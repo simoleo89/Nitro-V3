@@ -36,12 +36,12 @@ export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = p
           popoverRect={popoverRect}
           position={position}
         >
-          <NitroCardContentView className="bg-transparent max-h-[200px]!" overflow="hidden">
+          <NitroCardContentView className="bg-transparent max-h-[210px]!" overflow="hidden">
             <Grid columnCount={3} overflow="auto">
               {chatStyleIds && chatStyleIds.length > 0 && chatStyleIds.map(styleId => (
-                <Flex key={styleId} center pointer className="h-[30px]" onClick={() => selectStyle(styleId)}>
+                <Flex key={styleId} center pointer className="h-[35px] w-[65px]" onClick={() => selectStyle(styleId)}>
                   <div className="bubble-container relative w-[50px]">
-                    <div className={`relative max-w-[350px] min-h-[26px] text-[14px] chat-bubble bubble-${styleId}`}>&nbsp;</div>
+                    <div className={`relative max-w-[65px] min-h-[26px] text-[14px] chat-bubble bubble-${styleId}`} />
                   </div>
                 </Flex>
               ))}

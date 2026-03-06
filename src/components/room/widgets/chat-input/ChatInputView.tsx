@@ -1,257 +1,117 @@
-import { GetSessionDataManager, HabboClubLevelEnum, RoomControllerLevel } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { ChatMessageTypeEnum, GetClubMemberLevel, GetConfigurationValue, LocalizeText, RoomWidgetUpdateChatInputContentEvent } from '../../../../api';
-import { Text } from '../../../../common';
-import { useChatInputWidget, useRoom, useSessionInfo, useUiEvent } from '../../../../hooks';
-import { ChatInputEmojiSelectorView } from './ChatInputEmojiSelectorView';
-import { ChatInputStyleSelectorView } from './ChatInputStyleSelectorView';
+import { CreateLinkEvent, Dispose, DropBounce, EaseOut, GetSessionDataManager, JumpBy, Motions, NitroToolbarAnimateIconEvent, PerkAllowancesMessageEvent, PerkEnum, Queue, Wait } from '@nitrots/nitro-renderer';
+import { AnimatePresence, motion } from 'framer-motion';
+import { FC, useState } from 'react';
+import { GetConfigurationValue, MessengerIconState, OpenMessengerChat, VisitDesktop } from '../../api';
+import { Flex, LayoutAvatarImageView, LayoutItemCountView } from '../../common';
+import { useAchievements, useFriends, useInventoryUnseenTracker, useMessageEvent, useMessenger, useNitroEvent, useSessionInfo } from '../../hooks';
+import { ToolbarItemView } from './ToolbarItemView';
+import { ToolbarMeView } from './ToolbarMeView';
 
-export const ChatInputView: FC<{}> = props =>
+export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
 {
-    const [ chatValue, setChatValue ] = useState<string>('');
-    const { chatStyleId = 0, updateChatStyleId = null } = useSessionInfo();
-    const { selectedUsername = '', floodBlocked = false, floodBlockedSeconds = 0, setIsTyping = null, setIsIdle = null, sendChat = null } = useChatInputWidget();
-    const { roomSession = null } = useRoom();
-    const inputRef = useRef<HTMLInputElement>();
+    const { isInRoom } = props;
+    const [ isMeExpanded, setMeExpanded ] = useState(false);
+    const [ useGuideTool, setUseGuideTool ] = useState(false);
+    const { userFigure = null } = useSessionInfo();
+    const { getFullCount = 0 } = useInventoryUnseenTracker();
+    const { getTotalUnseen = 0 } = useAchievements();
+    const { requests = [] } = useFriends();
+    const { iconState = MessengerIconState.HIDDEN } = useMessenger();
+    const isMod = GetSessionDataManager().isModerator;
 
-    const chatModeIdWhisper = useMemo(() => LocalizeText('widgets.chatinput.mode.whisper'), []);
-    const chatModeIdShout = useMemo(() => LocalizeText('widgets.chatinput.mode.shout'), []);
-    const chatModeIdSpeak = useMemo(() => LocalizeText('widgets.chatinput.mode.speak'), []);
-    const maxChatLength = useMemo(() => GetConfigurationValue<number>('chat.input.maxlength', 100), []);
-
-    const anotherInputHasFocus = useCallback(() =>
+    useMessageEvent<PerkAllowancesMessageEvent>(PerkAllowancesMessageEvent, event =>
     {
-        const activeElement = document.activeElement;
-
-        if(!activeElement) return false;
-
-        if(inputRef && (inputRef.current === activeElement)) return false;
-
-        if(!(activeElement instanceof HTMLInputElement) && !(activeElement instanceof HTMLTextAreaElement)) return false;
-
-        return true;
-    }, [ inputRef ]);
-
-    const setInputFocus = useCallback(() =>
-    {
-        inputRef.current.focus();
-
-        inputRef.current.setSelectionRange((inputRef.current.value.length * 2), (inputRef.current.value.length * 2));
-    }, [ inputRef ]);
-
-    const checkSpecialKeywordForInput = useCallback(() =>
-    {
-        setChatValue(prevValue =>
-        {
-            if((prevValue !== chatModeIdWhisper) || !selectedUsername.length) return prevValue;
-
-            return (`${ prevValue } ${ selectedUsername }`);
-        });
-    }, [ selectedUsername, chatModeIdWhisper ]);
-
-    const sendChatValue = useCallback((value: string, shiftKey: boolean = false) =>
-    {
-        if(!value || (value === '')) return;
-
-        let chatType = (shiftKey ? ChatMessageTypeEnum.CHAT_SHOUT : ChatMessageTypeEnum.CHAT_DEFAULT);
-        let text = value;
-
-        const parts = text.split(' ');
-
-        let recipientName = '';
-        let append = '';
-
-        switch(parts[0])
-        {
-            case chatModeIdWhisper:
-                chatType = ChatMessageTypeEnum.CHAT_WHISPER;
-                recipientName = parts[1];
-                append = (chatModeIdWhisper + ' ' + recipientName + ' ');
-
-                parts.shift();
-                parts.shift();
-                break;
-            case chatModeIdShout:
-                chatType = ChatMessageTypeEnum.CHAT_SHOUT;
-
-                parts.shift();
-                break;
-            case chatModeIdSpeak:
-                chatType = ChatMessageTypeEnum.CHAT_DEFAULT;
-
-                parts.shift();
-                break;
-        }
-
-        text = parts.join(' ');
-
-        setIsTyping(false);
-        setIsIdle(false);
-
-        if(text.length <= maxChatLength)
-        {
-            if(/%CC%/g.test(encodeURIComponent(text)))
-            {
-                setChatValue('');
-            }
-            else
-            {
-                setChatValue('');
-                sendChat(text, chatType, recipientName, chatStyleId);
-            }
-        }
-
-        setChatValue(append);
-    }, [ chatModeIdWhisper, chatModeIdShout, chatModeIdSpeak, maxChatLength, chatStyleId, setIsTyping, setIsIdle, sendChat ]);
-
-    const updateChatInput = useCallback((value: string) =>
-    {
-        if(!value || !value.length)
-        {
-            setIsTyping(false);
-        }
-        else
-        {
-            setIsTyping(true);
-            setIsIdle(true);
-        }
-
-        setChatValue(value);
-    }, [ setIsTyping, setIsIdle ]);
-
-    const addChatEmoji = useCallback((emoji: string) =>
-    {
-        setChatValue(prev => prev + emoji);
-        setIsTyping(true);
-        inputRef.current?.focus();
-    }, [ setIsTyping, inputRef ]);
-
-    const onKeyDownEvent = useCallback((event: KeyboardEvent) =>
-    {
-        if(floodBlocked || !inputRef.current || anotherInputHasFocus()) return;
-
-        if(document.activeElement !== inputRef.current) setInputFocus();
-
-        const value = (event.target as HTMLInputElement).value;
-
-        switch(event.key)
-        {
-            case ' ':
-            case 'Space':
-                checkSpecialKeywordForInput();
-                return;
-            case 'NumpadEnter':
-            case 'Enter':
-                sendChatValue(value, event.shiftKey);
-                return;
-            case 'Backspace':
-                if(value)
-                {
-                    const parts = value.split(' ');
-
-                    if((parts[0] === chatModeIdWhisper) && (parts.length === 3) && (parts[2] === ''))
-                    {
-                        setChatValue('');
-                    }
-                }
-                return;
-        }
-
-    }, [ floodBlocked, inputRef, chatModeIdWhisper, anotherInputHasFocus, setInputFocus, checkSpecialKeywordForInput, sendChatValue ]);
-
-    useUiEvent<RoomWidgetUpdateChatInputContentEvent>(RoomWidgetUpdateChatInputContentEvent.CHAT_INPUT_CONTENT, event =>
-    {
-        switch(event.chatMode)
-        {
-            case RoomWidgetUpdateChatInputContentEvent.WHISPER: {
-                setChatValue(`${ chatModeIdWhisper } ${ event.userName } `);
-                return;
-            }
-            case RoomWidgetUpdateChatInputContentEvent.SHOUT:
-                return;
-        }
+        setUseGuideTool(event.getParser().isAllowed(PerkEnum.USE_GUIDE_TOOL));
     });
 
-    const chatStyleIds = useMemo(() =>
+    useNitroEvent<NitroToolbarAnimateIconEvent>(NitroToolbarAnimateIconEvent.ANIMATE_ICON, event =>
     {
-        let styleIds: number[] = [];
-
-        const styles = GetConfigurationValue<{ styleId: number, minRank: number, isSystemStyle: boolean, isHcOnly: boolean, isAmbassadorOnly: boolean }[]>('chat.styles');
-
-        for(const style of styles)
+        const animationIconToToolbar = (iconName: string, image: HTMLImageElement, x: number, y: number) =>
         {
-            if(!style) continue;
+            const target = (document.body.getElementsByClassName(iconName)[0] as HTMLElement);
 
-            if(style.minRank > 0)
+            if(!target) return;
+
+            image.className = 'toolbar-icon-animation';
+            image.style.visibility = 'visible';
+            image.style.left = (x + 'px');
+            image.style.top = (y + 'px');
+
+            document.body.append(image);
+
+            const targetBounds = target.getBoundingClientRect();
+            const imageBounds = image.getBoundingClientRect();
+
+            const left = (imageBounds.x - targetBounds.x);
+            const top = (imageBounds.y - targetBounds.y);
+            const squared = Math.sqrt(((left * left) + (top * top)));
+            const wait = (500 - Math.abs(((((1 / squared) * 100) * 500) * 0.5)));
+            const height = 20;
+
+            const motionName = (`ToolbarBouncing[${ iconName }]`);
+
+            if(!Motions.getMotionByTag(motionName))
             {
-                if(GetSessionDataManager().hasSecurity(style.minRank)) styleIds.push(style.styleId);
-
-                continue;
+                Motions.runMotion(new Queue(new Wait((wait + 8)), new DropBounce(target, 400, 12))).tag = motionName;
             }
 
-            if(style.isSystemStyle)
-            {
-                if(GetSessionDataManager().hasSecurity(RoomControllerLevel.MODERATOR))
-                {
-                    styleIds.push(style.styleId);
+            const motion = new Queue(new EaseOut(new JumpBy(image, wait, ((targetBounds.x - imageBounds.x) + height), (targetBounds.y - imageBounds.y), 100, 1), 1), new Dispose(image));
 
-                    continue;
-                }
-            }
-
-            if(GetConfigurationValue<number[]>('chat.styles.disabled').indexOf(style.styleId) >= 0) continue;
-
-            if(style.isHcOnly && (GetClubMemberLevel() >= HabboClubLevelEnum.CLUB))
-            {
-                styleIds.push(style.styleId);
-
-                continue;
-            }
-
-            if(style.isAmbassadorOnly && GetSessionDataManager().isAmbassador)
-            {
-                styleIds.push(style.styleId);
-
-                continue;
-            }
-
-            if(!style.isHcOnly && !style.isAmbassadorOnly) styleIds.push(style.styleId);
-        }
-
-        return styleIds;
-    }, []);
-
-    useEffect(() =>
-    {
-        document.body.addEventListener('keydown', onKeyDownEvent);
-
-        return () =>
-        {
-            document.body.removeEventListener('keydown', onKeyDownEvent);
+            Motions.runMotion(motion);
         };
-    }, [ onKeyDownEvent ]);
 
-    useEffect(() =>
-    {
-        if(!inputRef.current) return;
-
-        inputRef.current.parentElement.dataset.value = chatValue;
-    }, [ chatValue ]);
-
-    if(!roomSession || roomSession.isSpectator) return null;
+        animationIconToToolbar('icon-inventory', event.image, event.x, event.y);
+    });
 
     return (
-        createPortal(
-            <div className="nitro-chat-input-container flex justify-between items-center relative h-10 border-2 border-black bg-gray-200 pr-2.5 w-full overflow-hidden rounded-lg">
-                <div className="flex-1 items-center input-sizer">
-                    { !floodBlocked &&
-                        <input ref={ inputRef } className="[font-size:inherit] placeholder-[#6c757d] bg-transparent border-none focus:border-current focus:shadow-none focus:ring-0	" maxLength={ maxChatLength } placeholder={ LocalizeText('widgets.chatinput.default') } type="text" value={ chatValue } onChange={ event => updateChatInput(event.target.value) } onMouseDown={ event => setInputFocus() } /> }
-                    { floodBlocked &&
-                        <Text variant="danger">{ LocalizeText('chat.input.alert.flood', [ 'time' ], [ floodBlockedSeconds.toString() ]) } </Text> }
-                </div>
-                <ChatInputEmojiSelectorView addChatEmoji={ addChatEmoji } />
-                <ChatInputStyleSelectorView chatStyleId={ chatStyleId } chatStyleIds={ chatStyleIds } selectChatStyleId={ updateChatStyleId } />
-            </div>, document.getElementById('toolbar-chat-input-container'))
+        <>
+            <AnimatePresence> { isMeExpanded && ( <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+					<ToolbarMeView setMeExpanded={ setMeExpanded } unseenAchievementCount={ getTotalUnseen } useGuideTool={ useGuideTool } />
+				</motion.div> )}
+			</AnimatePresence>
+            <Flex alignItems="center" className="absolute bottom-0 left-0 w-full h-[55px] bg-[rgba(28,28,32,.95)] [box-shadow:inset_0_5px_#22222799,inset_0_-4px_#12121599] py-1 px-3" gap={ 2 } justifyContent="between">
+                <Flex alignItems="center" gap={ 2 }>
+                    <Flex alignItems="center" gap={ 2 }>
+                        <Flex center pointer className={ 'relative w-[50px] h-[45px] overflow-hidden ' + (isMeExpanded ? 'active ' : '') } onClick={ event =>
+                        {
+                            setMeExpanded(!isMeExpanded);
+                            event.stopPropagation();
+                        } }>
+                            <LayoutAvatarImageView className="-ml-[5px] mt-[25px]" direction={ 2 } figure={ userFigure } position="absolute" />
+                            { (getTotalUnseen > 0) &&
+                                <LayoutItemCountView count={ getTotalUnseen } /> }
+                        </Flex>
+                        { isInRoom &&
+                            <ToolbarItemView icon="habbo" onClick={ event => VisitDesktop() } /> }
+                        { !isInRoom &&
+                            <ToolbarItemView icon="house" onClick={ event => CreateLinkEvent('navigator/goto/home') } /> }
+                        <ToolbarItemView icon="rooms" onClick={ event => CreateLinkEvent('navigator/toggle') } />
+                        { GetConfigurationValue('game.center.enabled') &&
+                            <ToolbarItemView icon="game" onClick={ event => CreateLinkEvent('games/toggle') } /> }
+                        <ToolbarItemView icon="catalog" onClick={ event => CreateLinkEvent('catalog/toggle') } />
+                        <ToolbarItemView icon="inventory" onClick={ event => CreateLinkEvent('inventory/toggle') }>
+                            { (getFullCount > 0) &&
+                                <LayoutItemCountView count={ getFullCount } /> }
+                        </ToolbarItemView>
+                        { isInRoom &&
+                            <ToolbarItemView icon="camera" onClick={ event => CreateLinkEvent('camera/toggle') } /> }
+                        { isMod &&
+                            <ToolbarItemView icon="modtools" onClick={ event => CreateLinkEvent('mod-tools/toggle') } /> }
+                    </Flex>
+                    <Flex alignItems="center" id="toolbar-chat-input-container" />
+                </Flex>
+                <Flex alignItems="center" gap={ 2 }>
+                    <Flex gap={ 2 }>
+                        <ToolbarItemView icon="friendall" onClick={ event => CreateLinkEvent('friends/toggle') }>
+                            { (requests.length > 0) &&
+                                <LayoutItemCountView count={ requests.length } /> }
+                        </ToolbarItemView>
+                        { ((iconState === MessengerIconState.SHOW) || (iconState === MessengerIconState.UNREAD)) &&
+                            <ToolbarItemView className={ (iconState === MessengerIconState.UNREAD) && 'is-unseen' } icon="message" onClick={ event => OpenMessengerChat() } /> }
+                    </Flex>
+                    <div className="hidden lg:block" id="toolbar-friend-bar-container" />
+                </Flex>
+            </Flex>
+        </>
     );
 };

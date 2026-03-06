@@ -1,11 +1,11 @@
-import { GetRoomEngine, RoomAreaSelectionManager, RoomObjectCategory } from '@nitrots/nitro-renderer';
+import { GetRoomEngine, RoomAreaSelectionManager } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { LocalizeText } from '../../../../api';
 import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from '../actions/WiredActionBaseView';
 
-export const WiredActionFurniAreaView: FC<{}> = props =>
+export const WiredSelectorUsersAreaView: FC<{}> = props =>
 {
     const [ rootX, setRootX ] = useState(0);
     const [ rootY, setRootY ] = useState(0);
@@ -20,7 +20,6 @@ export const WiredActionFurniAreaView: FC<{}> = props =>
         setIntParams([ rootX, rootY, areaWidth, areaHeight, filterExisting ? 1 : 0, invert ? 1 : 0 ]);
     }, [ rootX, rootY, areaWidth, areaHeight, filterExisting, invert, setIntParams ]);
 
-    // Activate the area selection manager when dialog opens, deactivate on close
     useEffect(() =>
     {
         if(!trigger) return;
@@ -37,7 +36,6 @@ export const WiredActionFurniAreaView: FC<{}> = props =>
 
         if(activated)
         {
-            // Restore previously saved area highlight when re-opening dialog
             if(trigger.intData.length >= 4 && trigger.intData[2] > 0 && trigger.intData[3] > 0)
             {
                 GetRoomEngine().areaSelectionManager.setHighlight(
@@ -89,27 +87,11 @@ export const WiredActionFurniAreaView: FC<{}> = props =>
 
     const hasArea = areaWidth > 0 && areaHeight > 0;
 
-    const pickedLimit = trigger?.maximumItemSelectionCount ?? 20;
-    const pickedCount = hasArea
-        ? GetRoomEngine().getRoomObjects(GetRoomEngine().activeRoomId, RoomObjectCategory.FLOOR)
-            .filter(obj =>
-            {
-                const loc = obj.location;
-                const inArea = loc.x >= rootX && loc.x < rootX + areaWidth && loc.y >= rootY && loc.y < rootY + areaHeight;
-                return invert ? !inArea : inArea;
-            }).length
-        : 0;
-
     return (
-        <WiredActionBaseView hasSpecialInput={ true } requiresFurni={ 0 } save={ save } hideDelay={ true } cardStyle={ { width: '385px'} }>
+        <WiredActionBaseView hasSpecialInput={ true } requiresFurni={ 0 } save={ save } hideDelay={ true } cardStyle={ { width: '385px' } }>
             <div className="flex flex-col gap-2">
                 <Text bold>{ LocalizeText('wiredfurni.params.area_selection') }</Text>
                 <Text small>{ LocalizeText('wiredfurni.params.area_selection.info') }</Text>
-
-                { hasArea &&
-                    <Text small>
-                        { LocalizeText('wiredfurni.pickfurnis.caption', [ 'count', 'limit' ], [ pickedCount.toString(), pickedLimit.toString() ]) }
-                    </Text> }
 
                 <div className="flex gap-1">
                     <Button fullWidth variant="primary" onClick={ () => GetRoomEngine().areaSelectionManager.startSelecting() }>

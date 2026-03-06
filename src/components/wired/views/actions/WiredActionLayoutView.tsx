@@ -3,6 +3,7 @@ import { WiredActionBotChangeFigureView } from './WiredActionBotChangeFigureView
 import { WiredActionFurniAreaView } from '../selectors/WiredActionFurniAreaView';
 import { WiredSelectorFurniNeighborhoodView } from '../selectors/WiredSelectorFurniNeighborhoodView';
 import { WiredSelectorFurniByTypeView } from '../selectors/WiredSelectorFurniByTypeView';
+import { WiredSelectorUsersAreaView } from '../selectors/WiredSelectorUsersAreaView';
 import { WiredActionBotFollowAvatarView } from './WiredActionBotFollowAvatarView';
 import { WiredActionBotGiveHandItemView } from './WiredActionBotGiveHandItemView';
 import { WiredActionBotMoveView } from './WiredActionBotMoveView';
@@ -88,6 +89,8 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredSelectorFurniNeighborhoodView />;
         case WiredActionLayoutCode.FURNI_BYTYPE_SELECTOR:
             return <WiredSelectorFurniByTypeView />;
+        case WiredActionLayoutCode.USERS_AREA_SELECTOR:
+            return <WiredSelectorUsersAreaView />;
     }
 
     return null;

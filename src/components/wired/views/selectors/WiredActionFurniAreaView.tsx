@@ -108,6 +108,11 @@ export const WiredActionFurniAreaView: FC<{}> = props =>
 
                 { hasArea &&
                     <Text small>
+                        { LocalizeText('wiredfurni.params.area_selection.selected', [ 'x', 'y', 'w', 'h' ], [ rootX.toString(), rootY.toString(), areaWidth.toString(), areaHeight.toString() ]) }
+                    </Text> }
+
+                { hasArea &&
+                    <Text small>
                         { LocalizeText('wiredfurni.pickfurnis.caption', [ 'count', 'limit' ], [ pickedCount.toString(), pickedLimit.toString() ]) }
                     </Text> }
 

@@ -1,8 +1,8 @@
 {
-	"socket.url": "ws://## YOUR HOST ##:2096",
-	"asset.url": "http://## YOUR HOST ##/gamedata",
-	"image.library.url": "http://## YOUR HOST ##/gamedata/c_images/",
-	"hof.furni.url": "http://## YOUR HOST ##",
+	"socket.url": "ws:localhost:2097",
+	"asset.url": "http://localhost:3000/public\nitro-assets\gamedata",
+	"image.library.url": "http://localhost:3000/swf/gamedata/c_images/",
+	"hof.furni.url": "http://localhost:3000/",
 	"images.url": "${asset.url}/images",
 	"gamedata.url": "${asset.url}",
 	"sounds.url": "${asset.url}/sounds/%sample%.mp3",

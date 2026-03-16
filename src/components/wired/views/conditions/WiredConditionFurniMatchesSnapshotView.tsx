@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
+import { LocalizeText, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
@@ -10,7 +10,7 @@ export const WiredConditionFurniMatchesSnapshotView: FC<{}> = props =>
     const [ stateFlag, setStateFlag ] = useState(0);
     const [ directionFlag, setDirectionFlag ] = useState(0);
     const [ positionFlag, setPositionFlag ] = useState(0);
-    const { trigger = null, furniIds = [], setFurniIds = null, setIntParams = null } = useWired();
+    const { trigger = null, setIntParams = null } = useWired();
     const [ furniSource, setFurniSource ] = useState<number>(() =>
     {
         if(trigger?.intData?.length > 3) return trigger.intData[3];
@@ -28,23 +28,9 @@ export const WiredConditionFurniMatchesSnapshotView: FC<{}> = props =>
         else setFurniSource((trigger.selectedItems?.length ?? 0) > 0 ? 100 : 0);
     }, [ trigger ]);
 
-    const onChangeFurniSource = (next: number) =>
-    {
-        if(furniIds.length && setFurniIds)
-        {
-            setFurniIds(prev =>
-            {
-                if(prev && prev.length) WiredSelectionVisualizer.clearSelectionShaderFromFurni(prev);
-                return [];
-            });
-        }
+    const onChangeFurniSource = (next: number) => setFurniSource(next);
 
-        setFurniSource(next);
-    };
-
-    const requiresFurni = (furniSource === 100)
-        ? WiredFurniType.STUFF_SELECTION_OPTION_BY_ID
-        : WiredFurniType.STUFF_SELECTION_OPTION_NONE;
+    const requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_BY_ID;
 
     return (
         <WiredConditionBaseView

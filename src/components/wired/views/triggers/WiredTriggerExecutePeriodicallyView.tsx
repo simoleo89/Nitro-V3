@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { GetWiredTimeLocale, LocalizeText, WiredFurniType } from '../../../../api';
-import { Text } from '../../../../common';
+import { Slider, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredTriggerBaseView } from './WiredTriggerBaseView';
 

@@ -1,12 +1,12 @@
 import { FC, useEffect, useState } from 'react';
-import { WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
+import { WiredFurniType } from '../../../../api';
 import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
 export const WiredActionChaseView: FC<{}> = props =>
 {
-    const { trigger = null, furniIds = [], setFurniIds = null, setIntParams = null } = useWired();
+    const { trigger = null, setIntParams = null } = useWired();
     const [ furniSource, setFurniSource ] = useState<number>(() =>
     {
         if(trigger?.intData?.length >= 1) return trigger.intData[0];
@@ -21,25 +21,11 @@ export const WiredActionChaseView: FC<{}> = props =>
         else setFurniSource((trigger.selectedItems?.length ?? 0) > 0 ? 100 : 0);
     }, [ trigger ]);
 
-    const onChangeFurniSource = (next: number) =>
-    {
-        if(furniIds.length && setFurniIds)
-        {
-            setFurniIds(prev =>
-            {
-                if(prev && prev.length) WiredSelectionVisualizer.clearSelectionShaderFromFurni(prev);
-                return [];
-            });
-        }
-
-        setFurniSource(next);
-    };
+    const onChangeFurniSource = (next: number) => setFurniSource(next);
 
     const save = () => setIntParams([ furniSource ]);
 
-    const requiresFurni = (furniSource === 100)
-        ? WiredFurniType.STUFF_SELECTION_OPTION_BY_ID_BY_TYPE_OR_FROM_CONTEXT
-        : WiredFurniType.STUFF_SELECTION_OPTION_NONE;
+    const requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_BY_ID_BY_TYPE_OR_FROM_CONTEXT;
 
     return (
         <WiredActionBaseView

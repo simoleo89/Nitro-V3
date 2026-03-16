@@ -14,9 +14,9 @@ const useWiredState = () =>
     const [ actionDelay, setActionDelay ] = useState<number>(0);
     const [ allowsFurni, setAllowsFurni ] = useState<number>(WiredFurniType.STUFF_SELECTION_OPTION_NONE);
     const [ selectByType, setSelectByType ] = useState<boolean>(false);
-    const [ invertSelection, setInvertSelection ] = useState<boolean>(false);
     const [ neighborhoodTiles, setNeighborhoodTiles ] = useState<{ x: number; y: number }[] | null>(null);
     const [ neighborhoodInvert, setNeighborhoodInvert ] = useState<boolean>(false);
+    const [ allowedInteractionTypes, setAllowedInteractionTypes ] = useState<string[] | null>(null);
     const { showConfirm = null, simpleAlert = null } = useNotification();
 
     const saveWired = () =>
@@ -60,6 +60,30 @@ const useWiredState = () =>
 
         if(objectId <= 0) return;
 
+        const getInteractionTypeName = (furniData: any): string =>
+        {
+            if(!furniData) return null;
+
+            const rawValue = (furniData as any).interactionType
+                ?? (furniData as any).interactionTypeName
+                ?? (furniData as any).interactionTypeId;
+
+            if(rawValue === undefined || rawValue === null) return null;
+            if(typeof rawValue !== 'string') return null;
+
+            return rawValue.toLowerCase();
+        };
+
+        const isAllowedInteraction = (furniData: any): boolean =>
+        {
+            if(!allowedInteractionTypes || !allowedInteractionTypes.length) return true;
+
+            const interactionType = getInteractionTypeName(furniData);
+            if(!interactionType) return true;
+
+            return allowedInteractionTypes.some(type => (type && type.toLowerCase() === interactionType));
+        };
+
         if(selectByType && category === RoomObjectCategory.FLOOR)
         {
             const roomId = GetRoomSession().roomId;
@@ -71,6 +95,21 @@ const useWiredState = () =>
             const sourceFurniData = GetSessionDataManager().getFloorItemData(typeId);
 
             if(!sourceFurniData) return;
+            if(!isAllowedInteraction(sourceFurniData))
+            {
+                setFurniIds(prevValue =>
+                {
+                    if(!prevValue.includes(objectId)) return prevValue;
+
+                    const remaining = prevValue.filter(id => id !== objectId);
+
+                    WiredSelectionVisualizer.hide(objectId);
+
+                    return remaining;
+                });
+
+                return;
+            }
 
             const matchFurniLine = sourceFurniData.furniLine;
             const matchName = sourceFurniData.name;
@@ -83,6 +122,8 @@ const useWiredState = () =>
                 const tId = obj.model.getValue<number>(RoomObjectVariable.FURNITURE_TYPE_ID);
                 const fd = GetSessionDataManager().getFloorItemData(tId);
                 if(!fd) return false;
+
+                if(!isAllowedInteraction(fd)) return false;
 
                 const furniLineMatch = matchFurniLine && matchFurniLine.length > 0 && fd.furniLine === matchFurniLine;
                 return furniLineMatch || fd.name === matchName;
@@ -102,10 +143,8 @@ const useWiredState = () =>
                 }
 
                 // ── Select a new group ──────────────────────────────────────
-                if(prevValue && prevValue.length) WiredSelectionVisualizer.clearSelectionShaderFromFurni(prevValue);
-
                 const allFloorObjects = GetRoomEngine().getRoomObjects(roomId, RoomObjectCategory.FLOOR);
-                const newIds: number[] = [];
+                const newIds = [ ...prevValue ];
                 const limit = trigger.maximumItemSelectionCount;
 
                 for(const obj of allFloorObjects)
@@ -116,19 +155,49 @@ const useWiredState = () =>
                     const tId = obj.model.getValue<number>(RoomObjectVariable.FURNITURE_TYPE_ID);
                     const fd = GetSessionDataManager().getFloorItemData(tId);
                     if(!fd) continue;
+                    if(!isAllowedInteraction(fd)) continue;
 
                     const furniLineMatch = matchFurniLine && matchFurniLine.length > 0 && fd.furniLine === matchFurniLine;
                     const matches = furniLineMatch || fd.name === matchName;
 
-                    if(invertSelection ? !matches : matches) newIds.push(obj.id);
+                    if(matches && !newIds.includes(obj.id)) newIds.push(obj.id);
                 }
 
-                WiredSelectionVisualizer.applySelectionShaderToFurni(newIds);
+                const addedIds = newIds.filter(id => !prevValue.includes(id));
+                if(addedIds.length) WiredSelectionVisualizer.applySelectionShaderToFurni(addedIds);
 
                 return newIds;
             });
 
             return;
+        }
+
+        if(category === RoomObjectCategory.FLOOR && allowedInteractionTypes && allowedInteractionTypes.length)
+        {
+            const roomId = GetRoomSession().roomId;
+            const clickedObject = GetRoomEngine().getRoomObject(roomId, objectId, RoomObjectCategory.FLOOR);
+
+            if(!clickedObject) return;
+
+            const typeId = clickedObject.model.getValue<number>(RoomObjectVariable.FURNITURE_TYPE_ID);
+            const sourceFurniData = GetSessionDataManager().getFloorItemData(typeId);
+
+            if(!sourceFurniData) return;
+            if(!isAllowedInteraction(sourceFurniData))
+            {
+                setFurniIds(prevValue =>
+                {
+                    if(!prevValue.includes(objectId)) return prevValue;
+
+                    const remaining = prevValue.filter(id => id !== objectId);
+
+                    WiredSelectionVisualizer.hide(objectId);
+
+                    return remaining;
+                });
+
+                return;
+            }
         }
 
         setFurniIds(prevValue =>
@@ -217,13 +286,13 @@ const useWiredState = () =>
             });
             setAllowsFurni(WiredFurniType.STUFF_SELECTION_OPTION_NONE);
             setSelectByType(false);
-            setInvertSelection(false);
             setNeighborhoodTiles(null);
             setNeighborhoodInvert(false);
+            setAllowedInteractionTypes(null);
         };
     }, [ trigger ]);
 
-    return { trigger, setTrigger, intParams, setIntParams, stringParam, setStringParam, furniIds, setFurniIds, actionDelay, setActionDelay, setAllowsFurni, saveWired, selectObjectForWired, setSelectByType, setInvertSelection, setNeighborhoodTiles, setNeighborhoodInvert };
+    return { trigger, setTrigger, intParams, setIntParams, stringParam, setStringParam, furniIds, setFurniIds, actionDelay, setActionDelay, setAllowsFurni, saveWired, selectObjectForWired, setSelectByType, setNeighborhoodTiles, setNeighborhoodInvert, setAllowedInteractionTypes };
 };
 
 export const useWired = () => useBetween(useWiredState);

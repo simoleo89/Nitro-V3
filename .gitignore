@@ -27,3 +27,4 @@ Thumbs.db
 /build
 *.zip
 .env
+.claude/

@@ -155,7 +155,7 @@ export const CameraWidgetEditorView: FC<CameraWidgetEditorViewProps> = props => 
     }, [ picture, selectedEffects ]);
 
     return (
-        <NitroCardView className="w-[600px] h-[500px]">
+        <NitroCardView className="w-[620px] h-[500px]">
             <NitroCardHeaderView headerText={ LocalizeText('camera.editor.button.text') } onCloseClick={ event => processAction('close') } />
             <NitroCardTabsView>
                 { TABS.map(tab => (

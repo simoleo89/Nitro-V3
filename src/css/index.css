@@ -18,6 +18,10 @@ body {
     scrollbar-width: thin;
 }
 
+.image-rendering-pixelated {
+    image-rendering: pixelated;
+}
+
 *,
 *:focus,
 *:hover {

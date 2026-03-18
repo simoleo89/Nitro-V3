@@ -1,6 +1,6 @@
 import { AddLinkEventTracker, CreateLinkEvent, ILinkEventTracker, RemoveLinkEventTracker, RoomEngineEvent, RoomId, RoomObjectCategory, RoomObjectType } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useRef, useState } from 'react';
-import { GetRoomSession, ISelectedUser } from '../../api';
+import { GetRoomSession, ISelectedUser, LocalizeText } from '../../api';
 import { Button, DraggableWindowPosition, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../common';
 import { useModTools, useNitroEvent, useObjectSelectedEvent } from '../../hooks';
 import { ModToolsChatlogView } from './views/room/ModToolsChatlogView';
@@ -125,23 +125,23 @@ export const ModToolsView: FC<{}> = props =>
         <>
             { isVisible &&
                 <NitroCardView className="nitro-mod-tools min-w-[200px]" theme="primary-slim" uniqueKey="mod-tools" windowPosition={ DraggableWindowPosition.TOP_LEFT } >
-                    <NitroCardHeaderView headerText={ 'Mod Tools' } onCloseClick={ event => setIsVisible(false) } />
+                    <NitroCardHeaderView headerText={ LocalizeText('moderation.modtools.title') } onCloseClick={ event => setIsVisible(false) } />
                     <NitroCardContentView className="text-black" gap={ 2 }>
                         <Button active={ isRoomInfoOpen } disabled={ (currentRoomId <= 0) } gap={ 2 } justifyContent="start" onClick={ event => CreateLinkEvent(`mod-tools/toggle-room-info/${ currentRoomId }`) }>
-                            <div className="nitro-icon icon-small-room shrink-0" /> Room Tool
+                            <div className="nitro-icon icon-small-room shrink-0" /> { LocalizeText('moderation.modtools.roomtool') }
                         </Button>
                         <Button active={ isRoomChatlogOpen } disabled={ (currentRoomId <= 0) } gap={ 2 } innerRef={ elementRef } justifyContent="start" onClick={ event => CreateLinkEvent(`mod-tools/toggle-room-chatlog/${ currentRoomId }`) }>
-                            <div className="nitro-icon icon-chat-history shrink-0" /> Chatlog Tool
+                            <div className="nitro-icon icon-chat-history shrink-0" /> { LocalizeText('moderation.modtools.roomchatlogs') }
                         </Button>
                         <Button active={ !!isUserInfoOpen } disabled={ !selectedUser } gap={ 2 } justifyContent="start" onClick={ () => CreateLinkEvent(`mod-tools/toggle-user-info/${ selectedUser.userId }`) }>
                             <div className="nitro-icon icon-user shrink-0" />
                             { selectedUser
                                 ? <span className="truncate">{ selectedUser.username }</span>
-                                : <span className="opacity-50 italic">Select a user</span>
+                                : <span className="opacity-50 italic">{ LocalizeText('moderation.modtools.userinfo') }</span>
                             }
                         </Button>
                         <Button active={ isTicketsVisible } gap={ 2 } justifyContent="start" onClick={ () => setIsTicketsVisible(prevValue => !prevValue) }>
-                            <div className="nitro-icon icon-tickets shrink-0" /> Report Tool
+                            <div className="nitro-icon icon-tickets shrink-0" /> { LocalizeText('moderation.modtools.tickets') }
                         </Button>
                     </NitroCardContentView>
                 </NitroCardView> }

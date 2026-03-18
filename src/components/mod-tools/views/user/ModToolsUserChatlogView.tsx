@@ -1,6 +1,6 @@
 import { ChatRecordData, GetUserChatlogMessageComposer, UserChatlogEvent } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
-import { SendMessageComposer } from '../../../../api';
+import { LocalizeText, SendMessageComposer } from '../../../../api';
 import { DraggableWindowPosition, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
 import { useMessageEvent } from '../../../../hooks';
 import { ChatlogView } from '../chatlog/ChatlogView';
@@ -34,7 +34,7 @@ export const ModToolsUserChatlogView: FC<ModToolsUserChatlogViewProps> = props =
 
     return (
         <NitroCardView className="nitro-mod-tools-chatlog" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT }>
-            <NitroCardHeaderView headerText={ `User Chatlog: ${ username || '' }` } onCloseClick={ onCloseClick } />
+            <NitroCardHeaderView headerText={ LocalizeText('moderation.chatlog.user', [ 'username' ], [ username || '' ]) } onCloseClick={ onCloseClick } />
             <NitroCardContentView className="text-black h-full">
                 { userChatlog &&
                     <ChatlogView records={ userChatlog } /> }

@@ -1,5 +1,6 @@
 import { GetSessionDataManager, IssueMessageData } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
+import { LocalizeText } from '../../../../api';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardTabsItemView, NitroCardTabsView, NitroCardView } from '../../../../common';
 import { useModTools } from '../../../../hooks';
 import { ModToolsIssueInfoView } from './ModToolsIssueInfoView';
@@ -12,10 +13,10 @@ interface ModToolsTicketsViewProps
     onCloseClick: () => void;
 }
 
-const TABS: string[] = [
-    'Open Issues',
-    'My Issues',
-    'Picked Issues'
+const TAB_KEYS: string[] = [
+    'moderation.tickets.open',
+    'moderation.tickets.my',
+    'moderation.tickets.picked'
 ];
 
 export const ModToolsTicketsView: FC<ModToolsTicketsViewProps> = props =>
@@ -71,12 +72,12 @@ export const ModToolsTicketsView: FC<ModToolsTicketsViewProps> = props =>
     return (
         <>
             <NitroCardView className="nitro-mod-tools-tickets">
-                <NitroCardHeaderView headerText={ 'Tickets' } onCloseClick={ onCloseClick } />
+                <NitroCardHeaderView headerText={ LocalizeText('moderation.tickets.title') } onCloseClick={ onCloseClick } />
                 <NitroCardTabsView>
-                    { TABS.map((tab, index) =>
+                    { TAB_KEYS.map((tabKey, index) =>
                     {
                         return (<NitroCardTabsItemView key={ index } isActive={ (currentTab === index) } onClick={ event => setCurrentTab(index) }>
-                            { tab }
+                            { LocalizeText(tabKey) }
                         </NitroCardTabsItemView>);
                     }) }
                 </NitroCardTabsView>

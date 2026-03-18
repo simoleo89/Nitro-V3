@@ -1,6 +1,6 @@
 import { CreateLinkEvent, GetModeratorRoomInfoMessageComposer, ModerateRoomMessageComposer, ModeratorActionMessageComposer, ModeratorRoomInfoEvent } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
-import { SendMessageComposer, TryVisitRoom } from '../../../../api';
+import { LocalizeText, SendMessageComposer, TryVisitRoom } from '../../../../api';
 import { Button, Column, DraggableWindowPosition, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../../common';
 import { useMessageEvent } from '../../../../hooks';
 
@@ -70,7 +70,7 @@ export const ModToolsRoomView: FC<ModToolsRoomViewProps> = props =>
 
     return (
         <NitroCardView className="nitro-mod-tools-room min-w-[280px]" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT }>
-            <NitroCardHeaderView headerText={ 'Room Info' } onCloseClick={ event => onCloseClick() } />
+            <NitroCardHeaderView headerText={ LocalizeText('moderation.roomtool.info.title') } onCloseClick={ event => onCloseClick() } />
             <NitroCardContentView className="text-black" gap={ 2 }>
                 { name &&
                     <div className="bg-muted rounded px-2 py-1.5 text-center">
@@ -80,41 +80,41 @@ export const ModToolsRoomView: FC<ModToolsRoomViewProps> = props =>
                 <div className="flex gap-2">
                     <Column grow gap={ 1 }>
                         <div className="flex items-center gap-1">
-                            <Text bold className="opacity-60 shrink-0">Owner:</Text>
+                            <Text bold className="opacity-60 shrink-0">{ LocalizeText('moderation.roomtool.roomowner.title') }</Text>
                             <Text bold pointer truncate underline onClick={ () => CreateLinkEvent(`mod-tools/open-user-info/${ ownerId }`) }>{ ownerName }</Text>
                         </div>
                         <div className="flex items-center gap-1">
-                            <Text bold className="opacity-60 shrink-0">Users in room:</Text>
+                            <Text bold className="opacity-60 shrink-0">{ LocalizeText('moderation.roomtool.usersinroom.title') }</Text>
                             <Text>{ usersInRoom }</Text>
                         </div>
                         <div className="flex items-center gap-1">
-                            <Text bold className="opacity-60 shrink-0">Owner here:</Text>
-                            <Text className={ ownerInRoom ? 'text-green-700' : 'text-red-700' }>{ ownerInRoom ? 'Yes' : 'No' }</Text>
+                            <Text bold className="opacity-60 shrink-0">{ LocalizeText('moderation.roomtool.ownerinroom.title') }</Text>
+                            <Text className={ ownerInRoom ? 'text-green-700' : 'text-red-700' }>{ ownerInRoom ? LocalizeText('moderation.roomtool.true.title') : LocalizeText('moderation.roomtool.false.title') }</Text>
                         </div>
                     </Column>
                     <div className="flex flex-col gap-1 shrink-0">
-                        <Button onClick={ event => TryVisitRoom(roomId) }>Visit Room</Button>
-                        <Button onClick={ event => CreateLinkEvent(`mod-tools/open-room-chatlog/${ roomId }`) }>Chatlog</Button>
+                        <Button onClick={ event => TryVisitRoom(roomId) }>{ LocalizeText('moderation.roomtool.button.visit.title') }</Button>
+                        <Button onClick={ event => CreateLinkEvent(`mod-tools/open-room-chatlog/${ roomId }`) }>{ LocalizeText('moderation.modtools.roomchatlogs') }</Button>
                     </div>
                 </div>
                 <Column className="bg-muted rounded p-2" gap={ 1 }>
                     <div className="flex items-center gap-2">
                         <input checked={ kickUsers } className="form-check-input" type="checkbox" onChange={ event => setKickUsers(event.target.checked) } />
-                        <Text small>Kick everyone out</Text>
+                        <Text small>{ LocalizeText('moderation.roomtool.kickall.title') }</Text>
                     </div>
                     <div className="flex items-center gap-2">
                         <input checked={ lockRoom } className="form-check-input" type="checkbox" onChange={ event => setLockRoom(event.target.checked) } />
-                        <Text small>Enable the doorbell</Text>
+                        <Text small>{ LocalizeText('moderation.roomtool.closeroom.title') }</Text>
                     </div>
                     <div className="flex items-center gap-2">
                         <input checked={ changeRoomName } className="form-check-input" type="checkbox" onChange={ event => setChangeRoomName(event.target.checked) } />
-                        <Text small>Change room name</Text>
+                        <Text small>{ LocalizeText('moderation.roomtool.inappropiatename.title') }</Text>
                     </div>
                 </Column>
-                <textarea className="min-h-[60px] px-2 py-1.5 rounded text-sm border border-black/10" placeholder="Type a mandatory message..." value={ message } onChange={ event => setMessage(event.target.value) }></textarea>
+                <textarea className="min-h-[60px] px-2 py-1.5 rounded text-sm border border-black/10" placeholder={ LocalizeText('moderation.roomtool.presets.title') } value={ message } onChange={ event => setMessage(event.target.value) }></textarea>
                 <div className="flex gap-2">
-                    <Button className="grow" variant="danger" onClick={ event => handleClick('send_message') }>Send Caution</Button>
-                    <Button className="grow" onClick={ event => handleClick('alert_only') }>Send Alert</Button>
+                    <Button className="grow" variant="danger" onClick={ event => handleClick('send_message') }>{ LocalizeText('moderation.roomtool.button.caution.title') }</Button>
+                    <Button className="grow" onClick={ event => handleClick('alert_only') }>{ LocalizeText('moderation.roomtool.button.message.title') }</Button>
                 </div>
             </NitroCardContentView>
         </NitroCardView>

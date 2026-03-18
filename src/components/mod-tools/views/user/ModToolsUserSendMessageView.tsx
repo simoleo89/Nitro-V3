@@ -1,6 +1,6 @@
 import { ModMessageMessageComposer } from '@nitrots/nitro-renderer';
 import { FC, useState } from 'react';
-import { ISelectedUser, SendMessageComposer } from '../../../../api';
+import { ISelectedUser, LocalizeText, SendMessageComposer } from '../../../../api';
 import { Button, DraggableWindowPosition, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../../common';
 import { useNotification } from '../../../../hooks';
 
@@ -22,7 +22,7 @@ export const ModToolsUserSendMessageView: FC<ModToolsUserSendMessageViewProps> =
     {
         if(message.trim().length === 0)
         {
-            simpleAlert('Please write a message to user.', null, null, null, 'Error', null);
+            simpleAlert(LocalizeText('moderation.sendmessage.error.empty'), null, null, null, LocalizeText('moderation.error'), null);
 
             return;
         }
@@ -34,11 +34,11 @@ export const ModToolsUserSendMessageView: FC<ModToolsUserSendMessageViewProps> =
 
     return (
         <NitroCardView className="nitro-mod-tools-user-message" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT }>
-            <NitroCardHeaderView headerText={ 'Send Message' } onCloseClick={ () => onCloseClick() } />
+            <NitroCardHeaderView headerText={ LocalizeText('moderation.sendmessage.title') } onCloseClick={ () => onCloseClick() } />
             <NitroCardContentView className="text-black">
-                <Text>Message To: { user.username }</Text>
+                <Text>{ LocalizeText('moderation.sendmessage.to', [ 'username' ], [ user.username ]) }</Text>
                 <textarea className="min-h-[calc(1.5em+ .5rem+2px)] px-[.5rem] py-[.25rem]  rounded-[.2rem]" value={ message } onChange={ event => setMessage(event.target.value) }></textarea>
-                <Button fullWidth onClick={ sendMessage }>Send message</Button>
+                <Button fullWidth onClick={ sendMessage }>{ LocalizeText('moderation.sendmessage.send') }</Button>
             </NitroCardContentView>
         </NitroCardView>
     );

@@ -1,5 +1,6 @@
 import { IssueMessageData } from '@nitrots/nitro-renderer';
 import { FC } from 'react';
+import { LocalizeText } from '../../../../api';
 import { Column, Grid } from '../../../../common';
 
 interface ModToolsPickedIssuesTabViewProps
@@ -15,10 +16,10 @@ export const ModToolsPickedIssuesTabView: FC<ModToolsPickedIssuesTabViewProps> =
         <Column gap={ 0 } overflow="hidden">
             <Column gap={ 2 }>
                 <Grid className="text-black font-bold	 border-bottom pb-1" gap={ 1 }>
-                    <div className="col-span-2">Type</div>
-                    <div className="col-span-3">Room/Player</div>
-                    <div className="col-span-4">Opened</div>
-                    <div className="col-span-3">Picker</div>
+                    <div className="col-span-2">{ LocalizeText('moderation.tickets.col.type') }</div>
+                    <div className="col-span-3">{ LocalizeText('moderation.tickets.col.roomPlayer') }</div>
+                    <div className="col-span-4">{ LocalizeText('moderation.tickets.col.opened') }</div>
+                    <div className="col-span-3">{ LocalizeText('moderation.tickets.col.picker') }</div>
                 </Grid>
             </Column>
             <Column className="striped-children" gap={ 0 } overflow="auto">

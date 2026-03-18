@@ -1,6 +1,6 @@
 import { IssueMessageData, PickIssuesMessageComposer } from '@nitrots/nitro-renderer';
 import { FC, useRef } from 'react';
-import { SendMessageComposer } from '../../../../api';
+import { LocalizeText, SendMessageComposer } from '../../../../api';
 import { Button, Column, Grid } from '../../../../common';
 
 interface ModToolsOpenIssuesTabViewProps
@@ -27,9 +27,9 @@ export const ModToolsOpenIssuesTabView: FC<ModToolsOpenIssuesTabViewProps> = pro
         <Column gap={ 0 } overflow="hidden">
             <Column gap={ 2 }>
                 <Grid className="text-black font-bold	 border-bottom pb-1" gap={ 1 }>
-                    <div className="col-span-2">Type</div>
-                    <div className="col-span-3">Room/Player</div>
-                    <div className="col-span-4">Opened</div>
+                    <div className="col-span-2">{ LocalizeText('moderation.tickets.col.type') }</div>
+                    <div className="col-span-3">{ LocalizeText('moderation.tickets.col.roomPlayer') }</div>
+                    <div className="col-span-4">{ LocalizeText('moderation.tickets.col.opened') }</div>
                     <div className="col-span-3"></div>
                 </Grid>
             </Column>
@@ -42,7 +42,7 @@ export const ModToolsOpenIssuesTabView: FC<ModToolsOpenIssuesTabViewProps> = pro
                             <div className="col-span-3">{ issue.reportedUserName }</div>
                             <div className="col-span-4">{ new Date(Date.now() - issue.issueAgeInMilliseconds).toLocaleTimeString() }</div>
                             <div className="col-span-3">
-                                <Button variant="success" onClick={ () => pickIssue(issue.issueId) }>Pick Issue</Button>
+                                <Button variant="success" onClick={ () => pickIssue(issue.issueId) }>{ LocalizeText('moderation.tickets.pick') }</Button>
                             </div>
                         </Grid>
                     );

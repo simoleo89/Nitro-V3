@@ -1,6 +1,6 @@
 import { CfhChatlogData, CfhChatlogEvent, GetCfhChatlogMessageComposer } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
-import { SendMessageComposer } from '../../../../api';
+import { LocalizeText, SendMessageComposer } from '../../../../api';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
 import { useMessageEvent } from '../../../../hooks';
 import { ChatlogView } from '../chatlog/ChatlogView';
@@ -32,7 +32,7 @@ export const CfhChatlogView: FC<CfhChatlogViewProps> = props =>
 
     return (
         <NitroCardView className="nitro-mod-tools-chatlog" theme="primary-slim">
-            <NitroCardHeaderView headerText={ 'Issue Chatlog' } onCloseClick={ onCloseClick } />
+            <NitroCardHeaderView headerText={ LocalizeText('moderation.chatlog.issue') } onCloseClick={ onCloseClick } />
             <NitroCardContentView className="text-black">
                 { chatlogData && <ChatlogView records={ [ chatlogData.chatRecord ] } /> }
             </NitroCardContentView>

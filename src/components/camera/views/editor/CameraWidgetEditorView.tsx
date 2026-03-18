@@ -1,6 +1,5 @@
-import { GetRoomCameraWidgetManager, IRoomCameraWidgetEffect, IRoomCameraWidgetSelectedEffect, NitroLogger, RoomCameraWidgetSelectedEffect, TextureUtils } from '@nitrots/nitro-renderer';
+import { GetRoomCameraWidgetManager, IRoomCameraWidgetEffect, IRoomCameraWidgetSelectedEffect, NitroLogger, NitroTexture, RoomCameraWidgetSelectedEffect } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Texture } from 'pixi.js';
 import { FaSave, FaSearchMinus, FaSearchPlus, FaTrash } from 'react-icons/fa';
 import { CameraEditorTabs, CameraPicture, CameraPictureThumbnail, LocalizeText } from '../../../../api';
 import { Button, Column, Flex, Grid, NitroCardContentView, NitroCardHeaderView, NitroCardTabsItemView, NitroCardTabsView, NitroCardView, Slider, Text } from '../../../../common';
@@ -25,14 +24,14 @@ export const CameraWidgetEditorView: FC<CameraWidgetEditorViewProps> = props => 
     const [ effectsThumbnails, setEffectsThumbnails ] = useState<CameraPictureThumbnail[]>([]);
     const [ isZoomed, setIsZoomed ] = useState(false);
     const [ currentPictureUrl, setCurrentPictureUrl ] = useState<string>(picture?.imageUrl ?? '');
-    const [ stableTexture, setStableTexture ] = useState<Texture>(null);
+    const [ stableTexture, setStableTexture ] = useState<NitroTexture>(null);
     const debounceTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
     const requestIdRef = useRef<number>(0);
 
     useEffect(() =>
     {
         const img = new Image();
-        img.onload = () => setStableTexture(Texture.from(img));
+        img.onload = () => setStableTexture(NitroTexture.from(img));
         img.src = picture.imageUrl;
     }, [ picture ]);
 

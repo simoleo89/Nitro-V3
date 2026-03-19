@@ -1,6 +1,6 @@
 import { ChatRecordData, GetRoomChatlogMessageComposer, RoomChatlogEvent } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
-import { SendMessageComposer } from '../../../../api';
+import { LocalizeText, SendMessageComposer } from '../../../../api';
 import { DraggableWindowPosition, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
 import { useMessageEvent } from '../../../../hooks';
 import { ChatlogView } from '../chatlog/ChatlogView';
@@ -34,7 +34,7 @@ export const ModToolsChatlogView: FC<ModToolsChatlogViewProps> = props =>
 
     return (
         <NitroCardView className="nitro-mod-tools-chatlog min-w-[400px] max-h-[500px]" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT }>
-            <NitroCardHeaderView headerText={ `Room Chatlog` } onCloseClick={ onCloseClick } />
+            <NitroCardHeaderView headerText={ LocalizeText('moderation.chatlog.room') } onCloseClick={ onCloseClick } />
             <NitroCardContentView className="text-black" overflow="auto">
                 { roomChatlog &&
                     <ChatlogView records={ [ roomChatlog ] } /> }

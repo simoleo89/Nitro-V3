@@ -27,60 +27,60 @@ export const ModToolsUserView: FC<ModToolsUserViewProps> = props =>
 
         return [
             {
-                localeKey: 'modtools.userinfo.userName',
+                localeKey: 'moderation.userinfo.userName',
                 value: userInfo.userName,
                 showOnline: true
             },
             {
-                localeKey: 'modtools.userinfo.cfhCount',
+                localeKey: 'moderation.userinfo.cfhCount',
                 value: userInfo.cfhCount.toString()
             },
             {
-                localeKey: 'modtools.userinfo.abusiveCfhCount',
+                localeKey: 'moderation.userinfo.abusiveCfhCount',
                 value: userInfo.abusiveCfhCount.toString()
             },
             {
-                localeKey: 'modtools.userinfo.cautionCount',
+                localeKey: 'moderation.userinfo.cautionCount',
                 value: userInfo.cautionCount.toString()
             },
             {
-                localeKey: 'modtools.userinfo.banCount',
+                localeKey: 'moderation.userinfo.banCount',
                 value: userInfo.banCount.toString()
             },
             {
-                localeKey: 'modtools.userinfo.lastSanctionTime',
+                localeKey: 'moderation.userinfo.lastSanctionTime',
                 value: userInfo.lastSanctionTime
             },
             {
-                localeKey: 'modtools.userinfo.tradingLockCount',
+                localeKey: 'moderation.userinfo.tradingLockCount',
                 value: userInfo.tradingLockCount.toString()
             },
             {
-                localeKey: 'modtools.userinfo.tradingExpiryDate',
+                localeKey: 'moderation.userinfo.tradingExpiryDate',
                 value: userInfo.tradingExpiryDate
             },
             {
-                localeKey: 'modtools.userinfo.minutesSinceLastLogin',
+                localeKey: 'moderation.userinfo.minutesSinceLastLogin',
                 value: FriendlyTime.format(userInfo.minutesSinceLastLogin * 60, '.ago', 2)
             },
             {
-                localeKey: 'modtools.userinfo.lastPurchaseDate',
+                localeKey: 'moderation.userinfo.lastPurchaseDate',
                 value: userInfo.lastPurchaseDate
             },
             {
-                localeKey: 'modtools.userinfo.primaryEmailAddress',
+                localeKey: 'moderation.userinfo.primaryEmailAddress',
                 value: userInfo.primaryEmailAddress
             },
             {
-                localeKey: 'modtools.userinfo.identityRelatedBanCount',
+                localeKey: 'moderation.userinfo.identityRelatedBanCount',
                 value: userInfo.identityRelatedBanCount.toString()
             },
             {
-                localeKey: 'modtools.userinfo.registrationAgeInMinutes',
+                localeKey: 'moderation.userinfo.registrationAgeInMinutes',
                 value: FriendlyTime.format(userInfo.registrationAgeInMinutes * 60, '.ago', 2)
             },
             {
-                localeKey: 'modtools.userinfo.userClassification',
+                localeKey: 'moderation.userinfo.userClassification',
                 value: userInfo.userClassification
             }
         ];
@@ -105,7 +105,7 @@ export const ModToolsUserView: FC<ModToolsUserViewProps> = props =>
     return (
         <>
             <NitroCardView className="nitro-mod-tools-user" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT }>
-                <NitroCardHeaderView headerText={ LocalizeText('modtools.userinfo.title', [ 'username' ], [ userInfo.userName ]) } onCloseClick={ () => onCloseClick() } />
+                <NitroCardHeaderView headerText={ LocalizeText('moderation.userinfo.title', [ 'username' ], [ userInfo.userName ]) } onCloseClick={ () => onCloseClick() } />
                 <NitroCardContentView className="text-black">
                     <Grid overflow="hidden">
                         <Column overflow="auto" size={ 8 }>
@@ -130,16 +130,16 @@ export const ModToolsUserView: FC<ModToolsUserViewProps> = props =>
                         </Column>
                         <Column gap={ 1 } size={ 4 }>
                             <Button onClick={ event => CreateLinkEvent(`mod-tools/open-user-chatlog/${ userId }`) }>
-                                Room Chat
+                                { LocalizeText('moderation.userinfo.roomchat') }
                             </Button>
                             <Button onClick={ event => setSendMessageVisible(!sendMessageVisible) }>
-                                Send Message
+                                { LocalizeText('moderation.userinfo.sendmessage') }
                             </Button>
                             <Button onClick={ event => setRoomVisitsVisible(!roomVisitsVisible) }>
-                                Room Visits
+                                { LocalizeText('moderation.userinfo.roomvisits') }
                             </Button>
                             <Button onClick={ event => setModActionVisible(!modActionVisible) }>
-                                Mod Action
+                                { LocalizeText('moderation.userinfo.modaction') }
                             </Button>
                         </Column>
                     </Grid>

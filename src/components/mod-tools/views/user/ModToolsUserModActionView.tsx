@@ -11,18 +11,18 @@ interface ModToolsUserModActionViewProps
 }
 
 const MOD_ACTION_DEFINITIONS = [
-    new ModActionDefinition(1, 'Alert', ModActionDefinition.ALERT, 1, 0),
-    new ModActionDefinition(2, 'Mute 1h', ModActionDefinition.MUTE, 2, 0),
-    new ModActionDefinition(3, 'Ban 18h', ModActionDefinition.BAN, 3, 0),
-    new ModActionDefinition(4, 'Ban 7 days', ModActionDefinition.BAN, 4, 0),
-    new ModActionDefinition(5, 'Ban 30 days (step 1)', ModActionDefinition.BAN, 5, 0),
-    new ModActionDefinition(7, 'Ban 30 days (step 2)', ModActionDefinition.BAN, 7, 0),
-    new ModActionDefinition(6, 'Ban 100 years', ModActionDefinition.BAN, 6, 0),
-    new ModActionDefinition(106, 'Ban avatar-only 100 years', ModActionDefinition.BAN, 6, 0),
-    new ModActionDefinition(101, 'Kick', ModActionDefinition.KICK, 0, 0),
-    new ModActionDefinition(102, 'Lock trade 1 week', ModActionDefinition.TRADE_LOCK, 0, 168),
-    new ModActionDefinition(104, 'Lock trade permanent', ModActionDefinition.TRADE_LOCK, 0, 876000),
-    new ModActionDefinition(105, 'Message', ModActionDefinition.MESSAGE, 0, 0),
+    new ModActionDefinition(1, 'moderation.modaction.alert', ModActionDefinition.ALERT, 1, 0),
+    new ModActionDefinition(2, 'moderation.modaction.mute1h', ModActionDefinition.MUTE, 2, 0),
+    new ModActionDefinition(3, 'moderation.modaction.ban18h', ModActionDefinition.BAN, 3, 0),
+    new ModActionDefinition(4, 'moderation.modaction.ban7days', ModActionDefinition.BAN, 4, 0),
+    new ModActionDefinition(5, 'moderation.modaction.ban30days.step1', ModActionDefinition.BAN, 5, 0),
+    new ModActionDefinition(7, 'moderation.modaction.ban30days.step2', ModActionDefinition.BAN, 7, 0),
+    new ModActionDefinition(6, 'moderation.modaction.ban100years', ModActionDefinition.BAN, 6, 0),
+    new ModActionDefinition(106, 'moderation.modaction.banavataronly100years', ModActionDefinition.BAN, 6, 0),
+    new ModActionDefinition(101, 'moderation.modaction.kick', ModActionDefinition.KICK, 0, 0),
+    new ModActionDefinition(102, 'moderation.modaction.locktrade1week', ModActionDefinition.TRADE_LOCK, 0, 168),
+    new ModActionDefinition(104, 'moderation.modaction.locktradepermanent', ModActionDefinition.TRADE_LOCK, 0, 876000),
+    new ModActionDefinition(105, 'moderation.modaction.message', ModActionDefinition.MESSAGE, 0, 0),
 ];
 
 export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = props =>
@@ -60,7 +60,7 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
 
         const category = topics[selectedTopic];
 
-        if(selectedTopic === -1) errorMessage = 'You must select a CFH topic';
+        if(selectedTopic === -1) errorMessage = LocalizeText('moderation.modaction.error.notopic');
 
         if(errorMessage) return sendAlert(errorMessage);
 
@@ -82,10 +82,10 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
         const category = topics[selectedTopic];
         const sanction = MOD_ACTION_DEFINITIONS[selectedAction];
 
-        if((selectedTopic === -1) || (selectedAction === -1)) errorMessage = 'You must select a CFH topic and Sanction';
-        else if(!settings || !settings.cfhPermission) errorMessage = 'You do not have permission to do this';
-        else if(!category) errorMessage = 'You must select a CFH topic';
-        else if(!sanction) errorMessage = 'You must select a sanction';
+        if((selectedTopic === -1) || (selectedAction === -1)) errorMessage = LocalizeText('moderation.modaction.error.notopicorsanction');
+        else if(!settings || !settings.cfhPermission) errorMessage = LocalizeText('moderation.modaction.error.nopermission');
+        else if(!category) errorMessage = LocalizeText('moderation.modaction.error.notopic');
+        else if(!sanction) errorMessage = LocalizeText('moderation.modaction.error.nosanction');
 
         if(errorMessage)
         {
@@ -101,7 +101,7 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
             case ModActionDefinition.ALERT: {
                 if(!settings.alertPermission)
                 {
-                    sendAlert('You have insufficient permissions');
+                    sendAlert(LocalizeText('moderation.modaction.error.nopermission'));
 
                     return;
                 }
@@ -115,7 +115,7 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
             case ModActionDefinition.BAN: {
                 if(!settings.banPermission)
                 {
-                    sendAlert('You have insufficient permissions');
+                    sendAlert(LocalizeText('moderation.modaction.error.nopermission'));
 
                     return;
                 }
@@ -126,7 +126,7 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
             case ModActionDefinition.KICK: {
                 if(!settings.kickPermission)
                 {
-                    sendAlert('You have insufficient permissions');
+                    sendAlert(LocalizeText('moderation.modaction.error.nopermission'));
                     return;
                 }
 
@@ -142,7 +142,7 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
             case ModActionDefinition.MESSAGE: {
                 if(message.trim().length === 0)
                 {
-                    sendAlert('Please write a message to user');
+                    sendAlert(LocalizeText('moderation.modaction.error.emptymessage'));
 
                     return;
                 }
@@ -161,23 +161,23 @@ export const ModToolsUserModActionView: FC<ModToolsUserModActionViewProps> = pro
 
     return (
         <NitroCardView className="nitro-mod-tools-user-action" theme="primary-slim" windowPosition={ DraggableWindowPosition.TOP_LEFT }>
-            <NitroCardHeaderView headerText={ 'Mod Action: ' + (user ? user.username : '') } onCloseClick={ () => onCloseClick() } />
+            <NitroCardHeaderView headerText={ LocalizeText('moderation.modaction.title', [ 'username' ], [ user ? user.username : '' ]) } onCloseClick={ () => onCloseClick() } />
             <NitroCardContentView className="text-black">
                 <select className="form-select form-select-sm" value={ selectedTopic } onChange={ event => setSelectedTopic(parseInt(event.target.value)) }>
-                    <option disabled value={ -1 }>CFH Topic</option>
+                    <option disabled value={ -1 }>{ LocalizeText('moderation.modaction.cfhtopic') }</option>
                     { topics.map((topic, index) => <option key={ index } value={ index }>{ LocalizeText('help.cfh.topic.' + topic.id) }</option>) }
                 </select>
                 <select className="form-select form-select-sm" value={ selectedAction } onChange={ event => setSelectedAction(parseInt(event.target.value)) }>
-                    <option disabled value={ -1 }>Sanction Type</option>
-                    { MOD_ACTION_DEFINITIONS.map((action, index) => <option key={ index } value={ index }>{ action.name }</option>) }
+                    <option disabled value={ -1 }>{ LocalizeText('moderation.modaction.sanctiontype') }</option>
+                    { MOD_ACTION_DEFINITIONS.map((action, index) => <option key={ index } value={ index }>{ LocalizeText(action.name) }</option>) }
                 </select>
                 <div className="flex flex-col gap-1">
-                    <Text small>Optional message type, overrides default</Text>
+                    <Text small>{ LocalizeText('moderation.modaction.message.hint') }</Text>
                     <textarea className="min-h-[calc(1.5em+ .5rem+2px)] px-[.5rem] py-[.25rem]  rounded-[.2rem]" value={ message } onChange={ event => setMessage(event.target.value) } />
                 </div>
                 <Flex gap={ 1 } justifyContent="between">
-                    <Button variant="primary" onClick={ sendDefaultSanction }>Default Sanction</Button>
-                    <Button variant="success" onClick={ sendSanction }>Sanction</Button>
+                    <Button variant="primary" onClick={ sendDefaultSanction }>{ LocalizeText('moderation.modaction.defaultsanction') }</Button>
+                    <Button variant="success" onClick={ sendSanction }>{ LocalizeText('moderation.modaction.sanction') }</Button>
                 </Flex>
             </NitroCardContentView>
         </NitroCardView>

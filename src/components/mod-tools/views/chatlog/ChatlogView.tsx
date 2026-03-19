@@ -1,6 +1,6 @@
 import { ChatRecordData, CreateLinkEvent } from '@nitrots/nitro-renderer';
 import { FC, useMemo } from 'react';
-import { TryVisitRoom } from '../../../../api';
+import { LocalizeText, TryVisitRoom } from '../../../../api';
 import { Button, Column, Flex, Grid, InfiniteScroll, Text } from '../../../../common';
 import { useModTools } from '../../../../hooks';
 import { ChatlogRecord } from './ChatlogRecord';
@@ -49,8 +49,8 @@ export const ChatlogView: FC<ChatlogViewProps> = props =>
             <Flex alignItems="center" className="bg-muted rounded p-2" gap={ 2 } justifyContent="between">
                 <Text bold truncate>{ props.roomName }</Text>
                 <div className="flex gap-1 shrink-0">
-                    <Button size="sm" onClick={ event => TryVisitRoom(props.roomId) }>Visit</Button>
-                    <Button size="sm" onClick={ event => openRoomInfo(props.roomId) }>Room Tools</Button>
+                    <Button size="sm" onClick={ event => TryVisitRoom(props.roomId) }>{ LocalizeText('moderation.chatlog.visit') }</Button>
+                    <Button size="sm" onClick={ event => openRoomInfo(props.roomId) }>{ LocalizeText('moderation.chatlog.roomtools') }</Button>
                 </div>
             </Flex>
         );
@@ -61,9 +61,9 @@ export const ChatlogView: FC<ChatlogViewProps> = props =>
             <Column fit gap={ 0 } overflow="hidden">
                 <Column gap={ 2 }>
                     <Grid className="text-black font-bold border-bottom pb-1 text-[11px] uppercase opacity-60 tracking-wider" gap={ 1 }>
-                        <div className="col-span-2">Time</div>
-                        <div className="col-span-3">User</div>
-                        <div className="col-span-7">Message</div>
+                        <div className="col-span-2">{ LocalizeText('moderation.chatlog.col.time') }</div>
+                        <div className="col-span-3">{ LocalizeText('moderation.chatlog.col.user') }</div>
+                        <div className="col-span-7">{ LocalizeText('moderation.chatlog.col.message') }</div>
                     </Grid>
                 </Column>
                 { (records && (records.length > 0)) &&

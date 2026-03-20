@@ -220,8 +220,8 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
 
                 canUse = true;
                 isCrackable = true;
-                crackableHits = stuffData.hits;
-                crackableTarget = stuffData.target;
+                crackableHits = stuffData?.hits ?? 0;
+                crackableTarget = stuffData?.target ?? 0;
             }
 
             else if(avatarInfo.extraParam === RoomWidgetEnumItemExtradataParameter.JUKEBOX)
@@ -527,7 +527,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
                         { isCrackable &&
                             <>
                                 <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
-                                <Text small wrap variant="white">{ LocalizeText('infostand.crackable_furni.hits_remaining', [ 'hits', 'target' ], [ crackableHits.toString(), crackableTarget.toString() ]) }</Text>
+                                <Text small wrap variant="white">{ LocalizeText('infostand.crackable_furni.hits_remaining', [ 'hits', 'target' ], [ (crackableHits ?? 0).toString(), (crackableTarget ?? 0).toString() ]) }</Text>
                             </> }
                         { avatarInfo.groupId > 0 &&
                             <>

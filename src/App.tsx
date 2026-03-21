@@ -4,6 +4,7 @@ import { GetUIVersion } from './api';
 import { Base } from './common';
 import { LoadingView } from './components/loading/LoadingView';
 import { MainView } from './components/MainView';
+import { ReconnectView } from './components/reconnect/ReconnectView';
 import { useMessageEvent } from './hooks';
 
 NitroVersion.UI_VERSION = GetUIVersion();
@@ -93,6 +94,7 @@ export const App: FC<{}> = props =>
             { !isReady &&
                 <LoadingView /> }
             { isReady && <MainView /> }
+            <ReconnectView />
             <Base id="draggable-windows-container" />
         </Base>
     );

@@ -1,8 +1,8 @@
-import { CanCreateRoomEventEvent, CantConnectMessageParser, CreateLinkEvent, DoorbellMessageEvent, FavouriteChangedEvent, FavouritesEvent, FlatAccessDeniedMessageEvent, FlatCreatedEvent, FollowFriendMessageComposer, GenericErrorEvent, GetGuestRoomMessageComposer, GetGuestRoomResultEvent, GetSessionDataManager, GetUserEventCatsMessageComposer, GetUserFlatCatsMessageComposer, HabboWebTools, LegacyExternalInterface, NavigatorCategoryDataParser, NavigatorEventCategoryDataParser, NavigatorHomeRoomEvent, NavigatorMetadataEvent, NavigatorOpenRoomCreatorEvent, NavigatorSavedSearch, NavigatorSearchesEvent, NavigatorSearchEvent, NavigatorSearchResultSet, NavigatorTopLevelContext, RoomDataParser, RoomDoorbellAcceptedEvent, RoomEnterErrorEvent, RoomEntryInfoMessageEvent, RoomForwardEvent, RoomScoreEvent, RoomSettingsUpdatedEvent, SecurityLevel, UserEventCatsEvent, UserFlatCatsEvent, UserInfoEvent, UserPermissionsEvent } from '@nitrots/nitro-renderer';
+import { CanCreateRoomEventEvent, CantConnectMessageParser, CreateLinkEvent, DoorbellMessageEvent, FavouriteChangedEvent, FavouritesEvent, FlatAccessDeniedMessageEvent, FlatCreatedEvent, FollowFriendMessageComposer, GenericErrorEvent, GetGuestRoomMessageComposer, GetGuestRoomResultEvent, GetRoomSessionManager, GetSessionDataManager, GetUserEventCatsMessageComposer, GetUserFlatCatsMessageComposer, HabboWebTools, LegacyExternalInterface, NavigatorCategoryDataParser, NavigatorEventCategoryDataParser, NavigatorHomeRoomEvent, NavigatorMetadataEvent, NavigatorOpenRoomCreatorEvent, NavigatorSavedSearch, NavigatorSearchesEvent, NavigatorSearchEvent, NavigatorSearchResultSet, NavigatorTopLevelContext, NitroEventType, RoomDataParser, RoomDoorbellAcceptedEvent, RoomEnterErrorEvent, RoomEntryInfoMessageEvent, RoomForwardEvent, RoomScoreEvent, RoomSettingsUpdatedEvent, SecurityLevel, UserEventCatsEvent, UserFlatCatsEvent, UserInfoEvent, UserPermissionsEvent } from '@nitrots/nitro-renderer';
 import { useState } from 'react';
 import { useBetween } from 'use-between';
 import { CreateRoomSession, DoorStateType, GetConfigurationValue, INavigatorData, LocalizeText, NotificationAlertType, SendMessageComposer, TryVisitRoom, VisitDesktop } from '../../api';
-import { useMessageEvent } from '../events';
+import { useMessageEvent, useNitroEvent } from '../events';
 import { useNotification } from '../notification';
 
 const useNavigatorState = () =>
@@ -373,6 +373,15 @@ const useNavigatorState = () =>
         CreateRoomSession(parser.roomId);
     });
 
+    // When reconnection starts, reset settingsReceived so the login sequence's
+    // NavigatorHomeRoomEvent is treated as a fresh login. Without this, the
+    // prevSettingsReceived check blocks home room navigation after reconnection,
+    // leaving the user stuck on hotel view.
+    useNitroEvent(NitroEventType.SOCKET_RECONNECTING, () =>
+    {
+        setNavigatorData(prevValue => ({ ...prevValue, settingsReceived: false }));
+    });
+
     useMessageEvent<NavigatorHomeRoomEvent>(NavigatorHomeRoomEvent, event =>
     {
         const parser = event.getParser();
@@ -396,6 +405,10 @@ const useNavigatorState = () =>
             // refresh room info window
             return;
         }
+
+        // If a room session was already restored (from a network disconnect reload),
+        // skip the normal home room navigation to avoid overriding it.
+        if(GetRoomSessionManager().viewerSession) return;
 
         let forwardType = -1;
         let forwardId = -1;
@@ -455,6 +468,11 @@ const useNavigatorState = () =>
 
                 break;
         }
+
+        // During reconnection, don't navigate to desktop — the reconnection guard
+        // will handle retrying or cleaning up. Calling VisitDesktop here would
+        // remove the session from the map and send the user to hotel view.
+        if(GetRoomSessionManager().isReconnecting) return;
 
         VisitDesktop();
     });

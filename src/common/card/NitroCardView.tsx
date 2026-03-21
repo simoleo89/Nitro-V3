@@ -6,16 +6,17 @@ import { NitroCardContextProvider } from './NitroCardContext';
 export interface NitroCardViewProps extends DraggableWindowProps, ColumnProps
 {
     theme?: string;
+    isResizable?: boolean;
 }
 
 export const NitroCardView: FC<NitroCardViewProps> = props =>
 {
-    const { theme = 'primary', uniqueKey = null, handleSelector = '.drag-handler', windowPosition = DraggableWindowPosition.CENTER, disableDrag = false, overflow = 'hidden', position = 'relative', gap = 0, classNames = [], ...rest } = props;
+    const { theme = 'primary', uniqueKey = null, handleSelector = '.drag-handler', windowPosition = DraggableWindowPosition.CENTER, disableDrag = false, overflow = 'hidden', position = 'relative', gap = 0, classNames = [], isResizable = true, ...rest } = props;
     const elementRef = useRef<HTMLDivElement>();
 
     const getClassNames = useMemo(() =>
     {
-        const newClassNames: string[] = [ 'resize', 'rounded', 'shadow', ];
+        const newClassNames: string[] = [ isResizable ? 'resize' : 'resize-none', 'rounded', 'shadow' ];
 
         // Card Theme Changer
         newClassNames.push('border border-[#283F5D]');
@@ -23,7 +24,7 @@ export const NitroCardView: FC<NitroCardViewProps> = props =>
         if(classNames.length) newClassNames.push(...classNames);
 
         return newClassNames;
-    }, [ classNames ]);
+    }, [ classNames, isResizable ]);
 
     return (
         <NitroCardContextProvider value={ { theme } }>

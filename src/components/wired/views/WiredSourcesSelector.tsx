@@ -16,6 +16,13 @@ export const USER_SOURCES = [
     { value: 201, label: 'wiredfurni.params.sources.users.201' }
 ];
 
+export const BOT_SOURCES = [
+    { value: 0, label: 'wiredfurni.params.sources.users.0' },
+    { value: 100, label: 'wiredfurni.params.sources.users.100' },
+    { value: 200, label: 'wiredfurni.params.sources.users.200' },
+    { value: 201, label: 'wiredfurni.params.sources.users.201' }
+];
+
 export interface WiredSourceOption
 {
     value: number;

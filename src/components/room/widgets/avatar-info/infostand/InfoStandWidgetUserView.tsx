@@ -61,6 +61,8 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
     if (oldBadges === event.badges.join('')) return;
 
     setAvatarInfo(prevValue => {
+      if (!prevValue) return prevValue;
+
       const newValue = CloneObject(prevValue);
       newValue.badges = event.badges;
       return newValue;
@@ -71,6 +73,8 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
     if (!avatarInfo || avatarInfo.roomIndex !== event.roomIndex) return;
 
     setAvatarInfo(prevValue => {
+      if (!prevValue) return prevValue;
+
       const newValue = CloneObject(prevValue);
       newValue.figure = event.figure;
       newValue.motto = event.customInfo;
@@ -86,6 +90,8 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
     if (!avatarInfo || avatarInfo.roomIndex !== event.roomIndex) return;
 
     setAvatarInfo(prevValue => {
+      if (!prevValue) return prevValue;
+
       const newValue = CloneObject(prevValue);
       const clearGroup = (event.status === -1) || (event.habboGroupId <= 0);
 

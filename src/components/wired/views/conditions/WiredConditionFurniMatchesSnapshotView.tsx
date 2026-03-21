@@ -5,27 +5,38 @@ import { useWired } from '../../../../hooks';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredConditionFurniMatchesSnapshotView: FC<{}> = props =>
+interface WiredConditionFurniMatchesSnapshotViewProps
+{
+    negative?: boolean;
+}
+
+export const WiredConditionFurniMatchesSnapshotView: FC<WiredConditionFurniMatchesSnapshotViewProps> = ({ negative = false }) =>
 {
     const [ stateFlag, setStateFlag ] = useState(0);
     const [ directionFlag, setDirectionFlag ] = useState(0);
     const [ positionFlag, setPositionFlag ] = useState(0);
+    const [ altitudeFlag, setAltitudeFlag ] = useState(0);
+    const [ quantifier, setQuantifier ] = useState(0);
     const { trigger = null, setIntParams = null } = useWired();
     const [ furniSource, setFurniSource ] = useState<number>(() =>
     {
+        if(trigger?.intData?.length > 4) return trigger.intData[4];
         if(trigger?.intData?.length > 3) return trigger.intData[3];
         return (trigger?.selectedItems?.length ?? 0) > 0 ? 100 : 0;
     });
 
-    const save = () => setIntParams([ stateFlag, directionFlag, positionFlag, furniSource ]);
+    const save = () => setIntParams([ stateFlag, directionFlag, positionFlag, altitudeFlag, furniSource, quantifier ]);
 
     useEffect(() =>
     {
         setStateFlag(trigger.getBoolean(0) ? 1 : 0);
         setDirectionFlag(trigger.getBoolean(1) ? 1 : 0);
         setPositionFlag(trigger.getBoolean(2) ? 1 : 0);
-        if(trigger.intData.length > 3) setFurniSource(trigger.intData[3]);
+        setAltitudeFlag((trigger.intData.length > 4 && trigger.getBoolean(3)) ? 1 : 0);
+        if(trigger.intData.length > 4) setFurniSource(trigger.intData[4]);
+        else if(trigger.intData.length > 3) setFurniSource(trigger.intData[3]);
         else setFurniSource((trigger.selectedItems?.length ?? 0) > 0 ? 100 : 0);
+        setQuantifier((trigger.intData.length > 5 && trigger.intData[5] === 1) ? 1 : 0);
     }, [ trigger ]);
 
     const onChangeFurniSource = (next: number) => setFurniSource(next);
@@ -37,7 +48,23 @@ export const WiredConditionFurniMatchesSnapshotView: FC<{}> = props =>
             hasSpecialInput={ true }
             requiresFurni={ requiresFurni }
             save={ save }
-            footer={ <WiredSourcesSelector showFurni={ true } furniSource={ furniSource } onChangeFurni={ onChangeFurniSource } /> }>
+            footer={
+                <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-1">
+                        <Text bold>{ LocalizeText('wiredfurni.params.quantifier_selection') }</Text>
+                        { [ 0, 1 ].map(value =>
+                        {
+                            return (
+                                <label key={ value } className="flex items-center gap-1">
+                                    <input checked={ (quantifier === value) } className="form-check-input" name="snapshotQuantifier" type="radio" onChange={ () => setQuantifier(value) } />
+                                    <Text>{ LocalizeText(`wiredfurni.params.quantifier.furni${ negative ? '.neg' : '' }.${ value }`) }</Text>
+                                </label>
+                            );
+                        }) }
+                    </div>
+                    <WiredSourcesSelector showFurni={ true } furniSource={ furniSource } onChangeFurni={ onChangeFurniSource } />
+                </div>
+            }>
             <div className="flex flex-col gap-1">
                 <Text bold>{ LocalizeText('wiredfurni.params.conditions') }</Text>
                 <div className="flex items-center gap-1">
@@ -51,6 +78,10 @@ export const WiredConditionFurniMatchesSnapshotView: FC<{}> = props =>
                 <div className="flex items-center gap-1">
                     <input checked={ !!positionFlag } className="form-check-input" id="positionFlag" type="checkbox" onChange={ event => setPositionFlag(event.target.checked ? 1 : 0) } />
                     <Text>{ LocalizeText('wiredfurni.params.condition.position') }</Text>
+                </div>
+                <div className="flex items-center gap-1">
+                    <input checked={ !!altitudeFlag } className="form-check-input" id="altitudeFlag" type="checkbox" onChange={ event => setAltitudeFlag(event.target.checked ? 1 : 0) } />
+                    <Text>{ LocalizeText('wiredfurni.params.condition.altitude') }</Text>
                 </div>
             </div>
         </WiredConditionBaseView>

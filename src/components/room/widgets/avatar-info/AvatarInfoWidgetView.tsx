@@ -1,5 +1,5 @@
-import { GetSessionDataManager, RoomEngineEvent, RoomEnterEffect, RoomSessionDanceEvent } from '@nitrots/nitro-renderer';
-import { FC, useState } from 'react';
+import { AddLinkEventTracker, GetRoomEngine, GetSessionDataManager, ILinkEventTracker, RemoveLinkEventTracker, RoomEngineEvent, RoomEnterEffect, RoomSessionDanceEvent } from '@nitrots/nitro-renderer';
+import { FC, useEffect, useState } from 'react';
 import { AvatarInfoFurni, AvatarInfoPet, AvatarInfoRentableBot, AvatarInfoUser, GetConfigurationValue, RoomWidgetUpdateRentableBotChatEvent } from '../../../../api';
 import { Column } from '../../../../common';
 import { useAvatarInfoWidget, useNitroEvent, useRoom, useUiEvent } from '../../../../hooks';
@@ -23,11 +23,28 @@ import { AvatarInfoWidgetRentableBotView } from './menu/AvatarInfoWidgetRentable
 
 export const AvatarInfoWidgetView: FC<{}> = props =>
 {
+    const BLOCK_MENU_WINDOW_MS = 500;
+    const BLOCK_ROTATE_WINDOW_MS = 500;
     const [ isGameMode, setGameMode ] = useState(false);
     const [ isDancing, setIsDancing ] = useState(false);
     const [ rentableBotChatEvent, setRentableBotChatEvent ] = useState<RoomWidgetUpdateRentableBotChatEvent>(null);
     const { avatarInfo = null, setAvatarInfo = null, activeNameBubble = null, setActiveNameBubble = null, nameBubbles = [], removeNameBubble = null, productBubbles = [], confirmingProduct = null, updateConfirmingProduct = null, removeProductBubble = null, isDecorating = false, setIsDecorating = null } = useAvatarInfoWidget();
     const { roomSession = null } = useRoom();
+
+    const updateAvatarClickControl = (updates: { suppressMenuUntil?: number; suppressRotateUntil?: number; }) =>
+    {
+        const globalScope = (globalThis as any);
+
+        if(!globalScope.__nitroAvatarClickControl)
+        {
+            globalScope.__nitroAvatarClickControl = {
+                suppressMenuUntil: 0,
+                suppressRotateUntil: 0
+            };
+        }
+
+        Object.assign(globalScope.__nitroAvatarClickControl, updates);
+    };
 
     useNitroEvent<RoomEngineEvent>(RoomEngineEvent.NORMAL_MODE, event =>
     {
@@ -47,6 +64,41 @@ export const AvatarInfoWidgetView: FC<{}> = props =>
     });
 
     useUiEvent<RoomWidgetUpdateRentableBotChatEvent>(RoomWidgetUpdateRentableBotChatEvent.UPDATE_CHAT, event => setRentableBotChatEvent(event));
+
+    useEffect(() =>
+    {
+        const linkTracker: ILinkEventTracker = {
+            linkReceived: (url: string) =>
+            {
+                const parts = url.split('/');
+
+                if(parts.length < 2) return;
+
+                switch(parts[1])
+                {
+                    case 'hide':
+                        setAvatarInfo(null);
+                        setActiveNameBubble(null);
+
+                        if(roomSession) GetRoomEngine().clearSelectedAvatar(roomSession.roomId);
+                        return;
+                    case 'block-menu':
+                        updateAvatarClickControl({ suppressMenuUntil: Date.now() + BLOCK_MENU_WINDOW_MS });
+                        setAvatarInfo(null);
+                        setActiveNameBubble(null);
+                        return;
+                    case 'block-rotate':
+                        updateAvatarClickControl({ suppressRotateUntil: Date.now() + BLOCK_ROTATE_WINDOW_MS });
+                        return;
+                }
+            },
+            eventUrlPrefix: 'avatar-info/'
+        };
+
+        AddLinkEventTracker(linkTracker);
+
+        return () => RemoveLinkEventTracker(linkTracker);
+    }, [ roomSession, setActiveNameBubble, setAvatarInfo ]);
 
     const getMenuView = () =>
     {

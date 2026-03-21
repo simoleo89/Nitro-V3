@@ -11,13 +11,13 @@ const MINUTES_MAX = 99;
 const HALF_SECONDS_MIN = 0;
 const HALF_SECONDS_MAX = 119;
 const TRIGGER_FURNI_SOURCES: WiredSourceOption[] = [
-    { value: 0, label: 'wiredfurni.params.sources.furni.0' },
-    { value: 100, label: 'wiredfurni.params.sources.furni.100' }
+    { value: 100, label: 'wiredfurni.params.sources.furni.100' },
+    { value: 200, label: 'wiredfurni.params.sources.furni.200' }
 ];
 
 const normalizeMinutes = (value: number) => Math.max(MINUTES_MIN, Math.min(MINUTES_MAX, value));
 const normalizeHalfSeconds = (value: number) => Math.max(HALF_SECONDS_MIN, Math.min(HALF_SECONDS_MAX, value));
-const normalizeFurniSource = (value: number) => (value === 100 ? 100 : 0);
+const normalizeFurniSource = (value: number) => (TRIGGER_FURNI_SOURCES.some(option => (option.value === value)) ? value : 100);
 
 const formatSeconds = (halfSeconds: number) =>
 {
@@ -33,7 +33,7 @@ export const WiredTriggerClockCounterView: FC<{}> = () =>
     const [ furniSource, setFurniSource ] = useState<number>(() =>
     {
         if(trigger?.intData?.length > 2) return normalizeFurniSource(trigger.intData[2]);
-        return (trigger?.selectedItems?.length ?? 0) > 0 ? 100 : 0;
+        return 100;
     });
     const [ minutes, setMinutes ] = useState(0);
     const [ halfSeconds, setHalfSeconds ] = useState(0);
@@ -55,7 +55,7 @@ export const WiredTriggerClockCounterView: FC<{}> = () =>
 
         setMinutes((trigger.intData.length > 0) ? normalizeMinutes(trigger.intData[0]) : 0);
         setHalfSeconds((trigger.intData.length > 1) ? normalizeHalfSeconds(trigger.intData[1]) : 0);
-        setFurniSource((trigger.intData.length > 2) ? normalizeFurniSource(trigger.intData[2]) : ((trigger.selectedItems?.length ?? 0) > 0 ? 100 : 0));
+        setFurniSource((trigger.intData.length > 2) ? normalizeFurniSource(trigger.intData[2]) : 100);
     }, [ trigger ]);
 
     useEffect(() =>

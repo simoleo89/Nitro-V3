@@ -4,11 +4,14 @@ import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
 import { WiredActionBaseView } from './WiredActionBaseView';
-import { WiredSourcesSelector } from '../WiredSourcesSelector';
+import { BOT_SOURCES, WiredSourcesSelector } from '../WiredSourcesSelector';
+
+const normalizeBotSource = (value: number, hasBotName = false) => (BOT_SOURCES.some(option => (option.value === value)) ? value : (hasBotName ? 100 : 0));
 
 export const WiredActionBotMoveView: FC<{}> = props =>
 {
     const [ botName, setBotName ] = useState('');
+    const [ botSource, setBotSource ] = useState<number>(100);
     const { trigger = null, setStringParam = null, setIntParams = null } = useWired();
 
     const [ furniSource, setFurniSource ] = useState<number>(() =>
@@ -19,18 +22,21 @@ export const WiredActionBotMoveView: FC<{}> = props =>
 
     const save = () =>
     {
-        setStringParam(botName);
-        setIntParams([ furniSource ]);
+        setStringParam((botSource === 100) ? botName : '');
+        setIntParams([ furniSource, botSource ]);
     };
 
     useEffect(() =>
     {
         if(!trigger) return;
 
-        setBotName(trigger.stringData);
+        const nextBotName = trigger.stringData || '';
+        setBotName(nextBotName);
 
         if(trigger.intData.length >= 1) setFurniSource(trigger.intData[0]);
         else setFurniSource((trigger.selectedItems?.length ?? 0) > 0 ? 100 : 0);
+
+        setBotSource((trigger.intData.length >= 2) ? normalizeBotSource(trigger.intData[1], (nextBotName.length > 0)) : normalizeBotSource(-1, (nextBotName.length > 0)));
     }, [ trigger ]);
 
     const onChangeFurniSource = (next: number) => setFurniSource(next);
@@ -42,11 +48,18 @@ export const WiredActionBotMoveView: FC<{}> = props =>
             hasSpecialInput={ true }
             requiresFurni={ requiresFurni }
             save={ save }
-            footer={ <WiredSourcesSelector showFurni={ true } furniSource={ furniSource } onChangeFurni={ onChangeFurniSource } /> }>
-            <div className="flex flex-col gap-1">
-                <Text bold>{ LocalizeText('wiredfurni.params.bot.name') }</Text>
-                <NitroInput maxLength={ 32 } type="text" value={ botName } onChange={ event => setBotName(event.target.value) } />
-            </div>
+            footer={
+                <div className="flex flex-col gap-2">
+                    <WiredSourcesSelector showFurni={ true } furniSource={ furniSource } onChangeFurni={ onChangeFurniSource } />
+                    <hr className="m-0 bg-dark" />
+                    <WiredSourcesSelector showUsers={ true } userSource={ botSource } userSources={ BOT_SOURCES } usersTitle="wiredfurni.params.sources.users.title.bots" onChangeUsers={ value => setBotSource(normalizeBotSource(value, (botName.length > 0))) } />
+                </div>
+            }>
+            { (botSource === 100) &&
+                <div className="flex flex-col gap-1">
+                    <Text bold>{ LocalizeText('wiredfurni.params.bot.name') }</Text>
+                    <NitroInput maxLength={ 32 } type="text" value={ botName } onChange={ event => setBotName(event.target.value) } />
+                </div> }
         </WiredActionBaseView>
     );
 };

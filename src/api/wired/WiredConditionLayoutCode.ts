@@ -26,6 +26,7 @@ export class WiredConditionlayout
     public static NOT_ACTOR_WEARING_EFFECT: number = 23;
     public static DATE_RANGE_ACTIVE: number = 24;
     public static ACTOR_HAS_HANDITEM: number = 25;
+    public static MOVEMENT_VALIDATION: number = 26;
     public static COUNTER_TIME_MATCHES: number = 27;
     public static USER_PERFORMS_ACTION: number = 28;
     public static HAS_ALTITUDE: number = 29;
@@ -37,4 +38,6 @@ export class WiredConditionlayout
     public static TEAM_HAS_RANK: number = 35;
     public static MATCH_TIME: number = 36;
     public static MATCH_DATE: number = 37;
+    public static ACTOR_DIR: number = 38;
+    public static SLC_QUANTITY: number = 39;
 }

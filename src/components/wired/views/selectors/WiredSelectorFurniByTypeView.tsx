@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { LocalizeText, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
-import { WiredActionBaseView } from '../actions/WiredActionBaseView';
+import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 const SOURCE_FURNI_PICKED   = 0;
 
@@ -42,7 +42,7 @@ export const WiredSelectorFurniByTypeView: FC<{}> = () =>
     const requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_BY_ID;
 
     return (
-        <WiredActionBaseView hasSpecialInput={ true } requiresFurni={ requiresFurni } save={ save } hideDelay={ true } cardStyle={ { width: 400 } }>
+        <WiredSelectorBaseView hasSpecialInput={ true } requiresFurni={ requiresFurni } save={ save } hideDelay={ true } cardStyle={ { width: 400 } }>
             <div className="flex flex-col gap-2">
 
                 <label className="flex items-center gap-2">
@@ -76,6 +76,6 @@ export const WiredSelectorFurniByTypeView: FC<{}> = () =>
                     <Text small>{ LocalizeText('wiredfurni.params.selector_option.1') }</Text>
                 </label>
             </div>
-        </WiredActionBaseView>
+        </WiredSelectorBaseView>
     );
 };

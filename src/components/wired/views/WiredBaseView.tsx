@@ -1,4 +1,4 @@
-import { GetSessionDataManager } from '@nitrots/nitro-renderer';
+import { GetRoomEngine, GetSessionDataManager } from '@nitrots/nitro-renderer';
 import { CSSProperties, FC, PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../api';
 import { Button, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../common';
@@ -24,8 +24,15 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
     const [ needsSave, setNeedsSave ] = useState<boolean>(false);
     const { trigger = null, setTrigger = null, setIntParams = null, setStringParam = null, setFurniIds = null, setAllowsFurni = null, saveWired = null } = useWired();
 
+    const clearRoomAreaSelection = () =>
+    {
+        GetRoomEngine().areaSelectionManager.clearHighlight();
+        GetRoomEngine().areaSelectionManager.deactivate();
+    };
+
     const onClose = () =>
     {
+        clearRoomAreaSelection();
         WiredSelectionVisualizer.clearAllSelectionShaders();
         setTrigger(null);
     };
@@ -94,13 +101,26 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
 
     useEffect(() =>
     {
+        return () => clearRoomAreaSelection();
+    }, []);
+
+    useEffect(() =>
+    {
         if(!trigger) return;
 
         setAllowsFurni(requiresFurni);
     }, [ trigger, requiresFurni, setAllowsFurni ]);
 
+    const resolvedCardStyle: CSSProperties = { ...cardStyle };
+
+    if(resolvedCardStyle.width !== undefined)
+    {
+        resolvedCardStyle.minWidth = resolvedCardStyle.width;
+        delete resolvedCardStyle.width;
+    }
+
     return (
-        <NitroCardView className="nitro-wired" theme="primary-slim" uniqueKey="nitro-wired" style={ cardStyle }>
+        <NitroCardView className="nitro-wired" theme="primary-slim" uniqueKey="nitro-wired" isResizable={ false } style={ resolvedCardStyle }>
             <NitroCardHeaderView headerText={ LocalizeText('wiredfurni.title') } onCloseClick={ onClose } />
             <NitroCardContentView>
                 <div className="flex flex-col gap-1">

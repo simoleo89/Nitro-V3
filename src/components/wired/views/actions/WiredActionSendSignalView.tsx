@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
 import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
@@ -48,6 +48,7 @@ export const WiredActionSendSignalView: FC<{}> = () =>
     const [ antennaIds, setAntennaIds ]         = useState<number[]>([]);
     const [ forwardFurniIds, setForwardFurniIds ] = useState<number[]>([]);
     const [ selectionMode, setSelectionMode ]   = useState<SelectionMode>('antenna');
+    const highlightedIds = useRef<number[]>([]);
 
     const { trigger = null, furniIds = [], setFurniIds = null, setIntParams = null, setStringParam = null, setAllowedInteractionTypes = null } = useWired();
 
@@ -84,28 +85,39 @@ export const WiredActionSendSignalView: FC<{}> = () =>
         else setForwardFurniIds(furniIds);
     }, [ furniIds, selectionMode ]);
 
-    const applySelection = useCallback((nextIds: number[]) =>
+    const syncHighlights = useCallback((nextAntennaIds: number[], nextForwardFurniIds: number[], nextSelectionMode: SelectionMode, nextFurniSource: number) =>
     {
-        if(!setFurniIds) return;
-
-        setFurniIds(prev =>
+        if(highlightedIds.current.length)
         {
-            if(prev && prev.length) WiredSelectionVisualizer.clearSelectionShaderFromFurni(prev);
-            if(nextIds && nextIds.length) WiredSelectionVisualizer.applySelectionShaderToFurni(nextIds);
+            WiredSelectionVisualizer.clearSelectionShaderFromFurni(highlightedIds.current);
+            WiredSelectionVisualizer.clearSecondarySelectionShaderFromFurni(highlightedIds.current);
+        }
 
-            return [ ...nextIds ];
-        });
-    }, [ setFurniIds ]);
+        const visibleForwardIds = (nextFurniSource === SOURCE_SELECTED) ? nextForwardFurniIds : [];
+        const activeIds = (nextSelectionMode === 'antenna') ? nextAntennaIds : visibleForwardIds;
+        const passiveIds = (nextSelectionMode === 'antenna') ? visibleForwardIds : nextAntennaIds;
+        const activeSet = new Set(activeIds);
+        const passiveOnlyIds = passiveIds.filter(id => !activeSet.has(id));
+
+        if(activeIds.length) WiredSelectionVisualizer.applySelectionShaderToFurni(activeIds);
+        if(passiveOnlyIds.length) WiredSelectionVisualizer.applySecondarySelectionShaderToFurni(passiveOnlyIds);
+
+        highlightedIds.current = Array.from(new Set([ ...activeIds, ...passiveOnlyIds ]));
+    }, []);
+
+    useEffect(() =>
+    {
+        syncHighlights(antennaIds, forwardFurniIds, selectionMode, furniSource);
+    }, [ antennaIds, forwardFurniIds, selectionMode, furniSource, syncHighlights ]);
 
     const switchSelection = useCallback((mode: SelectionMode) =>
     {
         if(mode === selectionMode) return;
         if(mode === 'furni' && furniSource !== SOURCE_SELECTED) return;
 
-        const nextIds = (mode === 'antenna') ? antennaIds : forwardFurniIds;
-        applySelection(nextIds);
         setSelectionMode(mode);
-    }, [ selectionMode, furniSource, antennaIds, forwardFurniIds, applySelection ]);
+        if(setFurniIds) setFurniIds([ ...((mode === 'antenna') ? antennaIds : forwardFurniIds) ]);
+    }, [ selectionMode, furniSource, antennaIds, forwardFurniIds, setFurniIds ]);
 
     const onChangeFurniSource = (next: number) =>
     {
@@ -113,7 +125,7 @@ export const WiredActionSendSignalView: FC<{}> = () =>
 
         if(selectionMode === 'furni')
         {
-            applySelection(antennaIds);
+            if(setFurniIds) setFurniIds([ ...antennaIds ]);
             setSelectionMode('antenna');
         }
 
@@ -122,12 +134,6 @@ export const WiredActionSendSignalView: FC<{}> = () =>
 
     const save = useCallback(() =>
     {
-        if(selectionMode === 'furni')
-        {
-            setSelectionMode('antenna');
-            applySelection(antennaIds);
-        }
-
         const antennaSource = (antennaIds && antennaIds.length) ? antennaIds[0] : 0;
 
         setIntParams([
@@ -140,7 +146,19 @@ export const WiredActionSendSignalView: FC<{}> = () =>
         ]);
 
         setStringParam(serializeForwardIds(forwardFurniIds));
-    }, [ selectionMode, antennaIds, furniSource, userSource, signalPerFurni, signalPerUser, forwardFurniIds, setIntParams, setStringParam, applySelection, setSelectionMode ]);
+    }, [ antennaIds, furniSource, userSource, signalPerFurni, signalPerUser, forwardFurniIds, setIntParams, setStringParam ]);
+
+    useEffect(() =>
+    {
+        return () =>
+        {
+            if(!highlightedIds.current.length) return;
+
+            WiredSelectionVisualizer.clearSelectionShaderFromFurni(highlightedIds.current);
+            WiredSelectionVisualizer.clearSecondarySelectionShaderFromFurni(highlightedIds.current);
+            highlightedIds.current = [];
+        };
+    }, []);
 
     const selectionLimit = trigger?.maximumItemSelectionCount ?? 0;
     const forwardSelectionEnabled = (furniSource === SOURCE_SELECTED);

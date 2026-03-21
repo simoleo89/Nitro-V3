@@ -6,9 +6,15 @@ import { NitroInput } from '../../../../layout';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredConditionActorIsWearingBadgeView: FC<{}> = props =>
+interface WiredConditionActorIsWearingBadgeViewProps
+{
+    negative?: boolean;
+}
+
+export const WiredConditionActorIsWearingBadgeView: FC<WiredConditionActorIsWearingBadgeViewProps> = ({ negative = false }) =>
 {
     const [ badge, setBadge ] = useState('');
+    const [ quantifier, setQuantifier ] = useState(1);
     const { trigger = null, setStringParam = null, setIntParams = null } = useWired();
     const [ userSource, setUserSource ] = useState<number>(() =>
     {
@@ -19,7 +25,7 @@ export const WiredConditionActorIsWearingBadgeView: FC<{}> = props =>
     const save = () =>
     {
         setStringParam(badge);
-        setIntParams([ userSource ]);
+        setIntParams([ userSource, quantifier ]);
     };
 
     useEffect(() =>
@@ -27,6 +33,7 @@ export const WiredConditionActorIsWearingBadgeView: FC<{}> = props =>
         setBadge(trigger.stringData);
         if(trigger.intData.length >= 1) setUserSource(trigger.intData[0]);
         else setUserSource(0);
+        setQuantifier((trigger.intData.length >= 2) ? (trigger.intData[1] === 1 ? 1 : 0) : 1);
     }, [ trigger ]);
 
     return (
@@ -35,6 +42,15 @@ export const WiredConditionActorIsWearingBadgeView: FC<{}> = props =>
             requiresFurni={ WiredFurniType.STUFF_SELECTION_OPTION_NONE }
             save={ save }
             footer={ <WiredSourcesSelector showUsers={ true } userSource={ userSource } onChangeUsers={ setUserSource } /> }>
+            <div className="flex flex-col gap-1">
+                <Text bold>{ LocalizeText('wiredfurni.params.quantifier_selection') }</Text>
+                { [ 0, 1 ].map(value => (
+                    <label key={ value } className="flex items-center gap-1">
+                        <input checked={ (quantifier === value) } className="form-check-input" name="badgeQuantifier" type="radio" onChange={ () => setQuantifier(value) } />
+                        <Text>{ LocalizeText(`wiredfurni.params.quantifier.users${ negative ? '.neg' : '' }.${ value }`) }</Text>
+                    </label>
+                )) }
+            </div>
             <div className="flex flex-col gap-1">
                 <Text bold>{ LocalizeText('wiredfurni.params.badgecode') }</Text>
                 <NitroInput type="text" value={ badge } onChange={ event => setBadge(event.target.value) } />

@@ -1,5 +1,5 @@
 import { GetRoomEngine, GetSessionDataManager, RoomEngineObjectEvent, RoomEngineUseProductEvent, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomSessionPetInfoUpdateEvent, RoomSessionPetStatusUpdateEvent, RoomSessionUserDataUpdateEvent } from '@nitrots/nitro-renderer';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AvatarInfoFurni, AvatarInfoName, AvatarInfoPet, AvatarInfoRentableBot, AvatarInfoUser, AvatarInfoUtilities, CanManipulateFurniture, FurniCategory, IAvatarInfo, IsOwnerOfFurniture, RoomWidgetUpdateRoomObjectEvent, UseProductItem } from '../../../api';
 import { useNitroEvent, useUiEvent } from '../../events';
 import { useFriends } from '../../friends';
@@ -9,6 +9,7 @@ import { useRoom } from '../useRoom';
 
 const useAvatarInfoWidgetState = () =>
 {
+    const CLICK_USER_DEBOUNCE_MS = 120;
     const [ avatarInfo, setAvatarInfo ] = useState<IAvatarInfo>(null);
     const [ activeNameBubble, setActiveNameBubble ] = useState<AvatarInfoName>(null);
     const [ nameBubbles, setNameBubbles ] = useState<AvatarInfoName[]>([]);
@@ -16,9 +17,25 @@ const useAvatarInfoWidgetState = () =>
     const [ confirmingProduct, setConfirmingProduct ] = useState<UseProductItem>(null);
     const [ pendingPetId, setPendingPetId ] = useState<number>(-1);
     const [ isDecorating, setIsDecorating ] = useState(false);
+    const pendingAvatarInfoTimeout = useRef<ReturnType<typeof setTimeout>>(null);
     const { friends = [] } = useFriends();
     const { selectObjectForWired = null } = useWired();
     const { roomSession = null } = useRoom();
+
+    const clearPendingAvatarInfo = () =>
+    {
+        if(!pendingAvatarInfoTimeout.current) return;
+
+        clearTimeout(pendingAvatarInfoTimeout.current);
+        pendingAvatarInfoTimeout.current = null;
+    };
+
+    const isAvatarMenuBlocked = () =>
+    {
+        const control = (globalThis as any).__nitroAvatarClickControl;
+
+        return !!control && (control.suppressMenuUntil > Date.now());
+    };
 
     const removeNameBubble = (index: number) =>
     {
@@ -64,6 +81,8 @@ const useAvatarInfoWidgetState = () =>
 
     const getObjectInfo = (objectId: number, category: number) =>
     {
+        clearPendingAvatarInfo();
+
         let info: IAvatarInfo = null;
 
         switch(category)
@@ -101,7 +120,20 @@ const useAvatarInfoWidgetState = () =>
 
         if(!info) return;
 
-        setAvatarInfo(info);
+        if(category !== RoomObjectCategory.UNIT)
+        {
+            setAvatarInfo(info);
+            return;
+        }
+
+        pendingAvatarInfoTimeout.current = setTimeout(() =>
+        {
+            pendingAvatarInfoTimeout.current = null;
+
+            if(isAvatarMenuBlocked()) return;
+
+            setAvatarInfo(info);
+        }, CLICK_USER_DEBOUNCE_MS);
     };
 
     const processUsableRoomObject = (objectId: number) =>
@@ -271,6 +303,7 @@ const useAvatarInfoWidgetState = () =>
 
     useObjectDeselectedEvent(event =>
     {
+        clearPendingAvatarInfo();
         setAvatarInfo(null);
         setProductBubbles([]);
     });
@@ -343,6 +376,11 @@ const useAvatarInfoWidgetState = () =>
 
         setNameBubbles([]);
     }, [ activeNameBubble ]);
+
+    useEffect(() =>
+    {
+        return () => clearPendingAvatarInfo();
+    }, []);
 
     useEffect(() =>
     {

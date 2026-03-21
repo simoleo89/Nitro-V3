@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { LocalizeText } from '../../../../api';
 import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
-import { WiredActionBaseView } from '../actions/WiredActionBaseView';
+import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 export const WiredActionFurniAreaView: FC<{}> = props =>
 {
@@ -101,7 +101,7 @@ export const WiredActionFurniAreaView: FC<{}> = props =>
         : 0;
 
     return (
-        <WiredActionBaseView hasSpecialInput={ true } requiresFurni={ 0 } save={ save } hideDelay={ true } cardStyle={ { width: '385px'} }>
+        <WiredSelectorBaseView hasSpecialInput={ true } requiresFurni={ 0 } save={ save } hideDelay={ true } cardStyle={ { width: '385px'} }>
             <div className="flex flex-col gap-2">
                 <Text bold>{ LocalizeText('wiredfurni.params.area_selection') }</Text>
                 <Text small>{ LocalizeText('wiredfurni.params.area_selection.info') }</Text>
@@ -154,6 +154,6 @@ export const WiredActionFurniAreaView: FC<{}> = props =>
                     <Text small>{ LocalizeText('wiredfurni.params.selector_option.1') }</Text>
                 </label>
             </div>
-        </WiredActionBaseView>
+        </WiredSelectorBaseView>
     );
 };

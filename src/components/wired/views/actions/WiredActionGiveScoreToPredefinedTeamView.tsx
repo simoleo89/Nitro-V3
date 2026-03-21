@@ -7,24 +7,24 @@ import { WiredActionBaseView } from './WiredActionBaseView';
 export const WiredActionGiveScoreToPredefinedTeamView: FC<{}> = props =>
 {
     const [ points, setPoints ] = useState(1);
-    const [ time, setTime ] = useState(1);
+    const [ operation, setOperation ] = useState(0);
     const [ selectedTeam, setSelectedTeam ] = useState(1);
     const { trigger = null, setIntParams = null } = useWired();
 
-    const save = () => setIntParams([ points, time, selectedTeam ]);
+    const save = () => setIntParams([ points, operation, selectedTeam ]);
 
     useEffect(() =>
     {
-        if(trigger.intData.length >= 2)
+        if(trigger.intData.length >= 3)
         {
             setPoints(trigger.intData[0]);
-            setTime(trigger.intData[1]);
+            setOperation(trigger.intData[1]);
             setSelectedTeam(trigger.intData[2]);
         }
         else
         {
             setPoints(1);
-            setTime(1);
+            setOperation(0);
             setSelectedTeam(1);
         }
     }, [ trigger ]);
@@ -40,12 +40,13 @@ export const WiredActionGiveScoreToPredefinedTeamView: FC<{}> = props =>
                     onChange={ event => setPoints(event) } />
             </div>
             <div className="flex flex-col gap-1">
-                <Text bold>{ LocalizeText('wiredfurni.params.settimesingame', [ 'times' ], [ time.toString() ]) }</Text>
-                <Slider
-                    max={ 10 }
-                    min={ 1 }
-                    value={ time }
-                    onChange={ event => setTime(event) } />
+                <Text bold>{ LocalizeText('wiredfurni.params.choose_type') }</Text>
+                { [ 0, 1 ].map(value => (
+                    <label key={ value } className="flex items-center gap-1">
+                        <input checked={ (operation === value) } className="form-check-input" name="pointsOperation" type="radio" onChange={ () => setOperation(value) } />
+                        <Text>{ LocalizeText(`wiredfurni.params.points_operation.${ value }`) }</Text>
+                    </label>
+                )) }
             </div>
             <div className="flex flex-col gap-1">
                 <Text bold>{ LocalizeText('wiredfurni.params.team') }</Text>

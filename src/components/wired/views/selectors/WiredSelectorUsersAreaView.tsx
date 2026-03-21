@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { LocalizeText } from '../../../../api';
 import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
-import { WiredActionBaseView } from '../actions/WiredActionBaseView';
+import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 export const WiredSelectorUsersAreaView: FC<{}> = props =>
 {
@@ -13,14 +13,12 @@ export const WiredSelectorUsersAreaView: FC<{}> = props =>
     const [ areaHeight, setAreaHeight ] = useState(0);
     const [ filterExisting, setFilterExisting ] = useState(false);
     const [ invert, setInvert ] = useState(false);
-    const [ excludeBots, setExcludeBots ] = useState(false);
-    const [ excludePets, setExcludePets ] = useState(false);
     const { trigger = null, setIntParams } = useWired();
 
     const save = useCallback(() =>
     {
-        setIntParams([ rootX, rootY, areaWidth, areaHeight, filterExisting ? 1 : 0, invert ? 1 : 0, excludeBots ? 1 : 0, excludePets ? 1 : 0 ]);
-    }, [ rootX, rootY, areaWidth, areaHeight, filterExisting, invert, excludeBots, excludePets, setIntParams ]);
+        setIntParams([ rootX, rootY, areaWidth, areaHeight, filterExisting ? 1 : 0, invert ? 1 : 0 ]);
+    }, [ rootX, rootY, areaWidth, areaHeight, filterExisting, invert, setIntParams ]);
 
     useEffect(() =>
     {
@@ -76,8 +74,6 @@ export const WiredSelectorUsersAreaView: FC<{}> = props =>
 
         setFilterExisting(trigger.intData.length >= 5 && trigger.intData[4] === 1);
         setInvert(trigger.intData.length >= 6 && trigger.intData[5] === 1);
-        setExcludeBots(trigger.intData.length >= 7 && trigger.intData[6] === 1);
-        setExcludePets(trigger.intData.length >= 8 && trigger.intData[7] === 1);
     }, [ trigger ]);
 
     useEffect(() =>
@@ -92,7 +88,7 @@ export const WiredSelectorUsersAreaView: FC<{}> = props =>
     const hasArea = areaWidth > 0 && areaHeight > 0;
 
     return (
-        <WiredActionBaseView hasSpecialInput={ true } requiresFurni={ 0 } save={ save } hideDelay={ true } cardStyle={ { width: '385px' } }>
+        <WiredSelectorBaseView hasSpecialInput={ true } requiresFurni={ 0 } save={ save } hideDelay={ true } cardStyle={ { width: '385px' } }>
             <div className="flex flex-col gap-2">
                 <Text bold>{ LocalizeText('wiredfurni.params.area_selection') }</Text>
                 <Text small>{ LocalizeText('wiredfurni.params.area_selection.info') }</Text>
@@ -134,25 +130,7 @@ export const WiredSelectorUsersAreaView: FC<{}> = props =>
                         onChange={ e => setInvert(e.target.checked) } />
                     <Text small>{ LocalizeText('wiredfurni.params.selector_option.1') }</Text>
                 </label>
-
-                <label className="flex items-center gap-1">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={ excludeBots }
-                        onChange={ e => setExcludeBots(e.target.checked) } />
-                    <Text small>{ LocalizeText('wiredfurni.params.selector_option.bot') }</Text>
-                </label>
-
-                <label className="flex items-center gap-1">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        checked={ excludePets }
-                        onChange={ e => setExcludePets(e.target.checked) } />
-                    <Text small>{ LocalizeText('wiredfurni.params.selector_option.pet') }</Text>
-                </label>
             </div>
-        </WiredActionBaseView>
+        </WiredSelectorBaseView>
     );
 };

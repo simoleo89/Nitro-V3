@@ -87,7 +87,13 @@ const useWiredState = () =>
 
         const handleDisallowedInteraction = () =>
         {
-            if(allowedInteractionErrorKey) simpleAlert(LocalizeText(allowedInteractionErrorKey), null, null, null, LocalizeText('wiredfurni.title'));
+            if(!allowedInteractionErrorKey) return;
+
+            const message = (/^[a-z0-9_.]+$/i.test(allowedInteractionErrorKey))
+                ? LocalizeText(allowedInteractionErrorKey)
+                : allowedInteractionErrorKey;
+
+            simpleAlert(message, null, null, null, LocalizeText('wiredfurni.title'));
         };
 
         if(selectByType && category === RoomObjectCategory.FLOOR)

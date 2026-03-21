@@ -10,22 +10,26 @@ export const WiredActionSetFurniStateToView: FC<{}> = props =>
     const [ stateFlag, setStateFlag ] = useState(0);
     const [ directionFlag, setDirectionFlag ] = useState(0);
     const [ positionFlag, setPositionFlag ] = useState(0);
+    const [ altitudeFlag, setAltitudeFlag ] = useState(0);
     const { trigger = null, setIntParams = null } = useWired();
     const [ furniSource, setFurniSource ] = useState<number>(() =>
     {
+        if(trigger?.intData?.length > 4) return trigger.intData[4];
         if(trigger?.intData?.length > 3) return trigger.intData[3];
         return (trigger?.selectedItems?.length ?? 0) > 0 ? 100 : 0;
     });
 
-    const save = () => setIntParams([ stateFlag, directionFlag, positionFlag, furniSource ]);
+    const save = () => setIntParams([ stateFlag, directionFlag, positionFlag, altitudeFlag, furniSource ]);
 
     useEffect(() =>
     {
         setStateFlag(trigger.getBoolean(0) ? 1 : 0);
         setDirectionFlag(trigger.getBoolean(1) ? 1 : 0);
         setPositionFlag(trigger.getBoolean(2) ? 1 : 0);
+        setAltitudeFlag((trigger.intData.length > 4 && trigger.getBoolean(3)) ? 1 : 0);
 
-        if(trigger.intData.length > 3) setFurniSource(trigger.intData[3]);
+        if(trigger.intData.length > 4) setFurniSource(trigger.intData[4]);
+        else if(trigger.intData.length > 3) setFurniSource(trigger.intData[3]);
         else setFurniSource((trigger.selectedItems?.length ?? 0) > 0 ? 100 : 0);
     }, [ trigger ]);
 
@@ -52,6 +56,10 @@ export const WiredActionSetFurniStateToView: FC<{}> = props =>
                 <div className="flex items-center gap-1">
                     <input checked={ !!positionFlag } className="form-check-input" id="positionFlag" type="checkbox" onChange={ event => setPositionFlag(event.target.checked ? 1 : 0) } />
                     <Text>{ LocalizeText('wiredfurni.params.condition.position') }</Text>
+                </div>
+                <div className="flex items-center gap-1">
+                    <input checked={ !!altitudeFlag } className="form-check-input" id="altitudeFlag" type="checkbox" onChange={ event => setAltitudeFlag(event.target.checked ? 1 : 0) } />
+                    <Text>{ LocalizeText('wiredfurni.params.condition.altitude') }</Text>
                 </div>
             </div>
         </WiredActionBaseView>

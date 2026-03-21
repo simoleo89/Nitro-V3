@@ -24,7 +24,12 @@ const COMPARE_USER_SOURCES: WiredSourceOption[] = [
     { value: SOURCE_SPECIFIED_USERNAME, label: 'wiredfurni.params.sources.users.101' }
 ];
 
-export const WiredConditionTriggererMatchView: FC<{}> = () =>
+interface WiredConditionTriggererMatchViewProps
+{
+    negative?: boolean;
+}
+
+export const WiredConditionTriggererMatchView: FC<WiredConditionTriggererMatchViewProps> = ({ negative = false }) =>
 {
     const [ entityType, setEntityType ] = useState(ENTITY_HABBO);
     const [ avatarMode, setAvatarMode ] = useState(AVATAR_MODE_ANY);
@@ -36,6 +41,7 @@ export const WiredConditionTriggererMatchView: FC<{}> = () =>
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
 
     const needsUsername = (avatarMode === AVATAR_MODE_CERTAIN) || (compareUserSource === SOURCE_SPECIFIED_USERNAME);
+    const quantifierKeyPrefix = negative ? 'wiredfurni.params.quantifier.users.neg' : 'wiredfurni.params.quantifier.users';
 
     const save = () =>
     {
@@ -81,7 +87,7 @@ export const WiredConditionTriggererMatchView: FC<{}> = () =>
                                     return (
                                         <div key={ value } className="flex items-center gap-1">
                                             <input checked={ (quantifier === value) } className="form-check-input" id={ `triggererMatchQuantifier${ value }` } name="triggererMatchQuantifier" type="radio" onChange={ () => setQuantifier(value) } />
-                                            <Text>{ LocalizeText(`wiredfurni.params.quantifier.users.${ value }`) }</Text>
+                                            <Text>{ LocalizeText(`${ quantifierKeyPrefix }.${ value }`) }</Text>
                                         </div>
                                     );
                                 }) }

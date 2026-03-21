@@ -1,19 +1,29 @@
-import { CSSProperties, FC, useCallback, useEffect, useState } from 'react';
+import { GetRoomEngine } from '@nitrots/nitro-renderer';
+import { CSSProperties, FC, MouseEvent as ReactMouseEvent, useCallback, useEffect, useState } from 'react';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { MdGridOn } from 'react-icons/md';
-import { LocalizeText } from '../../../../api';
+import { LocalizeText, WiredFurniType } from '../../../../api';
 import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
-import { WiredActionBaseView } from '../actions/WiredActionBaseView';
+import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 const SOURCE_USER_TRIGGER  = 0;
 const SOURCE_USER_SIGNAL   = 1;
 const SOURCE_USER_CLICKED  = 2;
+const SOURCE_FURNI_TRIGGER = 3;
+const SOURCE_FURNI_PICKED  = 4;
+const SOURCE_FURNI_SIGNAL  = 5;
 
 const USER_SOURCES  = [
     { value: SOURCE_USER_TRIGGER,  label: 'wiredfurni.params.sources.users.0'   },
     { value: SOURCE_USER_SIGNAL,   label: 'wiredfurni.params.sources.users.201' },
     { value: SOURCE_USER_CLICKED,  label: 'wiredfurni.params.sources.users.11'  },
+];
+
+const FURNI_SOURCES = [
+    { value: SOURCE_FURNI_TRIGGER, label: 'wiredfurni.params.sources.furni.0'   },
+    { value: SOURCE_FURNI_PICKED,  label: 'wiredfurni.params.sources.furni.100' },
+    { value: SOURCE_FURNI_SIGNAL,  label: 'wiredfurni.params.sources.furni.201' },
 ];
 
 const TILE_W     = 22;
@@ -37,33 +47,74 @@ const tileTop = (rx: number, ry: number) =>
 
 interface GridProps {
     selectedTiles: Tile[];
+    targetTile: Tile;
     invert: boolean;
-    onToggle: (x: number, y: number) => void;
+    onSetTile: (x: number, y: number, selected: boolean) => void;
+    onMoveTarget: (x: number, y: number) => void;
+    targetPlacementMode: boolean;
 }
 
-const NeighborhoodGrid: FC<GridProps> = ({ selectedTiles, invert, onToggle }) =>
+const NeighborhoodGrid: FC<GridProps> = ({ selectedTiles, targetTile, invert, onSetTile, onMoveTarget, targetPlacementMode }) =>
 {
+    const [ dragMode, setDragMode ] = useState<'add' | 'remove' | 'target' | null>(null);
     const tiles: JSX.Element[] = [];
+
+    useEffect(() =>
+    {
+        const stopDragging = () => setDragMode(null);
+
+        window.addEventListener('mouseup', stopDragging);
+
+        return () => window.removeEventListener('mouseup', stopDragging);
+    }, []);
+
+    const beginTileDrag = (event: ReactMouseEvent<HTMLDivElement>, rx: number, ry: number, isTarget: boolean, isSelected: boolean) =>
+    {
+        event.preventDefault();
+
+        if(targetPlacementMode)
+        {
+            setDragMode('target');
+            onMoveTarget(rx, ry);
+            return;
+        }
+
+        const nextMode = isSelected ? 'remove' : 'add';
+
+        setDragMode(nextMode);
+        onSetTile(rx, ry, nextMode === 'add');
+    };
+
+    const continueTileDrag = (event: ReactMouseEvent<HTMLDivElement>, rx: number, ry: number, isTarget: boolean) =>
+    {
+        if(!(event.buttons & 1) || !dragMode) return;
+
+        if(dragMode === 'target')
+        {
+            onMoveTarget(rx, ry);
+            return;
+        }
+
+        onSetTile(rx, ry, dragMode === 'add');
+    };
 
     for (let ry = -GRID_RANGE; ry <= GRID_RANGE; ry++)
     {
         for (let rx = -GRID_RANGE; rx <= GRID_RANGE; rx++)
         {
-            const isCenter   = rx === 0 && ry === 0;
+            const isTarget   = rx === targetTile.x && ry === targetTile.y;
             const isSelected = tileIncluded(selectedTiles, rx, ry);
             const isActive   = invert ? !isSelected : isSelected;
             const left       = tileLeft(rx, ry);
             const top_       = tileTop(rx, ry);
             const zIdx       = rx + ry + GRID_RANGE * 2 + 10;
 
-            const bgColor = isCenter
-                ? '#ff9500'
-                : isActive
-                    ? '#3399ff'
-                    : '#2a3042';
+            const bgColor = isActive
+                ? '#3399ff'
+                : '#2a3042';
 
-            const borderColor = isCenter
-                ? '#cc6600'
+            const borderColor = isTarget
+                ? '#ffffff'
                 : isActive
                     ? '#1166cc'
                     : '#1a2032';
@@ -76,36 +127,61 @@ const NeighborhoodGrid: FC<GridProps> = ({ selectedTiles, invert, onToggle }) =>
                 top:             top_,
                 clipPath:        'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
                 backgroundColor: bgColor,
-                cursor:          isCenter ? 'default' : 'pointer',
+                cursor:          'pointer',
                 zIndex:          zIdx,
+                display:         'flex',
+                alignItems:      'center',
+                justifyContent:  'center',
+                color:           isTarget ? '#ffffff' : 'transparent',
+                fontSize:        10
             };
 
             const border: CSSProperties = {
                 position:        'absolute',
-                width:           TILE_W + 2,
-                height:          TILE_H + 2,
-                left:            left - 1,
-                top:             top_ - 1,
+                width:           TILE_W + (isTarget ? 6 : 2),
+                height:          TILE_H + (isTarget ? 6 : 2),
+                left:            left - (isTarget ? 3 : 1),
+                top:             top_ - (isTarget ? 3 : 1),
                 clipPath:        'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
                 backgroundColor: borderColor,
                 zIndex:          zIdx - 1,
                 pointerEvents:   'none',
             };
 
+            const targetOutline: CSSProperties = {
+                position:      'absolute',
+                width:         TILE_W + 4,
+                height:        TILE_H + 4,
+                left:          left - 2,
+                top:           top_ - 2,
+                zIndex:        zIdx + 1,
+                pointerEvents: 'none',
+                overflow:      'visible'
+            };
+
             tiles.push(
                 <div key={ `b-${ rx }-${ ry }` } style={ border } />,
+                isTarget && (
+                    <svg key={ `o-${ rx }-${ ry }` } style={ targetOutline } viewBox={ `0 0 ${ TILE_W + 4 } ${ TILE_H + 4 }` }>
+                        <polygon
+                            points={ `${ (TILE_W + 4) / 2 },2 ${ TILE_W + 2 },${ (TILE_H + 4) / 2 } ${ (TILE_W + 4) / 2 },${ TILE_H + 2 } 2,${ (TILE_H + 4) / 2 }` }
+                            fill="none"
+                            stroke="#ffffff"
+                            strokeWidth="1" />
+                    </svg>
+                ),
                 <div
                     key={ `t-${ rx }-${ ry }` }
                     style={ diamond }
                     title={ `(${ rx }, ${ ry })` }
-                    onClick={ () => !isCenter && onToggle(rx, ry) }
-                />,
+                    onMouseDown={ event => beginTileDrag(event, rx, ry, isTarget, isSelected) }
+                    onMouseEnter={ event => continueTileDrag(event, rx, ry, isTarget) } />,
             );
         }
     }
 
     return (
-        <div style={ { position: 'relative', width: GRID_PX_W, height: GRID_PX_H, flexShrink: 0 } }>
+        <div style={ { position: 'relative', width: GRID_PX_W, height: GRID_PX_H, flexShrink: 0 } } onContextMenu={ event => event.preventDefault() }>
             { tiles }
         </div>
     );
@@ -117,19 +193,29 @@ export const WiredSelectorUsersNeighborhoodView: FC<{}> = () =>
     const [ filterExisting, setFilterExisting ] = useState(false);
     const [ invert, setInvert ] = useState(false);
     const [ sourceType, setSourceType ] = useState(SOURCE_USER_TRIGGER);
+    const [ targetTile, setTargetTile ] = useState<Tile>({ x: 0, y: 0 });
+    const [ targetPlacementMode, setTargetPlacementMode ] = useState(false);
     const [ curX, setCurX ] = useState(0);
     const [ curY, setCurY ] = useState(0);
 
-    const { trigger = null, setIntParams } = useWired();
+    const { trigger = null, furniIds = [], setIntParams } = useWired();
+
+    useEffect(() =>
+    {
+        GetRoomEngine().areaSelectionManager.clearHighlight();
+        GetRoomEngine().areaSelectionManager.deactivate();
+    }, []);
 
     useEffect(() =>
     {
         if(!trigger) return;
 
         const p = trigger.intData;
-        if(p.length >= 1) setSourceType(Math.min(p[0], SOURCE_USER_CLICKED));
+        if(p.length >= 1) setSourceType(p[0]);
         if(p.length >= 2) setFilterExisting(p[1] === 1);
         if(p.length >= 3) setInvert(p[2] === 1);
+        if(p.length >= 5) setTargetTile({ x: p[3], y: p[4] });
+        else setTargetTile({ x: 0, y: 0 });
 
         if(p.length >= 6)
         {
@@ -156,25 +242,41 @@ export const WiredSelectorUsersNeighborhoodView: FC<{}> = () =>
             sourceType,
             filterExisting ? 1 : 0,
             invert ? 1 : 0,
+            targetTile.x,
+            targetTile.y,
             selectedTiles.length,
             ...selectedTiles.flatMap(t => [ t.x, t.y ]),
         ];
 
         setIntParams(params);
-    }, [ sourceType, filterExisting, invert, selectedTiles, setIntParams ]);
+    }, [ sourceType, filterExisting, invert, selectedTiles, targetTile.x, targetTile.y, setIntParams ]);
 
-    const toggleTile = useCallback((x: number, y: number) =>
+    const setTileSelection = useCallback((x: number, y: number, selected: boolean) =>
     {
         setSelectedTiles(prev =>
-            tileIncluded(prev, x, y)
-                ? prev.filter(t => !(t.x === x && t.y === y))
-                : [ ...prev, { x, y } ]
-        );
+        {
+            const alreadySelected = tileIncluded(prev, x, y);
+
+            if(selected)
+            {
+                if(alreadySelected) return prev;
+
+                return [ ...prev, { x, y } ];
+            }
+
+            if(!alreadySelected) return prev;
+
+            return prev.filter(t => !(t.x === x && t.y === y));
+        });
+    }, []);
+
+    const moveTargetTile = useCallback((x: number, y: number) =>
+    {
+        setTargetTile({ x, y });
     }, []);
 
     const addTile = useCallback(() =>
     {
-        if(curX === 0 && curY === 0) return;
         if(!tileIncluded(selectedTiles, curX, curY))
             setSelectedTiles(prev => [ ...prev, { x: curX, y: curY } ]);
     }, [ curX, curY, selectedTiles ]);
@@ -202,21 +304,50 @@ export const WiredSelectorUsersNeighborhoodView: FC<{}> = () =>
         setSelectedTiles(tiles);
     }, []);
 
-    const sourceIndex = USER_SOURCES.findIndex(s => s.value === sourceType);
+    const isUserGroup = sourceType <= SOURCE_USER_CLICKED;
+    const activeSources = isUserGroup ? USER_SOURCES : FURNI_SOURCES;
+    const groupOffset = isUserGroup ? 0 : SOURCE_FURNI_TRIGGER;
+    const groupIndex = sourceType - groupOffset;
 
     const prevSource = () =>
-        setSourceType(USER_SOURCES[(sourceIndex - 1 + USER_SOURCES.length) % USER_SOURCES.length].value);
+        setSourceType(groupOffset + ((groupIndex - 1 + activeSources.length) % activeSources.length));
 
     const nextSource = () =>
-        setSourceType(USER_SOURCES[(sourceIndex + 1) % USER_SOURCES.length].value);
+        setSourceType(groupOffset + ((groupIndex + 1) % activeSources.length));
+
+    const switchGroup = (toUser: boolean) =>
+    {
+        if(toUser === isUserGroup) return;
+
+        const newOffset = toUser ? 0 : SOURCE_FURNI_TRIGGER;
+        setSourceType(newOffset + groupIndex);
+    };
+
+    const requiresFurni = sourceType === SOURCE_FURNI_PICKED
+        ? WiredFurniType.STUFF_SELECTION_OPTION_BY_ID
+        : WiredFurniType.STUFF_SELECTION_OPTION_NONE;
+
+    const pickedCount = furniIds.length;
+    const pickedLimit = trigger?.maximumItemSelectionCount ?? 20;
 
     return (
-        <WiredActionBaseView hasSpecialInput={ true } requiresFurni={ 0 } save={ save } hideDelay={ true } cardStyle={ { width: '400px' } }>
+        <WiredSelectorBaseView hasSpecialInput={ true } requiresFurni={ requiresFurni } save={ save } hideDelay={ true } cardStyle={ { width: '400px' } }>
             <div className="flex flex-col gap-2">
 
                 <Text bold>{ LocalizeText('wiredfurni.params.neighborhood_selection') }</Text>
 
                 <div className="flex items-center gap-1">
+                    <Button
+                        variant={ targetPlacementMode ? 'success' : 'secondary' }
+                        className="px-2 py-1"
+                        onClick={ () => setTargetPlacementMode(value => !value) }
+                        title="Sposta target">
+                        <span aria-hidden className="relative inline-block h-[14px] w-[14px]">
+                            <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-current" />
+                            <span className="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-current" />
+                            <span className="absolute left-1/2 top-1/2 h-[8px] w-[8px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-current" />
+                        </span>
+                    </Button>
                     <Button variant="success" className="px-2 py-1" onClick={ addTile } title={ LocalizeText('wiredfurni.tooltip.select.tile') }>
                         <FaPlus />
                     </Button>
@@ -232,7 +363,13 @@ export const WiredSelectorUsersNeighborhoodView: FC<{}> = () =>
                 </div>
 
                 <div className="flex justify-center">
-                    <NeighborhoodGrid selectedTiles={ selectedTiles } invert={ invert } onToggle={ toggleTile } />
+                    <NeighborhoodGrid
+                        selectedTiles={ selectedTiles }
+                        targetTile={ targetTile }
+                        invert={ invert }
+                        onSetTile={ setTileSelection }
+                        onMoveTarget={ moveTargetTile }
+                        targetPlacementMode={ targetPlacementMode } />
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -282,15 +419,35 @@ export const WiredSelectorUsersNeighborhoodView: FC<{}> = () =>
 
                 <Text bold>{ LocalizeText('wiredfurni.params.sources.merged.title.neighborhood') }</Text>
 
+                <div className="flex gap-1">
+                    <Button
+                        fullWidth
+                        variant={ isUserGroup ? 'primary' : 'secondary' }
+                        onClick={ () => switchGroup(true) }>
+                        { LocalizeText('wiredfurni.params.furni_neighborhood.group.user') }
+                    </Button>
+                    <Button
+                        fullWidth
+                        variant={ !isUserGroup ? 'primary' : 'secondary' }
+                        onClick={ () => switchGroup(false) }>
+                        { LocalizeText('wiredfurni.params.furni_neighborhood.group.furni') }
+                    </Button>
+                </div>
+
                 <div className="flex items-center gap-2">
                     <Button variant="primary" className="px-2 py-1" onClick={ prevSource }>&#8249;</Button>
                     <div className="flex flex-1 items-center justify-center">
-                        <Text small>{ LocalizeText(USER_SOURCES[sourceIndex].label) }</Text>
+                        <Text small>{ LocalizeText(activeSources[groupIndex].label) }</Text>
                     </div>
                     <Button variant="primary" className="px-2 py-1" onClick={ nextSource }>&#8250;</Button>
                 </div>
 
+                { sourceType === SOURCE_FURNI_PICKED &&
+                    <Text small className="text-center">
+                        { LocalizeText('wiredfurni.pickfurnis.caption', [ 'count', 'limit' ], [ pickedCount.toString(), pickedLimit.toString() ]) }
+                    </Text> }
+
             </div>
-        </WiredActionBaseView>
+        </WiredSelectorBaseView>
     );
 };

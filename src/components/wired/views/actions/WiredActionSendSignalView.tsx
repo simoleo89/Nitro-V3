@@ -115,17 +115,28 @@ export const WiredActionSendSignalView: FC<{}> = () =>
         if(mode === selectionMode) return;
         if(mode === 'furni' && furniSource !== SOURCE_SELECTED) return;
 
+        const nextAntennaIds = (selectionMode === 'antenna') ? [ ...furniIds ] : [ ...antennaIds ];
+        const nextForwardFurniIds = (selectionMode === 'furni') ? [ ...furniIds ] : [ ...forwardFurniIds ];
+
+        setAntennaIds(nextAntennaIds);
+        setForwardFurniIds(nextForwardFurniIds);
         setSelectionMode(mode);
-        if(setFurniIds) setFurniIds([ ...((mode === 'antenna') ? antennaIds : forwardFurniIds) ]);
-    }, [ selectionMode, furniSource, antennaIds, forwardFurniIds, setFurniIds ]);
+        if(setFurniIds) setFurniIds([ ...((mode === 'antenna') ? nextAntennaIds : nextForwardFurniIds) ]);
+    }, [ selectionMode, furniSource, furniIds, antennaIds, forwardFurniIds, setFurniIds ]);
 
     const onChangeFurniSource = (next: number) =>
     {
-        if(forwardFurniIds.length) setForwardFurniIds([]);
+        const nextAntennaIds = (selectionMode === 'antenna') ? [ ...furniIds ] : [ ...antennaIds ];
+
+        setAntennaIds(nextAntennaIds);
+        if(forwardFurniIds.length || selectionMode === 'furni')
+        {
+            setForwardFurniIds([]);
+        }
 
         if(selectionMode === 'furni')
         {
-            if(setFurniIds) setFurniIds([ ...antennaIds ]);
+            if(setFurniIds) setFurniIds([ ...nextAntennaIds ]);
             setSelectionMode('antenna');
         }
 
@@ -134,7 +145,19 @@ export const WiredActionSendSignalView: FC<{}> = () =>
 
     const save = useCallback(() =>
     {
-        const antennaSource = (antennaIds && antennaIds.length) ? antennaIds[0] : 0;
+        const nextAntennaIds = (selectionMode === 'antenna') ? [ ...furniIds ] : [ ...antennaIds ];
+        const nextForwardFurniIds = (selectionMode === 'furni') ? [ ...furniIds ] : [ ...forwardFurniIds ];
+
+        setAntennaIds(nextAntennaIds);
+        setForwardFurniIds(nextForwardFurniIds);
+
+        if(selectionMode === 'furni')
+        {
+            setSelectionMode('antenna');
+            if(setFurniIds) setFurniIds([ ...nextAntennaIds ]);
+        }
+
+        const antennaSource = (nextAntennaIds && nextAntennaIds.length) ? nextAntennaIds[0] : 0;
 
         setIntParams([
             antennaSource,
@@ -145,8 +168,8 @@ export const WiredActionSendSignalView: FC<{}> = () =>
             0,
         ]);
 
-        setStringParam(serializeForwardIds(forwardFurniIds));
-    }, [ antennaIds, furniSource, userSource, signalPerFurni, signalPerUser, forwardFurniIds, setIntParams, setStringParam ]);
+        setStringParam(serializeForwardIds(nextForwardFurniIds));
+    }, [ selectionMode, furniIds, antennaIds, furniSource, userSource, signalPerFurni, signalPerUser, forwardFurniIds, setFurniIds, setIntParams, setStringParam ]);
 
     useEffect(() =>
     {

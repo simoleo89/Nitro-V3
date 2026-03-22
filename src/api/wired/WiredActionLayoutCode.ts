@@ -56,4 +56,8 @@ export class WiredActionLayoutCode
     public static USERS_HANDITEM_SELECTOR: number = 55;
     public static FILTER_FURNI_EXTRA: number = 56;
     public static FILTER_USER_EXTRA: number = 57;
+    public static MOVE_CARRY_USERS_EXTRA: number = 58;
+    public static MOVE_NO_ANIMATION_EXTRA: number = 59;
+    public static ANIMATION_TIME_EXTRA: number = 60;
+    public static MOVE_PHYSICS_EXTRA: number = 61;
 }

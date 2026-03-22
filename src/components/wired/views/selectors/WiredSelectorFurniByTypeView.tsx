@@ -12,7 +12,7 @@ export const WiredSelectorFurniByTypeView: FC<{}> = () =>
     const [ filterExisting, setFilterExisting ] = useState(false);
     const [ invert,         setInvert         ] = useState(false);
 
-    const { trigger = null, setIntParams, setSelectByType } = useWired();
+    const { trigger = null, setIntParams } = useWired();
 
     useEffect(() =>
     {
@@ -23,11 +23,6 @@ export const WiredSelectorFurniByTypeView: FC<{}> = () =>
         if(p.length >= 3) setFilterExisting(p[2] === 1);
         if(p.length >= 4) setInvert(p[3] === 1);
     }, [ trigger ]);
-
-    useEffect(() =>
-    {
-        setSelectByType(true);
-    }, [ setSelectByType ]);
 
     const save = useCallback(() =>
     {

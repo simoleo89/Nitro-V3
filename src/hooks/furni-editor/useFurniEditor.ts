@@ -36,6 +36,18 @@ export interface FurniDetail extends FurniItem
     multiheight: string;
     description: string;
     usageCount: number;
+    revision: number;
+    category: string;
+    defaultdir: number;
+    offerid: number;
+    buyout: boolean;
+    rentofferid: number;
+    rentbuyout: boolean;
+    bc: boolean;
+    excludeddynamic: boolean;
+    furniline: string;
+    environment: string;
+    rare: boolean;
 }
 
 export interface CatalogRef

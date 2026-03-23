@@ -160,9 +160,13 @@ export class AvatarEditorThumbnailsHelper
 
                 if(isDisabled) sprite.filters = [ AvatarEditorThumbnailsHelper.ALPHA_FILTER ];
 
+                const headSize = Math.floor(texture.width * 0.5);
+                const cropX = Math.floor((texture.width - headSize) / 2);
+                const cropY = Math.floor(texture.height * 0.22);
+
                 const imageUrl = await TextureUtils.generateImageUrl({
                     target: sprite,
-                    frame: new NitroRectangle(0, 0, texture.width, texture.height)
+                    frame: new NitroRectangle(cropX, cropY, headSize, headSize)
                 });
 
                 sprite.destroy();

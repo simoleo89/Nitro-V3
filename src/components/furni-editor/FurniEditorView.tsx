@@ -14,6 +14,7 @@ export const FurniEditorView: FC<{}> = () =>
 {
     const [ isVisible, setIsVisible ] = useState(false);
     const [ activeTab, setActiveTab ] = useState(TAB_SEARCH);
+    const pendingEditRef = useRef(false);
 
     const {
         items, total, page, loading, error, clearError,
@@ -24,9 +25,20 @@ export const FurniEditorView: FC<{}> = () =>
 
     useEffect(() =>
     {
+        if(selectedItem && pendingEditRef.current)
+        {
+            pendingEditRef.current = false;
+            setActiveTab(TAB_EDIT);
+        }
+    }, [ selectedItem ]);
+
+    useEffect(() =>
+    {
         const linkTracker: ILinkEventTracker = {
             linkReceived: (url: string) =>
             {
+                if(!GetSessionDataManager().isModerator) return;
+
                 const parts = url.split('/');
 
                 if(parts.length < 2) return;
@@ -61,6 +73,8 @@ export const FurniEditorView: FC<{}> = () =>
     {
         const handler = (e: CustomEvent<{ spriteId: number }>) =>
         {
+            if(!GetSessionDataManager().isModerator) return;
+
             const { spriteId } = e.detail;
 
             if(!spriteId || spriteId <= 0) return;
@@ -108,6 +122,9 @@ export const FurniEditorView: FC<{}> = () =>
                 </NitroCardTabsItemView>
                 <NitroCardTabsItemView isActive={ activeTab === TAB_EDIT } onClick={ () => selectedItem && setActiveTab(TAB_EDIT) }>
                     Edit
+                </NitroCardTabsItemView>
+                <NitroCardTabsItemView isActive={ activeTab === TAB_CREATE } onClick={ () => setActiveTab(TAB_CREATE) }>
+                    Create
                 </NitroCardTabsItemView>
             </NitroCardTabsView>
             <NitroCardContentView>

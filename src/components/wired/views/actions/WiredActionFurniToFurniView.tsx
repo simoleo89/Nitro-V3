@@ -81,9 +81,14 @@ export const WiredActionFurniToFurniView: FC<{}> = () =>
         if(mode === 'move' && !canEditMove) return;
         if(mode === 'target' && !canEditTarget) return;
 
+        const nextMoveIds = (selectionMode === 'move') ? [ ...furniIds ] : [ ...moveFurniIds ];
+        const nextTargetIds = (selectionMode === 'target') ? [ ...furniIds ] : [ ...targetFurniIds ];
+
+        setMoveFurniIds(nextMoveIds);
+        setTargetFurniIds(nextTargetIds);
         setSelectionMode(mode);
-        setFurniIds([ ...(mode === 'move' ? moveFurniIds : targetFurniIds) ]);
-    }, [ moveSource, targetSource, moveFurniIds, targetFurniIds, setFurniIds ]);
+        setFurniIds([ ...(mode === 'move' ? nextMoveIds : nextTargetIds) ]);
+    }, [ selectionMode, furniIds, moveSource, targetSource, moveFurniIds, targetFurniIds, setFurniIds ]);
 
     useEffect(() =>
     {
@@ -153,10 +158,16 @@ export const WiredActionFurniToFurniView: FC<{}> = () =>
 
     const save = useCallback(() =>
     {
+        const nextMoveIds = (selectionMode === 'move') ? [ ...furniIds ] : [ ...moveFurniIds ];
+        const nextTargetIds = (selectionMode === 'target') ? [ ...furniIds ] : [ ...targetFurniIds ];
+
+        setMoveFurniIds(nextMoveIds);
+        setTargetFurniIds(nextTargetIds);
+
         if(selectionMode === 'target')
         {
             setSelectionMode('move');
-            setFurniIds([ ...moveFurniIds ]);
+            setFurniIds([ ...nextMoveIds ]);
         }
 
         setIntParams([
@@ -164,8 +175,8 @@ export const WiredActionFurniToFurniView: FC<{}> = () =>
             targetSource
         ]);
 
-        setStringParam(serializeIds(targetFurniIds));
-    }, [ selectionMode, moveFurniIds, moveSource, targetSource, targetFurniIds, setFurniIds, setIntParams, setStringParam ]);
+        setStringParam(serializeIds(nextTargetIds));
+    }, [ selectionMode, furniIds, moveFurniIds, moveSource, targetSource, targetFurniIds, setFurniIds, setIntParams, setStringParam ]);
 
     const selectionLimit = trigger?.maximumItemSelectionCount ?? 0;
 

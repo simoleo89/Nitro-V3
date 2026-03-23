@@ -52,10 +52,6 @@ import { WiredActionToggleFurniStateView } from './WiredActionToggleFurniStateVi
 import { WiredActionUnfreezeView } from './WiredActionUnfreezeView';
 import { WiredExtraFilterFurniView } from '../extras/WiredExtraFilterFurniView';
 import { WiredExtraFilterUserView } from '../extras/WiredExtraFilterUserView';
-import { WiredExtraAnimationTimeView } from '../extras/WiredExtraAnimationTimeView';
-import { WiredExtraMoveCarryUsersView } from '../extras/WiredExtraMoveCarryUsersView';
-import { WiredExtraMoveNoAnimationView } from '../extras/WiredExtraMoveNoAnimationView';
-import { WiredExtraMovePhysicsView } from '../extras/WiredExtraMovePhysicsView';
 
 export const WiredActionLayoutView = (code: number) =>
 {
@@ -169,14 +165,6 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredExtraFilterFurniView />;
         case WiredActionLayoutCode.FILTER_USER_EXTRA:
             return <WiredExtraFilterUserView />;
-        case WiredActionLayoutCode.MOVE_CARRY_USERS_EXTRA:
-            return <WiredExtraMoveCarryUsersView />;
-        case WiredActionLayoutCode.MOVE_NO_ANIMATION_EXTRA:
-            return <WiredExtraMoveNoAnimationView />;
-        case WiredActionLayoutCode.ANIMATION_TIME_EXTRA:
-            return <WiredExtraAnimationTimeView />;
-        case WiredActionLayoutCode.MOVE_PHYSICS_EXTRA:
-            return <WiredExtraMovePhysicsView />;
         case WiredActionLayoutCode.SEND_SIGNAL:
             return <WiredActionSendSignalView />;
     }

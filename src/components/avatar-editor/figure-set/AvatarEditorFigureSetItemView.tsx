@@ -51,7 +51,7 @@ export const AvatarEditorFigureSetItemView: FC<{
     if(!partItem) return null;
 
     return (
-        <InfiniteGrid.Item itemActive={ isSelected } itemImage={ (partItem.isClear ? undefined : assetUrl) } className={ `avatar-parts mx-auto${ isSelected ? ' part-selected' : '' }` } style={ (setType === AvatarFigurePartType.HEAD) ? { backgroundSize: 'cover', backgroundPosition: 'center' } : { backgroundPosition: 'center' } } { ...rest }>
+        <InfiniteGrid.Item itemActive={ isSelected } itemImage={ (partItem.isClear ? undefined : assetUrl) } className={ `avatar-parts mx-auto${ isSelected ? ' part-selected' : '' }` } style={ { backgroundPosition: (setType === AvatarFigurePartType.HEAD) ? 'center -35px' : 'center' } } { ...rest }>
             { !partItem.isClear && isHC && <LayoutCurrencyIcon className="absolute inset-e-1 bottom-1" type="hc" /> }
             { partItem.isClear && <AvatarEditorIcon icon="clear" /> }
             { !partItem.isClear && partItem.partSet.isSellable && <AvatarEditorIcon className="inset-e-1 bottom-1 absolute" icon="sellable" /> }

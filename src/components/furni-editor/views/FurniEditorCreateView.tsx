@@ -39,19 +39,6 @@ export const FurniEditorCreateView: FC<FurniEditorCreateViewProps> = props =>
         interactionType: '',
         interactionModesCount: 1,
         customparams: '',
-        description: '',
-        revision: 0,
-        category: '',
-        defaultdir: 0,
-        offerid: 0,
-        buyout: false,
-        rentofferid: 0,
-        rentbuyout: false,
-        bc: false,
-        excludeddynamic: false,
-        furniline: '',
-        environment: '',
-        rare: false,
     });
 
     useEffect(() =>
@@ -106,10 +93,6 @@ export const FurniEditorCreateView: FC<FurniEditorCreateViewProps> = props =>
                         <label className={ labelClass }>Public Name *</label>
                         <input className={ inputClass } value={ form.publicName } onChange={ e => setField('publicName', e.target.value) } placeholder="My Custom Furni" />
                     </div>
-                    <div className="col-span-2">
-                        <label className={ labelClass }>Description</label>
-                        <textarea className={ inputClass } rows={ 2 } value={ form.description } onChange={ e => setField('description', e.target.value) } />
-                    </div>
                     <div>
                         <label className={ labelClass }>Sprite ID</label>
                         <input type="number" className={ inputClass } value={ form.spriteId } onChange={ e => setField('spriteId', Number(e.target.value)) } />
@@ -141,10 +124,6 @@ export const FurniEditorCreateView: FC<FurniEditorCreateViewProps> = props =>
                     <div>
                         <label className={ labelClass }>Stack Height</label>
                         <input type="number" step="0.01" className={ inputClass } value={ form.stackHeight } onChange={ e => setField('stackHeight', Number(e.target.value)) } />
-                    </div>
-                    <div>
-                        <label className={ labelClass }>Default Dir</label>
-                        <input type="number" className={ inputClass } value={ form.defaultdir } onChange={ e => setField('defaultdir', Number(e.target.value)) } />
                     </div>
                 </div>
             </div>

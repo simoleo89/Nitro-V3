@@ -45,19 +45,6 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
         interactionType: '',
         interactionModesCount: 0,
         customparams: '',
-        description: '',
-        revision: 0,
-        category: '',
-        defaultdir: 0,
-        offerid: 0,
-        buyout: false,
-        rentofferid: 0,
-        rentbuyout: false,
-        bc: false,
-        excludeddynamic: false,
-        furniline: '',
-        environment: '',
-        rare: false,
     });
 
     const [ confirmDelete, setConfirmDelete ] = useState(false);
@@ -85,19 +72,6 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
             interactionType: item.interactionType || '',
             interactionModesCount: item.interactionModesCount || 0,
             customparams: item.customparams || '',
-            description: item.description || '',
-            revision: item.revision || 0,
-            category: item.category || '',
-            defaultdir: item.defaultdir || 0,
-            offerid: item.offerid || 0,
-            buyout: !!item.buyout,
-            rentofferid: item.rentofferid || 0,
-            rentbuyout: !!item.rentbuyout,
-            bc: !!item.bc,
-            excludeddynamic: !!item.excludeddynamic,
-            furniline: item.furniline || '',
-            environment: item.environment || '',
-            rare: !!item.rare,
         });
 
         setConfirmDelete(false);
@@ -205,10 +179,6 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                     <div>
                         <label className={ lb }>Stack Height</label>
                         <input type="number" step="0.01" className={ ic } value={ form.stackHeight } onChange={ e => setField('stackHeight', Number(e.target.value)) } />
-                    </div>
-                    <div>
-                        <label className={ labelClass }>Default Dir</label>
-                        <input type="number" className={ inputClass } value={ form.defaultdir } onChange={ e => setField('defaultdir', Number(e.target.value)) } />
                     </div>
                 </div>
             </div>

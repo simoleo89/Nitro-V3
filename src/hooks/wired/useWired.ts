@@ -13,7 +13,7 @@ const useWiredState = () =>
     const [ furniIds, setFurniIds ] = useState<number[]>([]);
     const [ actionDelay, setActionDelay ] = useState<number>(0);
     const [ allowsFurni, setAllowsFurni ] = useState<number>(WiredFurniType.STUFF_SELECTION_OPTION_NONE);
-    const selectByType = false;
+    const [ selectByType, setSelectByType ] = useState<boolean>(false);
     const [ neighborhoodTiles, setNeighborhoodTiles ] = useState<{ x: number; y: number }[] | null>(null);
     const [ neighborhoodInvert, setNeighborhoodInvert ] = useState<boolean>(false);
     const [ allowedInteractionTypes, setAllowedInteractionTypes ] = useState<string[] | null>(null);
@@ -303,6 +303,7 @@ const useWiredState = () =>
                 return [];
             });
             setAllowsFurni(WiredFurniType.STUFF_SELECTION_OPTION_NONE);
+            setSelectByType(false);
             setNeighborhoodTiles(null);
             setNeighborhoodInvert(false);
             setAllowedInteractionTypes(null);
@@ -310,7 +311,7 @@ const useWiredState = () =>
         };
     }, [ trigger ]);
 
-    return { trigger, setTrigger, intParams, setIntParams, stringParam, setStringParam, furniIds, setFurniIds, actionDelay, setActionDelay, setAllowsFurni, saveWired, selectObjectForWired, setNeighborhoodTiles, setNeighborhoodInvert, setAllowedInteractionTypes, setAllowedInteractionErrorKey };
+    return { trigger, setTrigger, intParams, setIntParams, stringParam, setStringParam, furniIds, setFurniIds, actionDelay, setActionDelay, setAllowsFurni, saveWired, selectObjectForWired, setSelectByType, setNeighborhoodTiles, setNeighborhoodInvert, setAllowedInteractionTypes, setAllowedInteractionErrorKey };
 };
 
 export const useWired = () => useBetween(useWiredState);

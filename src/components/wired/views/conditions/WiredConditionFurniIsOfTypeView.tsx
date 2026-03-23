@@ -85,14 +85,9 @@ export const WiredConditionFurniIsOfTypeView: FC<WiredConditionFurniIsOfTypeView
         if(mode === 'primary' && !canEditPrimary) return;
         if(mode === 'secondary' && !canEditSecondary) return;
 
-        const nextPrimaryIds = (selectionMode === 'primary') ? [ ...furniIds ] : [ ...primaryFurniIds ];
-        const nextSecondaryIds = (selectionMode === 'secondary') ? [ ...furniIds ] : [ ...secondaryFurniIds ];
-
-        setPrimaryFurniIds(nextPrimaryIds);
-        setSecondaryFurniIds(nextSecondaryIds);
         setSelectionMode(mode);
-        setFurniIds([ ...(mode === 'primary' ? nextPrimaryIds : nextSecondaryIds) ]);
-    }, [ selectionMode, furniIds, matchSource, compareSource, primaryFurniIds, secondaryFurniIds, setFurniIds ]);
+        setFurniIds([ ...(mode === 'primary' ? primaryFurniIds : secondaryFurniIds) ]);
+    }, [ matchSource, compareSource, primaryFurniIds, secondaryFurniIds, setFurniIds ]);
 
     useEffect(() =>
     {
@@ -166,16 +161,10 @@ export const WiredConditionFurniIsOfTypeView: FC<WiredConditionFurniIsOfTypeView
 
     const save = useCallback(() =>
     {
-        const nextPrimaryIds = (selectionMode === 'primary') ? [ ...furniIds ] : [ ...primaryFurniIds ];
-        const nextSecondaryIds = (selectionMode === 'secondary') ? [ ...furniIds ] : [ ...secondaryFurniIds ];
-
-        setPrimaryFurniIds(nextPrimaryIds);
-        setSecondaryFurniIds(nextSecondaryIds);
-
         if(selectionMode === 'secondary')
         {
             setSelectionMode('primary');
-            setFurniIds([ ...nextPrimaryIds ]);
+            setFurniIds([ ...primaryFurniIds ]);
         }
 
         setIntParams([
@@ -183,8 +172,8 @@ export const WiredConditionFurniIsOfTypeView: FC<WiredConditionFurniIsOfTypeView
             compareSource,
             quantifier
         ]);
-        setStringParam(serializeIds(nextSecondaryIds));
-    }, [ selectionMode, furniIds, primaryFurniIds, matchSource, compareSource, quantifier, secondaryFurniIds, setFurniIds, setIntParams, setStringParam ]);
+        setStringParam(serializeIds(secondaryFurniIds));
+    }, [ selectionMode, primaryFurniIds, matchSource, compareSource, quantifier, secondaryFurniIds, setFurniIds, setIntParams, setStringParam ]);
 
     const selectionLimit = trigger?.maximumItemSelectionCount ?? 0;
     const quantifierKeyPrefix = negative ? 'wiredfurni.params.quantifier.furni.neg' : 'wiredfurni.params.quantifier.furni';

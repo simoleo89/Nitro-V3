@@ -2,6 +2,7 @@ import { PurchasePrefixComposer } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { LocalizeText, SendMessageComposer, PRESET_PREFIX_EFFECTS, generateGradientColors } from '../../../../../api';
 import { PrefixPreview } from '../../../../../layout';
+import { LocalizeText, SanitizeHtml, SendMessageComposer, PRESET_PREFIX_EFFECTS, parsePrefixColors, getPrefixEffectStyle, PREFIX_EFFECT_KEYFRAMES } from '../../../../../api';
 import { CatalogLayoutProps } from './CatalogLayout.types';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
@@ -34,32 +35,6 @@ export const CatalogLayoutCustomPrefixView: FC<CatalogLayoutProps> = props =>
     const [ showIconPicker, setShowIconPicker ] = useState(false);
     const [ selectedEffect, setSelectedEffect ] = useState('');
     const [ purchased, setPurchased ] = useState(false);
-    const pickerContainerRef = useRef<HTMLDivElement>(null);
-
-    // Inject style into emoji-mart Shadow DOM to remove backdrop-filter blur
-    useEffect(() =>
-    {
-        if(!showIconPicker) return;
-
-        const timer = setTimeout(() =>
-        {
-            const container = pickerContainerRef.current;
-            if(!container) return;
-
-            const emPicker = container.querySelector('em-emoji-picker');
-            if(!emPicker?.shadowRoot) return;
-
-            const existing = emPicker.shadowRoot.querySelector('#no-blur-fix');
-            if(existing) return;
-
-            const style = document.createElement('style');
-            style.id = 'no-blur-fix';
-            style.textContent = `.sticky { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgb(var(--em-rgb-background)) !important; } .menu { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgb(var(--em-rgb-background)) !important; }`;
-            emPicker.shadowRoot.appendChild(style);
-        }, 50);
-
-        return () => clearTimeout(timer);
-    }, [ showIconPicker ]);
 
     const colorString = useMemo(() =>
     {
@@ -164,7 +139,7 @@ export const CatalogLayoutCustomPrefixView: FC<CatalogLayoutProps> = props =>
             { page.localization.getImage(0) &&
                 <img alt="" className="w-full rounded" src={ page.localization.getImage(0) } /> }
             { page.localization.getText(0) &&
-                <div className="text-sm mb-1" dangerouslySetInnerHTML={ { __html: page.localization.getText(0) } } /> }
+                <div className="text-sm mb-1" dangerouslySetInnerHTML={ { __html: SanitizeHtml(page.localization.getText(0)) } } /> }
 
             { /* Live Preview */ }
             <div className="relative flex items-center justify-center p-4 rounded-lg min-h-[56px]"
@@ -263,6 +238,7 @@ export const CatalogLayoutCustomPrefixView: FC<CatalogLayoutProps> = props =>
                 <>
                     <div className="fixed inset-0" style={ { zIndex: 999, background: 'rgba(0,0,0,0.5)' } } onClick={ () => setShowIconPicker(false) } />
                     <div ref={ pickerContainerRef } className="fixed rounded-xl overflow-hidden" style={ { zIndex: 1000, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' } }>
+                    <div className="fixed rounded-xl overflow-hidden" style={ { zIndex: 1000, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' } }>
                         <Picker
                             data={ data }
                             locale="it"
@@ -494,6 +470,41 @@ export const CatalogLayoutCustomPrefixView: FC<CatalogLayoutProps> = props =>
                                 value={ customColorInput }
                                 onChange={ e => handleColorSelect(e.target.value) } />
                         </label>
+            { /* Color Palette */ }
+            <div className="flex flex-col gap-1">
+                { colorMode === 'perLetter' && selectedLetterIndex !== null &&
+                    <span className="text-[10px] opacity-50 italic">
+                        { LocalizeText('catalog.prefix.color.selected') } &quot;{ prefixText[selectedLetterIndex] || '' }&quot;
+                    </span>
+                }
+                <div className="grid gap-1" style={ { gridTemplateColumns: 'repeat(auto-fill, minmax(34px, 1fr))' } }>
+                    { PRESET_COLORS.map((color, idx) =>
+                    {
+                        const isActive = currentActiveColor === color;
+                        return (
+                            <div
+                                key={ idx }
+                                className={ `aspect-square rounded cursor-pointer transition-all duration-100 border-2 ${ isActive ? 'scale-110 border-white shadow-lg' : 'border-transparent hover:scale-105' }` }
+                                style={ {
+                                    backgroundColor: color,
+                                    boxShadow: isActive ? `0 0 8px ${ color }, 0 0 0 1px rgba(0,0,0,0.3)` : 'inset 0 1px 0 rgba(255,255,255,0.25), 0 1px 2px rgba(0,0,0,0.15)',
+                                    zIndex: isActive ? 5 : 1
+                                } }
+                                onClick={ () => handleColorSelect(color) } />
+                        );
+                    }) }
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                    <label
+                        className="relative cursor-pointer"
+                        style={ {
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '6px',
+                            backgroundColor: customColorInput,
+                            border: '2px solid rgba(0,0,0,0.2)',
+                            boxShadow: `0 0 6px ${ customColorInput }40, inset 0 1px 0 rgba(255,255,255,0.3)`
+                        } }>
                         <input
                             className="flex-1 px-2 py-0.5 text-xs font-mono focus:outline-none transition-all"
                             maxLength={ 7 }

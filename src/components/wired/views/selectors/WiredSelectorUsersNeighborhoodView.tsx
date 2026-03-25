@@ -5,6 +5,7 @@ import { MdGridOn } from 'react-icons/md';
 import { LocalizeText, WiredFurniType } from '../../../../api';
 import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
+import { sortWiredSourceOptions } from '../WiredSourcesSelector';
 import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 const SOURCE_USER_TRIGGER  = 0;
@@ -14,17 +15,17 @@ const SOURCE_FURNI_TRIGGER = 3;
 const SOURCE_FURNI_PICKED  = 4;
 const SOURCE_FURNI_SIGNAL  = 5;
 
-const USER_SOURCES  = [
+const USER_SOURCES  = sortWiredSourceOptions([
     { value: SOURCE_USER_TRIGGER,  label: 'wiredfurni.params.sources.users.0'   },
     { value: SOURCE_USER_SIGNAL,   label: 'wiredfurni.params.sources.users.201' },
     { value: SOURCE_USER_CLICKED,  label: 'wiredfurni.params.sources.users.11'  },
-];
+], 'users');
 
-const FURNI_SOURCES = [
+const FURNI_SOURCES = sortWiredSourceOptions([
     { value: SOURCE_FURNI_TRIGGER, label: 'wiredfurni.params.sources.furni.0'   },
     { value: SOURCE_FURNI_PICKED,  label: 'wiredfurni.params.sources.furni.100' },
     { value: SOURCE_FURNI_SIGNAL,  label: 'wiredfurni.params.sources.furni.201' },
-];
+], 'furni');
 
 const TILE_W     = 22;
 const TILE_H     = 11;

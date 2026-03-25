@@ -1,8 +1,9 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
-import { Button, Text } from '../../../../common';
+import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
-import { WiredSourcesSelector } from '../WiredSourcesSelector';
+import { WiredFurniSelectionSourceRow } from '../WiredFurniSelectionSourceRow';
+import { FURNI_SOURCES, USER_SOURCES } from '../WiredSourcesSelector';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
 const ANTENNA_INTERACTION_TYPES = [ 'antenna' ];
@@ -184,7 +185,6 @@ export const WiredActionSendSignalView: FC<{}> = () =>
     }, []);
 
     const selectionLimit = trigger?.maximumItemSelectionCount ?? 0;
-    const forwardSelectionEnabled = (furniSource === SOURCE_SELECTED);
 
     return (
         <WiredActionBaseView
@@ -192,40 +192,48 @@ export const WiredActionSendSignalView: FC<{}> = () =>
             requiresFurni={ WiredFurniType.STUFF_SELECTION_OPTION_BY_ID }
             cardStyle={ { width: '400px' } }
             save={ save }
-            footer={ (
-                <WiredSourcesSelector
-                    showFurni={ true }
-                    showUsers={ true }
-                    furniSource={ furniSource }
-                    userSource={ userSource }
-                    onChangeFurni={ onChangeFurniSource }
-                    onChangeUsers={ setUserSource } />
-            ) }>
+            selectionPreview={
+                <div className="flex flex-col gap-2">
+                    <WiredFurniSelectionSourceRow
+                        title="Antenne:"
+                        titleIsLiteral={ true }
+                        options={ [ { value: SOURCE_SELECTED, label: 'wiredfurni.params.sources.furni.100' } ] }
+                        value={ SOURCE_SELECTED }
+                        selectionKind="primary"
+                        selectionActive={ selectionMode === 'antenna' }
+                        selectionCount={ antennaIds.length }
+                        selectionLimit={ selectionLimit }
+                        selectionEnabledValues={ [ SOURCE_SELECTED ] }
+                        onChange={ () => {} }
+                        onSelectionActivate={ () => switchSelection('antenna') } />
+                    <WiredFurniSelectionSourceRow
+                        title="Furni da mandare avanti:"
+                        titleIsLiteral={ true }
+                        options={ FURNI_SOURCES }
+                        value={ furniSource }
+                        selectionKind="secondary"
+                        selectionActive={ selectionMode === 'furni' }
+                        selectionCount={ forwardFurniIds.length }
+                        selectionLimit={ selectionLimit }
+                        selectionEnabledValues={ [ SOURCE_SELECTED ] }
+                        onChange={ onChangeFurniSource }
+                        onSelectionActivate={ () => switchSelection('furni') } />
+                    <WiredFurniSelectionSourceRow
+                        title="Utenti da mandare avanti:"
+                        titleIsLiteral={ true }
+                        options={ USER_SOURCES }
+                        value={ userSource }
+                        selectionKind="secondary"
+                        selectionActive={ false }
+                        selectionCount={ 0 }
+                        selectionLimit={ 0 }
+                        selectionEnabledValues={ [] }
+                        showSelectionToggle={ false }
+                        onChange={ setUserSource } />
+                </div>
+            }
+            >
             <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-1">
-                    <Text bold>Antenne selezionate</Text>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant={ (selectionMode === 'antenna') ? 'primary' : 'secondary' }
-                            onClick={ () => switchSelection('antenna') }>
-                            Antenne
-                        </Button>
-                        <Text small>{ selectionLimit ? `${ antennaIds.length }/${ selectionLimit }` : antennaIds.length }</Text>
-                    </div>
-                </div>
-                <div className="flex flex-col gap-1">
-                    <Text bold>Furni selezionati</Text>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant={ (selectionMode === 'furni') ? 'primary' : 'secondary' }
-                            disabled={ !forwardSelectionEnabled }
-                            onClick={ () => switchSelection('furni') }>
-                            Furni
-                        </Button>
-                        <Text small>{ selectionLimit ? `${ forwardFurniIds.length }/${ selectionLimit }` : forwardFurniIds.length }</Text>
-                    </div>
-                </div>
-
                 <Text bold>{ LocalizeText('wiredfurni.params.signal.options') }</Text>
                 <div className="form-check">
                     <input

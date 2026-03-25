@@ -27,9 +27,9 @@ export const Slider: FC<SliderProps> = props =>
         return parseFloat(nextValue.toFixed(precision));
     };
 
-    return <Flex fullWidth gap={ 1 }>
-        { !disabledButton && <Button disabled={ minimum >= currentValue } onClick={ () => onChange(roundToStep(minimum < currentValue ? currentValue - buttonStep : minimum), 0) }><FaAngleLeft /></Button> }
+    return <Flex fullWidth gap={ 1 } classNames={ [ 'nitro-slider-wrapper' ] }>
+        { !disabledButton && <Button classNames={ [ 'nitro-slider-button', 'nitro-slider-button-left' ] } disabled={ minimum >= currentValue } onClick={ () => onChange(roundToStep(minimum < currentValue ? currentValue - buttonStep : minimum), 0) }><FaAngleLeft /></Button> }
         <ReactSlider className={ 'nitro-slider' } max={ max } min={ min } step={ step } value={ value } onChange={ onChange } { ...rest } />
-        { !disabledButton && <Button disabled={ maximum <= currentValue } onClick={ () => onChange(roundToStep(maximum > currentValue ? currentValue + buttonStep : maximum), 0) }><FaAngleRight /></Button> }
+        { !disabledButton && <Button classNames={ [ 'nitro-slider-button', 'nitro-slider-button-right' ] } disabled={ maximum <= currentValue } onClick={ () => onChange(roundToStep(maximum > currentValue ? currentValue + buttonStep : maximum), 0) }><FaAngleRight /></Button> }
     </Flex>;
 }

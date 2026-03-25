@@ -14,14 +14,16 @@ export interface WiredBaseViewProps
     validate?: () => boolean;
     cardStyle?: CSSProperties;
     footer?: ReactNode;
+    footerCollapsible?: boolean;
+    selectionPreview?: ReactNode;
 }
 
 export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
 {
-    const { wiredType = '', requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_NONE, save = null, validate = null, children = null, hasSpecialInput = false, cardStyle = undefined, footer = null } = props;
+    const { wiredType = '', requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_NONE, save = null, validate = null, children = null, hasSpecialInput = false, cardStyle = undefined, footer = null, footerCollapsible = true, selectionPreview = null } = props;
     const [ wiredName, setWiredName ] = useState<string>(null);
-    const [ wiredDescription, setWiredDescription ] = useState<string>(null);
     const [ needsSave, setNeedsSave ] = useState<boolean>(false);
+    const [ showFooter, setShowFooter ] = useState(false);
     const { trigger = null, setTrigger = null, setIntParams = null, setStringParam = null, setFurniIds = null, setAllowsFurni = null, saveWired = null } = useWired();
 
     const clearRoomAreaSelection = () =>
@@ -59,6 +61,8 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
     {
         if(!trigger) return;
 
+        setShowFooter(false);
+
         WiredSelectionVisualizer.clearAllSelectionShaders();
 
         const spriteId = (trigger.spriteId || -1);
@@ -67,12 +71,10 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
         if(!furniData)
         {
             setWiredName(('NAME: ' + spriteId));
-            setWiredDescription(('NAME: ' + spriteId));
         }
         else
         {
             setWiredName(furniData.name);
-            setWiredDescription(furniData.description);
         }
 
         if(hasSpecialInput)
@@ -115,36 +117,62 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
 
     if(resolvedCardStyle.width !== undefined)
     {
-        resolvedCardStyle.minWidth = resolvedCardStyle.width;
+        if(typeof resolvedCardStyle.width === 'number')
+        {
+            resolvedCardStyle.maxWidth = Math.min(resolvedCardStyle.width, 324);
+        }
+        else if(typeof resolvedCardStyle.width === 'string')
+        {
+            const match = resolvedCardStyle.width.trim().match(/^(\d+(?:\.\d+)?)px$/i);
+
+            resolvedCardStyle.maxWidth = match ? `${ Math.min(parseFloat(match[1]), 324) }px` : resolvedCardStyle.width;
+        }
+
         delete resolvedCardStyle.width;
     }
 
+    if(resolvedCardStyle.minWidth === undefined) resolvedCardStyle.minWidth = 216;
+    if(resolvedCardStyle.maxWidth === undefined) resolvedCardStyle.maxWidth = 'min(90vw, 324px)';
+
     return (
         <NitroCardView className="nitro-wired" theme="primary-slim" uniqueKey="nitro-wired" isResizable={ false } style={ resolvedCardStyle }>
-            <NitroCardHeaderView headerText={ LocalizeText('wiredfurni.title') } onCloseClick={ onClose } />
-            <NitroCardContentView>
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1">
+            <NitroCardHeaderView classNames={ [ 'nitro-wired__header' ] } headerText={ LocalizeText('wiredfurni.title') } onCloseClick={ onClose } />
+            <NitroCardContentView classNames={ [ 'nitro-wired__content' ] } gap={ 2 }>
+                <div className="nitro-wired__section nitro-wired__summary">
+                    <div className="flex items-center justify-center gap-1">
                         <i className={ `icon icon-wired-${ wiredType }` } />
-                        <Text bold>{ wiredName }</Text>
+                        <Text bold className="nitro-wired__summary-title">{ wiredName }</Text>
                     </div>
-                    <Text small>{ wiredDescription }</Text>
                 </div>
-                { !!children && <hr className="m-0 bg-dark" /> }
-                { children }
+                { !!children && <div className="nitro-wired__divider" /> }
+                { !!children && <div className="nitro-wired__section nitro-wired__section--body">{ children }</div> }
                 { (requiresFurni > WiredFurniType.STUFF_SELECTION_OPTION_NONE) &&
                     <>
-                        <hr className="m-0 bg-dark" />
-                        <WiredFurniSelectorView />
+                        <div className="nitro-wired__divider" />
+                        <div className="nitro-wired__section nitro-wired__section--selector">
+                            { selectionPreview || <WiredFurniSelectorView /> }
+                        </div>
                     </> }
                 { footer &&
                     <>
-                        <hr className="m-0 bg-dark" />
-                        { footer }
+                        <div className="nitro-wired__divider" />
+                        <div className="nitro-wired__section nitro-wired__section--footer">
+                            { footerCollapsible
+                                ? (
+                                    <>
+                                        <button className="nitro-wired__advanced-toggle" type="button" onClick={ () => setShowFooter(value => !value) }>
+                                            { LocalizeText(showFooter ? 'wiredfurni.params.sources.collapse' : 'wiredfurni.params.sources.expand') }
+                                        </button>
+                                        { showFooter && <div className="nitro-wired__advanced-body">{ footer }</div> }
+                                    </>
+                                )
+                                : footer }
+                        </div>
                     </> }
-                <div className="flex items-center gap-1">
-                    <Button fullWidth variant="success" onClick={ onSave }>{ LocalizeText('wiredfurni.ready') }</Button>
-                    <Button fullWidth variant="secondary" onClick={ onClose }>{ LocalizeText('cancel') }</Button>
+                <div className="nitro-wired__divider" />
+                <div className="flex items-center gap-1 nitro-wired__actions">
+                    <Button fullWidth variant="success" classNames={ [ 'nitro-wired__button', 'nitro-wired__button--primary' ] } onClick={ onSave }>{ LocalizeText('wiredfurni.ready') }</Button>
+                    <Button fullWidth variant="secondary" classNames={ [ 'nitro-wired__button', 'nitro-wired__button--secondary' ] } onClick={ onClose }>{ LocalizeText('cancel') }</Button>
                 </div>
             </NitroCardContentView>
         </NitroCardView>

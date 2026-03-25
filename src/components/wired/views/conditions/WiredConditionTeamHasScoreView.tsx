@@ -87,6 +87,7 @@ export const WiredConditionTeamHasScoreView: FC<{}> = () =>
             hasSpecialInput={ true }
             requiresFurni={ WiredFurniType.STUFF_SELECTION_OPTION_NONE }
             save={ save }
+            footerCollapsible={ false }
             footer={
                 <div className="flex flex-col gap-2">
                     <button className="btn btn-link p-0 align-self-start" type="button" onClick={ () => setShowAdvanced(value => !value) }>

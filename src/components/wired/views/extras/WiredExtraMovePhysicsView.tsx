@@ -89,6 +89,7 @@ export const WiredExtraMovePhysicsView: FC<{}> = () =>
                         userSource={ moveThroughUsersSource }
                         userSources={ USER_SOURCES }
                         usersTitle="wiredfurni.params.sources.users.title.physics.0"
+                        allowClickedUserSource={ false }
                         onChangeUsers={ value => setMoveThroughUsersSource(normalizeSource(value, USER_SOURCES)) } /> }
             </div>
         );

@@ -62,4 +62,6 @@ export class WiredActionLayoutCode
     public static MOVE_PHYSICS_EXTRA: number = 61;
     public static UNSEEN_EXTRA: number = 62;
     public static RANDOM_EXTRA: number = 63;
+    public static EXEC_IN_ORDER_EXTRA: number = 64;
+    public static EXECUTION_LIMIT_EXTRA: number = 65;
 }

@@ -54,6 +54,8 @@ import { WiredExtraFilterFurniView } from '../extras/WiredExtraFilterFurniView';
 import { WiredExtraFilterUserView } from '../extras/WiredExtraFilterUserView';
 import { WiredExtraAnimationTimeView } from '../extras/WiredExtraAnimationTimeView';
 import { WiredExtraMoveCarryUsersView } from '../extras/WiredExtraMoveCarryUsersView';
+import { WiredExtraExecuteInOrderView } from '../extras/WiredExtraExecuteInOrderView';
+import { WiredExtraExecutionLimitView } from '../extras/WiredExtraExecutionLimitView';
 import { WiredExtraMoveNoAnimationView } from '../extras/WiredExtraMoveNoAnimationView';
 import { WiredExtraMovePhysicsView } from '../extras/WiredExtraMovePhysicsView';
 import { WiredExtraRandomView } from '../extras/WiredExtraRandomView';
@@ -183,6 +185,10 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredExtraUnseenView />;
         case WiredActionLayoutCode.RANDOM_EXTRA:
             return <WiredExtraRandomView />;
+        case WiredActionLayoutCode.EXEC_IN_ORDER_EXTRA:
+            return <WiredExtraExecuteInOrderView />;
+        case WiredActionLayoutCode.EXECUTION_LIMIT_EXTRA:
+            return <WiredExtraExecutionLimitView />;
         case WiredActionLayoutCode.SEND_SIGNAL:
             return <WiredActionSendSignalView />;
     }

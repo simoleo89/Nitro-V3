@@ -20,5 +20,8 @@
     "widget.room.chat.clear_history": "leeg geschiedenis",
     "widget.room.youtube.shared": "YouTube word gedeeld",
     "widget.room.youtube.open_video": "Open de video",
-    "wiredfurni.params.area_selection.selected": "Geselecteerd gebied: Lengte=%x%, Breedte=%y%, breedte=%w%, hoogte=%h%"
+    "wiredfurni.params.area_selection.selected": "Geselecteerd gebied: Lengte=%x%, Breedte=%y%, breedte=%w%, hoogte=%h%",
+    "wiredfurni.params.sources.users.11": "L'utente cliccato",
+    "wiredfurni.params.setexecutions": "Quantità di esecuzioni: %amount%",
+    "wiredfurni.params.settimewindow": "Tempo massimo consentito: %timewindow% secondi"
 }

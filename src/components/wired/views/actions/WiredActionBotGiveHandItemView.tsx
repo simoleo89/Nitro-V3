@@ -4,7 +4,7 @@ import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
 import { WiredActionBaseView } from './WiredActionBaseView';
-import { WiredSourceOption, WiredSourcesSelector } from '../WiredSourcesSelector';
+import { CLICKED_USER_SOURCE_VALUE, WiredSourceOption, WiredSourcesSelector } from '../WiredSourcesSelector';
 import { WiredHandItemField } from '../WiredHandItemField';
 
 const USER_SOURCE_OPTIONS: WiredSourceOption[] = [
@@ -20,7 +20,7 @@ const BOT_SOURCE_OPTIONS: WiredSourceOption[] = [
     { value: 201, label: 'wiredfurni.params.sources.users.201' }
 ];
 
-const normalizeUserSource = (value: number) => (USER_SOURCE_OPTIONS.some(option => (option.value === value)) ? value : 0);
+const normalizeUserSource = (value: number) => ((value === CLICKED_USER_SOURCE_VALUE) || USER_SOURCE_OPTIONS.some(option => (option.value === value)) ? value : 0);
 const normalizeBotSource = (value: number, hasBotName = false) => (BOT_SOURCE_OPTIONS.some(option => (option.value === value)) ? value : (hasBotName ? 100 : 0));
 
 export const WiredActionBotGiveHandItemView: FC<{}> = props =>
@@ -56,7 +56,7 @@ export const WiredActionBotGiveHandItemView: FC<{}> = props =>
                 <div className="flex flex-col gap-2">
                     <WiredSourcesSelector showUsers={ true } userSource={ userSource } userSources={ USER_SOURCE_OPTIONS } onChangeUsers={ setUserSource } />
                     <hr className="m-0 bg-dark" />
-                    <WiredSourcesSelector showUsers={ true } userSource={ botSource } userSources={ BOT_SOURCE_OPTIONS } usersTitle="wiredfurni.params.sources.users.title.bots" onChangeUsers={ value => setBotSource(normalizeBotSource(value, (botName.length > 0))) } />
+                    <WiredSourcesSelector showUsers={ true } userSource={ botSource } userSources={ BOT_SOURCE_OPTIONS } usersTitle="wiredfurni.params.sources.users.title.bots" allowClickedUserSource={ false } onChangeUsers={ value => setBotSource(normalizeBotSource(value, (botName.length > 0))) } />
                 </div>
             }>
             <div className="form-check">

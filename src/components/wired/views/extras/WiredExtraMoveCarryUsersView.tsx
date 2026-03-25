@@ -45,7 +45,7 @@ export const WiredExtraMoveCarryUsersView: FC<{}> = () =>
             requiresFurni={ WiredFurniType.STUFF_SELECTION_OPTION_NONE }
             save={ save }
             cardStyle={ { width: 420 } }
-            footer={ <WiredSourcesSelector showUsers={ true } userSource={ userSource } userSources={ USER_SOURCES } usersTitle="wiredfurni.params.sources.users.title.carry" onChangeUsers={ value => setUserSource(normalizeUserSource(value)) } /> }>
+            footer={ <WiredSourcesSelector showUsers={ true } userSource={ userSource } userSources={ USER_SOURCES } usersTitle="wiredfurni.params.sources.users.title.carry" allowClickedUserSource={ false } onChangeUsers={ value => setUserSource(normalizeUserSource(value)) } /> }>
             <div className="flex flex-col gap-2">
                 <Text bold>{ LocalizeText('wiredfurni.params.carry_mode') }</Text>
                 <label className="flex items-center gap-1 cursor-pointer">

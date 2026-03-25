@@ -3,6 +3,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { LocalizeText, WiredFurniType } from '../../../../api';
 import { Button, Slider, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
+import { sortWiredSourceOptions, useAvailableUserSources } from '../WiredSourcesSelector';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 
 const SOURCE_GROUP_USERS = 0;
@@ -18,11 +19,11 @@ const USER_SOURCES = [
     { value: 201, label: 'wiredfurni.params.sources.users.201' }
 ];
 
-const FURNI_SOURCES = [
+const FURNI_SOURCES = sortWiredSourceOptions([
     { value: 0, label: 'wiredfurni.params.sources.furni.0' },
     { value: 200, label: 'wiredfurni.params.sources.furni.200' },
     { value: 201, label: 'wiredfurni.params.sources.furni.201' }
-];
+], 'furni');
 
 const clampQuantity = (value: number) =>
 {
@@ -39,6 +40,7 @@ const normalizeSource = (value: number, allowed: number[]) =>
 export const WiredConditionSelectionQuantityView: FC<{}> = () =>
 {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
+    const availableUserSources = sortWiredSourceOptions(useAvailableUserSources(trigger, USER_SOURCES), 'users');
     const [ comparison, setComparison ] = useState(1);
     const [ quantity, setQuantity ] = useState(0);
     const [ quantityInput, setQuantityInput ] = useState('0');
@@ -59,11 +61,11 @@ export const WiredConditionSelectionQuantityView: FC<{}> = () =>
         setQuantity(nextQuantity);
         setQuantityInput(nextQuantity.toString());
         setSourceGroup(nextSourceGroup);
-        setUserSource(nextSourceGroup === SOURCE_GROUP_USERS ? normalizeSource(nextSourceType, USER_SOURCES.map(source => source.value)) : 0);
+        setUserSource(nextSourceGroup === SOURCE_GROUP_USERS ? normalizeSource(nextSourceType, availableUserSources.map(source => source.value)) : 0);
         setFurniSource(nextSourceGroup === SOURCE_GROUP_FURNI ? normalizeSource(nextSourceType, FURNI_SOURCES.map(source => source.value)) : 0);
-    }, [ trigger ]);
+    }, [ availableUserSources, trigger ]);
 
-    const activeSources = useMemo(() => (sourceGroup === SOURCE_GROUP_FURNI) ? FURNI_SOURCES : USER_SOURCES, [ sourceGroup ]);
+    const activeSources = useMemo(() => (sourceGroup === SOURCE_GROUP_FURNI) ? FURNI_SOURCES : availableUserSources, [ availableUserSources, sourceGroup ]);
     const activeSource = (sourceGroup === SOURCE_GROUP_FURNI) ? furniSource : userSource;
     const activeSourceIndex = Math.max(0, activeSources.findIndex(source => source.value === activeSource));
 

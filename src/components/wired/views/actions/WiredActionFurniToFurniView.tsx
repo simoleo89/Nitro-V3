@@ -1,8 +1,8 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
-import { Button, Text } from '../../../../common';
+import { WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
 import { useWired } from '../../../../hooks';
-import { WiredSourcesSelector, FURNI_SOURCES, WiredSourceOption } from '../WiredSourcesSelector';
+import { WiredFurniSelectionSourceRow } from '../WiredFurniSelectionSourceRow';
+import { FURNI_SOURCES, sortWiredSourceOptions, WiredSourceOption } from '../WiredSourcesSelector';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
 const SOURCE_TRIGGER = 0;
@@ -10,12 +10,12 @@ const SOURCE_SELECTED = 100;
 const SOURCE_SECONDARY_SELECTED = 101;
 const FURNI_DELIMITER = ';';
 
-const TARGET_FURNI_SOURCES: WiredSourceOption[] = [
+const TARGET_FURNI_SOURCES: WiredSourceOption[] = sortWiredSourceOptions([
     { value: 0, label: 'wiredfurni.params.sources.furni.0' },
     { value: SOURCE_SECONDARY_SELECTED, label: 'wiredfurni.params.sources.furni.101' },
     { value: 200, label: 'wiredfurni.params.sources.furni.200' },
     { value: 201, label: 'wiredfurni.params.sources.furni.201' }
-];
+], 'furni');
 
 type SelectionMode = 'move' | 'target';
 
@@ -185,49 +185,32 @@ export const WiredActionFurniToFurniView: FC<{}> = () =>
             hasSpecialInput={ true }
             requiresFurni={ WiredFurniType.STUFF_SELECTION_OPTION_BY_ID }
             save={ save }
-            footer={
+            selectionPreview={
                 <div className="flex flex-col gap-2">
-                    <WiredSourcesSelector
-                        showFurni={ true }
-                        furniTitle="wiredfurni.params.sources.furni.title.mv.0"
-                        furniSources={ FURNI_SOURCES }
-                        furniSource={ moveSource }
-                        onChangeFurni={ setMoveSource } />
-                    <hr className="m-0 bg-dark" />
-                    <WiredSourcesSelector
-                        showFurni={ true }
-                        furniTitle="wiredfurni.params.sources.furni.title.mv.1"
-                        furniSources={ TARGET_FURNI_SOURCES }
-                        furniSource={ targetSource }
-                        onChangeFurni={ value => setTargetSource((value === SOURCE_SELECTED) ? SOURCE_SECONDARY_SELECTED : value) } />
+                    <WiredFurniSelectionSourceRow
+                        title="wiredfurni.params.sources.furni.title.mv.0"
+                        options={ FURNI_SOURCES }
+                        value={ moveSource }
+                        selectionKind="primary"
+                        selectionActive={ selectionMode === 'move' }
+                        selectionCount={ moveFurniIds.length }
+                        selectionLimit={ selectionLimit }
+                        selectionEnabledValues={ [ SOURCE_SELECTED ] }
+                        onChange={ setMoveSource }
+                        onSelectionActivate={ () => switchSelection('move') } />
+                    <WiredFurniSelectionSourceRow
+                        title="wiredfurni.params.sources.furni.title.mv.1"
+                        options={ TARGET_FURNI_SOURCES }
+                        value={ targetSource }
+                        selectionKind="secondary"
+                        selectionActive={ selectionMode === 'target' }
+                        selectionCount={ targetFurniIds.length }
+                        selectionLimit={ selectionLimit }
+                        selectionEnabledValues={ [ SOURCE_SECONDARY_SELECTED ] }
+                        onChange={ value => setTargetSource((value === SOURCE_SELECTED) ? SOURCE_SECONDARY_SELECTED : value) }
+                        onSelectionActivate={ () => switchSelection('target') } />
                 </div>
-            }>
-            <div className="flex flex-col gap-3">
-                <div className="flex flex-col gap-1">
-                    <Text bold>{ LocalizeText('wiredfurni.params.sources.furni.title.mv.0') }</Text>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant={ (selectionMode === 'move') ? 'primary' : 'secondary' }
-                            disabled={ moveSource !== SOURCE_SELECTED }
-                            onClick={ () => switchSelection('move') }>
-                            { LocalizeText('wiredfurni.params.sources.furni.100') }
-                        </Button>
-                        <Text small>{ selectionLimit ? `${ moveFurniIds.length }/${ selectionLimit }` : moveFurniIds.length }</Text>
-                    </div>
-                </div>
-                <div className="flex flex-col gap-1">
-                    <Text bold>{ LocalizeText('wiredfurni.params.sources.furni.title.mv.1') }</Text>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant={ (selectionMode === 'target') ? 'primary' : 'secondary' }
-                            disabled={ targetSource !== SOURCE_SECONDARY_SELECTED }
-                            onClick={ () => switchSelection('target') }>
-                            { LocalizeText('wiredfurni.params.sources.furni.101') }
-                        </Button>
-                        <Text small>{ selectionLimit ? `${ targetFurniIds.length }/${ selectionLimit }` : targetFurniIds.length }</Text>
-                    </div>
-                </div>
-            </div>
-        </WiredActionBaseView>
+            }
+            />
     );
 };

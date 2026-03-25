@@ -12,11 +12,13 @@ export interface WiredExtraBaseViewProps
     validate?: () => boolean;
     cardStyle?: CSSProperties;
     footer?: ReactNode;
+    footerCollapsible?: boolean;
+    selectionPreview?: ReactNode;
 }
 
 export const WiredExtraBaseView: FC<PropsWithChildren<WiredExtraBaseViewProps>> = props =>
 {
-    const { requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_NONE, save = null, validate = null, hasSpecialInput = false, children = null, cardStyle = undefined, footer = null } = props;
+    const { requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_NONE, save = null, validate = null, hasSpecialInput = false, children = null, cardStyle = undefined, footer = null, footerCollapsible = true, selectionPreview = null } = props;
     const { trigger = null, setActionDelay = null } = useWired();
 
     useEffect(() =>
@@ -25,7 +27,7 @@ export const WiredExtraBaseView: FC<PropsWithChildren<WiredExtraBaseViewProps>> 
     }, [ trigger, setActionDelay ]);
 
     return (
-        <WiredBaseView hasSpecialInput={ hasSpecialInput } requiresFurni={ requiresFurni } save={ save } validate={ validate } wiredType="extra" cardStyle={ cardStyle } footer={ footer }>
+        <WiredBaseView hasSpecialInput={ hasSpecialInput } requiresFurni={ requiresFurni } save={ save } validate={ validate } wiredType="extra" cardStyle={ cardStyle } footer={ footer } footerCollapsible={ footerCollapsible } selectionPreview={ selectionPreview }>
             { children }
         </WiredBaseView>
     );

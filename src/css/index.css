@@ -799,6 +799,272 @@ body {
     background-color: #185d79; /* Match bg-card-header */
 }
 
+.nitro-wired {
+    background: #d5d5d5;
+    border: 1px solid #8f8f8f !important;
+    border-radius: 6px !important;
+    box-shadow: inset 0 1px 0 #ffffff, 0 2px 0 rgba(0, 0, 0, 0.18) !important;
+    color: #000;
+    overflow: hidden;
+
+    .nitro-wired__header {
+        min-height: 22px !important;
+        max-height: 22px !important;
+        background: linear-gradient(180deg, #f1f1f1 0%, #dfdfdf 45%, #c8c8c8 46%, #d7d7d7 100%) !important;
+        border-bottom: 1px solid #9b9b9b;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+        padding-top: 0 !important;
+
+        span {
+            color: #000 !important;
+            font-size: 12px !important;
+            font-weight: 700;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) !important;
+            letter-spacing: 0.01em;
+        }
+    }
+
+    .ubuntu-close-button {
+        transform: scale(0.82);
+        transform-origin: center;
+    }
+
+    .nitro-wired__content {
+        background: #d9d9d9 !important;
+        padding: 4px !important;
+        gap: 4px !important;
+    }
+
+    .nitro-wired__section {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .nitro-wired__section .font-bold {
+        width: 100%;
+        font-weight: 400 !important;
+        text-align: center;
+    }
+
+    .nitro-wired__summary-description,
+    .nitro-wired__furni-selector-description,
+    .nitro-wired__picker-label {
+        line-height: 1.15;
+    }
+
+    .nitro-wired__divider,
+    hr {
+        height: 1px;
+        border: 0;
+        background: #a6a6a6;
+        box-shadow: 0 1px 0 #f8f8f8;
+        margin: 0 !important;
+    }
+
+    .form-check-input,
+    input[type='checkbox'],
+    input[type='radio'] {
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid #8e8e8e;
+        border-radius: 5px;
+        background: linear-gradient(180deg, #fcfcfc 0%, #ececec 100%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        cursor: pointer;
+        position: relative;
+    }
+
+    input[type='radio'] {
+        border-radius: 50%;
+    }
+
+    .form-check-input:focus,
+    input[type='checkbox']:focus,
+    input[type='radio']:focus {
+        outline: 1px solid #4b7ea1;
+        outline-offset: 1px;
+    }
+
+    .form-check-input[type='radio']:checked,
+    input[type='radio']:checked {
+        background:
+            radial-gradient(circle at center, #4a4a4a 0 34%, transparent 38%),
+            linear-gradient(180deg, #fcfcfc 0%, #ececec 100%);
+        border-color: #767676;
+    }
+
+    .form-check-input[type='checkbox']:checked,
+    input[type='checkbox']:checked {
+        background:
+            linear-gradient(135deg, transparent 0 46%, #ffffff 46% 54%, transparent 54% 100%),
+            linear-gradient(45deg, transparent 0 30%, #4a4a4a 30% 42%, transparent 42% 100%),
+            linear-gradient(180deg, #d9d9d9 0%, #c8c8c8 100%);
+        border-color: #767676;
+    }
+
+    .form-control,
+    input[type='text'],
+    input[type='number'],
+    textarea {
+        min-height: 24px;
+        border: 1px solid #8d8d8d !important;
+        border-radius: 4px !important;
+        background: #f6f6f6 !important;
+        color: #000 !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        font-size: 11px;
+        padding: 3px 6px;
+    }
+
+    .nitro-wired__button,
+    .nitro-wired__picker-button,
+    .nitro-slider-button {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 20px !important;
+        border: 1px solid #8e8e8e !important;
+        border-radius: 5px !important;
+        background: linear-gradient(180deg, #f6f6f6 0%, #e4e4e4 49%, #d0d0d0 50%, #ececec 100%) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+        color: #000 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .nitro-wired__button:hover,
+    .nitro-wired__picker-button:hover,
+    .nitro-slider-button:hover {
+        filter: brightness(0.98);
+    }
+
+    .nitro-wired__button--primary,
+    .nitro-wired__button--secondary {
+        font-weight: 700;
+    }
+
+    .nitro-slider-wrapper {
+        align-items: center;
+        gap: 2px;
+    }
+
+    .nitro-wired__advanced-toggle {
+        width: 100%;
+        padding: 0 !important;
+        border: 0;
+        background: transparent;
+        color: #000;
+        font: inherit;
+        text-align: center;
+        text-decoration: underline;
+    }
+
+    .nitro-wired__advanced-body,
+    .nitro-wired__source-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nitro-wired__source-row {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .nitro-wired__selection-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border: 1px solid #8e8e8e;
+        border-radius: 4px;
+        background: linear-gradient(180deg, #f6f6f6 0%, #e4e4e4 49%, #d0d0d0 50%, #ececec 100%);
+        color: #7b7b7b;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
+
+    .nitro-wired__selection-toggle.is-active.nitro-wired__selection-toggle--primary {
+        border-color: #66793c;
+        background: linear-gradient(180deg, #a5b56e 0%, #8ea25a 100%);
+        color: #fff;
+    }
+
+    .nitro-wired__selection-toggle.is-active.nitro-wired__selection-toggle--secondary {
+        border-color: #6172b7;
+        background: linear-gradient(180deg, #8d9bdd 0%, #7383cb 100%);
+        color: #fff;
+    }
+
+    .nitro-wired__selection-toggle:disabled {
+        opacity: 0.55;
+    }
+
+    .nitro-wired__selection-toggle svg {
+        font-size: 10px;
+        margin: 0;
+    }
+
+    .nitro-wired__actions {
+        gap: 4px !important;
+    }
+
+    .nitro-wired__picker-button,
+    .nitro-slider-button {
+        width: 22px;
+        min-width: 22px !important;
+        flex: 0 0 22px;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .nitro-wired__picker-button svg,
+    .nitro-slider-button svg {
+        margin: 0;
+    }
+
+    .nitro-wired__picker-label {
+        min-width: 0;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    .nitro-slider {
+        height: 16px;
+    }
+
+    .nitro-slider .track {
+        height: 4px;
+        border-radius: 999px;
+        border: 1px solid #9a9a9a;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+
+        &.track-0 {
+            background: linear-gradient(180deg, #7f9fb1 0%, #64889e 100%);
+        }
+
+        &.track-1 {
+            background: linear-gradient(180deg, #e9e9e9 0%, #d5d5d5 100%);
+        }
+    }
+
+    .nitro-slider .thumb {
+        width: 12px;
+        height: 12px;
+        margin-top: 3px;
+        border-radius: 50%;
+        border: 1px solid #7f7f7f;
+        background: linear-gradient(180deg, #fefefe 0%, #dadada 100%);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+}
+
 /* ── Avatar Editor ─────────────────────────────────────────────────────── */
 
 .color-picker-frame {

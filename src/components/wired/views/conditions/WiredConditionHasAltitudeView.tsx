@@ -127,6 +127,7 @@ export const WiredConditionHasAltitudeView: FC<{}> = () =>
             hasSpecialInput={ true }
             requiresFurni={ WiredFurniType.STUFF_SELECTION_OPTION_BY_ID_BY_TYPE_OR_FROM_CONTEXT }
             save={ save }
+            footerCollapsible={ false }
             footer={
                 <div className="flex flex-col gap-2">
                     <button className="btn btn-link p-0 align-self-start" type="button" onClick={ () => setShowAdvanced(value => !value) }>

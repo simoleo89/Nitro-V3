@@ -14,11 +14,13 @@ export interface WiredActionBaseViewProps
     cardStyle?: CSSProperties;
     hideDelay?: boolean;
     footer?: ReactNode;
+    footerCollapsible?: boolean;
+    selectionPreview?: ReactNode;
 }
 
 export const WiredActionBaseView: FC<PropsWithChildren<WiredActionBaseViewProps>> = props =>
 {
-    const { requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_NONE, save = null, validate = null, hasSpecialInput = false, children = null, cardStyle = undefined, hideDelay = false, footer = null } = props;
+    const { requiresFurni = WiredFurniType.STUFF_SELECTION_OPTION_NONE, save = null, validate = null, hasSpecialInput = false, children = null, cardStyle = undefined, hideDelay = false, footer = null, footerCollapsible = true, selectionPreview = null } = props;
     const { trigger = null, actionDelay = 0, setActionDelay = null } = useWired();
 
     useEffect(() =>
@@ -27,10 +29,10 @@ export const WiredActionBaseView: FC<PropsWithChildren<WiredActionBaseViewProps>
     }, [ trigger, setActionDelay ]);
 
     return (
-        <WiredBaseView hasSpecialInput={ hasSpecialInput } requiresFurni={ requiresFurni } save={ save } validate={ validate } wiredType="action" cardStyle={ cardStyle } footer={ footer }>
+        <WiredBaseView hasSpecialInput={ hasSpecialInput } requiresFurni={ requiresFurni } save={ save } validate={ validate } wiredType="action" cardStyle={ cardStyle } footer={ footer } footerCollapsible={ footerCollapsible } selectionPreview={ selectionPreview }>
             { children }
-            { !hideDelay && !!children && <hr className="m-0 bg-dark" /> }
-            { !hideDelay && <div className="flex flex-col">
+            { !hideDelay && !!children && <div className="nitro-wired__divider" /> }
+            { !hideDelay && <div className="flex flex-col nitro-wired__section nitro-wired__section--delay">
                 <Text bold>{ LocalizeText('wiredfurni.params.delay', [ 'seconds' ], [ GetWiredTimeLocale(actionDelay) ]) }</Text>
                 <Slider
                     max={ 20 }

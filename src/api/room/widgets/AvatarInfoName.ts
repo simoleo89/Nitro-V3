@@ -1,5 +1,10 @@
 export class AvatarInfoName
 {
+    public prefixText: string = '';
+    public prefixColor: string = '';
+    public prefixIcon: string = '';
+    public prefixEffect: string = '';
+
     constructor(
         public readonly roomIndex: number,
         public readonly category: number,

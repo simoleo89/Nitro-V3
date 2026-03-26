@@ -1,5 +1,5 @@
 import { ActivePrefixUpdatedEvent, PrefixReceivedEvent, RequestPrefixesComposer, SetActivePrefixComposer, DeletePrefixComposer, UserPrefixesEvent } from '@nitrots/nitro-renderer';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useBetween } from 'use-between';
 import { IPrefixItem, SendMessageComposer, UnseenItemCategory } from '../../api';
 import { useMessageEvent } from '../events';
@@ -36,16 +36,45 @@ const useInventoryPrefixesState = () =>
     useMessageEvent<PrefixReceivedEvent>(PrefixReceivedEvent, event =>
     {
         const parser = event.getParser();
-        const newPrefix: IPrefixItem = {
-            id: parser.id,
-            text: parser.text,
-            color: parser.color,
-            icon: parser.icon || '',
-            effect: parser.effect || '',
-            active: false
-        };
 
-        setPrefixes(prevValue => [ newPrefix, ...prevValue ]);
+        // Check if this is an edit (existing prefix updated) or a new purchase
+        setPrefixes(prevValue =>
+        {
+            const existingIdx = prevValue.findIndex(p => p.id === parser.id);
+
+            if(existingIdx >= 0)
+            {
+                // Edit: update existing prefix in place
+                const updated = [ ...prevValue ];
+                updated[existingIdx] = {
+                    ...updated[existingIdx],
+                    text: parser.text,
+                    color: parser.color,
+                    icon: parser.icon || '',
+                    effect: parser.effect || '',
+                };
+
+                // If the edited prefix is the active one, update activePrefix too
+                if(updated[existingIdx].active)
+                {
+                    setActivePrefix({ ...updated[existingIdx] });
+                }
+
+                return updated;
+            }
+
+            // New prefix purchased
+            const newPrefix: IPrefixItem = {
+                id: parser.id,
+                text: parser.text,
+                color: parser.color,
+                icon: parser.icon || '',
+                effect: parser.effect || '',
+                active: false
+            };
+
+            return [ newPrefix, ...prevValue ];
+        });
     });
 
     useMessageEvent<ActivePrefixUpdatedEvent>(ActivePrefixUpdatedEvent, event =>
@@ -54,41 +83,60 @@ const useInventoryPrefixesState = () =>
 
         setPrefixes(prevValue =>
         {
-            return prevValue.map(p => ({
+            const updated = prevValue.map(p => ({
                 ...p,
                 active: p.id === parser.prefixId
             }));
-        });
 
-        if(parser.prefixId === 0)
-        {
-            setActivePrefix(null);
-        }
-        else
-        {
-            setActivePrefix(prev =>
+            // Derive activePrefix from the updated list to avoid stale closure
+            if(parser.prefixId === 0)
             {
-                const found = prefixes.find(p => p.id === parser.prefixId);
-                if(found) return { ...found, active: true };
-                return { id: parser.prefixId, text: parser.text, color: parser.color, icon: parser.icon || '', effect: parser.effect || '', active: true };
-            });
-        }
+                setActivePrefix(null);
+            }
+            else
+            {
+                const found = updated.find(p => p.id === parser.prefixId);
+                if(found) setActivePrefix({ ...found });
+                else setActivePrefix({ id: parser.prefixId, text: parser.text, color: parser.color, icon: parser.icon || '', effect: parser.effect || '', active: true });
+            }
+
+            return updated;
+        });
     });
 
-    const activatePrefix = (prefixId: number) =>
+    const activatePrefix = useCallback((prefixId: number) =>
     {
         SendMessageComposer(new SetActivePrefixComposer(prefixId));
-    };
+    }, []);
 
-    const deactivatePrefix = () =>
+    const deactivatePrefix = useCallback(() =>
     {
         SendMessageComposer(new SetActivePrefixComposer(0));
-    };
+    }, []);
 
-    const deletePrefix = (prefixId: number) =>
+    const deletePrefix = useCallback((prefixId: number) =>
     {
         SendMessageComposer(new DeletePrefixComposer(prefixId));
-    };
+
+        // Optimistic removal from local state
+        setPrefixes(prevValue =>
+        {
+            const filtered = prevValue.filter(p => p.id !== prefixId);
+            return filtered;
+        });
+
+        setSelectedPrefix(prevValue =>
+        {
+            if(prevValue && prevValue.id === prefixId) return null;
+            return prevValue;
+        });
+
+        setActivePrefix(prevValue =>
+        {
+            if(prevValue && prevValue.id === prefixId) return null;
+            return prevValue;
+        });
+    }, []);
 
     useEffect(() =>
     {

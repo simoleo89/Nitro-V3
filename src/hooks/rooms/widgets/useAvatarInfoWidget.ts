@@ -1,7 +1,7 @@
-import { GetRoomEngine, GetSessionDataManager, RoomEngineObjectEvent, RoomEngineUseProductEvent, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomSessionPetInfoUpdateEvent, RoomSessionPetStatusUpdateEvent, RoomSessionUserDataUpdateEvent } from '@nitrots/nitro-renderer';
+import { GetRoomEngine, GetSessionDataManager, RoomEngineObjectEvent, RoomEngineUseProductEvent, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomSessionPetInfoUpdateEvent, RoomSessionPetStatusUpdateEvent, RoomSessionUserDataUpdateEvent, RoomUserPrefixEvent } from '@nitrots/nitro-renderer';
 import { useEffect, useRef, useState } from 'react';
 import { AvatarInfoFurni, AvatarInfoName, AvatarInfoPet, AvatarInfoRentableBot, AvatarInfoUser, AvatarInfoUtilities, CanManipulateFurniture, FurniCategory, IAvatarInfo, IsOwnerOfFurniture, RoomWidgetUpdateRoomObjectEvent, UseProductItem } from '../../../api';
-import { useNitroEvent, useUiEvent } from '../../events';
+import { useMessageEvent, useNitroEvent, useUiEvent } from '../../events';
 import { useFriends } from '../../friends';
 import { useWired } from '../../wired';
 import { useObjectDeselectedEvent, useObjectRollOutEvent, useObjectRollOverEvent, useObjectSelectedEvent } from '../engine';
@@ -18,6 +18,7 @@ const useAvatarInfoWidgetState = () =>
     const [ pendingPetId, setPendingPetId ] = useState<number>(-1);
     const [ isDecorating, setIsDecorating ] = useState(false);
     const pendingAvatarInfoTimeout = useRef<ReturnType<typeof setTimeout>>(null);
+    const roomPrefixMap = useRef<Map<number, { text: string; color: string; icon: string; effect: string }>>(new Map());
     const { friends = [] } = useFriends();
     const { selectObjectForWired = null } = useWired();
     const { roomSession = null } = useRoom();
@@ -157,7 +158,19 @@ const useAvatarInfoWidgetState = () =>
 
             if(friends.find(friend => (friend.id === user.webID)))
             {
-                addedNameBubbles.push(new AvatarInfoName(user.roomIndex, RoomObjectCategory.UNIT, user.webID, user.name, user.type, true));
+                const bubble = new AvatarInfoName(user.roomIndex, RoomObjectCategory.UNIT, user.webID, user.name, user.type, true);
+
+                // Apply cached prefix if available
+                const cachedPrefix = roomPrefixMap.current.get(user.webID);
+                if(cachedPrefix)
+                {
+                    bubble.prefixText = cachedPrefix.text;
+                    bubble.prefixColor = cachedPrefix.color;
+                    bubble.prefixIcon = cachedPrefix.icon;
+                    bubble.prefixEffect = cachedPrefix.effect;
+                }
+
+                addedNameBubbles.push(bubble);
             }
         });
 
@@ -177,6 +190,44 @@ const useAvatarInfoWidgetState = () =>
             });
 
             return newValue;
+        });
+    });
+
+    // Room user prefix broadcast — update name bubbles with prefix data
+    useMessageEvent<RoomUserPrefixEvent>(RoomUserPrefixEvent, event =>
+    {
+        const parser = event.getParser();
+        const prefixData = {
+            text: parser.text || '',
+            color: parser.color || '',
+            icon: parser.icon || '',
+            effect: parser.effect || '',
+        };
+
+        // Cache for future name bubbles
+        if(parser.prefixId === 0)
+        {
+            roomPrefixMap.current.delete(parser.userId);
+        }
+        else
+        {
+            roomPrefixMap.current.set(parser.userId, prefixData);
+        }
+
+        // Update existing name bubbles
+        setNameBubbles(prevValue =>
+        {
+            return prevValue.map(bubble =>
+            {
+                if(bubble.id !== parser.userId) return bubble;
+
+                bubble.prefixText = parser.prefixId === 0 ? '' : prefixData.text;
+                bubble.prefixColor = parser.prefixId === 0 ? '' : prefixData.color;
+                bubble.prefixIcon = parser.prefixId === 0 ? '' : prefixData.icon;
+                bubble.prefixEffect = parser.prefixId === 0 ? '' : prefixData.effect;
+
+                return { ...bubble } as AvatarInfoName;
+            });
         });
     });
 

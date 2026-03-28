@@ -1,15 +1,31 @@
 import { ExtendedProfileChangedMessageEvent, GetSessionDataManager, NavigatorSearchComposer, NavigatorSearchEvent, RelationshipStatusInfoEvent, RelationshipStatusInfoMessageParser, RoomDataParser, RoomEngineObjectEvent, RoomObjectCategory, RoomObjectType, UserCurrentBadgesComposer, UserCurrentBadgesEvent, UserProfileEvent, UserProfileParser, UserRelationshipsComposer } from '@nitrots/nitro-renderer';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { CreateRoomSession, GetRoomSession, GetUserProfile, LocalizeText, SendMessageComposer } from '../../api';
+import { DEFAULT_TAB_CONFIG, IProfileComment, IProfilePhoto, IProfileTabConfig, IShowcaseItem, ProfileTabKey } from '../../api/user/ProfilePortfolioData';
+import { LoadPortfolioComposer, PortfolioDataEvent, PortfolioUpdatedEvent, WallCommentAddedEvent } from '../../api/user/portfolio';
 import { Flex, Text } from '../../common';
 import { BadgeInfoView } from './BadgeInfoView';
 import { useMessageEvent, useNitroEvent } from '../../hooks';
 import { NitroCard } from '../../layout';
 import { FriendsContainerView } from './FriendsContainerView';
 import { GroupsContainerView } from './GroupsContainerView';
+import { PhotoGalleryView } from './PhotoGalleryView';
+import { ProfileTabSettingsView } from './ProfileTabSettingsView';
+import { ProfileWallView } from './ProfileWallView';
+import { RareShowcaseView } from './RareShowcaseView';
 import { UserContainerView } from './UserContainerView';
 
-type ProfileTab = 'badge' | 'amici' | 'stanze' | 'gruppi';
+type ProfileTab = ProfileTabKey | 'impostazioni';
+
+const TAB_LABELS: Record<ProfileTabKey, string> = {
+    badge: 'Badge',
+    amici: 'Amici',
+    stanze: 'Stanze',
+    gruppi: 'Gruppi',
+    foto: 'Foto',
+    bacheca: 'Bacheca',
+    showcase: 'Vetrina'
+};
 
 export const UserProfileView: FC<{}> = props =>
 {
@@ -18,6 +34,12 @@ export const UserProfileView: FC<{}> = props =>
     const [ userRelationships, setUserRelationships ] = useState<RelationshipStatusInfoMessageParser>(null);
     const [ activeTab, setActiveTab ] = useState<ProfileTab>('badge');
     const [ userRooms, setUserRooms ] = useState<RoomDataParser[]>(null);
+    const [ profilePhotos, setProfilePhotos ] = useState<IProfilePhoto[]>([]);
+    const [ wallComments, setWallComments ] = useState<IProfileComment[]>([]);
+    const [ showcaseItems, setShowcaseItems ] = useState<IShowcaseItem[]>([]);
+    const [ tabConfig, setTabConfig ] = useState<IProfileTabConfig>({ ...DEFAULT_TAB_CONFIG });
+
+    const isOwnProfile = userProfile && (userProfile.id === GetSessionDataManager().userId);
 
     const onClose = () =>
     {
@@ -26,6 +48,10 @@ export const UserProfileView: FC<{}> = props =>
         setUserRelationships(null);
         setActiveTab('badge');
         setUserRooms(null);
+        setProfilePhotos([]);
+        setWallComments([]);
+        setShowcaseItems([]);
+        setTabConfig({ ...DEFAULT_TAB_CONFIG });
     };
 
     const onLeaveGroup = () =>
@@ -33,6 +59,12 @@ export const UserProfileView: FC<{}> = props =>
         if(!userProfile || (userProfile.id !== GetSessionDataManager().userId)) return;
 
         GetUserProfile(userProfile.id);
+    };
+
+    const getFirstEnabledTab = (config: IProfileTabConfig): ProfileTab =>
+    {
+        const keys = Object.keys(TAB_LABELS) as ProfileTabKey[];
+        return keys.find(k => config[k]) ?? 'badge';
     };
 
     const onTabClick = (tab: ProfileTab) =>
@@ -44,6 +76,40 @@ export const UserProfileView: FC<{}> = props =>
             SendMessageComposer(new NavigatorSearchComposer('hotel_view', `owner:${ userProfile.username }`));
         }
     };
+
+    // --- Portfolio WebSocket events ---
+
+    useMessageEvent<PortfolioDataEvent>(PortfolioDataEvent, event =>
+    {
+        const data = event.getParser();
+
+        if(!userProfile || data.userId !== userProfile.id) return;
+
+        setTabConfig(data.tabConfig ?? { ...DEFAULT_TAB_CONFIG });
+        setProfilePhotos(data.photos ?? []);
+        setWallComments(data.wallComments ?? []);
+        setShowcaseItems(data.showcaseItems ?? []);
+    });
+
+    useMessageEvent<WallCommentAddedEvent>(WallCommentAddedEvent, event =>
+    {
+        const data = event.getParser();
+
+        if(!userProfile || data.userId !== userProfile.id) return;
+
+        setWallComments(prev => [ data.comment, ...prev ]);
+    });
+
+    useMessageEvent<PortfolioUpdatedEvent>(PortfolioUpdatedEvent, event =>
+    {
+        const data = event.getParser();
+
+        if(!userProfile || data.userId !== userProfile.id) return;
+
+        SendMessageComposer(new LoadPortfolioComposer(userProfile.id));
+    });
+
+    // --- Standard profile events ---
 
     useMessageEvent<UserCurrentBadgesEvent>(UserCurrentBadgesEvent, event =>
     {
@@ -80,12 +146,16 @@ export const UserProfileView: FC<{}> = props =>
         {
             setUserBadges([]);
             setUserRelationships(null);
-            setActiveTab('badge');
             setUserRooms(null);
+            setProfilePhotos([]);
+            setWallComments([]);
+            setShowcaseItems([]);
+            setTabConfig({ ...DEFAULT_TAB_CONFIG });
         }
 
         SendMessageComposer(new UserCurrentBadgesComposer(parser.id));
         SendMessageComposer(new UserRelationshipsComposer(parser.id));
+        SendMessageComposer(new LoadPortfolioComposer(parser.id));
     });
 
     useMessageEvent<ExtendedProfileChangedMessageEvent>(ExtendedProfileChangedMessageEvent, event =>
@@ -132,10 +202,22 @@ export const UserProfileView: FC<{}> = props =>
         GetUserProfile(userData.webID);
     });
 
+    useEffect(() =>
+    {
+        if(!tabConfig || !userProfile) return;
+
+        if(activeTab !== 'impostazioni' && !(tabConfig as Record<string, boolean>)[activeTab])
+        {
+            setActiveTab(getFirstEnabledTab(tabConfig));
+        }
+    }, [ tabConfig ]);
+
     if(!userProfile) return null;
 
+    const visibleTabs = (Object.keys(TAB_LABELS) as ProfileTabKey[]).filter(k => tabConfig[k]);
+
     return (
-        <NitroCard className="w-[470px] h-[460px]" uniqueKey="nitro-user-profile">
+        <NitroCard className="w-[550px] h-[500px]" uniqueKey="nitro-user-profile">
             <NitroCard.Header
                 headerText={ LocalizeText('extendedprofile.caption') }
                 onCloseClick={ onClose } />
@@ -144,18 +226,22 @@ export const UserProfileView: FC<{}> = props =>
                     <UserContainerView userProfile={ userProfile } />
                 </div>
                 <NitroCard.Tabs>
-                    <NitroCard.TabItem isActive={ activeTab === 'badge' } count={ userBadges.length } onClick={ () => onTabClick('badge') }>
-                        Badge
-                    </NitroCard.TabItem>
-                    <NitroCard.TabItem isActive={ activeTab === 'amici' } count={ userProfile.friendsCount } onClick={ () => onTabClick('amici') }>
-                        Amici
-                    </NitroCard.TabItem>
-                    <NitroCard.TabItem isActive={ activeTab === 'stanze' } onClick={ () => onTabClick('stanze') }>
-                        Stanze
-                    </NitroCard.TabItem>
-                    <NitroCard.TabItem isActive={ activeTab === 'gruppi' } count={ userProfile.groups?.length } onClick={ () => onTabClick('gruppi') }>
-                        Gruppi
-                    </NitroCard.TabItem>
+                    { visibleTabs.map(tab => (
+                        <NitroCard.TabItem
+                            key={ tab }
+                            isActive={ activeTab === tab }
+                            count={ tab === 'badge' ? userBadges.length : tab === 'amici' ? userProfile.friendsCount : tab === 'gruppi' ? userProfile.groups?.length : tab === 'foto' ? profilePhotos.length : tab === 'bacheca' ? wallComments.length : tab === 'showcase' ? showcaseItems.length : 0 }
+                            onClick={ () => onTabClick(tab) }>
+                            { TAB_LABELS[tab] }
+                        </NitroCard.TabItem>
+                    )) }
+                    { isOwnProfile && (
+                        <NitroCard.TabItem
+                            isActive={ activeTab === 'impostazioni' }
+                            onClick={ () => onTabClick('impostazioni') }>
+                            ⚙
+                        </NitroCard.TabItem>
+                    ) }
                 </NitroCard.Tabs>
                 <div className="flex-1 overflow-auto p-2">
                     { activeTab === 'badge' && (
@@ -209,6 +295,41 @@ export const UserProfileView: FC<{}> = props =>
                     { activeTab === 'gruppi' && (
                         <div className="h-full">
                             <GroupsContainerView fullWidth groups={ userProfile.groups } itsMe={ userProfile.id === GetSessionDataManager().userId } onLeaveGroup={ onLeaveGroup } />
+                        </div>
+                    ) }
+                    { activeTab === 'foto' && (
+                        <div className="h-full">
+                            <PhotoGalleryView
+                                isOwnProfile={ isOwnProfile }
+                                photos={ profilePhotos }
+                                userId={ userProfile.id }
+                            />
+                        </div>
+                    ) }
+                    { activeTab === 'bacheca' && (
+                        <div className="h-full">
+                            <ProfileWallView
+                                comments={ wallComments }
+                                userId={ userProfile.id }
+                            />
+                        </div>
+                    ) }
+                    { activeTab === 'showcase' && (
+                        <div className="h-full">
+                            <RareShowcaseView
+                                isOwnProfile={ isOwnProfile }
+                                items={ showcaseItems }
+                                userId={ userProfile.id }
+                            />
+                        </div>
+                    ) }
+                    { activeTab === 'impostazioni' && isOwnProfile && (
+                        <div className="h-full">
+                            <ProfileTabSettingsView
+                                tabConfig={ tabConfig }
+                                userId={ userProfile.id }
+                                onConfigChange={ setTabConfig }
+                            />
                         </div>
                     ) }
                 </div>

@@ -9,6 +9,8 @@ export interface IUiSettings
     ctxBgColor: string;
     borderRadius: number;
     glassMode: boolean;
+    fontFamily: string;
+    fontScale: number;
 }
 
 export const DEFAULT_UI_SETTINGS: IUiSettings = {
@@ -20,8 +22,25 @@ export const DEFAULT_UI_SETTINGS: IUiSettings = {
     darkPanelColor: '#212131',
     ctxBgColor: '#1c323f',
     borderRadius: 4,
-    glassMode: false
+    glassMode: false,
+    fontFamily: 'Ubuntu',
+    fontScale: 100
 };
+
+export const FONT_FAMILIES: string[] = [
+    'Ubuntu',
+    'Roboto',
+    'Inter',
+    'Poppins',
+    'Nunito',
+    'Open Sans',
+    'Lato',
+    'Montserrat',
+    'Source Sans 3',
+    'Quicksand',
+    'Comic Neue',
+    'Pixelify Sans',
+];
 
 export const PRESET_COLORS: string[] = [
     '#1E7295', '#185D79', '#0077B6', '#00B4D8', '#0096C7',

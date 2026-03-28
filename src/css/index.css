@@ -621,6 +621,11 @@ body {
     background-repeat: repeat !important;
 }
 
+/* Font theming */
+html {
+    transition: font-size 0.2s ease, font-family 0.2s ease;
+}
+
 /* Context menu themed item gradient */
 .ctx-menu-item-bg {
     background: repeating-linear-gradient(

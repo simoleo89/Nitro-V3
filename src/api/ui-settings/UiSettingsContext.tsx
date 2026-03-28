@@ -1,3 +1,4 @@
+import { GetCommunication } from '@nitrots/nitro-renderer';
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { DEFAULT_UI_SETTINGS, IUiSettings } from './IUiSettings';
 
@@ -109,18 +110,165 @@ const applyThemeToDOM = (settings: IUiSettings): void =>
     {
         root.classList.remove('theme-glass');
     }
+
+    // Font customization
+    const fontFamily = settings.fontFamily || 'Ubuntu';
+    const fontScale = (settings.fontScale ?? 100) / 100;
+
+    root.style.setProperty('--theme-font-family', fontFamily);
+    root.style.setProperty('--theme-font-scale', String(fontScale));
+
+    if(fontFamily !== 'Ubuntu')
+    {
+        // Load Google Font dynamically
+        const linkId = 'theme-google-font';
+        let link = document.getElementById(linkId) as HTMLLinkElement;
+
+        if(!link)
+        {
+            link = document.createElement('link');
+            link.id = linkId;
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+        }
+
+        link.href = `https://fonts.googleapis.com/css2?family=${ fontFamily.replace(/\s+/g, '+') }:wght@400;500;700&display=swap`;
+    }
+    else
+    {
+        const link = document.getElementById('theme-google-font');
+        if(link) link.remove();
+    }
+
+    root.style.setProperty('font-family', `${ fontFamily }, sans-serif`);
+    root.style.fontSize = `${ fontScale * 100 }%`;
+};
+
+// WebSocket sync helpers
+const SYNC_DEBOUNCE_MS = 1000;
+
+const syncToServer = (settings: IUiSettings): void =>
+{
+    try
+    {
+        const connection = GetCommunication()?.connection;
+        if(!connection) return;
+
+        const json = JSON.stringify(settings);
+
+        // Use dynamic import to check if composer exists in renderer
+        // Packet header 10047 = UiSettingsSave
+        try
+        {
+            const { UiSettingsSaveComposer } = require('@nitrots/nitro-renderer');
+            if(UiSettingsSaveComposer) connection.send(new UiSettingsSaveComposer(json));
+        }
+        catch(e)
+        {
+            // Composer not available in this renderer version - skip server sync
+        }
+    }
+    catch(e) { /* communication not ready */ }
+};
+
+const loadFromServer = (): void =>
+{
+    try
+    {
+        const connection = GetCommunication()?.connection;
+        if(!connection) return;
+
+        // Packet header 10048 = UiSettingsLoad
+        try
+        {
+            const { UiSettingsLoadComposer } = require('@nitrots/nitro-renderer');
+            if(UiSettingsLoadComposer) connection.send(new UiSettingsLoadComposer());
+        }
+        catch(e)
+        {
+            // Composer not available - skip server load
+        }
+    }
+    catch(e) { /* communication not ready */ }
+};
+
+const listenForServerSettings = (onReceive: (settings: IUiSettings) => void): (() => void) =>
+{
+    try
+    {
+        const { UiSettingsDataEvent } = require('@nitrots/nitro-renderer');
+        if(!UiSettingsDataEvent) return () => {};
+
+        const connection = GetCommunication()?.connection;
+        if(!connection) return () => {};
+
+        const handler = (event: any) =>
+        {
+            try
+            {
+                const parser = event.getParser();
+                const json = parser?.settingsJson;
+
+                if(json && json !== '{}')
+                {
+                    const serverSettings = { ...DEFAULT_UI_SETTINGS, ...JSON.parse(json) };
+                    onReceive(serverSettings);
+                }
+            }
+            catch(e) { /* parse error */ }
+        };
+
+        const eventInstance = new UiSettingsDataEvent(handler);
+        GetCommunication().registerMessageEvent(eventInstance);
+
+        return () =>
+        {
+            try { GetCommunication().removeMessageEvent(eventInstance); }
+            catch(e) { /* ignore */ }
+        };
+    }
+    catch(e)
+    {
+        return () => {};
+    }
 };
 
 export const UiSettingsProvider: FC<PropsWithChildren> = ({ children }) =>
 {
     const [ settings, setSettings ] = useState<IUiSettings>(loadSettings);
     const initializedRef = useRef(false);
+    const serverSyncTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+    // Listen for server settings on mount
+    useEffect(() =>
+    {
+        // Try to load from server
+        loadFromServer();
+
+        // Listen for server response
+        const cleanup = listenForServerSettings((serverSettings) =>
+        {
+            setSettings(serverSettings);
+            saveSettings(serverSettings);
+        });
+
+        return cleanup;
+    }, []);
 
     // Apply theme on mount and whenever settings change
     useEffect(() =>
     {
         applyThemeToDOM(settings);
-        if(initializedRef.current) saveSettings(settings);
+
+        if(initializedRef.current)
+        {
+            saveSettings(settings);
+
+            // Debounced server sync
+            if(serverSyncTimerRef.current) clearTimeout(serverSyncTimerRef.current);
+            serverSyncTimerRef.current = setTimeout(() => syncToServer(settings), SYNC_DEBOUNCE_MS);
+        }
+
         initializedRef.current = true;
     }, [ settings ]);
 

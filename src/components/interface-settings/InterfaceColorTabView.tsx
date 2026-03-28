@@ -1,7 +1,7 @@
 import { RgbaColorPicker, RgbaColor } from 'react-colorful';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FaUndo, FaTrash, FaDownload, FaUpload, FaGlasses } from 'react-icons/fa';
-import { LocalizeText, PRESET_COLORS, THEME_PRESETS, useUiSettings } from '../../api';
+import { FaUndo, FaTrash, FaDownload, FaUpload, FaGlasses, FaFont } from 'react-icons/fa';
+import { LocalizeText, PRESET_COLORS, THEME_PRESETS, FONT_FAMILIES, useUiSettings } from '../../api';
 import { Flex, Text } from '../../common';
 
 const hexToRgba = (hex: string, a = 1): RgbaColor =>
@@ -249,6 +249,36 @@ export const InterfaceColorTabView: FC<{}> = () =>
                     Glass
                 </button>
             </Flex>
+
+            {/* Font customization */}
+            <Text small bold className="text-black mt-2">
+                <FaFont size={ 10 } className="inline mr-1" />
+                { LocalizeText('interface.settings.font.title') }
+            </Text>
+            <Flex gap={ 2 } className="w-full items-center">
+                <select
+                    className="form-control form-control-sm flex-1"
+                    value={ settings.fontFamily || 'Ubuntu' }
+                    onChange={ e => updateSettings({ fontFamily: e.target.value }) }
+                >
+                    { FONT_FAMILIES.map(font => (
+                        <option key={ font } value={ font } style={ { fontFamily: font } }>{ font }</option>
+                    )) }
+                </select>
+                <Flex column className="items-center min-w-[80px]">
+                    <input
+                        type="range"
+                        className="w-full"
+                        min={ 70 }
+                        max={ 130 }
+                        step={ 5 }
+                        value={ settings.fontScale ?? 100 }
+                        onChange={ e => updateSettings({ fontScale: parseInt(e.target.value) }) }
+                    />
+                    <Text small className="text-black">{ settings.fontScale ?? 100 }%</Text>
+                </Flex>
+            </Flex>
+
             <Flex gap={ 1 } className="w-full">
                 <button
                     className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs bg-blue-600 hover:bg-blue-700 transition-colors"

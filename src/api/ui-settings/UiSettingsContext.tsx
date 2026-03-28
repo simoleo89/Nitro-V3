@@ -144,8 +144,21 @@ const applyThemeToDOM = (settings: IUiSettings): void =>
     root.style.fontSize = `${ fontScale * 100 }%`;
 };
 
-// WebSocket sync helpers
+/**
+ * WebSocket server sync
+ *
+ * Settings are stored server-side in the `users` table, column `ui_settings` (TEXT).
+ * The emulator reads/writes this column via two packet handlers:
+ *
+ *   - UiSettingsLoadEvent  (header 10048): SELECT ui_settings FROM users WHERE id = ?
+ *   - UiSettingsSaveEvent  (header 10047): UPDATE users SET ui_settings = ? WHERE id = ?
+ *
+ * The emulator responds with UiSettingsDataComposer containing the JSON string.
+ * If the renderer does not export the required Composer/Event classes, sync is
+ * silently skipped and localStorage is used as the only persistence layer.
+ */
 const SYNC_DEBOUNCE_MS = 1000;
+const MAX_SETTINGS_JSON_LENGTH = 4096;
 
 const syncToServer = (settings: IUiSettings): void =>
 {
@@ -156,8 +169,8 @@ const syncToServer = (settings: IUiSettings): void =>
 
         const json = JSON.stringify(settings);
 
-        // Use dynamic import to check if composer exists in renderer
-        // Packet header 10047 = UiSettingsSave
+        if(json.length > MAX_SETTINGS_JSON_LENGTH) return;
+
         try
         {
             const { UiSettingsSaveComposer } = require('@nitrots/nitro-renderer');
@@ -165,7 +178,7 @@ const syncToServer = (settings: IUiSettings): void =>
         }
         catch(e)
         {
-            // Composer not available in this renderer version - skip server sync
+            // Composer not available in this renderer version - localStorage only
         }
     }
     catch(e) { /* communication not ready */ }
@@ -178,7 +191,6 @@ const loadFromServer = (): void =>
         const connection = GetCommunication()?.connection;
         if(!connection) return;
 
-        // Packet header 10048 = UiSettingsLoad
         try
         {
             const { UiSettingsLoadComposer } = require('@nitrots/nitro-renderer');
@@ -186,7 +198,7 @@ const loadFromServer = (): void =>
         }
         catch(e)
         {
-            // Composer not available - skip server load
+            // Composer not available - localStorage only
         }
     }
     catch(e) { /* communication not ready */ }

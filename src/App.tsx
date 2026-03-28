@@ -1,6 +1,6 @@
 import { GetAssetManager, GetAvatarRenderManager, GetCommunication, GetConfiguration, GetLocalizationManager, GetRoomEngine, GetRoomSessionManager, GetSessionDataManager, GetSoundManager, GetStage, GetTexturePool, GetTicker, HabboWebTools, LegacyExternalInterface, LoadGameUrlEvent, NitroEventType, NitroLogger, NitroVersion, PrepareRenderer } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useState } from 'react';
-import { GetUIVersion } from './api';
+import { GetUIVersion, UiSettingsProvider } from './api';
 import { Base } from './common';
 import { LoadingView } from './components/loading/LoadingView';
 import { MainView } from './components/MainView';
@@ -112,12 +112,14 @@ export const App: FC<{}> = props =>
     }, []);
 
     return (
-        <Base fit overflow="hidden" className={ !(window.devicePixelRatio % 1) && 'image-rendering-pixelated' }>
-            { !isReady &&
-                <LoadingView isError={ errorMessage.length > 0 } message={ errorMessage } homeUrl={ homeUrl } /> }
-            { isReady && <MainView /> }
-            <ReconnectView />
-            <Base id="draggable-windows-container" />
-        </Base>
+        <UiSettingsProvider>
+            <Base fit overflow="hidden" className={ !(window.devicePixelRatio % 1) && 'image-rendering-pixelated' }>
+                { !isReady &&
+                    <LoadingView isError={ errorMessage.length > 0 } message={ errorMessage } homeUrl={ homeUrl } /> }
+                { isReady && <MainView /> }
+                <ReconnectView />
+                <Base id="draggable-windows-container" />
+            </Base>
+        </UiSettingsProvider>
     );
 };

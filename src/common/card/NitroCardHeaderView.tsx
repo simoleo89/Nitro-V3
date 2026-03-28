@@ -1,5 +1,6 @@
 import { FC, MouseEvent } from 'react';
 import { FaFlag } from 'react-icons/fa';
+import { useUiSettings } from '../../api/ui-settings/UiSettingsContext';
 import { Base, Column, ColumnProps, Flex } from '..';
 
 interface NitroCardHeaderViewProps extends ColumnProps
@@ -16,8 +17,9 @@ interface NitroCardHeaderViewProps extends ColumnProps
 export const NitroCardHeaderView: FC<NitroCardHeaderViewProps> = props =>
 {
     const { headerText = null, isGalleryPhoto = false, noCloseButton = false, isInfoToHabboPages = false, onReportPhoto = null, onClickInfoHabboPages = null, onCloseClick = null, justifyContent = 'center', alignItems = 'center', classNames = [], children = null, ...rest } = props;
+    const { settings } = useUiSettings();
 
-
+    const headerImageClass = (settings.colorMode === 'image' && settings.headerImageUrl) ? ' theme-header-image' : '';
 
     const onMouseDown = (event: MouseEvent<HTMLDivElement>) =>
     {
@@ -26,7 +28,7 @@ export const NitroCardHeaderView: FC<NitroCardHeaderViewProps> = props =>
     };
 
     return (
-        <Column center className={ 'relative flex items-center justify-center flex-col drag-handler min-h-card-header max-h-card-header bg-card-header' } { ...rest }>
+        <Column center className={ 'relative flex items-center justify-center flex-col drag-handler min-h-card-header max-h-card-header bg-card-header' + headerImageClass } { ...rest }>
             <Flex center fullWidth>
                 <span className="text-xl text-white drop-shadow-lg">{ headerText }</span>
                 { isGalleryPhoto &&

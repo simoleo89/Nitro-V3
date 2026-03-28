@@ -2,7 +2,9 @@ import { GetSessionDataManager, HabboClubLevelEnum} from '@nitrots/nitro-rendere
 import { Dispatch, FC, SetStateAction, useCallback, useMemo, useState } from 'react';
 import { Base, Grid, Flex, NitroCardView, NitroCardHeaderView, NitroCardTabsView, NitroCardTabsItemView, NitroCardContentView, Text, LayoutCurrencyIcon } from '../../common';
 import { useRoom } from '../../hooks';
-import { GetClubMemberLevel, GetConfigurationValue } from '../../api';
+import { GetClubMemberLevel, GetConfigurationValue, LocalizeText } from '../../api';
+import { InterfaceColorTabView } from '../interface-settings/InterfaceColorTabView';
+import { InterfaceImageTabView } from '../interface-settings/InterfaceImageTabView';
 
 interface ItemData { 
     id: number;
@@ -22,7 +24,7 @@ interface BackgroundsViewProps {
     setSelectedOverlay: Dispatch<SetStateAction<number>>;
 }
 
-const TABS = ['backgrounds', 'stands', 'overlays'] as const;
+const TABS = ['backgrounds', 'stands', 'overlays', 'color', 'image'] as const;
 type TabType = typeof TABS[number];
 
 export const BackgroundsView: FC<BackgroundsViewProps> = ({
@@ -68,7 +70,7 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
         
         const currentValues = { backgrounds: selectedBackground, stands: selectedStand, overlays: selectedOverlay };
 
-        setters[activeTab](id);
+        setters[activeTab as 'backgrounds' | 'stands' | 'overlays'](id);
         const newValues = { ...currentValues, [activeTab]: id };
         roomSession.sendBackgroundMessage( newValues.backgrounds, newValues.stands, newValues.overlays );
     }, [activeTab, roomSession, selectedBackground, selectedStand, selectedOverlay, setSelectedBackground, setSelectedStand, setSelectedOverlay]);
@@ -86,9 +88,11 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
         </Flex>
     ), [handleSelection]);
 
+    const isProfileTab = activeTab === 'backgrounds' || activeTab === 'stands' || activeTab === 'overlays';
+
     return (
         <NitroCardView uniqueKey="backgrounds" className="absolute min-w-[535px] max-w-[535px] min-h-[389px] max-h-[389px]">
-            <NitroCardHeaderView headerText="Profile Background" onCloseClick={() => setIsVisible(false)} />
+            <NitroCardHeaderView headerText={ LocalizeText('interface.settings.title') } onCloseClick={() => setIsVisible(false)} />
             <NitroCardTabsView>
                 {TABS.map(tab => (
                     <NitroCardTabsItemView
@@ -96,15 +100,21 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
                         isActive={activeTab === tab}
                         onClick={() => setActiveTab(tab)}
                     >
-                        {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        { LocalizeText(`interface.settings.tab.${ tab }`) }
                     </NitroCardTabsItemView>
                 ))}
             </NitroCardTabsView>
             <NitroCardContentView gap={1}>
-                <Text bold center>Select an Option</Text>
-                <Grid gap={1} columnCount={7} overflow="auto">
-                    {allData[activeTab].map(item => renderItem(item, activeTab.slice(0, -1)))}
-                </Grid>
+                { isProfileTab && (
+                    <>
+                        <Text bold center>{ LocalizeText('interface.settings.select.option') }</Text>
+                        <Grid gap={1} columnCount={7} overflow="auto">
+                            {allData[activeTab as 'backgrounds' | 'stands' | 'overlays'].map(item => renderItem(item, activeTab.slice(0, -1)))}
+                        </Grid>
+                    </>
+                ) }
+                { activeTab === 'color' && <InterfaceColorTabView /> }
+                { activeTab === 'image' && <InterfaceImageTabView /> }
             </NitroCardContentView>
         </NitroCardView>
     );

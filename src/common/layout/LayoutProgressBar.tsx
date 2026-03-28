@@ -14,7 +14,7 @@ export const LayoutProgressBar: FC<LayoutProgressBarProps> = props =>
 
     const getClassNames = useMemo(() =>
     {
-        const newClassNames: string[] = [ 'border border-[solid] border-[#fff] p-[2px] h-[20px] rounded-[.25rem] overflow-hidden bg-[#1E7295]        ', 'text-white' ];
+        const newClassNames: string[] = [ 'border border-[solid] border-[#fff] p-[2px] h-[20px] rounded-[.25rem] overflow-hidden bg-[var(--theme-primary,#1E7295)]', 'text-white' ];
 
         if(classNames.length) newClassNames.push(...classNames);
 

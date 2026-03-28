@@ -571,14 +571,64 @@ body {
     font-size: var(--font-size, 16px); /* Fallback to 16px if not set */
 }
 
-/* Header and Tab Colors */
+/* ── Theme CSS Variables ─────────────────────────────────────────────── */
+/* All theme-aware elements reference these variables with fallbacks.     */
+/* The UiSettingsContext sets them on :root when a custom theme is active. */
 
 .bg-card-header {
-    background-color: #1e7295; /* e.g., #2c3e50 */
+    background-color: var(--theme-primary, #1e7295);
 }
 
 .bg-card-tabs {
-    background-color: #185d79; /* Match bg-card-header */
+    background-color: var(--theme-primary-dark, #185d79);
+}
+
+/* Glassmorphism mode */
+.theme-glass .bg-card-header,
+.theme-glass .bg-card-tabs {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.theme-glass .nitro-infostand,
+.theme-glass .nitro-room-tools,
+.theme-glass .nitro-room-history,
+.theme-glass .nitro-room-tools-info {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: color-mix(in srgb, var(--theme-dark-panel, #212131) 75%, transparent) !important;
+}
+
+/* UI Theme transitions */
+.bg-card-header,
+.bg-card-tabs,
+.nitro-room-tools,
+.nitro-room-history,
+.nitro-room-tools-info,
+.borderhccontent,
+.nitro-purse-seasonal-currency,
+.nitro-infostand,
+.btn-primary,
+.btn-dark {
+    transition: background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+/* Header image mode */
+.theme-header-image {
+    background-image: var(--theme-header-image) !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: repeat !important;
+}
+
+/* Context menu themed item gradient */
+.ctx-menu-item-bg {
+    background: repeating-linear-gradient(
+        var(--theme-ctx-item1, #131e25),
+        var(--theme-ctx-item1, #131e25) 50%,
+        var(--theme-ctx-item2, #0d171d) 50%,
+        var(--theme-ctx-item2, #0d171d) 100%
+    );
 }
 
 .nitro-wired {

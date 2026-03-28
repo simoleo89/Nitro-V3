@@ -10,7 +10,7 @@
         overflow: hidden;
 
         &.track-0 {
-            background-color: #1e7295;
+            background-color: var(--theme-slider-track, #1e7295);
         }
 
         &.track-1 {

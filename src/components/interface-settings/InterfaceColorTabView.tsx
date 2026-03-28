@@ -1,6 +1,6 @@
 import { RgbaColorPicker, RgbaColor } from 'react-colorful';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FaUndo, FaTrash, FaDownload, FaUpload } from 'react-icons/fa';
+import { FaUndo, FaTrash, FaDownload, FaUpload, FaGlasses } from 'react-icons/fa';
 import { LocalizeText, PRESET_COLORS, THEME_PRESETS, useUiSettings } from '../../api';
 import { Flex, Text } from '../../common';
 
@@ -27,7 +27,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
     const hexColor = useMemo(() => rgbaToHex(color), [ color ]);
     const alphaPercent = useMemo(() => Math.round((color.a ?? 1) * 100), [ color ]);
 
-    // Live preview con debounce
+    // Live preview with debounce
     useEffect(() =>
     {
         if(previewTimerRef.current) clearTimeout(previewTimerRef.current);
@@ -52,8 +52,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
         const clean = value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6);
         if(clean.length === 6)
         {
-            const rgba = hexToRgba('#' + clean, color.a);
-            setColor(rgba);
+            setColor(hexToRgba('#' + clean, color.a));
         }
     }, [ color.a ]);
 
@@ -74,10 +73,16 @@ export const InterfaceColorTabView: FC<{}> = () =>
         setColor(hexToRgba(presetHex, color.a));
     }, [ color.a ]);
 
-    const onThemeClick = useCallback((themeColor: string, themeAlpha: number) =>
+    const onThemeClick = useCallback((preset: typeof THEME_PRESETS[0]) =>
     {
-        setColor(hexToRgba(themeColor, themeAlpha / 100));
-    }, []);
+        const c = preset.colors;
+        if(c.headerColor) setColor(hexToRgba(c.headerColor, (c.headerAlpha ?? settings.headerAlpha) / 100));
+        updateSettings({
+            colorMode: 'color',
+            ...c,
+            headerAlpha: c.headerAlpha ?? settings.headerAlpha
+        });
+    }, [ updateSettings, settings.headerAlpha ]);
 
     const onReset = useCallback(() =>
     {
@@ -91,46 +96,52 @@ export const InterfaceColorTabView: FC<{}> = () =>
         setColor(hexToRgba('#1E7295', 1));
     }, [ updateSettings ]);
 
+    const toggleGlass = useCallback(() =>
+    {
+        updateSettings({ glassMode: !settings.glassMode });
+    }, [ updateSettings, settings.glassMode ]);
+
     const onExport = useCallback(() =>
     {
-        const data = JSON.stringify({
-            color: hexColor,
-            alpha: alphaPercent,
-            mode: settings.colorMode,
-            image: settings.headerImageUrl
-        });
-
+        const data = btoa(JSON.stringify(settings));
         navigator.clipboard.writeText(data);
         setCopyFeedback(true);
         setTimeout(() => setCopyFeedback(false), 2000);
-    }, [ hexColor, alphaPercent, settings ]);
+    }, [ settings ]);
 
     const onImport = useCallback(() =>
     {
         try
         {
-            const data = JSON.parse(importValue);
-
-            if(data.color)
+            const decoded = JSON.parse(atob(importValue.trim()));
+            if(decoded.headerColor)
             {
-                const alpha = data.alpha ?? 100;
-                setColor(hexToRgba(data.color, alpha / 100));
-                updateSettings({
-                    colorMode: data.mode || 'color',
-                    headerColor: data.color,
-                    headerAlpha: alpha,
-                    headerImageUrl: data.image || ''
-                });
+                setColor(hexToRgba(decoded.headerColor, (decoded.headerAlpha ?? 100) / 100));
+                updateSettings({ ...decoded });
             }
-
             setImportValue('');
             setShowImport(false);
         }
-        catch(e) {}
+        catch(e)
+        {
+            // Try raw JSON fallback
+            try
+            {
+                const decoded = JSON.parse(importValue.trim());
+                if(decoded.headerColor)
+                {
+                    setColor(hexToRgba(decoded.headerColor, (decoded.headerAlpha ?? 100) / 100));
+                    updateSettings({ ...decoded });
+                }
+                setImportValue('');
+                setShowImport(false);
+            }
+            catch(e2) { /* invalid input */ }
+        }
     }, [ importValue, updateSettings ]);
 
     return (
-        <Flex column gap={ 2 } className="items-center p-2">
+        <Flex column gap={ 2 } className="items-center p-2 overflow-auto">
             {/* Color picker */}
             <div className="w-[280px]">
                 <RgbaColorPicker color={ color } onChange={ setColor } style={ { width: '100%', height: '180px' } } />
@@ -138,7 +149,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
 
             {/* Color preview swatch */}
             <div
-                className="w-[280px] h-[32px] rounded border border-black/20"
+                className="w-[280px] h-[32px] rounded border border-black/20 transition-colors duration-150"
                 style={ { backgroundColor: `rgba(${ color.r }, ${ color.g }, ${ color.b }, ${ color.a })` } }
             />
 
@@ -153,36 +164,18 @@ export const InterfaceColorTabView: FC<{}> = () =>
                     />
                     <Text small className="text-black">Hex</Text>
                 </Flex>
-                <Flex column className="items-center">
-                    <input
-                        type="number"
-                        className="form-control form-control-sm text-center w-[45px]"
-                        value={ color.r }
-                        onChange={ e => onRgbInput('r', parseInt(e.target.value)) }
-                        min={ 0 } max={ 255 }
-                    />
-                    <Text small className="text-black">R</Text>
-                </Flex>
-                <Flex column className="items-center">
-                    <input
-                        type="number"
-                        className="form-control form-control-sm text-center w-[45px]"
-                        value={ color.g }
-                        onChange={ e => onRgbInput('g', parseInt(e.target.value)) }
-                        min={ 0 } max={ 255 }
-                    />
-                    <Text small className="text-black">G</Text>
-                </Flex>
-                <Flex column className="items-center">
-                    <input
-                        type="number"
-                        className="form-control form-control-sm text-center w-[45px]"
-                        value={ color.b }
-                        onChange={ e => onRgbInput('b', parseInt(e.target.value)) }
-                        min={ 0 } max={ 255 }
-                    />
-                    <Text small className="text-black">B</Text>
-                </Flex>
+                { (['r', 'g', 'b'] as const).map(ch => (
+                    <Flex column className="items-center" key={ ch }>
+                        <input
+                            type="number"
+                            className="form-control form-control-sm text-center w-[45px]"
+                            value={ color[ch] }
+                            onChange={ e => onRgbInput(ch, parseInt(e.target.value)) }
+                            min={ 0 } max={ 255 }
+                        />
+                        <Text small className="text-black">{ ch.toUpperCase() }</Text>
+                    </Flex>
+                )) }
                 <Flex column className="items-center">
                     <input
                         type="number"
@@ -200,7 +193,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
                 { PRESET_COLORS.map((presetHex, i) => (
                     <div
                         key={ i }
-                        className={ `w-[24px] h-[24px] rounded cursor-pointer border hover:scale-110 transition-transform ${ hexColor.toUpperCase() === presetHex.toUpperCase() ? 'border-white border-2 scale-110' : 'border-black/20' }` }
+                        className={ `w-[24px] h-[24px] rounded cursor-pointer border transition-transform hover:scale-110 ${ hexColor.toUpperCase() === presetHex.toUpperCase() ? 'border-white border-2 scale-110' : 'border-black/20' }` }
                         style={ { backgroundColor: presetHex } }
                         onClick={ () => onPresetClick(presetHex) }
                     />
@@ -213,23 +206,26 @@ export const InterfaceColorTabView: FC<{}> = () =>
                 { THEME_PRESETS.map((theme) => (
                     <div
                         key={ theme.name }
-                        className={ `flex flex-col items-center gap-0.5 p-1 rounded cursor-pointer hover:bg-black/5 transition-colors ${ hexColor.toUpperCase() === theme.color.toUpperCase() ? 'ring-2 ring-white' : '' }` }
-                        onClick={ () => onThemeClick(theme.color, theme.alpha) }
+                        className={ `flex flex-col items-center gap-0.5 p-1 rounded cursor-pointer hover:bg-black/5 transition-colors ${ settings.headerColor.toUpperCase() === (theme.colors.headerColor ?? '').toUpperCase() && settings.toolbarColor === (theme.colors.toolbarColor ?? '') ? 'ring-2 ring-white' : '' }` }
+                        onClick={ () => onThemeClick(theme) }
                     >
                         <div
-                            className="w-[32px] h-[32px] rounded-full border border-black/20"
-                            style={ { backgroundColor: theme.color, opacity: theme.alpha / 100 } }
-                        />
+                            className="w-[32px] h-[32px] rounded-full border border-black/20 relative overflow-hidden"
+                            style={ { backgroundColor: theme.colors.headerColor } }
+                        >
+                            { theme.colors.glassMode && (
+                                <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px]" />
+                            ) }
+                        </div>
                         <Text small className="text-black text-[10px]">{ LocalizeText(`interface.settings.theme.${ theme.name }`) }</Text>
                     </div>
                 )) }
             </div>
 
             {/* Action buttons */}
-            <Flex gap={ 1 } className="w-full mt-2">
+            <Flex gap={ 1 } className="w-full mt-2 flex-wrap">
                 <button
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs"
-                    style={ { backgroundColor: '#5f9ea0' } }
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs min-w-[70px] bg-teal-600 hover:bg-teal-700 transition-colors"
                     onClick={ onReset }
                     title={ LocalizeText('interface.settings.color.reset') }
                 >
@@ -237,8 +233,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
                     { LocalizeText('interface.settings.color.reset') }
                 </button>
                 <button
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs"
-                    style={ { backgroundColor: '#c0392b' } }
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs min-w-[70px] bg-red-600 hover:bg-red-700 transition-colors"
                     onClick={ onDelete }
                     title={ LocalizeText('interface.settings.color.remove') }
                 >
@@ -246,8 +241,17 @@ export const InterfaceColorTabView: FC<{}> = () =>
                     { LocalizeText('interface.settings.color.remove') }
                 </button>
                 <button
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs"
-                    style={ { backgroundColor: '#2980b9' } }
+                    className={ `flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs min-w-[70px] transition-colors ${ settings.glassMode ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-500 hover:bg-gray-600' }` }
+                    onClick={ toggleGlass }
+                    title="Glassmorphism"
+                >
+                    <FaGlasses size={ 12 } />
+                    Glass
+                </button>
+            </Flex>
+            <Flex gap={ 1 } className="w-full">
+                <button
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs bg-blue-600 hover:bg-blue-700 transition-colors"
                     onClick={ onExport }
                     title={ LocalizeText('interface.settings.color.export') }
                 >
@@ -255,8 +259,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
                     { copyFeedback ? LocalizeText('interface.settings.color.copied') : LocalizeText('interface.settings.color.export') }
                 </button>
                 <button
-                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs"
-                    style={ { backgroundColor: '#27ae60' } }
+                    className="flex-1 flex items-center justify-center gap-1 py-2 rounded cursor-pointer text-white text-xs bg-green-600 hover:bg-green-700 transition-colors"
                     onClick={ () => setShowImport(!showImport) }
                     title={ LocalizeText('interface.settings.color.import') }
                 >
@@ -275,8 +278,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
                         onChange={ e => setImportValue(e.target.value) }
                     />
                     <button
-                        className="px-3 py-1 rounded cursor-pointer text-white text-xs"
-                        style={ { backgroundColor: '#27ae60' } }
+                        className="px-3 py-1 rounded cursor-pointer text-white text-xs bg-green-600 hover:bg-green-700 transition-colors"
                         onClick={ onImport }
                     >
                         OK

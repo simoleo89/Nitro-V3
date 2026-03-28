@@ -1,28 +1,19 @@
-import { GetCommunication, UiSettingsDataEvent, UiSettingsLoadComposer, UiSettingsSaveComposer } from '@nitrots/nitro-renderer';
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { DEFAULT_UI_SETTINGS, IUiSettings } from './IUiSettings';
 
-const STORAGE_KEY = 'nitro.ui.settings';
+const STORAGE_KEY = 'nitro.ui.theme';
 
 interface IUiSettingsContext
 {
     settings: IUiSettings;
-    isCustomActive: boolean;
     updateSettings: (partial: Partial<IUiSettings>) => void;
     resetSettings: () => void;
-    getHeaderStyle: () => React.CSSProperties;
-    getTabsStyle: () => React.CSSProperties;
-    getAccentColor: () => string;
 }
 
 const UiSettingsContext = createContext<IUiSettingsContext>({
     settings: DEFAULT_UI_SETTINGS,
-    isCustomActive: false,
     updateSettings: () => {},
-    resetSettings: () => {},
-    getHeaderStyle: () => ({}),
-    getTabsStyle: () => ({}),
-    getAccentColor: () => DEFAULT_UI_SETTINGS.headerColor
+    resetSettings: () => {}
 });
 
 const darkenColor = (hex: string, amount: number): string =>
@@ -35,6 +26,16 @@ const darkenColor = (hex: string, amount: number): string =>
     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 };
 
+const hexToRgba = (hex: string, alpha: number): string =>
+{
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = (num >> 16) & 0xFF;
+    const g = (num >> 8) & 0xFF;
+    const b = num & 0xFF;
+
+    return `rgba(${ r }, ${ g }, ${ b }, ${ alpha })`;
+};
+
 const loadSettings = (): IUiSettings =>
 {
     try
@@ -42,180 +43,99 @@ const loadSettings = (): IUiSettings =>
         const stored = localStorage.getItem(STORAGE_KEY);
         if(stored) return { ...DEFAULT_UI_SETTINGS, ...JSON.parse(stored) };
     }
-    catch(e) {}
+    catch(e) { /* ignore */ }
 
     return { ...DEFAULT_UI_SETTINGS };
 };
 
 const saveSettings = (settings: IUiSettings): void =>
 {
-    try
-    {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    }
-    catch(e) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); }
+    catch(e) { /* ignore */ }
 };
 
-const sendComposer = (composer: any): void =>
+const applyThemeToDOM = (settings: IUiSettings): void =>
 {
-    try
+    const root = document.documentElement;
+
+    if(settings.colorMode === 'default')
     {
-        GetCommunication()?.connection?.send(composer);
+        // Remove all theme variables - CSS fallbacks kick in
+        const vars = [
+            '--theme-primary', '--theme-primary-dark', '--theme-primary-hover', '--theme-primary-border',
+            '--theme-dark-bg', '--theme-dark-bg-95', '--theme-dark-panel', '--theme-dark-border',
+            '--theme-ctx-bg', '--theme-ctx-header', '--theme-ctx-item1', '--theme-ctx-item2',
+            '--theme-slider-track', '--theme-border', '--theme-header-image',
+            '--theme-glass-blur', '--theme-glass-bg'
+        ];
+        vars.forEach(v => root.style.removeProperty(v));
+        root.classList.remove('theme-glass');
+        return;
     }
-    catch(e) {}
+
+    if(settings.colorMode === 'color')
+    {
+        const c = settings.headerColor;
+        const alpha = (settings.headerAlpha ?? 100) / 100;
+
+        root.style.setProperty('--theme-primary', hexToRgba(c, alpha));
+        root.style.setProperty('--theme-primary-dark', darkenColor(c, 30));
+        root.style.setProperty('--theme-primary-hover', darkenColor(c, 20));
+        root.style.setProperty('--theme-primary-border', darkenColor(c, 35));
+        root.style.setProperty('--theme-dark-bg', settings.toolbarColor);
+        root.style.setProperty('--theme-dark-bg-95', hexToRgba(settings.toolbarColor, 0.95));
+        root.style.setProperty('--theme-dark-panel', settings.darkPanelColor);
+        root.style.setProperty('--theme-dark-border', darkenColor(settings.darkPanelColor, 10));
+        root.style.setProperty('--theme-ctx-bg', settings.ctxBgColor);
+        root.style.setProperty('--theme-ctx-header', darkenColor(settings.ctxBgColor, -30));
+        root.style.setProperty('--theme-ctx-item1', darkenColor(settings.ctxBgColor, 20));
+        root.style.setProperty('--theme-ctx-item2', darkenColor(settings.ctxBgColor, 30));
+        root.style.setProperty('--theme-slider-track', c);
+        root.style.setProperty('--theme-border', darkenColor(c, 50));
+        root.style.removeProperty('--theme-header-image');
+    }
+
+    if(settings.colorMode === 'image' && settings.headerImageUrl)
+    {
+        root.style.setProperty('--theme-header-image', `url(${ settings.headerImageUrl })`);
+        // Keep other variables if they were set
+    }
+
+    if(settings.glassMode)
+    {
+        root.classList.add('theme-glass');
+    }
+    else
+    {
+        root.classList.remove('theme-glass');
+    }
 };
 
 export const UiSettingsProvider: FC<PropsWithChildren> = ({ children }) =>
 {
     const [ settings, setSettings ] = useState<IUiSettings>(loadSettings);
-    const serverSaveTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+    const initializedRef = useRef(false);
 
-    // Carica dal server al mount e ascolta risposta
+    // Apply theme on mount and whenever settings change
     useEffect(() =>
     {
-        sendComposer(new UiSettingsLoadComposer());
-
-        const connection = GetCommunication()?.connection;
-
-        if(!connection) return;
-
-        const handler = (event: any) =>
-        {
-            try
-            {
-                const parser = event.getParser();
-                const json = parser?.settingsJson;
-
-                if(json && json !== '{}')
-                {
-                    const serverSettings = { ...DEFAULT_UI_SETTINGS, ...JSON.parse(json) };
-                    setSettings(serverSettings);
-                    saveSettings(serverSettings);
-                }
-            }
-            catch(e) {}
-        };
-
-        connection.addMessageEvent(new UiSettingsDataEvent(handler));
-    }, []);
-
-    const syncToServer = useCallback((settingsToSave: IUiSettings) =>
-    {
-        if(serverSaveTimerRef.current) clearTimeout(serverSaveTimerRef.current);
-
-        serverSaveTimerRef.current = setTimeout(() =>
-        {
-            sendComposer(new UiSettingsSaveComposer(JSON.stringify(settingsToSave)));
-        }, 1000);
-    }, []);
+        applyThemeToDOM(settings);
+        if(initializedRef.current) saveSettings(settings);
+        initializedRef.current = true;
+    }, [ settings ]);
 
     const updateSettings = useCallback((partial: Partial<IUiSettings>) =>
     {
-        setSettings(prev =>
-        {
-            const updated = { ...prev, ...partial };
-            saveSettings(updated);
-            syncToServer(updated);
-
-            return updated;
-        });
-    }, [ syncToServer ]);
+        setSettings(prev => ({ ...prev, ...partial }));
+    }, []);
 
     const resetSettings = useCallback(() =>
     {
         setSettings({ ...DEFAULT_UI_SETTINGS });
-        saveSettings(DEFAULT_UI_SETTINGS);
-        syncToServer(DEFAULT_UI_SETTINGS);
-    }, [ syncToServer ]);
-
-    const getHeaderStyle = useCallback((): React.CSSProperties =>
-    {
-        if(settings.colorMode === 'color')
-        {
-            const alpha = (settings.headerAlpha ?? 100) / 100;
-            const num = parseInt(settings.headerColor.replace('#', ''), 16);
-            const r = (num >> 16) & 0xFF;
-            const g = (num >> 8) & 0xFF;
-            const b = num & 0xFF;
-
-            return { backgroundColor: `rgba(${ r }, ${ g }, ${ b }, ${ alpha })` };
-        }
-
-        if(settings.colorMode === 'image' && settings.headerImageUrl)
-        {
-            return {
-                backgroundImage: `url(${ settings.headerImageUrl })`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'repeat'
-            };
-        }
-
-        return {};
-    }, [ settings ]);
-
-    const getTabsStyle = useCallback((): React.CSSProperties =>
-    {
-        if(settings.colorMode === 'color')
-        {
-            return { backgroundColor: darkenColor(settings.headerColor, 30) };
-        }
-
-        if(settings.colorMode === 'image' && settings.headerImageUrl)
-        {
-            return {
-                backgroundImage: `url(${ settings.headerImageUrl })`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center bottom',
-                backgroundRepeat: 'repeat'
-            };
-        }
-
-        return {};
-    }, [ settings ]);
-
-    const getAccentColor = useCallback((): string =>
-    {
-        if(settings.colorMode === 'color') return settings.headerColor;
-
-        return DEFAULT_UI_SETTINGS.headerColor;
-    }, [ settings ]);
-
-    const isCustomActive = settings.colorMode !== 'default';
-
-    const ALL_CSS_VARS = [
-        '--ui-accent-color', '--ui-accent-dark',
-        '--ui-ctx-bg', '--ui-ctx-header-bg', '--ui-ctx-item-bg1', '--ui-ctx-item-bg2',
-        '--ui-btn-primary-bg', '--ui-btn-primary-border',
-        '--ui-dark-bg', '--ui-dark-border'
-    ];
-
-    useEffect(() =>
-    {
-        const root = document.documentElement;
-
-        if(settings.colorMode === 'color')
-        {
-            const c = settings.headerColor;
-            root.style.setProperty('--ui-accent-color', c);
-            root.style.setProperty('--ui-accent-dark', darkenColor(c, 30));
-            root.style.setProperty('--ui-ctx-bg', darkenColor(c, 50));
-            root.style.setProperty('--ui-ctx-header-bg', darkenColor(c, 20));
-            root.style.setProperty('--ui-ctx-item-bg1', darkenColor(c, 60));
-            root.style.setProperty('--ui-ctx-item-bg2', darkenColor(c, 70));
-            root.style.setProperty('--ui-btn-primary-bg', c);
-            root.style.setProperty('--ui-btn-primary-border', darkenColor(c, 20));
-            root.style.setProperty('--ui-dark-bg', darkenColor(c, 55));
-            root.style.setProperty('--ui-dark-border', darkenColor(c, 60));
-        }
-        else
-        {
-            ALL_CSS_VARS.forEach(v => root.style.removeProperty(v));
-        }
-    }, [ settings ]);
+    }, []);
 
     return (
-        <UiSettingsContext.Provider value={ { settings, isCustomActive, updateSettings, resetSettings, getHeaderStyle, getTabsStyle, getAccentColor } }>
+        <UiSettingsContext.Provider value={ { settings, updateSettings, resetSettings } }>
             { children }
         </UiSettingsContext.Provider>
     );

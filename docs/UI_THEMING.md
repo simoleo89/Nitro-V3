@@ -280,31 +280,29 @@ These must be added to `@nitrots/nitro-renderer` (the `Nitro_Render_V3` reposito
 
 ### Required Emulator changes (Arcturus / Java)
 
-#### Database table
+#### Database migration
+
+Add a column to the existing `users` table:
 
 ```sql
-CREATE TABLE IF NOT EXISTS `user_ui_settings` (
-    `user_id` INT NOT NULL,
-    `settings_json` TEXT NOT NULL DEFAULT '{}',
-    PRIMARY KEY (`user_id`),
-    CONSTRAINT `fk_ui_settings_user`
-        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-        ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE `users`
+    ADD COLUMN `ui_settings` TEXT NOT NULL DEFAULT '{}' AFTER `extra_rank`;
 ```
+
+> **Note:** Adjust the `AFTER` clause to place the column where it makes sense in your schema. The column stores the full JSON string of `IUiSettings`.
 
 #### Incoming packet handlers
 
 **`UiSettingsLoadEvent` (header 10048):**
 1. Get `user_id` from session
-2. Query `SELECT settings_json FROM user_ui_settings WHERE user_id = ?`
-3. Respond with `UiSettingsDataComposer(settingsJson)`
+2. Query `SELECT ui_settings FROM users WHERE id = ?`
+3. Respond with `UiSettingsDataComposer(uiSettings)`
 
 **`UiSettingsSaveEvent` (header 10047):**
 1. Get `user_id` from session
 2. Read `settingsJson` string from packet
 3. Validate JSON length (max 4096 chars recommended)
-4. `INSERT INTO user_ui_settings (user_id, settings_json) VALUES (?, ?) ON DUPLICATE KEY UPDATE settings_json = ?`
+4. `UPDATE users SET ui_settings = ? WHERE id = ?`
 5. No response needed (fire-and-forget)
 
 #### Outgoing packet composer

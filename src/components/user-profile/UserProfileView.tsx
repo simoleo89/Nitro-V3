@@ -145,16 +145,16 @@ export const UserProfileView: FC<{}> = props =>
                 </div>
                 <NitroCard.Tabs>
                     <NitroCard.TabItem isActive={ activeTab === 'badge' } count={ userBadges.length } onClick={ () => onTabClick('badge') }>
-                        Badge
+                        { LocalizeText('extendedprofile.tab.badge') }
                     </NitroCard.TabItem>
                     <NitroCard.TabItem isActive={ activeTab === 'amici' } count={ userProfile.friendsCount } onClick={ () => onTabClick('amici') }>
-                        Amici
+                        { LocalizeText('extendedprofile.tab.friends') }
                     </NitroCard.TabItem>
                     <NitroCard.TabItem isActive={ activeTab === 'stanze' } onClick={ () => onTabClick('stanze') }>
-                        Stanze
+                        { LocalizeText('extendedprofile.tab.rooms') }
                     </NitroCard.TabItem>
                     <NitroCard.TabItem isActive={ activeTab === 'gruppi' } count={ userProfile.groups?.length } onClick={ () => onTabClick('gruppi') }>
-                        Gruppi
+                        { LocalizeText('extendedprofile.tab.groups') }
                     </NitroCard.TabItem>
                 </NitroCard.Tabs>
                 <div className="flex-1 overflow-auto p-2">
@@ -166,7 +166,7 @@ export const UserProfileView: FC<{}> = props =>
                                 ))
                                 : (
                                     <Flex center fullWidth className="h-full">
-                                        <Text small variant="muted">Nessun badge da mostrare</Text>
+                                        <Text small variant="muted">{ LocalizeText('extendedprofile.badge.empty') }</Text>
                                     </Flex>
                                 )
                             }
@@ -178,7 +178,7 @@ export const UserProfileView: FC<{}> = props =>
                                 <FriendsContainerView friendsCount={ userProfile.friendsCount } relationships={ userRelationships } />
                             ) : (
                                 <Flex center className="h-full">
-                                    <Text small variant="muted">Caricamento...</Text>
+                                    <Text small variant="muted">{ LocalizeText('generic.loading') }</Text>
                                 </Flex>
                             ) }
                         </div>
@@ -187,12 +187,12 @@ export const UserProfileView: FC<{}> = props =>
                         <div className="flex flex-col gap-1 h-full">
                             { !userRooms && (
                                 <Flex center className="h-full">
-                                    <Text small variant="muted">Caricamento stanze...</Text>
+                                    <Text small variant="muted">{ LocalizeText('extendedprofile.rooms.loading') }</Text>
                                 </Flex>
                             ) }
                             { userRooms && userRooms.length === 0 && (
                                 <Flex center className="h-full">
-                                    <Text small variant="muted">Nessuna stanza trovata</Text>
+                                    <Text small variant="muted">{ LocalizeText('extendedprofile.rooms.empty') }</Text>
                                 </Flex>
                             ) }
                             { userRooms && userRooms.length > 0 && userRooms.map(room => (

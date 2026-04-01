@@ -56,7 +56,7 @@ export const InventoryPrefixView: FC<{}> = () =>
         if(!selectedPrefix) return;
 
         showConfirm(
-            `Are you sure you want to delete the prefix {${selectedPrefix.text}}?`,
+            LocalizeText('inventory.prefix.delete.confirm', [ 'prefix' ], [ selectedPrefix.text ]),
             () => deletePrefix(selectedPrefix.id),
             null,
             null,
@@ -101,16 +101,16 @@ export const InventoryPrefixView: FC<{}> = () =>
             <div className="flex flex-col justify-between col-span-5 overflow-auto">
                 { activePrefix &&
                     <div className="flex flex-col gap-1">
-                        <span className="text-sm truncate min-h-[1.25rem] leading-5">Active prefix</span>
+                        <span className="text-sm truncate min-h-[1.25rem] leading-5">{ LocalizeText('inventory.prefix.active') }</span>
                         <div className="flex items-center justify-center p-3 rounded-md border-2 border-green-400 bg-card-grid-item">
                             <PrefixPreview color={ activePrefix.color } effect={ activePrefix.effect } icon={ activePrefix.icon } text={ activePrefix.text } textSize="text-lg" />
                         </div>
                     </div> }
                 { !activePrefix &&
                     <div className="flex flex-col gap-1">
-                        <span className="text-sm truncate min-h-[1.25rem] leading-5">Active prefix</span>
+                        <span className="text-sm truncate min-h-[1.25rem] leading-5">{ LocalizeText('inventory.prefix.active') }</span>
                         <div className="flex items-center justify-center p-3 rounded-md border-2 border-dashed border-card-grid-item-border bg-card-grid-item opacity-50">
-                            <span className="text-sm">No active prefix</span>
+                            <span className="text-sm">{ LocalizeText('inventory.prefix.none') }</span>
                         </div>
                     </div> }
                 { !!selectedPrefix &&
@@ -122,7 +122,7 @@ export const InventoryPrefixView: FC<{}> = () =>
                             <NitroButton
                                 className="grow"
                                 onClick={ () => selectedPrefix.active ? deactivatePrefix() : activatePrefix(selectedPrefix.id) }>
-                                { selectedPrefix.active ? 'Deactivate' : 'Activate' }
+                                { selectedPrefix.active ? LocalizeText('inventory.prefix.deactivate') : LocalizeText('inventory.prefix.activate') }
                             </NitroButton>
                             { !selectedPrefix.active &&
                                 <NitroButton className="bg-danger! hover:bg-danger/80! p-1" onClick={ attemptDeletePrefix }>

@@ -12,7 +12,7 @@ export const parsePrefixColors = (text: string, colorStr: string): string[] =>
 {
     if(!colorStr || !text) return [];
 
-    const colors = colorStr.split(',');
+    const colors = colorStr.split(',').filter(c => c.length > 0);
     return [ ...text ].map((_, i) => colors[Math.min(i, colors.length - 1)]);
 };
 
@@ -51,3 +51,25 @@ export const PREFIX_EFFECT_KEYFRAMES = `
     50% { opacity: 0.5; }
 }
 `;
+
+export interface IPrefixCacheData
+{
+    text: string;
+    color: string;
+    icon: string;
+    effect: string;
+}
+
+const prefixCache = new Map<number, IPrefixCacheData>();
+
+export const setPrefixCache = (webId: number, data: IPrefixCacheData) =>
+{
+    if(!data.text) return;
+
+    prefixCache.set(webId, data);
+};
+
+export const getPrefixCache = (webId: number): IPrefixCacheData | null =>
+{
+    return prefixCache.get(webId) || null;
+};

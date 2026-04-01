@@ -14,4 +14,8 @@ export interface IChatEntry
     roomId: number;
     timestamp: string;
     type: number;
+    prefixText?: string;
+    prefixColor?: string;
+    prefixIcon?: string;
+    prefixEffect?: string;
 }

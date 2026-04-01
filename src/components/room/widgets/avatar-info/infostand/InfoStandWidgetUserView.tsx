@@ -1,7 +1,7 @@
 import { GetSessionDataManager, RelationshipStatusInfoEvent, RelationshipStatusInfoMessageParser, RoomSessionFavoriteGroupUpdateEvent, RoomSessionUserBadgesEvent, RoomSessionUserFigureUpdateEvent, UserRelationshipsComposer } from '@nitrots/nitro-renderer';
 import { Dispatch, FC, FocusEvent, KeyboardEvent, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { FaPencilAlt, FaTimes } from 'react-icons/fa';
-import { AvatarInfoUser, CloneObject, GetConfigurationValue, GetGroupInformation, GetUserProfile, LocalizeText, SendMessageComposer } from '../../../../../api';
+import { AvatarInfoUser, CloneObject, GetConfigurationValue, GetGroupInformation, GetUserProfile, LocalizeText, SendMessageComposer, parsePrefixColors, getPrefixEffectStyle, PREFIX_EFFECT_KEYFRAMES } from '../../../../../api';
 import { Base, Column, Flex, LayoutAvatarImageView, LayoutBadgeImageView, Text, UserProfileIconView } from '../../../../../common';
 import { useMessageEvent, useNitroEvent, useRoom } from '../../../../../hooks';
 import { InfoStandBadgeSlotView } from './InfoStandBadgeSlotView';
@@ -143,6 +143,29 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
               </div>
               <FaTimes className="cursor-pointer fa-icon" onClick={onClose} />
             </div>
+            { avatarInfo.prefixText && (() => {
+                const colors = parsePrefixColors(avatarInfo.prefixText, avatarInfo.prefixColor);
+                const hasMultiColor = colors.length > 1 && new Set(colors).size > 1;
+                const fxStyle = getPrefixEffectStyle(avatarInfo.prefixEffect, colors[0] || '#FFFFFF');
+                return (
+                    <>
+                        { avatarInfo.prefixEffect === 'pulse' && <style>{ PREFIX_EFFECT_KEYFRAMES }</style> }
+                        <span className="text-[11px] font-bold" style={ fxStyle }>
+                            { avatarInfo.prefixIcon && <span className="mr-0.5">{ avatarInfo.prefixIcon }</span> }
+                            <span style={ hasMultiColor ? fxStyle : { ...fxStyle, color: colors[0] || '#FFFFFF' } }>
+                                {'{'}
+                                { hasMultiColor
+                                    ? [ ...avatarInfo.prefixText ].map((char, i) => (
+                                        <span key={ i } style={ { color: colors[i] || colors[colors.length - 1], ...getPrefixEffectStyle(avatarInfo.prefixEffect, colors[i]) } }>{ char }</span>
+                                    ))
+                                    : avatarInfo.prefixText
+                                }
+                                {'}'}
+                            </span>
+                        </span>
+                    </>
+                );
+            })() }
             <hr className="m-0 bg-[#0003] border-0 opacity-[0.5] h-px" />
           </div>
           <div className="flex flex-col gap-1">

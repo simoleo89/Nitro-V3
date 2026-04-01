@@ -1,9 +1,34 @@
 import { AddLinkEventTracker, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { ChatEntryType, LocalizeText } from '../../api';
+import { ChatEntryType, LocalizeText, parsePrefixColors, getPrefixEffectStyle, PREFIX_EFFECT_KEYFRAMES } from '../../api';
 import { Flex, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../common';
 import { useChatHistory, useOnClickChat } from '../../hooks';
 import { NitroInput } from '../../layout';
+
+const ChatHistoryPrefixView: FC<{ text: string; color: string; icon: string; effect: string }> = ({ text, color, icon, effect }) =>
+{
+    if(!text) return null;
+
+    const colors = parsePrefixColors(text, color);
+    const hasMultiColor = colors.length > 1 && new Set(colors).size > 1;
+    const fxStyle = getPrefixEffectStyle(effect, colors[0] || '#FFFFFF');
+
+    return (
+        <span className="font-bold mr-1" style={ fxStyle }>
+            { icon && <span className="mr-0.5 text-[11px]">{ icon }</span> }
+            <span style={ hasMultiColor ? fxStyle : { ...fxStyle, color: colors[0] || '#FFFFFF' } }>
+                {'{'}
+                { hasMultiColor
+                    ? [ ...text ].map((char, i) => (
+                        <span key={ i } style={ { color: colors[i] || colors[colors.length - 1], ...getPrefixEffectStyle(effect, colors[i]) } }>{ char }</span>
+                    ))
+                    : text
+                }
+                {'}'}
+            </span>
+        </span>
+    );
+};
 
 export const ChatHistoryView: FC<{}> = props => {
     const [isVisible, setIsVisible] = useState(false);
@@ -16,15 +41,15 @@ export const ChatHistoryView: FC<{}> = props => {
 
     const filteredChatHistory = useMemo(() => {
         let result = chatHistory;
-        
+
         if (searchText.length > 0) {
             const text = searchText.toLowerCase();
-            result = chatHistory.filter(entry => 
-                (entry.message && entry.message.toLowerCase().includes(text)) || 
+            result = chatHistory.filter(entry =>
+                (entry.message && entry.message.toLowerCase().includes(text)) ||
                 (entry.name && entry.name.toLowerCase().includes(text))
             );
         }
-        
+
         return [...result];
     }, [chatHistory, searchText]);
 
@@ -78,6 +103,7 @@ export const ChatHistoryView: FC<{}> = props => {
         <NitroCardView className="w-[400px] h-[400px] bg-[#f0f0f0]" theme="primary-slim" uniqueKey="chat-history">
             <NitroCardHeaderView headerText={LocalizeText('room.chathistory.button.text')} onCloseClick={event => setIsVisible(false)} />
             <NitroCardContentView className="h-full bg-[#f0f0f0] bg-[url('@/assets/images/chat/chathistory_background.png')] bg-repeat bg-auto" gap={2} overflow="hidden" style={{ height: 'calc(100% - 40px)', display: 'flex', flexDirection: 'column' }}>
+                <style>{ PREFIX_EFFECT_KEYFRAMES }</style>
                 <NitroInput placeholder={LocalizeText('generic.search')} type="text" value={searchText} onChange={event => setSearchText(event.target.value)} />
                 <div ref={elementRef} style={{ flex: 1, overflowY: 'auto', background: 'inherit' }}>
                     {filteredChatHistory.map((row, index) => (
@@ -85,8 +111,8 @@ export const ChatHistoryView: FC<{}> = props => {
                             <Text variant="gray">{row.timestamp}</Text>
                             {row.type === ChatEntryType.TYPE_CHAT && (
                                 <div className="bubble-container" style={{position: 'relative', display: 'inline-flex', alignItems: 'center'}}>
-                                    <div 
-                                        className={`chat-bubble bubble-${row.style} type-${row.chatType}`} 
+                                    <div
+                                        className={`chat-bubble bubble-${row.style} type-${row.chatType}`}
                                         style={{ maxWidth: '100%', backgroundColor: row.style === 0 ? row.color : 'transparent', position: 'relative', zIndex: 1 }}>
                                         <div className="user-container">
                                             {row.imageUrl && row.imageUrl.length > 0 && (
@@ -94,6 +120,8 @@ export const ChatHistoryView: FC<{}> = props => {
                                             )}
                                         </div>
                                         <div className="chat-content">
+                                            { row.prefixText &&
+                                                <ChatHistoryPrefixView color={ row.prefixColor } effect={ row.prefixEffect } icon={ row.prefixIcon } text={ row.prefixText } /> }
                                             <b className="mr-1 username" dangerouslySetInnerHTML={{__html: `${row.name}: `}} />
                                             <span className="message" dangerouslySetInnerHTML={{__html: `${row.message}`}} onClick={ onClickChat } />
                                         </div>

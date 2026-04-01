@@ -1,6 +1,6 @@
 import { GetRoomEngine, GetSessionDataManager, GetTickerTime, IFurnitureData, IRoomModerationSettings, IRoomPetData, IRoomUserData, ObjectDataFactory, PetFigureData, PetType, RoomControllerLevel, RoomModerationSettings, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomTradingLevelEnum, RoomWidgetEnumItemExtradataParameter } from '@nitrots/nitro-renderer';
 import { GetRoomSession, IsOwnerOfFurniture } from '../../nitro';
-import { LocalizeText } from '../../utils';
+import { LocalizeText, getPrefixCache } from '../../utils';
 import { AvatarInfoFurni } from './AvatarInfoFurni';
 import { AvatarInfoName } from './AvatarInfoName';
 import { AvatarInfoPet } from './AvatarInfoPet';
@@ -259,10 +259,16 @@ export class AvatarInfoUtilities
         userInfo.groupName = userData.groupName;
         userInfo.badges = roomSession.userDataManager.getUserBadges(userData.webID);
         userInfo.figure = userData.figure;
-        //var _local_8:Array = GetSessionDataManager().getUserTags(userData.webID);
-        //this._Str_16287(userData.webId, _local_8);
-        //this._container.habboGroupsManager.updateVisibleExtendedProfile(userData.webID);
-        //this._container.connection.send(new GetRelationshipStatusInfoMessageComposer(userData.webId));
+
+        const cachedPrefix = getPrefixCache(userData.webID);
+
+        if(cachedPrefix)
+        {
+            userInfo.prefixText = cachedPrefix.text;
+            userInfo.prefixColor = cachedPrefix.color;
+            userInfo.prefixIcon = cachedPrefix.icon;
+            userInfo.prefixEffect = cachedPrefix.effect;
+        }
 
         return userInfo;
     }

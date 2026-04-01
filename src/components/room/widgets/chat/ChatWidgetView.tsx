@@ -1,6 +1,6 @@
 import { RoomChatSettings } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useRef } from 'react';
-import { ChatBubbleMessage, DoChatsOverlap, GetConfigurationValue } from '../../../../api';
+import { ChatBubbleMessage, DoChatsOverlap, GetConfigurationValue, PREFIX_EFFECT_KEYFRAMES } from '../../../../api';
 import { useChatWidget, useChatWindow } from '../../../../hooks';
 import IntervalWebWorker from '../../../../workers/IntervalWebWorker';
 import { WorkerBuilder } from '../../../../workers/WorkerBuilder';
@@ -158,6 +158,7 @@ export const ChatWidgetView: FC<{}> = props =>
 
     return (
         <div ref={ elementRef } className="absolute flex justify-center items-center w-full top-0 min-h-px z-(--chat-zindex) bg-transparent roundehidden shadow-none pointer-events-none">
+            <style>{ PREFIX_EFFECT_KEYFRAMES }</style>
             { !chatWindowEnabled && chatMessages.map(chat => <ChatWidgetMessageView key={ chat.id } bubbleWidth={ chatSettings.weight } chat={ chat } makeRoom={ makeRoom } />) }
             { chatWindowEnabled && <ChatWidgetWindowView /> }
         </div>

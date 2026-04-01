@@ -1,6 +1,6 @@
 import { GetGuestRoomResultEvent, GetRoomEngine, PetFigureData, RoomChatSettings, RoomChatSettingsEvent, RoomDragEvent, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomSessionChatEvent, RoomUserData, SystemChatStyleEnum } from '@nitrots/nitro-renderer';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChatBubbleMessage, ChatBubbleUtilities, ChatEntryType, ChatHistoryCurrentDate, GetConfigurationValue, GetRoomObjectScreenLocation, IRoomChatSettings, LocalizeText, PlaySound, RoomChatFormatter } from '../../../api';
+import { ChatBubbleMessage, ChatBubbleUtilities, ChatEntryType, ChatHistoryCurrentDate, GetConfigurationValue, GetRoomObjectScreenLocation, IRoomChatSettings, LocalizeText, PlaySound, RoomChatFormatter, setPrefixCache } from '../../../api';
 import { useMessageEvent, useNitroEvent } from '../../events';
 import { useRoom } from '../useRoom';
 import { useChatHistory } from './../../chat-history';
@@ -154,6 +154,8 @@ const useChatWidgetState = () =>
         chatMessage.prefixIcon = event.prefixIcon || '';
         chatMessage.prefixEffect = event.prefixEffect || '';
 
+        if(event.prefixText) setPrefixCache(userData.webID, { text: event.prefixText, color: event.prefixColor || '', icon: event.prefixIcon || '', effect: event.prefixEffect || '' });
+
         setChatMessages(prevValue =>
         {
             const newValue = [ ...prevValue, chatMessage ];
@@ -162,7 +164,7 @@ const useChatWidgetState = () =>
 
             return newValue;
         });
-        addChatEntry({ id: -1, webId: userData.webID, entityId: userData.roomIndex, name: username, imageUrl, style: styleId, chatType: chatType, entityType: userData.type, message: formattedText, timestamp: ChatHistoryCurrentDate(), type: ChatEntryType.TYPE_CHAT, roomId: roomSession.roomId, color });
+        addChatEntry({ id: -1, webId: userData.webID, entityId: userData.roomIndex, name: username, imageUrl, style: styleId, chatType: chatType, entityType: userData.type, message: formattedText, timestamp: ChatHistoryCurrentDate(), type: ChatEntryType.TYPE_CHAT, roomId: roomSession.roomId, color, prefixText: event.prefixText || '', prefixColor: event.prefixColor || '', prefixIcon: event.prefixIcon || '', prefixEffect: event.prefixEffect || '' });
     });
 
     useNitroEvent<RoomDragEvent>(RoomDragEvent.ROOM_DRAG, event =>

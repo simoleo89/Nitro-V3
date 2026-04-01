@@ -25,6 +25,10 @@ export class AvatarInfoUser implements IAvatarInfo
     public groupName: string = '';
     public groupBadgeId: string = '';
     public carryItem: number = 0;
+    public prefixText: string = '';
+    public prefixColor: string = '';
+    public prefixIcon: string = '';
+    public prefixEffect: string = '';
     public roomIndex: number = 0;
     public isSpectatorMode: boolean = false;
     public allowNameChange: boolean = false;

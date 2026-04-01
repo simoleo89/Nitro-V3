@@ -8,8 +8,11 @@ export const UserContainerView: FC<{
 }> = props =>
 {
     const { userProfile = null } = props;
+
     const [ requestSent, setRequestSent ] = useState(userProfile.requestSent);
+
     const isOwnProfile = (userProfile.id === GetSessionDataManager().userId);
+
     const canSendFriendRequest = !requestSent && (!isOwnProfile && !userProfile.isMyFriend && !userProfile.requestSent);
 
     const infostandBackgroundClass = `background-${userProfile.backgroundId ?? 'default'}`;
@@ -35,36 +38,75 @@ export const UserContainerView: FC<{
                 <LayoutAvatarImageView direction={ 2 } figure={ userProfile.figure } />
                 <div className={`absolute inset-0 profile-overlay ${infostandOverlayClass}`} />
             </div>
+
             <div className="flex flex-col gap-2">
                 <div className="flex flex-col gap-0">
                     <p className="leading-tight font-bold">{ userProfile.username }</p>
                     <p className="text-sm italic leading-tight">{ userProfile.motto }</p>
                 </div>
+
                 <div className="flex flex-col gap-1">
-                    <p className="text-sm leading-none" dangerouslySetInnerHTML={{ __html: LocalizeText('extendedprofile.created', ['created'], [userProfile.registration]) }} />
-                    <p className="text-sm leading-none" dangerouslySetInnerHTML={{ __html: LocalizeText('extendedprofile.last.login', ['lastlogin'], [FriendlyTime.format(userProfile.secondsSinceLastVisit, '.ago', 2)]) }} />
-                    <p className="text-sm leading-none">
-                        <b>{ LocalizeText('extendedprofile.friends.count') }</b> { userProfile.friendsCount }
-                    </p>
+                    <p
+                        className="text-sm leading-none"
+                        dangerouslySetInnerHTML={{
+                            __html: LocalizeText(
+                                'extendedprofile.created',
+                                ['created'],
+                                [userProfile.registration]
+                            )
+                        }}
+                    />
+
+                    <p
+                        className="text-sm leading-none"
+                        dangerouslySetInnerHTML={{
+                            __html: LocalizeText(
+                                'extendedprofile.last.login',
+                                ['lastlogin'],
+                                [FriendlyTime.format(userProfile.secondsSinceLastVisit, '.ago', 2)]
+                            )
+                        }}
+                    />
+
+                    <p
+                        className="text-sm leading-none"
+                        dangerouslySetInnerHTML={{
+                            __html: LocalizeText(
+                                'extendedprofile.friends.count',
+                                ['count'],
+                                [userProfile.friendsCount]
+                            )
+                        }}
+                    />
+
                     <p className="text-sm leading-none">
                         <b>{ LocalizeText('extendedprofile.achievementscore') }</b> { userProfile.achievementPoints }
                     </p>
                 </div>
+
                 <div className="flex items-center gap-1">
                     { userProfile.isOnline &&
                         <i className="nitro-icon icon-pf-online" /> }
+
                     { !userProfile.isOnline &&
                         <i className="nitro-icon icon-pf-offline" /> }
+
                     <div className="flex items-center gap-1">
                         { canSendFriendRequest &&
-                            <Text pointer small underline onClick={ addFriend }>{ LocalizeText('extendedprofile.addasafriend') }</Text> }
+                            <Text pointer small underline onClick={ addFriend }>
+                                { LocalizeText('extendedprofile.addasafriend') }
+                            </Text> }
+
                         { !canSendFriendRequest &&
                             <>
                                 <i className="nitro-icon icon-pf-tick" />
+
                                 { isOwnProfile &&
                                     <p>{ LocalizeText('extendedprofile.me') }</p> }
+
                                 { userProfile.isMyFriend &&
                                     <p>{ LocalizeText('extendedprofile.friend') }</p> }
+
                                 { (requestSent || userProfile.requestSent) &&
                                     <p>{ LocalizeText('extendedprofile.friendrequestsent') }</p> }
                             </> }

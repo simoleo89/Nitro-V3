@@ -9,7 +9,7 @@ import { FriendsContainerView } from './FriendsContainerView';
 import { GroupsContainerView } from './GroupsContainerView';
 import { UserContainerView } from './UserContainerView';
 
-type ProfileTab = 'badge' | 'amici' | 'stanze' | 'gruppi';
+type ProfileTab = 'badge' | 'friends' | 'rooms' | 'groups';
 
 export const UserProfileView: FC<{}> = props =>
 {
@@ -39,7 +39,7 @@ export const UserProfileView: FC<{}> = props =>
     {
         setActiveTab(tab);
 
-        if(tab === 'stanze' && !userRooms && userProfile)
+        if(tab === 'rooms' && !userRooms && userProfile)
         {
             SendMessageComposer(new NavigatorSearchComposer('hotel_view', `owner:${ userProfile.username }`));
         }
@@ -99,7 +99,7 @@ export const UserProfileView: FC<{}> = props =>
 
     useMessageEvent<NavigatorSearchEvent>(NavigatorSearchEvent, event =>
     {
-        if(!userProfile || activeTab !== 'stanze') return;
+        if(!userProfile || activeTab !== 'rooms') return;
 
         const parser = event.getParser();
         const result = parser.result;
@@ -145,16 +145,16 @@ export const UserProfileView: FC<{}> = props =>
                 </div>
                 <NitroCard.Tabs>
                     <NitroCard.TabItem isActive={ activeTab === 'badge' } count={ userBadges.length } onClick={ () => onTabClick('badge') }>
-                        { LocalizeText('extendedprofile.tab.badge') }
+                        { LocalizeText('levelinfo.category.badge') }
                     </NitroCard.TabItem>
-                    <NitroCard.TabItem isActive={ activeTab === 'amici' } count={ userProfile.friendsCount } onClick={ () => onTabClick('amici') }>
-                        { LocalizeText('extendedprofile.tab.friends') }
+                    <NitroCard.TabItem isActive={ activeTab === 'friends' } count={ userProfile.friendsCount } onClick={ () => onTabClick('friends') }>
+                        { LocalizeText('navigator.tab.3') }
                     </NitroCard.TabItem>
-                    <NitroCard.TabItem isActive={ activeTab === 'stanze' } onClick={ () => onTabClick('stanze') }>
-                        { LocalizeText('extendedprofile.tab.rooms') }
+                    <NitroCard.TabItem isActive={ activeTab === 'rooms' } onClick={ () => onTabClick('rooms') }>
+                        { LocalizeText('navigator.tab.2') }
                     </NitroCard.TabItem>
-                    <NitroCard.TabItem isActive={ activeTab === 'gruppi' } count={ userProfile.groups?.length } onClick={ () => onTabClick('gruppi') }>
-                        { LocalizeText('extendedprofile.tab.groups') }
+                    <NitroCard.TabItem isActive={ activeTab === 'groups' } count={ userProfile.groups?.length } onClick={ () => onTabClick('groups') }>
+                        { LocalizeText('navigator.searchcode.title.groups') }
                     </NitroCard.TabItem>
                 </NitroCard.Tabs>
                 <div className="flex-1 overflow-auto p-2">
@@ -172,7 +172,7 @@ export const UserProfileView: FC<{}> = props =>
                             }
                         </div>
                     ) }
-                    { activeTab === 'amici' && (
+                    { activeTab === 'friends' && (
                         <div className="flex flex-col gap-2 h-full">
                             { userRelationships ? (
                                 <FriendsContainerView friendsCount={ userProfile.friendsCount } relationships={ userRelationships } />
@@ -183,7 +183,7 @@ export const UserProfileView: FC<{}> = props =>
                             ) }
                         </div>
                     ) }
-                    { activeTab === 'stanze' && (
+                    { activeTab === 'rooms' && (
                         <div className="flex flex-col gap-1 h-full">
                             { !userRooms && (
                                 <Flex center className="h-full">
@@ -206,7 +206,7 @@ export const UserProfileView: FC<{}> = props =>
                             )) }
                         </div>
                     ) }
-                    { activeTab === 'gruppi' && (
+                    { activeTab === 'groups' && (
                         <div className="h-full">
                             <GroupsContainerView fullWidth groups={ userProfile.groups } itsMe={ userProfile.id === GetSessionDataManager().userId } onLeaveGroup={ onLeaveGroup } />
                         </div>

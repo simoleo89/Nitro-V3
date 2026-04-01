@@ -13,6 +13,8 @@ interface FurniEditorEditViewProps
     onBack: () => void;
 }
 
+const FURNI_DATA_EXCLUDED_KEYS = new Set([ 'name', 'description' ]);
+
 const FIELD_TIPS: Record<string, string> = {
     stackHeight: 'Visual height when items are stacked on top of this furniture',
     interactionType: 'Defines behavior when user interacts (e.g. default, gate, teleport, vendingmachine)',
@@ -69,9 +71,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
     const saveRef = useRef<() => void>(null);
 
     const [ form, setForm ] = useState({
-        itemName: '',
         publicName: '',
-        spriteId: 0,
         type: 's',
         width: 1,
         length: 1,
@@ -88,6 +88,8 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
         interactionType: '',
         interactionModesCount: 0,
         customparams: '',
+        furniDataName: '',
+        furniDataDescription: '',
     });
 
     const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
@@ -97,9 +99,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
         if(!item) return;
 
         setForm({
-            itemName: item.itemName || '',
             publicName: item.publicName || '',
-            spriteId: item.spriteId || 0,
             type: item.type || 's',
             width: item.width || 1,
             length: item.length || 1,
@@ -116,10 +116,12 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
             interactionType: item.interactionType || '',
             interactionModesCount: item.interactionModesCount || 0,
             customparams: item.customparams || '',
+            furniDataName: furniDataEntry ? String(furniDataEntry.name ?? '') : '',
+            furniDataDescription: furniDataEntry ? String(furniDataEntry.description ?? '') : '',
         });
 
         setShowDeleteDialog(false);
-    }, [ item ]);
+    }, [ item, furniDataEntry ]);
 
     const setField = useCallback((key: string, value: unknown) =>
     {
@@ -130,9 +132,10 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
     {
         if(!item) return false;
 
-        return form.itemName !== (item.itemName || '') ||
-            form.publicName !== (item.publicName || '') ||
-            form.spriteId !== (item.spriteId || 0) ||
+        const origFurniName = furniDataEntry ? String(furniDataEntry.name ?? '') : '';
+        const origFurniDesc = furniDataEntry ? String(furniDataEntry.description ?? '') : '';
+
+        return form.publicName !== (item.publicName || '') ||
             form.type !== (item.type || 's') ||
             form.width !== (item.width || 1) ||
             form.length !== (item.length || 1) ||
@@ -148,14 +151,15 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
             form.allowInventoryStack !== !!item.allowInventoryStack ||
             form.interactionType !== (item.interactionType || '') ||
             form.interactionModesCount !== (item.interactionModesCount || 0) ||
-            form.customparams !== (item.customparams || '');
-    }, [ form, item ]);
+            form.customparams !== (item.customparams || '') ||
+            form.furniDataName !== origFurniName ||
+            form.furniDataDescription !== origFurniDesc;
+    }, [ form, item, furniDataEntry ]);
 
     const validation = useMemo(() =>
     {
         const errors: Record<string, string> = {};
 
-        if(!form.itemName.trim()) errors.itemName = 'Required';
         if(!form.publicName.trim()) errors.publicName = 'Required';
         if(form.width < 1) errors.width = 'Min 1';
         if(form.length < 1) errors.length = 'Min 1';
@@ -233,8 +237,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                 <div className="grid grid-cols-2 gap-2">
                     <div>
                         <label className={ labelClass }>Item Name</label>
-                        <input className={ inputClass('itemName') } value={ form.itemName } onChange={ e => setField('itemName', e.target.value) } />
-                        { validation.itemName && <span className="text-[9px] text-red-500">{ validation.itemName }</span> }
+                        <input className={ `${ inputClass() } bg-[#e9ecef] cursor-not-allowed` } value={ item.itemName || '' } disabled />
                     </div>
                     <div>
                         <label className={ labelClass }>Public Name</label>
@@ -243,7 +246,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                     </div>
                     <div>
                         <label className={ labelClass }>Sprite ID</label>
-                        <input type="number" className={ inputClass() } value={ form.spriteId } onChange={ e => setField('spriteId', Number(e.target.value)) } />
+                        <input type="number" className={ `${ inputClass() } bg-[#e9ecef] cursor-not-allowed` } value={ item.spriteId || 0 } disabled />
                     </div>
                     <div>
                         <label className={ labelClass }>Type</label>
@@ -321,9 +324,19 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
             </Section>
 
             { furniDataEntry &&
-                <Section title="FurniData.json" defaultOpen={ false }>
+                <Section title="FurniData.json">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                        <div>
+                            <label className={ labelClass }>Name</label>
+                            <input className={ inputClass() } value={ form.furniDataName } onChange={ e => setField('furniDataName', e.target.value) } />
+                        </div>
+                        <div>
+                            <label className={ labelClass }>Description</label>
+                            <input className={ inputClass() } value={ form.furniDataDescription } onChange={ e => setField('furniDataDescription', e.target.value) } />
+                        </div>
+                    </div>
                     <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10px]">
-                        { Object.entries(furniDataEntry).map(([ key, value ]) => (
+                        { Object.entries(furniDataEntry).filter(([ key ]) => !FURNI_DATA_EXCLUDED_KEYS.has(key)).map(([ key, value ]) => (
                             <div key={ key } className="flex justify-between bg-[#f5f5f5] px-2 py-0.5 rounded">
                                 <span className="font-bold text-[#555]">{ key }</span>
                                 <span className="text-[#333] truncate ml-1 max-w-[120px] text-right">{ String(value ?? '') }</span>

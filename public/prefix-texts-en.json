@@ -1,0 +1,23 @@
+{
+    "catalog.prefix.text": "Text",
+    "catalog.prefix.text.placeholder": "Enter text...",
+    "catalog.prefix.icon": "Icon",
+    "catalog.prefix.icon.remove": "Remove icon",
+    "catalog.prefix.effect": "Effect",
+    "catalog.prefix.color": "Color",
+    "catalog.prefix.color.single": "🎨 Single",
+    "catalog.prefix.color.per.letter": "🌈 Per Letter",
+    "catalog.prefix.color.hint": "Select a letter, then choose the color. Auto-advances.",
+    "catalog.prefix.color.apply.all.title": "Apply current color to all letters",
+    "catalog.prefix.color.apply.all": "Apply to all",
+    "catalog.prefix.color.selected": "Selected letter:",
+    "catalog.prefix.price": "Price:",
+    "catalog.prefix.price.amount": "5 Credits",
+    "catalog.prefix.purchased": "✓ Purchased!",
+    "catalog.prefix.purchase": "Purchase",
+    "inventory.prefix.active": "Active prefix",
+    "inventory.prefix.none": "No active prefix",
+    "inventory.prefix.activate": "Activate",
+    "inventory.prefix.deactivate": "Deactivate",
+    "inventory.prefix.delete.confirm": "Are you sure you want to delete the prefix {%prefix%}?"
+}

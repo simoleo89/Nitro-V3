@@ -1,12 +1,13 @@
-import { ColorConverter, GetRenderer, GetRoomEngine, GetStage, IRoomSession, NitroAdjustmentFilter, NitroSprite, NitroTexture, RoomBackgroundColorEvent, RoomEngineEvent, RoomEngineObjectEvent, RoomGeometry, RoomId, RoomObjectCategory, RoomObjectHSLColorEnabledEvent, RoomObjectOperationType, RoomSessionEvent, RoomVariableEnum, Vector3d } from '@nitrots/nitro-renderer';
+import { ColorConverter, GetRenderer, GetRoomEngine, GetStage, HanditemBlockStateMessageEvent, IRoomSession, NitroAdjustmentFilter, NitroSprite, NitroTexture, RoomBackgroundColorEvent, RoomEngineEvent, RoomEngineObjectEvent, RoomGeometry, RoomId, RoomObjectCategory, RoomObjectHSLColorEnabledEvent, RoomObjectOperationType, RoomSessionEvent, RoomVariableEnum, Vector3d } from '@nitrots/nitro-renderer';
 import { useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
 import { CanManipulateFurniture, DispatchUiEvent, GetRoomSession, IsFurnitureSelectionDisabled, ProcessRoomObjectOperation, RoomWidgetUpdateBackgroundColorPreviewEvent, RoomWidgetUpdateRoomObjectEvent, SetActiveRoomId, StartRoomSession } from '../../api';
-import { useNitroEvent, useUiEvent } from '../events';
+import { useMessageEvent, useNitroEvent, useUiEvent } from '../events';
 
 const useRoomState = () =>
 {
     const [roomSession, setRoomSession] = useState<IRoomSession>(null);
+    const [isHandItemBlocked, setIsHandItemBlocked] = useState(false);
     const [roomBackground, setRoomBackground] = useState<NitroSprite>(null);
     const [roomFilter, setRoomFilter] = useState<NitroAdjustmentFilter>(null);
     const [originalRoomBackgroundColor, setOriginalRoomBackgroundColor] = useState(0);
@@ -91,9 +92,11 @@ const useRoomState = () =>
             case RoomEngineEvent.INITIALIZED:
                 SetActiveRoomId(event.roomId);
                 setRoomSession(session);
+                setIsHandItemBlocked(false);
                 return;
             case RoomEngineEvent.DISPOSED:
                 setRoomSession(null);
+                setIsHandItemBlocked(false);
                 return;
         }
     });
@@ -110,8 +113,20 @@ const useRoomState = () =>
                 return;
             case RoomSessionEvent.ENDED:
                 setRoomSession(null);
+                setIsHandItemBlocked(false);
                 return;
         }
+    });
+
+    useMessageEvent<HanditemBlockStateMessageEvent>(HanditemBlockStateMessageEvent, event =>
+    {
+        const parser = event.getParser();
+        const session = (roomSession || GetRoomSession());
+
+        if(!parser || !session) return;
+        if(parser.stateData.roomId !== session.roomId) return;
+
+        setIsHandItemBlocked(parser.stateData.blocked);
     });
 
     useNitroEvent<RoomEngineObjectEvent>([
@@ -281,7 +296,7 @@ const useRoomState = () =>
         };
     }, [roomSession]);
 
-    return { roomSession };
+    return { roomSession, isHandItemBlocked };
 };
 
 export const useRoom = () => useBetween(useRoomState);

@@ -21,11 +21,13 @@ export const AvatarInfoWidgetOwnPetView: FC<AvatarInfoWidgetOwnPetViewProps> = p
 {
     const { avatarInfo = null, onClose = null } = props;
     const [ mode, setMode ] = useState(MODE_NORMAL);
-    const { roomSession = null } = useRoom();
+    const { roomSession = null, isHandItemBlocked = false } = useRoom();
     const { petRespectRemaining = 0, respectPet = null } = useSessionInfo();
 
     const canGiveHandItem = useMemo(() =>
     {
+        if(isHandItemBlocked) return false;
+
         let flag = false;
 
         const roomObject = GetOwnRoomObject();
@@ -38,7 +40,7 @@ export const AvatarInfoWidgetOwnPetView: FC<AvatarInfoWidgetOwnPetViewProps> = p
         }
 
         return flag;
-    }, []);
+    }, [ isHandItemBlocked ]);
 
     const processAction = (name: string) =>
     {

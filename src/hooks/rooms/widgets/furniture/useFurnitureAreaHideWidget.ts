@@ -1,6 +1,6 @@
-import { GetRoomEngine, RoomAreaSelectionManager, RoomEngineAreaHideStateEvent, RoomEngineTriggerWidgetEvent, RoomObjectVariable } from '@nitrots/nitro-renderer';
-import { useEffect, useState } from 'react';
-import { CanManipulateFurniture } from '../../../../api';
+import { FurnitureMultiStateComposer, GetRoomEngine, RoomAreaSelectionManager, RoomEngineAreaHideStateEvent, RoomEngineTriggerWidgetEvent, RoomObjectVariable, SetObjectDataMessageComposer } from '@nitrots/nitro-renderer';
+import { useCallback, useEffect, useState } from 'react';
+import { CanManipulateFurniture, SendMessageComposer } from '../../../../api';
 import { useNitroEvent } from '../../../events';
 import { useRoom } from '../../useRoom';
 
@@ -34,6 +34,27 @@ const useFurnitureAreaHideWidgetState = () =>
         GetRoomEngine().areaSelectionManager.deactivate();
     };
 
+    const saveChanges = useCallback(() =>
+    {
+        if(objectId === -1) return;
+
+        const data = new Map<string, string>();
+
+        data.set('state', isOn ? '1' : '0');
+        data.set('rootX', rootX.toString());
+        data.set('rootY', rootY.toString());
+        data.set('width', width.toString());
+        data.set('length', length.toString());
+        data.set('invisibility', invisibility ? '1' : '0');
+        data.set('wallItems', wallItems ? '1' : '0');
+        data.set('invert', inverted ? '1' : '0');
+
+        SendMessageComposer(new SetObjectDataMessageComposer(objectId, data));
+        SendMessageComposer(new FurnitureMultiStateComposer(objectId, isOn ? 0 : 1));
+
+        onClose();
+    }, [ objectId, isOn, rootX, rootY, width, length, invisibility, wallItems, inverted ]);
+
     useNitroEvent<RoomEngineTriggerWidgetEvent>(RoomEngineTriggerWidgetEvent.REQUEST_AREA_HIDE, event =>
     {
         if(!CanManipulateFurniture(roomSession, event.objectId, event.category)) return;
@@ -44,20 +65,22 @@ const useFurnitureAreaHideWidgetState = () =>
         const roomObject = GetRoomEngine().getRoomObject(event.roomId, event.objectId, event.category);
 
         const model = roomObject.model;
+        const data = model.getValue<number[]>(RoomObjectVariable.FURNITURE_DATA) || [];
 
         setIsOn(roomObject.getState(0) === 1);
-        setRootX(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_ROOT_X) ?? 0);
-        setRootY(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_ROOT_Y) ?? 0);
-        setWidth(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_WIDTH) ?? 0);
-        setLength(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_LENGTH) ?? 0);
-        setInvisibility(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_INVISIBILITY) === 1);
-        setWallItems(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_WALL_ITEMS) === 1);
-        setInverted(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_INVERT) === 1);
+        setRootX(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_ROOT_X) ?? data[1] ?? 0);
+        setRootY(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_ROOT_Y) ?? data[2] ?? 0);
+        setWidth(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_WIDTH) ?? data[3] ?? 0);
+        setLength(model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_LENGTH) ?? data[4] ?? 0);
+        setInvisibility((model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_INVISIBILITY) ?? data[5] ?? 0) === 1);
+        setWallItems((model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_WALL_ITEMS) ?? data[6] ?? 0) === 1);
+        setInverted((model.getValue<number>(RoomObjectVariable.FURNITURE_AREA_HIDE_INVERT) ?? data[7] ?? 0) === 1);
     });
 
     useNitroEvent<RoomEngineAreaHideStateEvent>(RoomEngineAreaHideStateEvent.UPDATE_STATE_AREA_HIDE, event =>
     {
-        setObjectId(event.objectId);
+        if(objectId !== event.objectId) return;
+
         setCategory(event.category);
         setIsOn(event.isOn);
     });
@@ -87,7 +110,7 @@ const useFurnitureAreaHideWidgetState = () =>
         }
     }, [ objectId, isOn, rootX, rootY, width, length ]);
 
-    return { objectId, category, isOn, setIsOn, rootX, setRootX, rootY, setRootY, width, setWidth, length, setLength, invisibility, setInvisibility, wallItems, setWallItems, inverted, setInverted, onClose };
+    return { objectId, category, isOn, setIsOn, rootX, setRootX, rootY, setRootY, width, setWidth, length, setLength, invisibility, setInvisibility, wallItems, setWallItems, inverted, setInverted, saveChanges, onClose };
 };
 
 export const useFurnitureAreaHideWidget = useFurnitureAreaHideWidgetState;

@@ -28,7 +28,7 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
     const [ mode, setMode ] = useState(MODE_NORMAL);
     const { canRequestFriend = null } = useFriends();
     const { report = null } = useHelp();
-    const { roomSession = null } = useRoom();
+    const { roomSession = null, isHandItemBlocked = false } = useRoom();
     const { userRespectRemaining = 0, respectUser = null } = useSessionInfo();
     const { openInspectionForUser, showInspectButton } = useWiredTools();
 
@@ -49,6 +49,8 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
 
     const canGiveHandItem = useMemo(() =>
     {
+        if(isHandItemBlocked) return false;
+
         let flag = false;
 
         const roomObject = GetOwnRoomObject();
@@ -61,7 +63,7 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
         }
 
         return flag;
-    }, []);
+    }, [ isHandItemBlocked ]);
 
     const processAction = (name: string) =>
     {

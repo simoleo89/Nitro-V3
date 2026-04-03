@@ -108,8 +108,15 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
 
     const update = () => {
       if (!elementRef.current) return;
-      const bounds = GetRoomObjectBounds(GetRoomSession().roomId, objectId, category);
-      const location = GetRoomObjectScreenLocation(GetRoomSession().roomId, objectId, category);
+      const roomSession = GetRoomSession();
+
+      if (!roomSession) {
+        onClose();
+        return;
+      }
+
+      const bounds = GetRoomObjectBounds(roomSession.roomId, objectId, category);
+      const location = GetRoomObjectScreenLocation(roomSession.roomId, objectId, category);
       updatePosition(bounds, location);
     };
 
@@ -117,7 +124,7 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
     ticker.add(update);
 
     return () => ticker.remove(update);
-  }, [objectId, category, updatePosition]);
+  }, [objectId, category, updatePosition, onClose]);
 
   useEffect(() => {
     if (!fades) return;

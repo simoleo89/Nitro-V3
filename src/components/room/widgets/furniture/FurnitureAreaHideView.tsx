@@ -6,7 +6,7 @@ import { useFurnitureAreaHideWidget } from '../../../../hooks';
 
 export const FurnitureAreaHideView: FC<{}> = props =>
 {
-    const { objectId = -1, isOn, setIsOn, wallItems, setWallItems, inverted, setInverted, invisibility, setInvisibility, onClose = null } = useFurnitureAreaHideWidget();
+    const { objectId = -1, isOn, wallItems, setWallItems, inverted, setInverted, invisibility, setInvisibility, saveChanges = null, onClose = null } = useFurnitureAreaHideWidget();
 
     if(objectId === -1) return null;
 
@@ -49,7 +49,7 @@ export const FurnitureAreaHideView: FC<{}> = props =>
                         </Column>
                     </Flex>
                 </Column>
-                <Button fullWidth variant="primary">
+                <Button fullWidth variant="primary" onClick={ saveChanges }>
                     { LocalizeText(isOn ? 'widget.dimmer.button.off' : 'widget.dimmer.button.on') }
                 </Button>
             </NitroCardContentView>

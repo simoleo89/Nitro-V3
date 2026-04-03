@@ -83,6 +83,7 @@ const CatalogClassicViewInner: FC<{}> = () =>
             { isVisible &&
                 <NitroCardView className="w-[630px] h-[400px]" style={ GetConfigurationValue('catalog.headers') ? { width: 710 } : {} } uniqueKey="catalog">
                     <NitroCardHeaderView headerText={ LocalizeText('catalog.title') } onCloseClick={ () => setIsVisible(false) } />
+                    { /* Admin banner */ }
                     { adminMode &&
                         <div className="flex items-center justify-between bg-warning text-dark text-[10px] font-bold px-3 py-0.5 uppercase tracking-wider" style={ { textShadow: '0 1px 0 rgba(255,255,255,0.3)' } }>
                             <span>⚙ Admin Mode</span>
@@ -127,12 +128,14 @@ const CatalogClassicViewInner: FC<{}> = () =>
                                 </NitroCardTabsItemView>
                             );
                         }) }
+                        { /* Admin toggle button in tabs bar */ }
                         { isMod &&
                             <NitroCardTabsItemView isActive={ adminMode } onClick={ () => setAdminMode(!adminMode) }>
                                 <FaCog className={ `text-[10px] ${ adminMode ? 'animate-spin' : '' }` } style={ adminMode ? { animationDuration: '3s' } : {} } />
                             </NitroCardTabsItemView> }
                     </NitroCardTabsView>
                     <NitroCardContentView>
+                        { /* Admin: add new root category */ }
                         { adminMode && rootNode &&
                             <div className="flex items-center gap-2 mb-1">
                                 <button
@@ -152,7 +155,7 @@ const CatalogClassicViewInner: FC<{}> = () =>
                             </div> }
                         <Grid>
                             { !navigationHidden &&
-                                 <Column overflow="auto" size={ 3 }>
+                                <Column overflow="auto" size={ 3 }>
                                     { activeNodes && (activeNodes.length > 0) &&
                                         <CatalogNavigationView node={ activeNodes[0] } /> }
                                 </Column> }

@@ -22,6 +22,8 @@ export const CatalogSearchView: FC<{}> = () =>
 
         const timeout = setTimeout(() =>
         {
+            if(!offersToNodes || !rootNode) return;
+
             const furnitureDatas = GetSessionDataManager().getAllFurnitureData();
 
             if(!furnitureDatas || !furnitureDatas.length) return;
@@ -31,11 +33,13 @@ export const CatalogSearchView: FC<{}> = () =>
 
             for(const furniture of furnitureDatas)
             {
+                if(!furniture) continue;
+
                 if((currentType === CatalogType.BUILDER) && !furniture.availableForBuildersClub) continue;
 
                 if((currentType === CatalogType.NORMAL) && furniture.excludeDynamic) continue;
 
-                const searchValues = [ furniture.className, furniture.name, furniture.description ].join(' ').replace(/ /gi, '').toLowerCase();
+                const searchValues = [ furniture.className || '', furniture.name || '', furniture.description || '' ].join(' ').replace(/ /gi, '').toLowerCase();
 
                 if((currentType === CatalogType.BUILDER) && (furniture.purchaseOfferId === -1) && (furniture.rentOfferId === -1))
                 {

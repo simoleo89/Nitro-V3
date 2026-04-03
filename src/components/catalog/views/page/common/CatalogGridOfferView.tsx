@@ -18,16 +18,18 @@ export const CatalogGridOfferView: FC<CatalogGridOfferViewProps> = props =>
     const { requestOfferToMover = null } = useCatalog();
     const { isVisible = false } = useInventoryFurni();
     const { isFavoriteOffer, toggleFavoriteOffer } = useCatalogFavorites();
-    const isFav = isFavoriteOffer(offer.offerId);
+    const isFav = offer ? isFavoriteOffer(offer.offerId) : false;
 
     const iconUrl = useMemo(() =>
     {
+        if(!offer) return null;
+
         if(offer.pricingModel === Offer.PRICING_MODEL_BUNDLE)
         {
             return null;
         }
 
-        return offer.product.getIconUrl(offer);
+        return offer.product?.getIconUrl(offer) ?? null;
     }, [ offer ]);
 
     const onMouseEvent = (event: MouseEvent) =>
@@ -48,6 +50,8 @@ export const CatalogGridOfferView: FC<CatalogGridOfferViewProps> = props =>
                 return;
         }
     };
+
+    if(!offer) return null;
 
     const product = offer.product;
 

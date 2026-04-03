@@ -3,7 +3,7 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AvatarInfoUser, DispatchUiEvent, GetOwnRoomObject, GetUserProfile, LocalizeText, MessengerFriend, ReportType, RoomWidgetUpdateChatInputContentEvent, SendMessageComposer } from '../../../../../api';
 import { Flex } from '../../../../../common';
-import { useFriends, useHelp, useRoom, useSessionInfo } from '../../../../../hooks';
+import { useFriends, useHelp, useRoom, useSessionInfo, useWiredTools } from '../../../../../hooks';
 import { ContextMenuHeaderView } from '../../context-menu/ContextMenuHeaderView';
 import { ContextMenuListItemView } from '../../context-menu/ContextMenuListItemView';
 import { ContextMenuView } from '../../context-menu/ContextMenuView';
@@ -30,6 +30,7 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
     const { report = null } = useHelp();
     const { roomSession = null } = useRoom();
     const { userRespectRemaining = 0, respectUser = null } = useSessionInfo();
+    const { openInspectionForUser, showInspectButton } = useWiredTools();
 
     const isShowGiveRights = useMemo(() =>
     {
@@ -157,6 +158,9 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
                 case 'report':
                     report(ReportType.BULLY, { reportedUserId: avatarInfo.webID });
                     break;
+                case 'inspect':
+                    openInspectionForUser(avatarInfo.roomIndex);
+                    break;
                 case 'pass_hand_item':
                     SendMessageComposer(new RoomUnitGiveHandItemComposer(avatarInfo.webID));
                     break;
@@ -236,6 +240,10 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
                     <ContextMenuListItemView onClick={ event => processAction('report') }>
                         { LocalizeText('infostand.button.report') }
                     </ContextMenuListItemView>
+                    { showInspectButton &&
+                        <ContextMenuListItemView onClick={ event => processAction('inspect') }>
+                            Inspect
+                        </ContextMenuListItemView> }
                     { moderateMenuHasContent &&
                         <ContextMenuListItemView onClick={ event => processAction('moderate') }>
                             <FaChevronRight className="right fa-icon" />

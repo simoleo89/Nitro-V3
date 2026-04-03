@@ -2,6 +2,7 @@ import { GroupSavePreferencesComposer } from '@nitrots/nitro-renderer';
 import { Dispatch, FC, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { IGroupData, LocalizeText, SendMessageComposer } from '../../../../api';
 import { Flex, HorizontalRule, Text } from '../../../../common';
+import { useNotification } from '../../../../hooks';
 
 const STATES: string[] = [ 'regular', 'exclusive', 'private' ];
 
@@ -17,12 +18,30 @@ export const GroupTabSettingsView: FC<GroupTabSettingsViewProps> = props =>
     const { groupData = null, setGroupData = null, setCloseAction = null } = props;
     const [ groupState, setGroupState ] = useState<number>(groupData.groupState);
     const [ groupDecorate, setGroupDecorate ] = useState<boolean>(groupData.groupCanMembersDecorate);
+    const [ groupForum, setGroupForum ] = useState<boolean>(groupData.groupHasForum ?? false);
+    const { showConfirm = null } = useNotification();
+
+    const handleForumToggle = useCallback(() =>
+    {
+        if(groupForum)
+        {
+            // Disabling forum - show confirmation
+            showConfirm(LocalizeText('group.forum.disable.confirm'), () =>
+            {
+                setGroupForum(false);
+            }, null);
+        }
+        else
+        {
+            setGroupForum(true);
+        }
+    }, [ groupForum, showConfirm ]);
 
     const saveSettings = useCallback(() =>
     {
         if(!groupData) return false;
 
-        if((groupState === groupData.groupState) && (groupDecorate === groupData.groupCanMembersDecorate)) return true;
+        if((groupState === groupData.groupState) && (groupDecorate === groupData.groupCanMembersDecorate) && (groupForum === (groupData.groupHasForum ?? false))) return true;
 
         if(groupData.groupId <= 0)
         {
@@ -32,6 +51,7 @@ export const GroupTabSettingsView: FC<GroupTabSettingsViewProps> = props =>
 
                 newValue.groupState = groupState;
                 newValue.groupCanMembersDecorate = groupDecorate;
+                newValue.groupHasForum = groupForum;
 
                 return newValue;
             });
@@ -39,15 +59,16 @@ export const GroupTabSettingsView: FC<GroupTabSettingsViewProps> = props =>
             return true;
         }
 
-        SendMessageComposer(new GroupSavePreferencesComposer(groupData.groupId, groupState, groupDecorate ? 0 : 1));
+        SendMessageComposer(new GroupSavePreferencesComposer(groupData.groupId, groupState, groupDecorate ? 0 : 1, groupForum));
 
         return true;
-    }, [ groupData, groupState, groupDecorate, setGroupData ]);
+    }, [ groupData, groupState, groupDecorate, groupForum, setGroupData ]);
 
     useEffect(() =>
     {
         setGroupState(groupData.groupState);
         setGroupDecorate(groupData.groupCanMembersDecorate);
+        setGroupForum(groupData.groupHasForum ?? false);
     }, [ groupData ]);
 
     useEffect(() =>
@@ -82,6 +103,14 @@ export const GroupTabSettingsView: FC<GroupTabSettingsViewProps> = props =>
                 <div className="flex flex-col gap-1">
                     <Text bold>{ LocalizeText('group.edit.settings.rights.caption') }</Text>
                     <Text>{ LocalizeText('group.edit.settings.rights.members.help') }</Text>
+                </div>
+            </div>
+            <HorizontalRule />
+            <div className="flex items-center gap-1">
+                <input checked={ groupForum } className="form-check-input" type="checkbox" onChange={ handleForumToggle } />
+                <div className="flex flex-col gap-1">
+                    <Text bold>{ LocalizeText('group.forum.enable.caption') }</Text>
+                    <Text>{ LocalizeText('group.forum.enable.help') }</Text>
                 </div>
             </div>
         </div>

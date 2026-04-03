@@ -7,6 +7,11 @@
     src: url("@/assets/webfonts/Ubuntu-C.ttf");
 }
 
+@font-face {
+    font-family: UbuntuCondensed;
+    src: local("Ubuntu Condensed"), local("Ubuntu");
+}
+
 html,
 body {
     padding: 0;
@@ -30,51 +35,45 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: .5rem
+    width: .625rem;
 }
 
 ::-webkit-scrollbar:horizontal {
-    height: .5rem
+    height: .625rem;
 }
 
 ::-webkit-scrollbar:not(:horizontal) {
-    width: .5rem
+    width: .625rem;
 }
 
-::-webkit-scrollbar-track:horizontal {
-    border-bottom: .25rem solid rgba(0, 0, 0, .1)
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, .08);
+    border-radius: .5rem;
 }
 
-::-webkit-scrollbar-track:not(:horizontal) {
-    border-right: .25rem solid rgba(0, 0, 0, .1)
+::-webkit-scrollbar-thumb {
+    background: rgba(30, 114, 149, .35);
+    border-radius: .5rem;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
-::-webkit-scrollbar-thumb:horizontal {
-    border-bottom: .25rem solid rgba(30, 114, 149, .4)
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 114, 149, .6);
+    border-radius: .5rem;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
-::-webkit-scrollbar-thumb:horizontal:hover {
-    border-bottom: .25rem solid rgba(30, 114, 149, .8)
-}
-
-::-webkit-scrollbar-thumb:horizontal:active {
-    border-bottom: .25rem solid #185D79
-}
-
-::-webkit-scrollbar-thumb:not(:horizontal) {
-    border-right: .25rem solid rgba(30, 114, 149, .4)
-}
-
-::-webkit-scrollbar-thumb:not(:horizontal):hover {
-    border-right: .25rem solid rgba(30, 114, 149, .8)
-}
-
-::-webkit-scrollbar-thumb:not(:horizontal):active {
-    border-right: .25rem solid #185D79
+::-webkit-scrollbar-thumb:active {
+    background: #185D79;
+    border-radius: .5rem;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-corner {
-    background: rgba(0, 0, 0, .1)
+    background: rgba(0, 0, 0, .08);
 }
 
 @layer components {
@@ -183,16 +182,231 @@ body {
         @apply pointer-events-none relative h-[130px] w-[90px] bg-position-[center_-8px] bg-no-repeat;
     }
 
-    .ubuntu-close-button {
-        @apply inline-block h-[20px] w-[19px] bg-transparent bg-position-[0px_0px] bg-no-repeat outline-0;
-        background-image: url("@/assets/images/ui/ubuntu-close-buttons.png");
+    .nitro-card-shell {
+        border: 2px solid #000 !important;
+        border-radius: 10px;
+        background: #f2f2eb;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+        overflow: hidden;
+        max-width: min(calc(100vw - 16px), 100%);
+        max-height: calc(100vh - 16px);
+    }
 
-        &:hover {
-            @apply bg-position-[-38px];
+    .nitro-card-header-shell {
+        border: 2px solid #3c88a6;
+        border-bottom-color: #000;
+        border-radius: 8px 8px 0 0;
+        background: #30728c;
+        padding: 5px;
+    }
+
+    .nitro-card-title {
+        margin: 0 auto;
+        font-family: UbuntuCondensed, Ubuntu, sans-serif;
+        font-weight: 400;
+        line-height: 1;
+    }
+
+    .nitro-card-close-button,
+    .ubuntu-close-button {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        border: 2px solid #000;
+        border-radius: 4px;
+        background: #bf2c2c;
+        position: relative;
+        transition: border-color .2s ease, filter .2s ease, transform .15s ease;
+    }
+
+    .nitro-card-close-button::before,
+    .nitro-card-close-button::after,
+    .ubuntu-close-button::before,
+    .ubuntu-close-button::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 10px;
+        height: 2px;
+        border-radius: 2px;
+        background: #fff;
+        transform-origin: center;
+    }
+
+    .nitro-card-close-button::before,
+    .ubuntu-close-button::before {
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .nitro-card-close-button::after,
+    .ubuntu-close-button::after {
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .nitro-card-close-button:hover,
+    .ubuntu-close-button:hover {
+        border-color: #fff;
+        filter: brightness(1.08);
+    }
+
+    .nitro-card-close-button:active,
+    .ubuntu-close-button:active {
+        transform: translateY(1px);
+        filter: brightness(0.96);
+    }
+
+    .nitro-card-content-shell {
+        border: 0;
+        border-top: 0;
+        border-radius: 0 0 8px 8px;
+        background: #f2f2eb;
+        font-family: Ubuntu, sans-serif;
+        color: #000;
+    }
+
+    .nitro-card-shell,
+    .nitro-card-content-shell {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: UbuntuCondensed, Ubuntu, sans-serif;
+            font-weight: 400;
+            line-height: 1.1;
+            color: #111;
+            font-size: 16px;
         }
 
-        &:active {
-            @apply bg-position-[-19px];
+        p,
+        span,
+        label,
+        li,
+        td,
+        th,
+        input,
+        textarea,
+        select,
+        button {
+            font-family: Ubuntu, sans-serif;
+            color: #111;
+        }
+
+        p,
+        label,
+        li,
+        td,
+        th,
+        input,
+        textarea,
+        select,
+        button {
+            font-size: 12px;
+            line-height: 1.25;
+        }
+    }
+
+    .nitro-card-tabs-shell {
+        background: #d9ded7;
+        border-top: 0;
+        border-bottom: 2px solid #c4cabf;
+    }
+
+    .nitro-card-tab-item {
+        background: #d2d7cf;
+        border: 2px solid #000;
+        border-bottom: 0;
+        color: #000;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .nitro-card-tab-item-active {
+        background: #f2f2eb;
+    }
+
+    .nitro-card-panel {
+        background: rgba(0, 0, 0, 0.045) !important;
+        border: 1px solid #c4cabf !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+    }
+
+    .nitro-card-row {
+        background: rgba(0, 0, 0, 0.035) !important;
+        border: 1px solid #c4cabf !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        transition: background-color .15s ease, border-color .15s ease;
+    }
+
+    .nitro-card-row:hover {
+        background: rgba(0, 0, 0, 0.07) !important;
+        border-color: #aeb7aa !important;
+    }
+
+    .nitro-card-divider {
+        border-color: #c4cabf !important;
+        box-shadow: none !important;
+    }
+
+    .nitro-card-shell :where(.bg-muted, .bg-light, .bg-light-dark, .bg-white, .bg-white\/50, .bg-white\/80) {
+        background: rgba(0, 0, 0, 0.045) !important;
+        box-shadow: none !important;
+    }
+
+    .nitro-card-shell :where(.border, .border-muted, .border-card-grid-item-border, .border-card-grid-item-border-active, .border-white, .border-white\/10, .border-white\/20, .border-white\/30) {
+        border-color: #c4cabf !important;
+        box-shadow: none !important;
+    }
+
+    .nitro-card-shell :where(.shadow, .shadow-md, .shadow-lg, .shadow-inner, .shadow-inner1px) {
+        box-shadow: none !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .nitro-card-shell {
+        width: min(calc(100vw - 16px), 100%) !important;
+        max-width: calc(100vw - 16px) !important;
+        max-height: calc(100vh - 16px) !important;
+    }
+
+    .nitro-card-header-shell {
+        padding: 4px;
+    }
+
+    .nitro-card-title {
+        font-size: 17px;
+    }
+
+    .nitro-card-content-shell {
+        padding: 8px !important;
+    }
+
+    .nitro-card-tabs-shell {
+        flex-wrap: wrap;
+        gap: 3px;
+        padding: 4px 6px 0;
+    }
+
+    .nitro-card-tab-item {
+        padding: 4px 9px;
+    }
+
+    .nitro-card-shell,
+    .nitro-card-content-shell {
+        p,
+        label,
+        li,
+        td,
+        th,
+        input,
+        textarea,
+        select,
+        button {
+            font-size: 11.5px;
         }
     }
 }
@@ -447,219 +661,7 @@ body {
     }
 }
 
-.nitro-avatar-editor-spritesheet {
-    background: url('@/assets/images/avatareditor/avatar-editor-spritesheet.png') transparent no-repeat;
-
-    &.arrow-left-icon {
-        width: 28px;
-        height: 21px;
-        background-position: -226px -131px;
-    }
-
-    &.arrow-right-icon {
-        width: 28px;
-        height: 21px;
-        background-position: -226px -162px;
-    }
-
-    &.ca-icon {
-        width: 25px;
-        height: 25px;
-        background-position: -226px -61px;
-
-        &.selected {
-            width: 25px;
-            height: 25px;
-            background-position: -226px -96px;
-        }
-    }
-
-    &.cc-icon {
-        width: 31px;
-        height: 29px;
-        background-position: -145px -5px;
-
-        &.selected {
-            width: 31px;
-            height: 29px;
-            background-position: -145px -44px;
-        }
-    }
-
-    &.ch-icon {
-        width: 29px;
-        height: 24px;
-        background-position: -186px -39px;
-
-        &.selected {
-            width: 29px;
-            height: 24px;
-            background-position: -186px -73px;
-        }
-    }
-
-    &.clear-icon {
-        width: 27px;
-        height: 27px;
-        background-position: -145px -157px;
-    }
-
-    &.cp-icon {
-        width: 30px;
-        height: 24px;
-        background-position: -145px -264px;
-
-        &.selected {
-            width: 30px;
-            height: 24px;
-            background-position: -186px -5px;
-        }
-    }
-
-
-    &.ea-icon {
-        width: 35px;
-        height: 16px;
-        background-position: -226px -193px;
-
-        &.selected {
-            width: 35px;
-            height: 16px;
-            background-position: -226px -219px;
-        }
-    }
-
-    &.fa-icon {
-        width: 27px;
-        height: 20px;
-        background-position: -186px -137px;
-
-        &.selected {
-            width: 27px;
-            height: 20px;
-            background-position: -186px -107px;
-        }
-    }
-
-    &.female-icon {
-        width: 18px;
-        height: 27px;
-        background-position: -186px -202px;
-
-        &.selected {
-            width: 18px;
-            height: 27px;
-            background-position: -186px -239px;
-        }
-    }
-
-    &.ha-icon {
-        width: 25px;
-        height: 22px;
-        background-position: -226px -245px;
-
-        &.selected {
-            width: 25px;
-            height: 22px;
-            background-position: -226px -277px;
-        }
-    }
-
-    &.he-icon {
-        width: 31px;
-        height: 27px;
-        background-position: -145px -83px;
-
-        &.selected {
-            width: 31px;
-            height: 27px;
-            background-position: -145px -120px;
-        }
-    }
-
-    &.hr-icon {
-        width: 29px;
-        height: 25px;
-        background-position: -145px -194px;
-
-        &.selected {
-            width: 29px;
-            height: 25px;
-            background-position: -145px -229px;
-        }
-    }
-
-    &.lg-icon {
-        width: 19px;
-        height: 20px;
-        background-position: -303px -45px;
-
-        &.selected {
-            width: 19px;
-            height: 20px;
-            background-position: -303px -75px;
-        }
-    }
-
-    &.loading-icon {
-        width: 21px;
-        height: 25px;
-        background-position: -186px -167px;
-    }
-
-
-    &.male-icon {
-        width: 21px;
-        height: 21px;
-        background-position: -186px -276px;
-
-        &.selected {
-            width: 21px;
-            height: 21px;
-            background-position: -272px -5px;
-        }
-    }
-
-
-    &.sellable-icon {
-        width: 17px;
-        height: 15px;
-        background-position: -303px -105px;
-    }
-
-
-    &.sh-icon {
-        width: 37px;
-        height: 10px;
-        background-position: -303px -5px;
-
-        &.selected {
-            width: 37px;
-            height: 10px;
-            background-position: -303px -25px;
-        }
-    }
-
-
-    &.spotlight-icon {
-        width: 130px;
-        height: 305px;
-        background-position: -5px -5px;
-    }
-
-
-    &.wa-icon {
-        width: 36px;
-        height: 18px;
-        background-position: -226px -5px;
-
-        &.selected {
-            width: 36px;
-            height: 18px;
-            background-position: -226px -33px;
-        }
-    }
-}
+/* Avatar editor icons are now rendered as <img> tags via AvatarEditorIcon.tsx */
 
 .nitro-avatar-editor-wardrobe-figure-preview {
     background-color: #677181;
@@ -710,7 +712,7 @@ body {
 
 
     .category-item {
-        height: 40px;
+        height: 32px;
     }
 
     .figure-preview-container {
@@ -789,16 +791,6 @@ body {
     font-size: var(--font-size, 16px); /* Fallback to 16px if not set */
 }
 
-/* Header and Tab Colors */
-
-.bg-card-header {
-    background-color: #1e7295; /* e.g., #2c3e50 */
-}
-
-.bg-card-tabs {
-    background-color: #185d79; /* Match bg-card-header */
-}
-
 .nitro-wired {
     background: #d5d5d5;
     border: 1px solid #8f8f8f !important;
@@ -833,12 +825,17 @@ body {
         background: #d9d9d9 !important;
         padding: 4px !important;
         gap: 4px !important;
+        overflow: visible !important;
     }
 
     .nitro-wired__section {
         display: flex;
         flex-direction: column;
         gap: 3px;
+    }
+
+    .nitro-wired__section--body {
+        overflow: visible !important;
     }
 
     .nitro-wired__section .font-bold {
@@ -1035,6 +1032,513 @@ body {
         word-break: break-word;
     }
 
+    .nitro-wired__give-var {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nitro-wired__give-var-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+    }
+
+    .nitro-wired__give-var-targets {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+    .nitro-wired__give-var-target {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        min-height: 18px;
+        padding: 0;
+        border: 1px solid #8e8e8e;
+        border-radius: 4px;
+        background: transparent;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        transition: filter 0.12s ease-in-out;
+    }
+
+    .nitro-wired__give-var-target:hover {
+        filter: brightness(0.98);
+    }
+
+    .nitro-wired__give-var-target img {
+        width: auto;
+        height: auto;
+        max-width: 12px;
+        max-height: 12px;
+        image-rendering: pixelated;
+    }
+
+    .nitro-wired__give-var-target--furni.is-active {
+        background: linear-gradient(180deg, #f7db6d 0%, #ddb948 100%);
+    }
+
+    .nitro-wired__give-var-target--user.is-active {
+        background: linear-gradient(180deg, #74be68 0%, #4f9644 100%);
+    }
+
+    .nitro-wired__give-var-target--global.is-active {
+        background: linear-gradient(180deg, #7bc4f0 0%, #5497d2 100%);
+    }
+
+    .nitro-wired__give-var-target--context.is-active {
+        background: linear-gradient(180deg, #f0ad65 0%, #d68739 100%);
+    }
+
+    .nitro-wired__give-var-target.is-active {
+        border-color: #4d4d4d;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    }
+
+    .nitro-wired__give-var-target:disabled {
+        opacity: 0.72;
+        cursor: default;
+    }
+
+    .nitro-wired__give-var-select {
+        min-height: 23px;
+    }
+
+    .nitro-wired__variable-picker {
+        position: relative;
+        width: 100%;
+    }
+
+    .nitro-wired__variable-picker-trigger {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: 23px;
+        padding: 0 22px 0 8px;
+        border: 1px solid #8e8e8e;
+        border-radius: 4px;
+        background: linear-gradient(180deg, #ffffff 0%, #ededed 100%);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        font-size: 11px;
+        text-align: left;
+        position: relative;
+    }
+
+    .nitro-wired__variable-picker-trigger::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 8px;
+        width: 0;
+        height: 0;
+        margin-top: -2px;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid #555;
+    }
+
+    .nitro-wired__variable-picker-placeholder {
+        color: #7a7a7a;
+    }
+
+    .nitro-wired__variable-picker-panel {
+        position: absolute;
+        top: calc(100% + 2px);
+        left: 0;
+        z-index: 30;
+        width: 202px;
+        padding: 4px;
+        border: 1px solid #8e8e8e;
+        border-radius: 4px;
+        background: #f5f5f5;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        overflow: visible;
+    }
+
+    .nitro-wired__variable-picker-panel.is-portal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 5001;
+        margin: 0;
+        pointer-events: auto;
+    }
+
+    .nitro-wired__variable-picker-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #d0d0d0;
+    }
+
+    .nitro-wired__variable-picker-mode {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        background: transparent;
+    }
+
+    .nitro-wired__variable-picker-mode.is-active {
+        border-color: #8e8e8e;
+        background: linear-gradient(180deg, #f3cc58 0%, #d2a93a 100%);
+    }
+
+    .nitro-wired__variable-picker-mode img {
+        width: auto;
+        height: auto;
+        max-width: 13px;
+        max-height: 13px;
+        image-rendering: pixelated;
+    }
+
+    .nitro-wired__variable-picker-search {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-height: 24px;
+        padding: 0 4px;
+        margin-top: 4px;
+        border: 1px solid #c4c4c4;
+        border-radius: 3px;
+        background: #fff;
+    }
+
+    .nitro-wired__variable-picker-search-icon {
+        width: auto;
+        height: auto;
+        max-width: 10px;
+        max-height: 10px;
+        opacity: 0.75;
+        image-rendering: pixelated;
+    }
+
+    .nitro-wired__variable-picker-search-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        font-size: 11px;
+        line-height: 1;
+        outline: none;
+    }
+
+    .nitro-wired__variable-picker-clear {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+
+    .nitro-wired__variable-picker-clear img {
+        width: auto;
+        height: auto;
+        max-width: 10px;
+        max-height: 10px;
+        image-rendering: pixelated;
+    }
+
+    .nitro-wired__variable-picker-list,
+    .nitro-wired__variable-picker-submenu {
+        display: flex;
+        flex-direction: column;
+        max-height: 140px;
+        margin-top: 4px;
+        overflow-y: auto;
+        border: 1px solid #c8c8c8;
+        border-radius: 3px;
+        background: #fff;
+    }
+
+    .nitro-wired__variable-picker-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        min-height: 20px;
+        padding: 0 6px;
+        border: 0;
+        background: transparent;
+        font-size: 11px;
+        text-align: left;
+    }
+
+    .nitro-wired__variable-picker-row:nth-child(even) {
+        background: #f3f3f3;
+    }
+
+    .nitro-wired__variable-picker-row:hover {
+        background: #dfe8f6;
+    }
+
+    .nitro-wired__variable-picker-row.is-selected {
+        background: #d7dfea;
+    }
+
+    .nitro-wired__variable-picker-row.is-disabled {
+        color: #7b7b7b;
+    }
+
+    .nitro-wired__variable-picker-row-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .nitro-wired__variable-picker-row-arrow {
+        flex: 0 0 auto;
+        font-size: 9px;
+    }
+
+    .nitro-wired__variable-picker-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 86px;
+        color: #8a8a8a;
+    }
+
+    .nitro-wired__variable-picker-submenu {
+        position: fixed;
+        width: 120px;
+        margin-top: 0;
+        z-index: 5000;
+        pointer-events: auto;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+    }
+
+    .nitro-wired__give-var-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        white-space: nowrap;
+        font-size: 13px;
+        line-height: 1;
+    }
+
+    .nitro-wired__give-var-section {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nitro-wired__give-var-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .nitro-wired__give-var-input-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .nitro-wired__give-var-number {
+        width: 48px;
+        min-width: 48px;
+        min-height: 18px !important;
+        height: 18px;
+        padding: 0 4px !important;
+        line-height: 18px;
+        text-align: center;
+    }
+
+    .nitro-wired__give-var-number--blurred {
+        filter: blur(0.8px) !important;
+        opacity: 0.78;
+        pointer-events: none;
+    }
+
+    .nitro-wired__resizable-textarea {
+        min-height: 140px !important;
+        resize: vertical !important;
+        overflow: auto;
+    }
+
+    .nitro-wired__levelup {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .nitro-wired__levelup-section {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nitro-wired__levelup-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        text-align: left;
+    }
+
+    .nitro-wired__levelup-chevron {
+        font-size: 12px;
+        line-height: 1;
+        transform: rotate(180deg);
+        transition: transform 0.12s ease;
+    }
+
+    .nitro-wired__levelup-chevron.is-open {
+        transform: rotate(0deg);
+    }
+
+    .nitro-wired__levelup-section-body {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .nitro-wired__levelup-mode-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nitro-wired__levelup-mode-block.is-inactive {
+        opacity: 0.72;
+    }
+
+    .nitro-wired__levelup-mode-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+    }
+
+    .nitro-wired__levelup-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-left: 22px;
+    }
+
+    .nitro-wired__levelup-field-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 20px;
+    }
+
+    .nitro-wired__levelup-number {
+        width: 74px;
+        min-width: 74px;
+        min-height: 20px !important;
+        height: 20px;
+        padding: 0 6px !important;
+        line-height: 20px;
+        text-align: center;
+    }
+
+    .nitro-wired__levelup-textarea {
+        min-height: 88px !important;
+        resize: vertical !important;
+        overflow: auto;
+    }
+
+    .nitro-wired__levelup-preview {
+        max-height: 120px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
+
+    .nitro-wired__levelup-preview-entry {
+        padding: 1px 0;
+        font-size: 11px;
+        line-height: 1.25;
+    }
+
+    .nitro-wired__levelup-subvariables {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .nitro-wired__levelup-subvariable-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .nitro-wired__levelup-subvariable-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+        flex: 1 1 auto;
+        cursor: pointer;
+    }
+
+    .nitro-wired__levelup-subvariable-token {
+        width: 96px;
+        min-width: 96px;
+        height: 20px;
+        padding: 0 6px;
+        border: 1px solid #cfcfcf;
+        border-radius: 6px;
+        background: #f3f3f3;
+        color: #9a9a9a;
+        font-size: 11px;
+        line-height: 20px;
+    }
+
+    .nitro-wired__placeholder-preview {
+        display: flex;
+        width: 100%;
+        align-items: flex-start;
+        padding: 6px 8px;
+        border: 1px solid #b7b7b7;
+        border-radius: 5px;
+        background: linear-gradient(180deg, #fbfbfb 0%, #efefef 100%);
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.12s ease, border-color 0.12s ease;
+    }
+
+    .nitro-wired__placeholder-preview:hover {
+        background: linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%);
+        border-color: #909090;
+    }
+
+    .nitro-wired__placeholder-preview.is-copied {
+        border-color: #73a753;
+        background: linear-gradient(180deg, #f8fff2 0%, #eef9e2 100%);
+    }
+
+    .nitro-wired__change-var-radio {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .nitro-wired__change-var-reference-block {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
     .nitro-slider {
         height: 16px;
     }
@@ -1093,12 +1597,12 @@ body {
 
 .avatar-parts {
     border: none !important;
-    height: 42px;
-    width: 42px;
-    background-position: center;
-    background-repeat: no-repeat;
+    position: relative;
+    aspect-ratio: 1;
+    width: 100%;
+    max-width: 42px;
     border-radius: 2rem !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     background-color: transparent;
 
     &:hover {
@@ -1189,6 +1693,18 @@ body {
         background-position: center;
         background-size: 22px 22px;
     }
+}
+
+.nitro-wired__variable-picker-portal {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    pointer-events: none;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 /* ── Avatar Editor misc ─────────────────────────────────────────────────── */

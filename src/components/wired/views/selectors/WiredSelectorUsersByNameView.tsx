@@ -37,7 +37,7 @@ export const WiredSelectorUsersByNameView: FC<{}> = () =>
                 <div className="flex flex-col gap-1">
                     <Text bold>{ LocalizeText('wiredfurni.params.enter_names') }</Text>
                     <textarea
-                        className="form-control form-control-sm min-h-[140px] resize-none"
+                        className="form-control form-control-sm nitro-wired__resizable-textarea"
                         value={ namesText }
                         onChange={ event => setNamesText(event.target.value) } />
                 </div>

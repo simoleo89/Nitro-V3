@@ -4,7 +4,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AvatarInfoUser, DispatchUiEvent, GetCanStandUp, GetCanUseExpression, GetOwnPosture, GetUserProfile, HasHabboClub, HasHabboVip, IsRidingHorse, LocalizeText, PostureTypeEnum, SendMessageComposer } from '../../../../../api';
 import { LayoutCurrencyIcon } from '../../../../../common';
 import { HelpNameChangeEvent } from '../../../../../events';
-import { useRoom } from '../../../../../hooks';
+import { useRoom, useWiredTools } from '../../../../../hooks';
 import { ContextMenuHeaderView } from '../../context-menu/ContextMenuHeaderView';
 import { ContextMenuListItemView } from '../../context-menu/ContextMenuListItemView';
 import { ContextMenuView } from '../../context-menu/ContextMenuView';
@@ -28,6 +28,7 @@ export const AvatarInfoWidgetOwnAvatarView: FC<AvatarInfoWidgetOwnAvatarViewProp
     const { avatarInfo = null, isDancing = false, setIsDecorating = null, onClose = null } = props;
     const [ mode, setMode ] = useState((isDancing && HasHabboClub()) ? MODE_CLUB_DANCES : MODE_NORMAL);
     const { roomSession = null } = useRoom();
+    const { openInspectionForUser, showInspectButton } = useWiredTools();
 
     const processAction = (name: string) =>
     {
@@ -103,6 +104,9 @@ export const AvatarInfoWidgetOwnAvatarView: FC<AvatarInfoWidgetOwnAvatarViewProp
                     case 'drop_carry_item':
                         SendMessageComposer(new RoomUnitDropHandItemComposer());
                         break;
+                    case 'inspect':
+                        openInspectionForUser(avatarInfo.roomIndex);
+                        break;
                 }
             }
         }
@@ -157,6 +161,10 @@ export const AvatarInfoWidgetOwnAvatarView: FC<AvatarInfoWidgetOwnAvatarViewProp
                     { (avatarInfo.carryItem > 0) &&
                         <ContextMenuListItemView onClick={ event => processAction('drop_carry_item') }>
                             { LocalizeText('avatar.widget.drop_hand_item') }
+                        </ContextMenuListItemView> }
+                    { showInspectButton &&
+                        <ContextMenuListItemView onClick={ event => processAction('inspect') }>
+                            Inspect
                         </ContextMenuListItemView> }
                 </> }
             { (mode === MODE_CLUB_DANCES) &&

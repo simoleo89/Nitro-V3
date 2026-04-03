@@ -67,4 +67,21 @@ export class WiredActionLayoutCode
     public static OR_EVAL_EXTRA: number = 66;
     public static TEXT_OUTPUT_USERNAME_EXTRA: number = 67;
     public static TEXT_OUTPUT_FURNI_NAME_EXTRA: number = 68;
+    public static GIVE_VARIABLE: number = 69;
+    public static USER_VARIABLE_EXTRA: number = 70;
+    public static FURNI_VARIABLE_EXTRA: number = 71;
+    public static ROOM_VARIABLE_EXTRA: number = 72;
+    public static REMOVE_VARIABLE: number = 73;
+    public static CHANGE_VARIABLE_VALUE: number = 74;
+    public static FURNI_WITH_VARIABLE_SELECTOR: number = 75;
+    public static USERS_WITH_VARIABLE_SELECTOR: number = 76;
+    public static FILTER_USERS_BY_VARIABLE_EXTRA: number = 77;
+    public static FILTER_FURNI_BY_VARIABLE_EXTRA: number = 78;
+    public static VARIABLE_TEXT_CONNECTOR_EXTRA: number = 79;
+    public static TEXT_OUTPUT_VARIABLE_EXTRA: number = 80;
+    public static VARIABLE_REFERENCE_EXTRA: number = 81;
+    public static VARIABLE_LEVELUP_SYSTEM_EXTRA: number = 82;
+    public static VARIABLE_ECHO_EXTRA: number = 83;
+    public static CONTEXT_VARIABLE_EXTRA: number = 84;
+    public static TEXT_INPUT_VARIABLE_EXTRA: number = 85;
 }

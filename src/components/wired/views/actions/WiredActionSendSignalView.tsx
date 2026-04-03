@@ -6,8 +6,6 @@ import { WiredFurniSelectionSourceRow } from '../WiredFurniSelectionSourceRow';
 import { FURNI_SOURCES, USER_SOURCES } from '../WiredSourcesSelector';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
-const ANTENNA_INTERACTION_TYPES = [ 'antenna' ];
-
 const SOURCE_TRIGGER = 0;
 const SOURCE_SELECTED = 100;
 
@@ -51,7 +49,7 @@ export const WiredActionSendSignalView: FC<{}> = () =>
     const [ selectionMode, setSelectionMode ]   = useState<SelectionMode>('antenna');
     const highlightedIds = useRef<number[]>([]);
 
-    const { trigger = null, furniIds = [], setFurniIds = null, setIntParams = null, setStringParam = null, setAllowedInteractionTypes = null } = useWired();
+    const { trigger = null, furniIds = [], setFurniIds = null, setIntParams = null, setStringParam = null } = useWired();
 
     useEffect(() =>
     {
@@ -71,14 +69,6 @@ export const WiredActionSendSignalView: FC<{}> = () =>
         setForwardFurniIds(parseForwardIds(trigger.stringData));
         setSelectionMode('antenna');
     }, [ trigger ]);
-
-    useEffect(() =>
-    {
-        if(selectionMode === 'antenna') setAllowedInteractionTypes(ANTENNA_INTERACTION_TYPES);
-        else setAllowedInteractionTypes(null);
-
-        return () => setAllowedInteractionTypes(null);
-    }, [ selectionMode, setAllowedInteractionTypes ]);
 
     useEffect(() =>
     {

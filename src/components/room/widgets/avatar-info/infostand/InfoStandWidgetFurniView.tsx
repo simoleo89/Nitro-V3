@@ -4,7 +4,7 @@ import { FaCrosshairs, FaRulerVertical, FaTimes } from 'react-icons/fa';
 import { GrFormNextLink, GrRotateLeft, GrRotateRight } from 'react-icons/gr';
 import { AvatarInfoFurni, GetGroupInformation, LocalizeText, SendMessageComposer } from '../../../../../api';
 import { Button, Column, Flex, LayoutBadgeImageView, LayoutLimitedEditionCompactPlateView, LayoutRarityLevelView, LayoutRoomObjectImageView, Text, UserProfileIconView } from '../../../../../common';
-import { useMessageEvent, useNitroEvent, useRoom } from '../../../../../hooks';
+import { useMessageEvent, useNitroEvent, useRoom, useWiredTools } from '../../../../../hooks';
 import { NitroInput } from '../../../../../layout';
 
 interface InfoStandWidgetFurniViewProps
@@ -21,6 +21,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
 {
     const { avatarInfo = null, onClose = null } = props;
     const { roomSession = null } = useRoom();
+    const { openInspectionForFurni, showInspectButton } = useWiredTools();
 
     const [ pickupMode, setPickupMode ] = useState(0);
     const [ canMove, setCanMove ] = useState(false);
@@ -698,6 +699,10 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
                 </Column>
             </Column>
             <Flex gap={ 1 } justifyContent="end">
+                { showInspectButton &&
+                    <Button variant="dark" onClick={ () => openInspectionForFurni(avatarInfo.id, avatarInfo.category) }>
+                        Inspect
+                    </Button> }
                 { canMove &&
                     <Button variant="dark" onClick={ event => processButtonAction('move') }>
                         { LocalizeText('infostand.button.move') }

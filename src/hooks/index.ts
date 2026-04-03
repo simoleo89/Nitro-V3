@@ -22,5 +22,6 @@ export * from './session';
 export * from './useLocalStorage';
 export * from './useSharedVisibility';
 export * from './wired';
+export * from './wired-tools';
 export * from './useChatWindow';
 export * from './useOnClickChat';

@@ -1,4 +1,7 @@
-import { useCallback, useState } from 'react';
+import { FurniEditorBySpriteComposer, FurniEditorDeleteComposer, FurniEditorDetailComposer, FurniEditorDetailResultEvent, FurniEditorInteractionsComposer, FurniEditorInteractionsResultEvent, FurniEditorResultEvent, FurniEditorSearchComposer, FurniEditorSearchResultEvent, FurniEditorUpdateComposer } from '@nitrots/nitro-renderer';
+import { useCallback, useRef, useState } from 'react';
+import { NotificationAlertType, SendMessageComposer } from '../../api';
+import { useMessageEvent, useNotification } from '../../hooks';
 
 export interface FurniItem
 {
@@ -46,18 +49,6 @@ export interface CatalogRef
     pageName: string;
 }
 
-const API_BASE = '/api/admin/furni-editor';
-
-async function apiFetch<T>(url: string, options?: RequestInit): Promise<T>
-{
-    const res = await fetch(url, { credentials: 'include', ...options });
-    const data = await res.json();
-
-    if(!res.ok || data.error) throw new Error(data.error || 'API error');
-
-    return data;
-}
-
 export const useFurniEditor = () =>
 {
     const [ items, setItems ] = useState<FurniItem[]>([]);
@@ -69,171 +60,200 @@ export const useFurniEditor = () =>
     const [ catalogItems, setCatalogItems ] = useState<CatalogRef[]>([]);
     const [ interactions, setInteractions ] = useState<string[]>([]);
     const [ furniDataEntry, setFurniDataEntry ] = useState<Record<string, unknown> | null>(null);
+    const pendingActionRef = useRef<{ action: string; itemId: number } | null>(null);
+    const { simpleAlert = null } = useNotification();
 
     const clearError = useCallback(() => setError(null), []);
 
-    const searchItems = useCallback(async (query: string, type: string, pg: number) =>
+    // Handle search results
+    useMessageEvent(FurniEditorSearchResultEvent, (event: FurniEditorSearchResultEvent) =>
+    {
+        const parser = event.getParser();
+
+        setLoading(false);
+        setItems(parser.items.map(item => ({
+            id: item.id,
+            spriteId: item.spriteId,
+            itemName: item.itemName,
+            publicName: item.publicName,
+            type: item.type,
+            width: item.width,
+            length: item.length,
+            stackHeight: item.stackHeight,
+            allowStack: item.allowStack,
+            allowWalk: item.allowWalk,
+            allowSit: item.allowSit,
+            allowLay: item.allowLay,
+            interactionType: item.interactionType,
+            interactionModesCount: item.interactionModesCount
+        })));
+        setTotal(parser.total);
+        setPage(parser.page);
+    });
+
+    // Handle detail results (for both detail and by-sprite lookups)
+    useMessageEvent(FurniEditorDetailResultEvent, (event: FurniEditorDetailResultEvent) =>
+    {
+        const parser = event.getParser();
+        const item = parser.item;
+
+        setLoading(false);
+        setSelectedItem({
+            id: item.id,
+            spriteId: item.spriteId,
+            itemName: item.itemName,
+            publicName: item.publicName,
+            type: item.type,
+            width: item.width,
+            length: item.length,
+            stackHeight: item.stackHeight,
+            allowStack: item.allowStack,
+            allowWalk: item.allowWalk,
+            allowSit: item.allowSit,
+            allowLay: item.allowLay,
+            interactionType: item.interactionType,
+            interactionModesCount: item.interactionModesCount,
+            allowGift: item.allowGift,
+            allowTrade: item.allowTrade,
+            allowRecycle: item.allowRecycle,
+            allowMarketplaceSell: item.allowMarketplaceSell,
+            allowInventoryStack: item.allowInventoryStack,
+            vendingIds: item.vendingIds,
+            customparams: item.customparams,
+            effectIdMale: item.effectIdMale,
+            effectIdFemale: item.effectIdFemale,
+            clothingOnWalk: item.clothingOnWalk,
+            multiheight: item.multiheight,
+            description: item.description,
+            usageCount: item.usageCount
+        });
+        setCatalogItems(parser.catalogItems.map(ref => ({
+            id: ref.id,
+            catalogName: ref.catalogName,
+            costCredits: ref.costCredits,
+            costPoints: ref.costPoints,
+            pointsType: ref.pointsType,
+            pageId: ref.pageId,
+            pageName: ref.pageName
+        })));
+
+        let furniData: Record<string, unknown> | null = null;
+
+        try
+        {
+            if(parser.furniDataJson && parser.furniDataJson !== '{}' && parser.furniDataJson !== '')
+            {
+                furniData = JSON.parse(parser.furniDataJson);
+            }
+        }
+        catch(e) {}
+
+        setFurniDataEntry(furniData);
+    });
+
+    // Handle interaction types list
+    useMessageEvent(FurniEditorInteractionsResultEvent, (event: FurniEditorInteractionsResultEvent) =>
+    {
+        setInteractions(event.getParser().interactions);
+    });
+
+    // Handle operation results (update, create, delete)
+    useMessageEvent(FurniEditorResultEvent, (event: FurniEditorResultEvent) =>
+    {
+        const parser = event.getParser();
+        const pending = pendingActionRef.current;
+        const action = pending?.action ?? null;
+        const actionItemId = pending?.itemId ?? null;
+
+        pendingActionRef.current = null;
+        setLoading(false);
+
+        if(!parser.success)
+        {
+            setError(parser.message || 'Operation failed');
+
+            if(simpleAlert)
+            {
+                simpleAlert(parser.message || 'Operation failed', NotificationAlertType.ALERT, null, null, 'Furni Editor Error');
+            }
+
+            return;
+        }
+
+        setError(null);
+
+        if(action === 'update')
+        {
+            // Auto-reload detail after update using the ID from the original request
+            if(actionItemId)
+            {
+                SendMessageComposer(new FurniEditorDetailComposer(actionItemId));
+            }
+
+            if(simpleAlert)
+            {
+                simpleAlert('Item updated successfully', NotificationAlertType.DEFAULT, null, null, 'Furni Editor');
+            }
+        }
+        else if(action === 'delete')
+        {
+            setSelectedItem(null);
+            setCatalogItems([]);
+            setFurniDataEntry(null);
+
+            if(simpleAlert)
+            {
+                simpleAlert('Item deleted successfully', NotificationAlertType.DEFAULT, null, null, 'Furni Editor');
+            }
+        }
+    });
+
+    const searchItems = useCallback((query: string, type: string, pg: number) =>
     {
         setLoading(true);
         setError(null);
-
-        try
-        {
-            const params = new URLSearchParams({ q: query, limit: '20', page: String(pg) });
-
-            if(type) params.set('type', type);
-
-            const data = await apiFetch<{ items: FurniItem[]; total: number; page: number }>(`${ API_BASE }?${ params }`);
-
-            setItems(data.items);
-            setTotal(data.total);
-            setPage(data.page);
-        }
-        catch(e: any)
-        {
-            setError(e.message);
-        }
-        finally
-        {
-            setLoading(false);
-        }
+        SendMessageComposer(new FurniEditorSearchComposer(query, type, pg));
     }, []);
 
-    const loadDetail = useCallback(async (id: number): Promise<boolean> =>
+    const loadDetail = useCallback((id: number) =>
     {
         setLoading(true);
         setError(null);
-
-        try
-        {
-            const data = await apiFetch<{ item: FurniDetail; catalogItems: CatalogRef[]; furniDataEntry: Record<string, unknown> | null }>(`${ API_BASE }/detail?id=${ id }`);
-
-            setSelectedItem(data.item);
-            setCatalogItems(data.catalogItems);
-            setFurniDataEntry(data.furniDataEntry);
-
-            return true;
-        }
-        catch(e: any)
-        {
-            setError(e.message);
-
-            return false;
-        }
-        finally
-        {
-            setLoading(false);
-        }
+        SendMessageComposer(new FurniEditorDetailComposer(id));
     }, []);
 
-    const updateItem = useCallback(async (id: number, fields: Record<string, unknown>) =>
+    const loadBySpriteId = useCallback((spriteId: number) =>
     {
         setLoading(true);
         setError(null);
-
-        try
-        {
-            await apiFetch(`${ API_BASE }/update?id=${ id }`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(fields)
-            });
-
-            return true;
-        }
-        catch(e: any)
-        {
-            setError(e.message);
-
-            return false;
-        }
-        finally
-        {
-            setLoading(false);
-        }
+        SendMessageComposer(new FurniEditorBySpriteComposer(spriteId));
     }, []);
 
-    const createItem = useCallback(async (fields: Record<string, unknown>) =>
+    const updateItem = useCallback((id: number, fields: Record<string, unknown>) =>
     {
         setLoading(true);
         setError(null);
-
-        try
-        {
-            const data = await apiFetch<{ id: number }>(`${ API_BASE }`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(fields)
-            });
-
-            return data.id;
-        }
-        catch(e: any)
-        {
-            setError(e.message);
-
-            return null;
-        }
-        finally
-        {
-            setLoading(false);
-        }
+        pendingActionRef.current = { action: 'update', itemId: id };
+        SendMessageComposer(new FurniEditorUpdateComposer(id, JSON.stringify(fields)));
     }, []);
 
-    const deleteItem = useCallback(async (id: number) =>
+    const deleteItem = useCallback((id: number) =>
     {
         setLoading(true);
         setError(null);
-
-        try
-        {
-            await apiFetch(`${ API_BASE }/delete?id=${ id }`, { method: 'POST' });
-
-            return true;
-        }
-        catch(e: any)
-        {
-            setError(e.message);
-
-            return false;
-        }
-        finally
-        {
-            setLoading(false);
-        }
+        pendingActionRef.current = { action: 'delete', itemId: id };
+        SendMessageComposer(new FurniEditorDeleteComposer(id));
     }, []);
 
-    const loadInteractions = useCallback(async () =>
+    const loadInteractions = useCallback(() =>
     {
-        try
-        {
-            const data = await apiFetch<{ interactions: Array<string | { name: string }> }>(`${ API_BASE }/interactions`);
-
-            setInteractions(data.interactions.map(i => typeof i === 'string' ? i : i.name));
-        }
-        catch {}
+        SendMessageComposer(new FurniEditorInteractionsComposer());
     }, []);
-
-    const loadBySpriteId = useCallback(async (spriteId: number): Promise<boolean> =>
-    {
-        try
-        {
-            const data = await apiFetch<{ id: number }>(`${ API_BASE }/by-sprite?spriteId=${ spriteId }`);
-
-            return await loadDetail(data.id);
-        }
-        catch(e: any)
-        {
-            setError(e.message);
-
-            return false;
-        }
-    }, [ loadDetail ]);
 
     return {
         items, total, page, loading, error, clearError,
         selectedItem, setSelectedItem, catalogItems, furniDataEntry,
         interactions,
-        searchItems, loadDetail, loadBySpriteId, updateItem, createItem, deleteItem, loadInteractions
+        searchItems, loadDetail, loadBySpriteId, updateItem, deleteItem, loadInteractions
     };
 };

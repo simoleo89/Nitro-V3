@@ -40,4 +40,8 @@ export class WiredConditionlayout
     public static MATCH_DATE: number = 37;
     public static ACTOR_DIR: number = 38;
     public static SLC_QUANTITY: number = 39;
+    public static HAS_VAR: number = 40;
+    public static NEG_HAS_VAR: number = 41;
+    public static VAR_VAL_MATCH: number = 42;
+    public static VAR_AGE_MATCH: number = 43;
 }

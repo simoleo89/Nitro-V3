@@ -13,6 +13,7 @@ import { FurniEditorView } from './furni-editor/FurniEditorView';
 import { FriendsView } from './friends/FriendsView';
 import { GameCenterView } from './game-center/GameCenterView';
 import { GroupsView } from './groups/GroupsView';
+import { GroupForumView } from './groups/views/forums/GroupForumView';
 import { GuideToolView } from './guide-tool/GuideToolView';
 import { HcCenterView } from './hc-center/HcCenterView';
 import { HelpView } from './help/HelpView';
@@ -113,6 +114,7 @@ export const MainView: FC<{}> = props =>
             <UserSettingsView />
             <UserProfileView />
             <GroupsView />
+            <GroupForumView />
             <CameraWidgetView />
             <HelpView />
             <NitropediaView />

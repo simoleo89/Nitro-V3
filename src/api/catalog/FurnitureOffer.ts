@@ -105,12 +105,12 @@ export class FurnitureOffer implements IPurchasableOffer
 
     public get localizationName(): string
     {
-        return this._furniData.name;
+        return this._furniData?.name ?? '';
     }
 
     public get localizationDescription(): string
     {
-        return this._furniData.description;
+        return this._furniData?.description ?? '';
     }
 
     public get isLazy(): boolean

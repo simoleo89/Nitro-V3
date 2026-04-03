@@ -5,6 +5,7 @@ import { useWired } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 import { WiredExtraBaseView } from './WiredExtraBaseView';
+import { WiredPlaceholderPreview } from './WiredPlaceholderPreview';
 
 const TYPE_SINGLE = 1;
 const TYPE_MULTIPLE = 2;
@@ -100,7 +101,7 @@ export const WiredExtraTextOutputFurniNameView: FC<{}> = () =>
                     <Text>{ LocalizeText('wiredfurni.params.texts.placeholder_name') }</Text>
                     <NitroInput maxLength={ MAX_PLACEHOLDER_NAME_LENGTH } type="text" value={ placeholderName } onChange={ event => setPlaceholderName(normalizePlaceholderName(event.target.value)) } />
                 </div>
-                <Text dangerouslySetInnerHTML={ { __html: previewHtml } } />
+                <WiredPlaceholderPreview previewHtml={ previewHtml } previewToken={ previewToken } />
                 <div className="flex flex-col gap-1">
                     <Text>{ LocalizeText('wiredfurni.params.texts.placeholder_type') }</Text>
                     <label className="flex items-center gap-1 cursor-pointer">

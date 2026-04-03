@@ -70,6 +70,12 @@
     height: 34px;
 }
 
+.nitro-icon.icon-furnieditor {
+    background-image: url("@/assets/images/toolbar/icons/furnieditor.png");
+    width: 30px;
+    height: 34px;
+}
+
 .nitro-icon.icon-friendall {
     background-image: url("@/assets/images/toolbar/icons/friend_all.png");
     width: 32px;
@@ -170,6 +176,13 @@
     background-image: url("@/assets/images/toolbar/icons/message.png");
     width: 36px;
     height: 32px;
+}
+
+.nitro-icon.icon-wired-tools {
+    background-image: url("@/assets/images/wiredtools/wired_menu.png");
+    background-size: contain;
+    width: 40px;
+    height: 40px;
 }
 
 .nitro-icon.icon-message.is-unseen {

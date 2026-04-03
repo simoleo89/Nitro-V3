@@ -2,7 +2,7 @@ import { GetRoomEngine, GetSessionDataManager } from '@nitrots/nitro-renderer';
 import { CSSProperties, FC, PropsWithChildren, ReactNode, useEffect, useState } from 'react';
 import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../api';
 import { Button, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../common';
-import { useWired } from '../../../hooks';
+import { useWired, useWiredTools } from '../../../hooks';
 import { WiredFurniSelectorView } from './WiredFurniSelectorView';
 
 export interface WiredBaseViewProps
@@ -25,6 +25,7 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
     const [ needsSave, setNeedsSave ] = useState<boolean>(false);
     const [ showFooter, setShowFooter ] = useState(false);
     const { trigger = null, setTrigger = null, setIntParams = null, setStringParam = null, setFurniIds = null, setAllowsFurni = null, saveWired = null } = useWired();
+    const { roomSettings } = useWiredTools();
 
     const clearRoomAreaSelection = () =>
     {
@@ -41,6 +42,8 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
 
     const onSave = () =>
     {
+        if(!roomSettings.canModify) return;
+
         if(validate && !validate()) return;
 
         if(save) save();
@@ -82,24 +85,28 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
             setIntParams(trigger.intData);
             setStringParam(trigger.stringData);
         }
+    }, [ trigger, hasSpecialInput, setIntParams, setStringParam ]);
 
-        if(requiresFurni > WiredFurniType.STUFF_SELECTION_OPTION_NONE)
+    useEffect(() =>
+    {
+        if(!trigger) return;
+
+        setFurniIds(prevValue =>
         {
-            setFurniIds(prevValue =>
+            if(prevValue && prevValue.length) WiredSelectionVisualizer.clearSelectionShaderFromFurni(prevValue);
+
+            if(requiresFurni <= WiredFurniType.STUFF_SELECTION_OPTION_NONE) return [];
+
+            if(trigger.selectedItems && trigger.selectedItems.length)
             {
-                if(prevValue && prevValue.length) WiredSelectionVisualizer.clearSelectionShaderFromFurni(prevValue);
+                WiredSelectionVisualizer.applySelectionShaderToFurni(trigger.selectedItems);
 
-                if(trigger.selectedItems && trigger.selectedItems.length)
-                {
-                    WiredSelectionVisualizer.applySelectionShaderToFurni(trigger.selectedItems);
+                return trigger.selectedItems;
+            }
 
-                    return trigger.selectedItems;
-                }
-
-                return [];
-            });
-        }
-    }, [ trigger, hasSpecialInput, setIntParams, setStringParam, setFurniIds ]);
+            return [];
+        });
+    }, [ trigger, requiresFurni, setFurniIds ]);
 
     useEffect(() =>
     {
@@ -171,7 +178,7 @@ export const WiredBaseView: FC<PropsWithChildren<WiredBaseViewProps>> = props =>
                     </> }
                 <div className="nitro-wired__divider" />
                 <div className="flex items-center gap-1 nitro-wired__actions">
-                    <Button fullWidth variant="success" classNames={ [ 'nitro-wired__button', 'nitro-wired__button--primary' ] } onClick={ onSave }>{ LocalizeText('wiredfurni.ready') }</Button>
+                    <Button disabled={ !roomSettings.canModify } fullWidth variant="success" classNames={ [ 'nitro-wired__button', 'nitro-wired__button--primary' ] } onClick={ onSave }>{ LocalizeText('wiredfurni.ready') }</Button>
                     <Button fullWidth variant="secondary" classNames={ [ 'nitro-wired__button', 'nitro-wired__button--secondary' ] } onClick={ onClose }>{ LocalizeText('cancel') }</Button>
                 </div>
             </NitroCardContentView>

@@ -132,7 +132,12 @@ const InfiniteGridItem = forwardRef<HTMLDivElement, {
 
     useEffect(() =>
     {
-        if(!itemImage || !itemImage.length) return;
+        if(!itemImage || !itemImage.length)
+        {
+            setBackgroundImageUrl(null);
+
+            return;
+        }
 
         const image = new Image();
 

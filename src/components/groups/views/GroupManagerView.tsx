@@ -77,6 +77,7 @@ export const GroupManagerView: FC<{}> = props =>
             groupHomeroomId: parser.roomId,
             groupState: parser.state,
             groupCanMembersDecorate: parser.canMembersDecorate,
+            groupHasForum: parser.hasForum,
             groupColors: [ parser.colorA, parser.colorB ],
             groupBadgeParts
         });
@@ -85,7 +86,7 @@ export const GroupManagerView: FC<{}> = props =>
     if(!groupData || (groupData.groupId <= 0)) return null;
 
     return (
-        <NitroCardView className="nitro-group-manager">
+        <NitroCardView className="nitro-group-manager w-[560px]">
             <NitroCardHeaderView headerText={ LocalizeText('group.window.title') } onCloseClick={ onClose } />
             <NitroCardTabsView>
                 { TABS.map(tab =>

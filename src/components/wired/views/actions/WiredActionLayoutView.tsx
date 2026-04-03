@@ -2,6 +2,9 @@ import { WiredActionLayoutCode } from '../../../../api';
 import { WiredActionBotChangeFigureView } from './WiredActionBotChangeFigureView';
 import { WiredActionAdjustClockView } from './WiredActionAdjustClockView';
 import { WiredActionFreezeView } from './WiredActionFreezeView';
+import { WiredActionGiveVariableView } from './WiredActionGiveVariableView';
+import { WiredActionChangeVariableValueView } from './WiredActionChangeVariableValueView';
+import { WiredActionRemoveVariableView } from './WiredActionRemoveVariableView';
 import { WiredActionControlClockView } from './WiredActionControlClockView';
 import { WiredActionFurniToFurniView } from './WiredActionFurniToFurniView';
 import { WiredActionSetAltitudeView } from './WiredActionSetAltitudeView';
@@ -13,6 +16,7 @@ import { WiredSelectorFurniAltitudeView } from '../selectors/WiredSelectorFurniA
 import { WiredSelectorFurniOnFurniView } from '../selectors/WiredSelectorFurniOnFurniView';
 import { WiredSelectorFurniPicksView } from '../selectors/WiredSelectorFurniPicksView';
 import { WiredSelectorFurniSignalView } from '../selectors/WiredSelectorFurniSignalView';
+import { WiredSelectorFurniWithVariableView } from '../selectors/WiredSelectorFurniWithVariableView';
 import { WiredSelectorUsersAreaView } from '../selectors/WiredSelectorUsersAreaView';
 import { WiredSelectorUsersByTypeView } from '../selectors/WiredSelectorUsersByTypeView';
 import { WiredSelectorUsersByActionView } from '../selectors/WiredSelectorUsersByActionView';
@@ -23,6 +27,7 @@ import { WiredSelectorUsersHandItemView } from '../selectors/WiredSelectorUsersH
 import { WiredSelectorUsersNeighborhoodView } from '../selectors/WiredSelectorUsersNeighborhoodView';
 import { WiredSelectorUsersSignalView } from '../selectors/WiredSelectorUsersSignalView';
 import { WiredSelectorUsersTeamView } from '../selectors/WiredSelectorUsersTeamView';
+import { WiredSelectorUsersWithVariableView } from '../selectors/WiredSelectorUsersWithVariableView';
 import { WiredActionBotFollowAvatarView } from './WiredActionBotFollowAvatarView';
 import { WiredActionBotGiveHandItemView } from './WiredActionBotGiveHandItemView';
 import { WiredActionBotMoveView } from './WiredActionBotMoveView';
@@ -51,7 +56,9 @@ import { WiredActionTeleportView } from './WiredActionTeleportView';
 import { WiredActionToggleFurniStateView } from './WiredActionToggleFurniStateView';
 import { WiredActionUnfreezeView } from './WiredActionUnfreezeView';
 import { WiredExtraFilterFurniView } from '../extras/WiredExtraFilterFurniView';
+import { WiredExtraFilterFurniByVariableView } from '../extras/WiredExtraFilterFurniByVariableView';
 import { WiredExtraFilterUserView } from '../extras/WiredExtraFilterUserView';
+import { WiredExtraFilterUsersByVariableView } from '../extras/WiredExtraFilterUsersByVariableView';
 import { WiredExtraAnimationTimeView } from '../extras/WiredExtraAnimationTimeView';
 import { WiredExtraMoveCarryUsersView } from '../extras/WiredExtraMoveCarryUsersView';
 import { WiredExtraExecuteInOrderView } from '../extras/WiredExtraExecuteInOrderView';
@@ -62,7 +69,17 @@ import { WiredExtraMovePhysicsView } from '../extras/WiredExtraMovePhysicsView';
 import { WiredExtraRandomView } from '../extras/WiredExtraRandomView';
 import { WiredExtraTextOutputFurniNameView } from '../extras/WiredExtraTextOutputFurniNameView';
 import { WiredExtraTextOutputUsernameView } from '../extras/WiredExtraTextOutputUsernameView';
+import { WiredExtraTextOutputVariableView } from '../extras/WiredExtraTextOutputVariableView';
+import { WiredExtraFurniVariableView } from '../extras/WiredExtraFurniVariableView';
+import { WiredExtraRoomVariableView } from '../extras/WiredExtraRoomVariableView';
+import { WiredExtraContextVariableView } from '../extras/WiredExtraContextVariableView';
+import { WiredExtraUserVariableView } from '../extras/WiredExtraUserVariableView';
 import { WiredExtraUnseenView } from '../extras/WiredExtraUnseenView';
+import { WiredExtraTextInputVariableView } from '../extras/WiredExtraTextInputVariableView';
+import { WiredExtraVariableLevelUpSystemView } from '../extras/WiredExtraVariableLevelUpSystemView';
+import { WiredExtraVariableEchoView } from '../extras/WiredExtraVariableEchoView';
+import { WiredExtraVariableReferenceView } from '../extras/WiredExtraVariableReferenceView';
+import { WiredExtraVariableTextConnectorView } from '../extras/WiredExtraVariableTextConnectorView';
 
 export const WiredActionLayoutView = (code: number) =>
 {
@@ -106,6 +123,12 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredActionGiveRewardView />;
         case WiredActionLayoutCode.GIVE_SCORE:
             return <WiredActionGiveScoreView />;
+        case WiredActionLayoutCode.GIVE_VARIABLE:
+            return <WiredActionGiveVariableView />;
+        case WiredActionLayoutCode.CHANGE_VARIABLE_VALUE:
+            return <WiredActionChangeVariableValueView />;
+        case WiredActionLayoutCode.REMOVE_VARIABLE:
+            return <WiredActionRemoveVariableView />;
         case WiredActionLayoutCode.GIVE_SCORE_TO_PREDEFINED_TEAM:
             return <WiredActionGiveScoreToPredefinedTeamView />;
         case WiredActionLayoutCode.JOIN_TEAM:
@@ -152,6 +175,8 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredSelectorFurniPicksView />;
         case WiredActionLayoutCode.FURNI_SIGNAL_SELECTOR:
             return <WiredSelectorFurniSignalView />;
+        case WiredActionLayoutCode.FURNI_WITH_VARIABLE_SELECTOR:
+            return <WiredSelectorFurniWithVariableView />;
         case WiredActionLayoutCode.USERS_AREA_SELECTOR:
             return <WiredSelectorUsersAreaView />;
         case WiredActionLayoutCode.USERS_NEIGHBORHOOD_SELECTOR:
@@ -172,10 +197,16 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredSelectorUsersHandItemView />;
         case WiredActionLayoutCode.USERS_TEAM_SELECTOR:
             return <WiredSelectorUsersTeamView />;
+        case WiredActionLayoutCode.USERS_WITH_VARIABLE_SELECTOR:
+            return <WiredSelectorUsersWithVariableView />;
         case WiredActionLayoutCode.FILTER_FURNI_EXTRA:
             return <WiredExtraFilterFurniView />;
         case WiredActionLayoutCode.FILTER_USER_EXTRA:
             return <WiredExtraFilterUserView />;
+        case WiredActionLayoutCode.FILTER_USERS_BY_VARIABLE_EXTRA:
+            return <WiredExtraFilterUsersByVariableView />;
+        case WiredActionLayoutCode.FILTER_FURNI_BY_VARIABLE_EXTRA:
+            return <WiredExtraFilterFurniByVariableView />;
         case WiredActionLayoutCode.MOVE_CARRY_USERS_EXTRA:
             return <WiredExtraMoveCarryUsersView />;
         case WiredActionLayoutCode.MOVE_NO_ANIMATION_EXTRA:
@@ -198,6 +229,26 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredExtraTextOutputUsernameView />;
         case WiredActionLayoutCode.TEXT_OUTPUT_FURNI_NAME_EXTRA:
             return <WiredExtraTextOutputFurniNameView />;
+        case WiredActionLayoutCode.VARIABLE_TEXT_CONNECTOR_EXTRA:
+            return <WiredExtraVariableTextConnectorView />;
+        case WiredActionLayoutCode.TEXT_OUTPUT_VARIABLE_EXTRA:
+            return <WiredExtraTextOutputVariableView />;
+        case WiredActionLayoutCode.USER_VARIABLE_EXTRA:
+            return <WiredExtraUserVariableView />;
+        case WiredActionLayoutCode.FURNI_VARIABLE_EXTRA:
+            return <WiredExtraFurniVariableView />;
+        case WiredActionLayoutCode.ROOM_VARIABLE_EXTRA:
+            return <WiredExtraRoomVariableView />;
+        case WiredActionLayoutCode.CONTEXT_VARIABLE_EXTRA:
+            return <WiredExtraContextVariableView />;
+        case WiredActionLayoutCode.VARIABLE_REFERENCE_EXTRA:
+            return <WiredExtraVariableReferenceView />;
+        case WiredActionLayoutCode.VARIABLE_LEVELUP_SYSTEM_EXTRA:
+            return <WiredExtraVariableLevelUpSystemView />;
+        case WiredActionLayoutCode.VARIABLE_ECHO_EXTRA:
+            return <WiredExtraVariableEchoView />;
+        case WiredActionLayoutCode.TEXT_INPUT_VARIABLE_EXTRA:
+            return <WiredExtraTextInputVariableView />;
         case WiredActionLayoutCode.SEND_SIGNAL:
             return <WiredActionSendSignalView />;
     }

@@ -10,8 +10,6 @@ const FURNI_SOURCE_OPTIONS: WiredSourceOption[] = [
     { value: 200, label: 'wiredfurni.params.sources.furni.200' }
 ];
 
-const ANTENNA_INTERACTION_TYPES = [ 'antenna' ];
-const ANTENNA_ERROR_MESSAGE = 'Puoi selezionare solo furni antenna.';
 const normalizeFurniSource = (value: number) => (FURNI_SOURCE_OPTIONS.some(option => (option.value === value)) ? value : 100);
 
 export const WiredTriggerReceiveSignalView: FC<{}> = () =>
@@ -21,7 +19,7 @@ export const WiredTriggerReceiveSignalView: FC<{}> = () =>
     const [ channel, setChannel ] = useState(0);
     const [ furniSource, setFurniSource ] = useState(100);
 
-    const { trigger = null, setIntParams = null, setAllowedInteractionTypes = null, setAllowedInteractionErrorKey = null } = useWired();
+    const { trigger = null, setIntParams = null } = useWired();
 
     const save = () => setIntParams([ channel, furniSource ]);
 
@@ -36,18 +34,6 @@ export const WiredTriggerReceiveSignalView: FC<{}> = () =>
         if(p.length >= 4) setFurniSource(normalizeFurniSource(p[3]));
         else setFurniSource(100);
     }, [ trigger ]);
-
-    useEffect(() =>
-    {
-        setAllowedInteractionTypes(ANTENNA_INTERACTION_TYPES);
-        setAllowedInteractionErrorKey(ANTENNA_ERROR_MESSAGE);
-
-        return () =>
-        {
-            setAllowedInteractionTypes(null);
-            setAllowedInteractionErrorKey(null);
-        };
-    }, [ setAllowedInteractionErrorKey, setAllowedInteractionTypes ]);
 
     return (
         <WiredTriggerBaseView

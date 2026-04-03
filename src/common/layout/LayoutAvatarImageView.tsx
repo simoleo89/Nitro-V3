@@ -1,6 +1,7 @@
-import { AvatarScaleType, AvatarSetType, GetAvatarRenderManager } from '@nitrots/nitro-renderer';
+import { AvatarScaleType, AvatarSetType, GetAvatarRenderManager, NitroEventType } from '@nitrots/nitro-renderer';
 import { CSSProperties, FC, useEffect, useMemo, useRef, useState } from 'react';
 import { Base, BaseProps } from '../Base';
+import { useNitroEvent } from '../../hooks/events';
 
 const AVATAR_IMAGE_CACHE: Map<string, string> = new Map();
 
@@ -18,7 +19,18 @@ export const LayoutAvatarImageView: FC<LayoutAvatarImageViewProps> = props =>
     const { figure = '', gender = '', headOnly = false, direction = 0, scale = 1, classNames = [], style = {}, ...rest } = props;
     const [ avatarUrl, setAvatarUrl ] = useState<string>(null);
     const [ isReady, setIsReady ] = useState<boolean>(false);
+    const [ updateId, setUpdateId ] = useState<number>(0);
     const isDisposed = useRef(false);
+    const figureKeyRef = useRef<string>(null);
+
+    useNitroEvent(NitroEventType.AVATAR_ASSET_LOADED, () =>
+    {
+        if(figureKeyRef.current)
+        {
+            AVATAR_IMAGE_CACHE.delete(figureKeyRef.current);
+            setUpdateId(prev => prev + 1);
+        }
+    });
 
     const getClassNames = useMemo(() =>
     {
@@ -53,39 +65,44 @@ export const LayoutAvatarImageView: FC<LayoutAvatarImageViewProps> = props =>
 
         const figureKey = [ figure, gender, direction, headOnly ].join('-');
 
+        figureKeyRef.current = figureKey;
+
         if(AVATAR_IMAGE_CACHE.has(figureKey))
         {
             setAvatarUrl(AVATAR_IMAGE_CACHE.get(figureKey));
         }
         else
         {
-            const resetFigure = (_figure: string) =>
-            {
-                if(isDisposed.current) return;
-
-                const avatarImage = GetAvatarRenderManager().createAvatarImage(_figure, AvatarScaleType.LARGE, gender, { resetFigure: (figure: string) => resetFigure(figure), dispose: null, disposed: false });
-
-                let setType = AvatarSetType.FULL;
-
-                if(headOnly) setType = AvatarSetType.HEAD;
-
-                avatarImage.setDirection(setType, direction);
-
-                const imageUrl = avatarImage.processAsImageUrl(setType);
-
-                if(imageUrl && !isDisposed.current)
+            const avatarImage = GetAvatarRenderManager().createAvatarImage(figure, AvatarScaleType.LARGE, gender, {
+                resetFigure: (figure: string) =>
                 {
-                    if(!avatarImage.isPlaceholder()) AVATAR_IMAGE_CACHE.set(figureKey, imageUrl);
+                    if(isDisposed.current) return;
 
-                    setAvatarUrl(imageUrl);
-                }
+                    AVATAR_IMAGE_CACHE.delete(figureKey);
+                    setUpdateId(prev => prev + 1);
+                },
+                dispose: null,
+                disposed: false
+            });
 
-                avatarImage.dispose();
-            };
+            let setType = AvatarSetType.FULL;
 
-            resetFigure(figure);
+            if(headOnly) setType = AvatarSetType.HEAD;
+
+            avatarImage.setDirection(setType, direction);
+
+            const imageUrl = avatarImage.processAsImageUrl(setType);
+
+            if(imageUrl && !isDisposed.current)
+            {
+                if(!avatarImage.isPlaceholder()) AVATAR_IMAGE_CACHE.set(figureKey, imageUrl);
+
+                setAvatarUrl(imageUrl);
+            }
+
+            avatarImage.dispose();
         }
-    }, [ figure, gender, direction, headOnly, isReady ]);
+    }, [ figure, gender, direction, headOnly, isReady, updateId ]);
 
     useEffect(() =>
     {

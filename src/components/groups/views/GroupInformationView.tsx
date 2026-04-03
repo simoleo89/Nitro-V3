@@ -94,6 +94,9 @@ export const GroupInformationView: FC<GroupInformationViewProps> = props =>
             case 'popular_groups':
                 CreateLinkEvent('navigator/search/groups');
                 break;
+            case 'forum':
+                CreateLinkEvent('groupforum/' + groupInformation.id);
+                break;
         }
     };
 
@@ -134,6 +137,8 @@ export const GroupInformationView: FC<GroupInformationViewProps> = props =>
                         <Text pointer small underline onClick={ () => handleAction('homeroom') }>{ LocalizeText('group.linktobase') }</Text>
                         <Text pointer small underline onClick={ () => handleAction('furniture') }>{ LocalizeText('group.buyfurni') }</Text>
                         <Text pointer small underline onClick={ () => handleAction('popular_groups') }>{ LocalizeText('group.showgroups') }</Text>
+                        { groupInformation.hasForum &&
+                            <Text pointer small underline onClick={ () => handleAction('forum') }>{ LocalizeText('group.showforum') }</Text> }
                     </div>
                     { (groupInformation.type !== GroupType.PRIVATE || groupInformation.type === GroupType.PRIVATE && groupInformation.membershipType === GroupMembershipType.MEMBER) &&
                         <Button disabled={ (groupInformation.membershipType === GroupMembershipType.REQUEST_PENDING) || isRealOwner } onClick={ handleButtonClick }>

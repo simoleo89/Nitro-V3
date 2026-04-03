@@ -17,6 +17,9 @@ import { WiredConditionFurniHasFurniOnView } from './WiredConditionFurniHasFurni
 import { WiredConditionFurniHasNotFurniOnView } from './WiredConditionFurniHasNotFurniOnView';
 import { WiredConditionFurniIsOfTypeView } from './WiredConditionFurniIsOfTypeView';
 import { WiredConditionFurniMatchesSnapshotView } from './WiredConditionFurniMatchesSnapshotView';
+import { WiredConditionHasVariableView } from './WiredConditionHasVariableView';
+import { WiredConditionVariableAgeMatchView } from './WiredConditionVariableAgeMatchView';
+import { WiredConditionVariableValueMatchView } from './WiredConditionVariableValueMatchView';
 import { WiredConditionTimeElapsedLessView } from './WiredConditionTimeElapsedLessView';
 import { WiredConditionTimeElapsedMoreView } from './WiredConditionTimeElapsedMoreView';
 import { WiredConditionTeamHasRankView } from './WiredConditionTeamHasRankView';
@@ -38,6 +41,14 @@ export const WiredConditionLayoutView = (code: number) =>
             return <WiredConditionActorDirView />;
         case WiredConditionlayout.SLC_QUANTITY:
             return <WiredConditionSelectionQuantityView />;
+        case WiredConditionlayout.HAS_VAR:
+            return <WiredConditionHasVariableView />;
+        case WiredConditionlayout.NEG_HAS_VAR:
+            return <WiredConditionHasVariableView negative={ true } />;
+        case WiredConditionlayout.VAR_VAL_MATCH:
+            return <WiredConditionVariableValueMatchView />;
+        case WiredConditionlayout.VAR_AGE_MATCH:
+            return <WiredConditionVariableAgeMatchView />;
         case WiredConditionlayout.TRIGGERER_MATCH:
             return <WiredConditionTriggererMatchView />;
         case WiredConditionlayout.NOT_TRIGGERER_MATCH:

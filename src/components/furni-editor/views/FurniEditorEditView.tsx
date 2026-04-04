@@ -55,7 +55,7 @@ const Tip: FC<{ field: string }> = ({ field }) =>
 
     return (
         <span className="relative group ml-0.5 inline-flex">
-            <span className="w-3 h-3 rounded-full bg-[#1e7295] text-white text-[8px] flex items-center justify-center cursor-help font-bold">?</span>
+            <span className="w-3 h-3 rounded-full bg-primary text-white text-[8px] flex items-center justify-center cursor-help font-bold">?</span>
             <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-[#333] text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
                 { tip }
             </span>

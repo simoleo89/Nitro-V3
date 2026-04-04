@@ -1,7 +1,7 @@
 import { RgbaColorPicker, RgbaColor } from 'react-colorful';
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FaUndo, FaTrash, FaDownload, FaUpload } from 'react-icons/fa';
-import { LocalizeText, PRESET_COLORS, THEME_PRESETS, useUiSettings } from '../../api';
+import { FaUndo, FaTrash, FaDownload, FaUpload, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { LocalizeText, AVAILABLE_FONTS, FONT_SIZE_MIN, FONT_SIZE_MAX, useUiSettings } from '../../api';
 import { Flex, Text } from '../../common';
 
 const hexToRgba = (hex: string, a = 1): RgbaColor =>
@@ -21,13 +21,14 @@ export const InterfaceColorTabView: FC<{}> = () =>
     const [ color, setColor ] = useState<RgbaColor>(() => hexToRgba(settings.headerColor, settings.headerAlpha / 100));
     const [ importValue, setImportValue ] = useState('');
     const [ showImport, setShowImport ] = useState(false);
+    const [ showAdvanced, setShowAdvanced ] = useState(false);
     const [ copyFeedback, setCopyFeedback ] = useState(false);
     const previewTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
     const hexColor = useMemo(() => rgbaToHex(color), [ color ]);
     const alphaPercent = useMemo(() => Math.round((color.a ?? 1) * 100), [ color ]);
 
-    // Live preview con debounce
+    // Live preview with debounce
     useEffect(() =>
     {
         if(previewTimerRef.current) clearTimeout(previewTimerRef.current);
@@ -69,15 +70,29 @@ export const InterfaceColorTabView: FC<{}> = () =>
         setColor(prev => ({ ...prev, a: clamped / 100 }));
     }, []);
 
-    const onPresetClick = useCallback((presetHex: string) =>
+    const onSecondaryHexInput = useCallback((value: string) =>
     {
-        setColor(hexToRgba(presetHex, color.a));
-    }, [ color.a ]);
+        const clean = value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6);
+        if(clean.length === 6)
+        {
+            updateSettings({ secondaryColor: '#' + clean });
+        }
+    }, [ updateSettings ]);
 
-    const onThemeClick = useCallback((themeColor: string, themeAlpha: number) =>
+    const onClearSecondary = useCallback(() =>
     {
-        setColor(hexToRgba(themeColor, themeAlpha / 100));
-    }, []);
+        updateSettings({ secondaryColor: undefined });
+    }, [ updateSettings ]);
+
+    const onFontChange = useCallback((fontName: string) =>
+    {
+        updateSettings({ fontFamily: fontName });
+    }, [ updateSettings ]);
+
+    const onFontSizeChange = useCallback((size: number) =>
+    {
+        updateSettings({ fontSize: Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, size)) });
+    }, [ updateSettings ]);
 
     const onReset = useCallback(() =>
     {
@@ -87,7 +102,7 @@ export const InterfaceColorTabView: FC<{}> = () =>
 
     const onDelete = useCallback(() =>
     {
-        updateSettings({ colorMode: 'default' });
+        updateSettings({ colorMode: 'default', secondaryColor: undefined, accentColor: undefined, fontFamily: 'Ubuntu', fontSize: 14 });
         setColor(hexToRgba('#1E7295', 1));
     }, [ updateSettings ]);
 
@@ -97,7 +112,10 @@ export const InterfaceColorTabView: FC<{}> = () =>
             color: hexColor,
             alpha: alphaPercent,
             mode: settings.colorMode,
-            image: settings.headerImageUrl
+            image: settings.headerImageUrl,
+            secondary: settings.secondaryColor,
+            font: settings.fontFamily,
+            fontSize: settings.fontSize
         });
 
         navigator.clipboard.writeText(data);
@@ -119,7 +137,10 @@ export const InterfaceColorTabView: FC<{}> = () =>
                     colorMode: data.mode || 'color',
                     headerColor: data.color,
                     headerAlpha: alpha,
-                    headerImageUrl: data.image || ''
+                    headerImageUrl: data.image || '',
+                    secondaryColor: data.secondary || undefined,
+                    fontFamily: data.font || 'Ubuntu',
+                    fontSize: data.fontSize || 14
                 });
             }
 
@@ -195,35 +216,76 @@ export const InterfaceColorTabView: FC<{}> = () =>
                 </Flex>
             </Flex>
 
-            {/* Preset colors */}
-            <div className="grid grid-cols-10 gap-0.5 mt-1">
-                { PRESET_COLORS.map((presetHex, i) => (
-                    <div
-                        key={ i }
-                        className={ `w-[24px] h-[24px] rounded cursor-pointer border hover:scale-110 transition-transform ${ hexColor.toUpperCase() === presetHex.toUpperCase() ? 'border-white border-2 scale-110' : 'border-black/20' }` }
-                        style={ { backgroundColor: presetHex } }
-                        onClick={ () => onPresetClick(presetHex) }
-                    />
+            {/* Font selector */}
+            <Text small bold className="text-black mt-2">{ LocalizeText('interface.settings.font') }</Text>
+            <div className="flex gap-1 w-full flex-wrap">
+                { AVAILABLE_FONTS.map((font) => (
+                    <button
+                        key={ font.name }
+                        className={ `flex-1 min-w-[70px] py-1.5 rounded cursor-pointer text-sm border-2 transition-colors ${ (settings.fontFamily || 'Ubuntu') === font.name ? 'border-white bg-black/20 text-white font-bold' : 'border-transparent bg-black/5 text-black hover:bg-black/10' }` }
+                        style={ { fontFamily: `'${ font.name }', sans-serif` } }
+                        onClick={ () => onFontChange(font.name) }
+                    >
+                        { font.label }
+                    </button>
                 )) }
             </div>
 
-            {/* Theme presets */}
-            <Text small bold className="text-black mt-2">{ LocalizeText('interface.settings.color.themes') }</Text>
-            <div className="grid grid-cols-6 gap-1 w-full">
-                { THEME_PRESETS.map((theme) => (
-                    <div
-                        key={ theme.name }
-                        className={ `flex flex-col items-center gap-0.5 p-1 rounded cursor-pointer hover:bg-black/5 transition-colors ${ hexColor.toUpperCase() === theme.color.toUpperCase() ? 'ring-2 ring-white' : '' }` }
-                        onClick={ () => onThemeClick(theme.color, theme.alpha) }
-                    >
-                        <div
-                            className="w-[32px] h-[32px] rounded-full border border-black/20"
-                            style={ { backgroundColor: theme.color, opacity: theme.alpha / 100 } }
+            {/* Font size */}
+            <Text small bold className="text-black mt-2">{ LocalizeText('interface.settings.font.size') }</Text>
+            <Flex gap={ 2 } className="items-center w-full">
+                <Text small className="text-black w-[20px] text-center">{ settings.fontSize || 14 }</Text>
+                <input
+                    type="range"
+                    className="custom-range flex-1"
+                    min={ FONT_SIZE_MIN }
+                    max={ FONT_SIZE_MAX }
+                    step={ 1 }
+                    value={ settings.fontSize || 14 }
+                    onChange={ e => onFontSizeChange(parseInt(e.target.value)) }
+                />
+                <Text small className="text-black text-[10px]">{ FONT_SIZE_MIN }px - { FONT_SIZE_MAX }px</Text>
+            </Flex>
+
+            {/* Advanced toggle */}
+            <button
+                className="flex items-center gap-1 text-xs text-black/60 cursor-pointer hover:text-black transition-colors mt-1"
+                onClick={ () => setShowAdvanced(!showAdvanced) }
+            >
+                { showAdvanced ? <FaChevronUp size={ 10 } /> : <FaChevronDown size={ 10 } /> }
+                { LocalizeText('interface.settings.color.advanced') }
+            </button>
+
+            {/* Advanced section */}
+            { showAdvanced && (
+                <div className="w-full flex flex-col gap-2 p-2 rounded bg-black/5">
+                    {/* Secondary color */}
+                    <Flex gap={ 1 } className="items-center">
+                        <Text small className="text-black w-[80px]">{ LocalizeText('interface.settings.color.secondary') }</Text>
+                        <input
+                            className="form-control form-control-sm text-center w-[70px]"
+                            value={ (settings.secondaryColor || '').replace('#', '').toUpperCase() }
+                            onChange={ e => onSecondaryHexInput(e.target.value) }
+                            placeholder="Auto"
+                            maxLength={ 6 }
                         />
-                        <Text small className="text-black text-[10px]">{ LocalizeText(`interface.settings.theme.${ theme.name }`) }</Text>
-                    </div>
-                )) }
-            </div>
+                        { settings.secondaryColor && (
+                            <>
+                                <div
+                                    className="w-[24px] h-[24px] rounded border border-black/20"
+                                    style={ { backgroundColor: settings.secondaryColor } }
+                                />
+                                <button
+                                    className="text-xs text-red-600 cursor-pointer hover:underline"
+                                    onClick={ onClearSecondary }
+                                >
+                                    Auto
+                                </button>
+                            </>
+                        ) }
+                    </Flex>
+                </div>
+            ) }
 
             {/* Action buttons */}
             <Flex gap={ 1 } className="w-full mt-2">

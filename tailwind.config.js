@@ -4,21 +4,16 @@ const {
     generateShades
 } = require('./css-utils/CSSColorUtils');
 
-const colors = {
+// Static colors processed by generateShades (build-time only)
+const staticColors = {
     'toolbar': '#555555',
-    'card-header': '#1E7295',
     'card-close': '#921911',
-    'card-tabs': '#185D79',
-    'card-border': '#283F5D',
-    'card-tab-item': '#B6BEC5',
-    'card-tab-item-active': '#DFDFDF',
-    'card-content-area': '#DFDFDF',
     'card-grid-item': '#CDD3D9',
     'card-grid-item-active': '#ECECEC',
     'card-grid-item-border': '#B6BEC5',
     'card-grid-item-border-active': '#FFFFFF',
     'loading': '#393A85',
-    'muted': 'rgba(182, 190, 197)',
+    'muted': '#B6BEC5',
     'blue': '#0d6efd',
     'indigo': '#6610f2',
     'pink': '#d63384',
@@ -39,8 +34,6 @@ const colors = {
     'gray-700': '#495057',
     'gray-800': '#343a40',
     'gray-900': '#212529',
-    'primary': '#1E7295',
-    'secondary': '#185D79',
     'success': '#00800b',
     'info': '#0dcaf0',
     'warning': '#ffc107',
@@ -50,9 +43,23 @@ const colors = {
     'light-dark': '#343a40',
     'white': '#fff',
     'black': '#000',
-    'muted': '#B6BEC5',
     'purple': '#6f42c1',
     'gainsboro': '#d9d9d9'
+};
+
+// Theme colors using CSS variables (runtime-switchable)
+const themeColors = {
+    'primary': 'var(--ui-primary, #1E7295)',
+    'primary-hover': 'var(--ui-primary-hover, #1A617F)',
+    'primary-darker': 'var(--ui-primary-darker, #144F67)',
+    'secondary': 'var(--ui-primary-dark, #185D79)',
+    'card-header': 'var(--ui-primary, #1E7295)',
+    'card-tabs': 'var(--ui-primary-dark, #185D79)',
+    'card-border': 'var(--ui-border, #283F5D)',
+    'card-tab-item': 'var(--ui-tab-bg, #B6BEC5)',
+    'card-tab-item-active': 'var(--ui-tab-active-bg, #DFDFDF)',
+    'card-content-area': 'var(--ui-content-bg, #DFDFDF)',
+    'card-content-dark': 'var(--ui-content-dark-bg, #1C323F)',
 };
 
 const boxShadow = {
@@ -74,9 +81,12 @@ module.exports = {
             },
 
             fontFamily: {
-                sans: ['Ubuntu'],
+                sans: ['var(--ui-font-family)'],
             },
-            colors: generateShades(colors),
+            colors: {
+                ...generateShades(staticColors),
+                ...themeColors,
+            },
             boxShadow,
             backgroundImage: {
                 'button-gradient-gray': 'linear-gradient(to bottom, #e2e2e2 50%, #c8c8c8 50%)',

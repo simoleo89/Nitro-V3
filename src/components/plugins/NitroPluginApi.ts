@@ -160,11 +160,11 @@ const pluginApi: INitroPluginApi = {
 
         // Card wrapper
         const card = document.createElement('div');
-        card.style.cssText = `width:${width}px;background:#2c3e50;border:1px solid #283F5D;border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;font-family:Ubuntu,sans-serif`;
+        card.style.cssText = `width:${width}px;background:var(--ui-content-dark-bg,#2c3e50);border:1px solid var(--ui-border,#283F5D);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;font-family:var(--ui-font-family,'Ubuntu',sans-serif)`;
 
         // Header (draggable)
         const header = document.createElement('div');
-        header.style.cssText = `display:flex;align-items:center;justify-content:center;position:relative;min-height:33px;background:linear-gradient(180deg,#3c6a8e 0%,#2a4f6e 100%);cursor:move;user-select:none`;
+        header.style.cssText = `display:flex;align-items:center;justify-content:center;position:relative;min-height:33px;background:var(--ui-primary,#1E7295);cursor:move;user-select:none`;
 
         const titleEl = document.createElement('span');
         titleEl.textContent = title;

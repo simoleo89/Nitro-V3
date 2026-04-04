@@ -69,7 +69,7 @@ export const InventoryFurnitureDeleteView: FC<{}> = props =>
             <NitroCardHeaderView
                 headerText={ LocalizeText('inventory.delete.confirm_delete.title') }
                 onCloseClick={ onClose } />
-            <div className="bg-[#DFDFDF] p-2">
+            <div className="bg-card-content-area p-2">
                 <div className="flex items-center gap-2">
                     <div className="shrink-0 w-[64px] h-[64px] bg-white rounded flex items-center justify-center">
                         <LayoutFurniImageView

@@ -7,6 +7,89 @@
     src: url("@/assets/webfonts/Ubuntu-C.ttf");
 }
 
+@font-face {
+    font-family: Ubuntu;
+    src: url("@/assets/webfonts/Ubuntu-b.ttf");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: Ubuntu;
+    src: url("@/assets/webfonts/Ubuntu-i.ttf");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Ubuntu;
+    src: url("@/assets/webfonts/Ubuntu-m.ttf");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: Inter;
+    src: url("@/assets/webfonts/Inter.ttf");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: Inter;
+    src: url("@/assets/webfonts/Inter-b.ttf");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: Inter;
+    src: url("@/assets/webfonts/Inter-i.ttf");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Poppins;
+    src: url("@/assets/webfonts/Poppins.ttf");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: Poppins;
+    src: url("@/assets/webfonts/Poppins-b.ttf");
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: Poppins;
+    src: url("@/assets/webfonts/Poppins-i.ttf");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url("@/assets/webfonts/Roboto.ttf");
+    font-weight: 400;
+}
+
+:root {
+    --ui-font-family: 'Ubuntu', sans-serif;
+    --ui-font-size: 0.9rem;
+    --ui-primary: #1E7295;
+    --ui-primary-dark: #185D79;
+    --ui-primary-hover: #1A617F;
+    --ui-primary-darker: #144F67;
+    --ui-border: #283F5D;
+    --ui-content-bg: #DFDFDF;
+    --ui-content-dark-bg: #1C323F;
+    --ui-tab-bg: #B6BEC5;
+    --ui-tab-active-bg: #DFDFDF;
+    --ui-tab-shine: #C2C9D1;
+    --ui-slim-top: #2DABC2;
+    --ui-slim-bottom: #2B91A7;
+    --ui-scrollbar-thumb: rgba(30, 114, 149, 0.35);
+    --ui-scrollbar-hover: rgba(30, 114, 149, 0.6);
+    --ui-scrollbar-active: #185D79;
+}
+
 html,
 body {
     padding: 0;
@@ -17,6 +100,7 @@ body {
     -webkit-user-select: none;
     user-select: none;
     scrollbar-width: thin;
+    font-size: var(--ui-font-size, 0.9rem);
 }
 
 .image-rendering-pixelated {
@@ -47,21 +131,21 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(30, 114, 149, .35);
+    background: var(--ui-scrollbar-thumb);
     border-radius: .5rem;
     border: 2px solid transparent;
     background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(30, 114, 149, .6);
+    background: var(--ui-scrollbar-hover);
     border-radius: .5rem;
     border: 2px solid transparent;
     background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:active {
-    background: #185D79;
+    background: var(--ui-scrollbar-active);
     border-radius: .5rem;
     border: 2px solid transparent;
     background-clip: padding-box;
@@ -574,11 +658,11 @@ body {
 /* Header and Tab Colors */
 
 .bg-card-header {
-    background-color: #1e7295; /* e.g., #2c3e50 */
+    background-color: var(--ui-primary, #1e7295);
 }
 
 .bg-card-tabs {
-    background-color: #185d79; /* Match bg-card-header */
+    background-color: var(--ui-primary-dark, #185d79);
 }
 
 .nitro-wired {

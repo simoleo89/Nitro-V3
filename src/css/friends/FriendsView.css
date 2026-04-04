@@ -171,7 +171,7 @@
                 content: ' ';
                 width: 0;
                 height: 0;
-                border-right: 8px solid #DFDFDF;
+                border-right: 8px solid var(--ui-content-bg, #DFDFDF);
                 border-top: 8px solid transparent;
                 border-bottom: 8px solid transparent;
                 top: 10px;
@@ -187,7 +187,7 @@
                 content: ' ';
                 width: 0;
                 height: 0;
-                border-left: 8px solid #DFDFDF;
+                border-left: 8px solid var(--ui-content-bg, #DFDFDF);
                 border-top: 8px solid transparent;
                 border-bottom: 8px solid transparent;
                 top: 10px;

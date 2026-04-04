@@ -106,7 +106,7 @@ export const FurniEditorSearchView: FC<FurniEditorSearchViewProps> = props =>
                             key={ t || 'all' }
                             className={ `px-2 py-1 text-[11px] rounded border cursor-pointer transition-colors ${
                                 typeFilter === t
-                                    ? 'bg-[#1e7295] text-white border-[#1e7295]'
+                                    ? 'bg-primary text-white border-primary'
                                     : 'bg-white text-[#333] border-[#ccc] hover:bg-[#f0f0f0]'
                             }` }
                             onClick={ () => handleTypeToggle(t) }
@@ -166,7 +166,7 @@ export const FurniEditorSearchView: FC<FurniEditorSearchViewProps> = props =>
                                 <td className="px-2 py-1 truncate max-w-[120px]" title={ item.itemName }>{ item.itemName }</td>
                                 <td className="px-2 py-1 truncate max-w-[120px]" title={ item.publicName }>{ item.publicName }</td>
                                 <td className="px-2 py-1 text-center">
-                                    <span className={ `px-1.5 py-0.5 rounded text-white text-[10px] font-medium ${ item.type === 's' ? 'bg-[#1e7295]' : 'bg-[#6b7280]' }` }>
+                                    <span className={ `px-1.5 py-0.5 rounded text-white text-[10px] font-medium ${ item.type === 's' ? 'bg-primary' : 'bg-[#6b7280]' }` }>
                                         { item.type === 's' ? 'Floor' : 'Wall' }
                                     </span>
                                 </td>

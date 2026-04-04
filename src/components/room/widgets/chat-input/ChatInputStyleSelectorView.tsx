@@ -26,7 +26,7 @@ export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = p
       isOpen={selectorVisible}
       positions={['top']}
       reposition={false}
-      containerClassName="max-w-[276px] not-italic font-normal leading-normal text-left no-underline text-shadow-none normal-case tracking-[normal] [word-break:normal] [word-spacing:normal] whitespace-normal text-[.7875rem] [word-wrap:break-word] bg-[#dfdfdf] bg-clip-padding border border-[solid] border-[#283F5D] rounded-[.25rem] [box-shadow:0_2px_#00000073] z-1070"
+      containerClassName="max-w-[276px] not-italic font-normal leading-normal text-left no-underline text-shadow-none normal-case tracking-[normal] [word-break:normal] [word-spacing:normal] whitespace-normal text-[.7875rem] [word-wrap:break-word] bg-card-content-area bg-clip-padding border border-[solid] border-card-border rounded-[.25rem] [box-shadow:0_2px_#00000073] z-1070"
       content={({ position, childRect, popoverRect }) => (
         <ArrowContainer
           arrowColor={'black'}

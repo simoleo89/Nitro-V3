@@ -575,7 +575,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
                                             { dropdownOpen ? `${LocalizeText('widget.furni.present.close')} Buildtools` : `${LocalizeText('navigator.roomsettings.doormode.open')} Buildtools` }
                                         </button>
                                         <button
-                                            className="w-full text-white text-xs bg-[#1e7295] hover:bg-[#1a617f] border border-[#ffffff33] rounded px-2 py-1 cursor-pointer transition-colors"
+                                            className="w-full text-white text-xs bg-primary hover:bg-primary-hover border border-[#ffffff33] rounded px-2 py-1 cursor-pointer transition-colors"
                                             onClick={ () =>
                                             {
                                                 const roomObject = GetRoomEngine().getRoomObject(roomSession.roomId, avatarInfo.id, avatarInfo.isWallItem ? RoomObjectCategory.WALL : RoomObjectCategory.FLOOR);

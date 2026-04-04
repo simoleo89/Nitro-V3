@@ -10,11 +10,11 @@
         overflow: hidden;
 
         &.track-0 {
-            background-color: #1e7295;
+            background-color: var(--ui-primary, #1e7295);
         }
 
         &.track-1 {
-            background-color: #b6bec5;
+            background-color: var(--ui-tab-bg, #b6bec5);
         }
     }
 

@@ -25,7 +25,7 @@ export const Button: FC<ButtonProps> = props =>
         {
 
             if(variant == 'primary')
-                newClassNames.push('text-white bg-[#1e7295] border-[#1e7295] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-[#1a617f] hover:border-[#185b77]');
+                newClassNames.push('text-white bg-primary border-primary [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-primary-hover hover:border-primary-darker');
 
             if(variant == 'success')
                 newClassNames.push('text-white  bg-[#00800b] border-[#00800b] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white  hover:bg-[#006d09] hover:border-[#006609]');
@@ -40,13 +40,13 @@ export const Button: FC<ButtonProps> = props =>
                 newClassNames.push('text-white  bg-[#000] border-[#000] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white  hover:bg-[#000] hover:border-[#000]');
 
             if(variant == 'secondary')
-                newClassNames.push('text-white  bg-[#185d79] border-[#185d79] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a]  hover:text-white hover:bg-[#144f67] hover:border-[#134a61]');
+                newClassNames.push('text-white bg-secondary border-secondary [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-primary-darker hover:border-primary-darker');
 
             if(variant == 'dark')
                 newClassNames.push('text-white bg-dark [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-[#18181bfb] hover:border-[#161619fb]');
 				
 			if(variant == 'gray')
-				newClassNames.push('text-white bg-[#1e7295] border-[#1e7295] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-[#1a617f] hover:border-[#185b77]');
+				newClassNames.push('text-white bg-gray border-gray [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-gray-700 hover:border-gray-800');
 
         }
 

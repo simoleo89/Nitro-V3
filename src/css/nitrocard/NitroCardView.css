@@ -7,12 +7,12 @@
     }
 
     &.theme-primary {
-        border: 1px solid #283F5D;
+        border: 1px solid var(--ui-border, #283F5D);
 
         .nitro-card-header {
             min-height: 33px;
             max-height: 33px;
-            background: #1E7295;
+            background: var(--ui-primary, #1E7295);
 
             .nitro-card-header-text {
                 color: #FFF;
@@ -68,18 +68,18 @@
         }
 
         .nitro-card-tabs {
-            background-color: #185D79;
+            background-color: var(--ui-primary-dark, #185D79);
 
             .nav-item {
                 padding: .2rem .8rm;
-                background-color: #B6BEC5;
+                background-color: var(--ui-tab-bg, #B6BEC5);
                 color: #000;
                 z-index: 1;
                 margin-bottom: -1px;
 
                 &.active {
-                    background-color: #DFDFDF;
-                    border-color: #283F5D #283F5D #DFDFDF !important;
+                    background-color: var(--ui-tab-active-bg, #DFDFDF);
+                    border-color: var(--ui-border, #283F5D) var(--ui-border, #283F5D) var(--ui-tab-active-bg, #DFDFDF) !important;
                     border-bottom: 1px solid black;
 
                     &:before {
@@ -97,26 +97,26 @@
                     left: 0;
                     right: 0;
                     margin: auto;
-                    background: #c2c9d1;
+                    background: var(--ui-tab-shine, #c2c9d1);
                     z-index: 1;
                 }
             }
         }
 
         .content-area {
-            background-color: #DFDFDF;
+            background-color: var(--ui-content-bg, #DFDFDF);
         }
     }
 
     &.theme-primary-slim {
-        border: 1px solid #283F5D;
+        border: 1px solid var(--ui-border, #283F5D);
 
         .nitro-card-header {
             position: relative;
             min-height: 28px;
             max-height: 28px;
-            background: repeating-linear-gradient(#2DABC2, #2DABC2 50%, #2B91A7 50%, #2B91A7 100%);
-            border-bottom: 2px solid darken(#2B91A7, 5);
+            background: repeating-linear-gradient(var(--ui-slim-top, #2DABC2), var(--ui-slim-top, #2DABC2) 50%, var(--ui-slim-bottom, #2B91A7) 50%, var(--ui-slim-bottom, #2B91A7) 100%);
+            border-bottom: 2px solid var(--ui-primary-dark, #185D79);
             box-shadow: 0 2px white;
             width: 100%;
             margin: 0;
@@ -190,11 +190,11 @@
         }
 
         .nitro-card-tabs {
-            background-color: #185D79;
+            background-color: var(--ui-primary-dark, #185D79);
         }
 
         .content-area {
-            background-color: #DFDFDF;
+            background-color: var(--ui-content-bg, #DFDFDF);
         }
     }
 }
@@ -206,7 +206,7 @@
     overflow: auto;
 
     &.theme-dark {
-        background-color: #1C323F !important;
+        background-color: var(--ui-content-dark-bg, #1C323F) !important;
     }
 }
 
@@ -227,7 +227,7 @@
     height: 100%;
     min-height: 133px;
     max-height: 133px;
-    border-bottom: 1px solid #283F5D;
+    border-bottom: 1px solid var(--ui-border, #283F5D);
 }
 
 .nitro-card-accordion-set {

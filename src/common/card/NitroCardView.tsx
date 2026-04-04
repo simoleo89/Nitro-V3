@@ -19,7 +19,7 @@ export const NitroCardView: FC<NitroCardViewProps> = props =>
         const newClassNames: string[] = [ isResizable ? 'resize' : 'resize-none', 'rounded', 'shadow' ];
 
         // Card Theme Changer
-        newClassNames.push('border border-[#283F5D]');
+        newClassNames.push('border border-card-border');
 
         if(classNames.length) newClassNames.push(...classNames);
 

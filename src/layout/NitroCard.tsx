@@ -100,7 +100,7 @@ const NitroCardTabItem = forwardRef<HTMLDivElement, {
         <div
             ref={ ref }
             className={ classNames(
-                'overflow-hidden relative cursor-pointer rounded-t-md flex bg-card-tab-item px-3 py-1 z-1 border-card-border border-t border-l border-r before:absolute before:w-[93%] before:h-[3px] before:rounded-md before:top-[1.5px] before:left-0 before:right-0 before:m-auto before:z-1 before:bg-[#C2C9D1]',
+                'overflow-hidden relative cursor-pointer rounded-t-md flex bg-card-tab-item px-3 py-1 z-1 border-card-border border-t border-l border-r before:absolute before:w-[93%] before:h-[3px] before:rounded-md before:top-[1.5px] before:left-0 before:right-0 before:m-auto before:z-1 before:bg-card-tab-item',
                 isActive && 'bg-card-tab-item-active -mb-px before:bg-white',
                 className)
             }

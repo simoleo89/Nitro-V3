@@ -159,14 +159,14 @@ export const FloorplanCanvasView: FC<FloorplanCanvasViewProps> = props =>
             </Base>
             <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
                 <button
-                    className="w-[28px] h-[28px] flex items-center justify-center rounded bg-[#1e7295] text-white border border-transparent shadow cursor-pointer hover:brightness-110"
+                    className="w-[28px] h-[28px] flex items-center justify-center rounded bg-primary text-white border border-transparent shadow cursor-pointer hover:brightness-110"
                     onClick={ zoomIn }
                     title="Zoom in"
                 >
                     <FaPlus size={ 10 } />
                 </button>
                 <button
-                    className="w-[28px] h-[28px] flex items-center justify-center rounded bg-[#1e7295] text-white border border-transparent shadow cursor-pointer hover:brightness-110"
+                    className="w-[28px] h-[28px] flex items-center justify-center rounded bg-primary text-white border border-transparent shadow cursor-pointer hover:brightness-110"
                     onClick={ zoomOut }
                     title="Zoom out"
                 >

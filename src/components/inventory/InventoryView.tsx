@@ -149,7 +149,7 @@ export const InventoryView: FC<{}> = props =>
                                 );
                             }) }
                         </NitroCardTabsView>
-                        <div className="flex flex-col overflow-hidden bg-[#DFDFDF] p-2 h-full gap-2">
+                        <div className="flex flex-col overflow-hidden bg-card-content-area p-2 h-full gap-2">
                             { showFilter &&
                                 <InventoryCategoryFilterView
                                     badgeCodes={ badgeCodes }
@@ -175,7 +175,7 @@ export const InventoryView: FC<{}> = props =>
                         </div>
                     </> }
                 { isTrading &&
-                    <div className="flex flex-col overflow-hidden bg-[#DFDFDF] p-2 h-full">
+                    <div className="flex flex-col overflow-hidden bg-card-content-area p-2 h-full">
                         <InventoryTradeView cancelTrade={ onClose } />
                     </div> }
             </NitroCardView>

@@ -161,7 +161,7 @@ export const CatalogLayoutCustomPrefixView: FC<CatalogLayoutProps> = props =>
                             onClick={ () => setShowIconPicker(!showIconPicker) }>
                             { selectedIcon
                                 ? <><span className="text-base">{ selectedIcon }</span><span className="text-[10px] opacity-40">&#x25BC;</span></>
-                                : <span className="opacity-40 text-xs">Emoji &#x25BC;</span>
+                                : <span className="opacity-40 text-xs">{ LocalizeText('catalog.prefix.icon') } &#x25BC;</span>
                             }
                         </button>
                         { selectedIcon &&

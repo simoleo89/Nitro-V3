@@ -32,7 +32,7 @@ export const InventoryPrefixView: FC<{}> = () =>
         if(!selectedPrefix) return;
 
         showConfirm(
-            LocalizeText('inventory.prefix.delete.confirm'),
+            LocalizeText('inventory.prefix.delete.confirm', [ 'prefix' ], [ selectedPrefix.text ]),
             () =>
             {
                 if(selectedPrefix.active) deactivatePrefix();

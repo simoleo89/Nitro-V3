@@ -58,6 +58,8 @@ const useInventoryPrefixesState = () =>
 
             return [ newPrefix, ...prevValue ];
         });
+
+        setNeedsUpdate(true);
     });
 
     useMessageEvent<ActivePrefixUpdatedEvent>(ActivePrefixUpdatedEvent, event =>

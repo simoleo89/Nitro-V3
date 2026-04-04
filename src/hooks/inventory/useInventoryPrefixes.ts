@@ -45,7 +45,19 @@ const useInventoryPrefixesState = () =>
             active: false
         };
 
-        setPrefixes(prevValue => [ newPrefix, ...prevValue ]);
+        setPrefixes(prevValue =>
+        {
+            const existingIndex = prevValue.findIndex(p => p.id === newPrefix.id);
+
+            if(existingIndex !== -1)
+            {
+                const updated = [ ...prevValue ];
+                updated[existingIndex] = { ...updated[existingIndex], ...newPrefix, active: updated[existingIndex].active };
+                return updated;
+            }
+
+            return [ newPrefix, ...prevValue ];
+        });
     });
 
     useMessageEvent<ActivePrefixUpdatedEvent>(ActivePrefixUpdatedEvent, event =>
@@ -54,25 +66,26 @@ const useInventoryPrefixesState = () =>
 
         setPrefixes(prevValue =>
         {
-            return prevValue.map(p => ({
+            const updated = prevValue.map(p => ({
                 ...p,
                 active: p.id === parser.prefixId
             }));
-        });
 
-        if(parser.prefixId === 0)
-        {
-            setActivePrefix(null);
-        }
-        else
-        {
-            setActivePrefix(prev =>
+            if(parser.prefixId === 0)
             {
-                const found = prefixes.find(p => p.id === parser.prefixId);
-                if(found) return { ...found, active: true };
-                return { id: parser.prefixId, text: parser.text, color: parser.color, icon: parser.icon || '', effect: parser.effect || '', active: true };
-            });
-        }
+                setActivePrefix(null);
+            }
+            else
+            {
+                const found = updated.find(p => p.id === parser.prefixId);
+                setActivePrefix(found
+                    ? { ...found, active: true }
+                    : { id: parser.prefixId, text: parser.text, color: parser.color, icon: parser.icon || '', effect: parser.effect || '', active: true }
+                );
+            }
+
+            return updated;
+        });
     });
 
     const activatePrefix = (prefixId: number) =>

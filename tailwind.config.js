@@ -115,11 +115,16 @@ module.exports = {
                     '0%': { transform: 'scale(1.15)' },
                     '100%': { transform: 'scale(1)' },
                 },
+                pulseGlowGold: {
+                    '0%, 100%': { boxShadow: '0 0 6px rgba(255,193,7,0.4)' },
+                    '50%': { boxShadow: '0 0 14px rgba(255,193,7,0.7)' },
+                },
             },
             animation: {
                 'pulse-glow': 'pulseGlow 1.2s ease-in-out infinite',
                 'pulse-glow-red': 'pulseGlowRed 1.2s ease-in-out infinite',
                 'drop-settle': 'dropSettle 0.3s ease-out',
+                'pulse-glow-gold': 'pulseGlowGold 1.5s ease-in-out infinite',
             },
         },
     },
@@ -166,7 +171,8 @@ module.exports = {
         'items-end',
         'animate-pulse-glow',
         'animate-pulse-glow-red',
-        'animate-drop-settle'
+        'animate-drop-settle',
+        'animate-pulse-glow-gold'
     ],
     darkMode: 'class',
     variants: {

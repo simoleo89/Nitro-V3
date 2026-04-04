@@ -1,4 +1,5 @@
 import { NotificationBubbleItem, NotificationBubbleType } from '../../../../api';
+import { NotificationBadgeReceivedBubbleView } from './NotificationBadgeReceivedBubbleView';
 import { NotificationClubGiftBubbleView } from './NotificationClubGiftBubbleView';
 import { NotificationDefaultBubbleView } from './NotificationDefaultBubbleView';
 
@@ -10,6 +11,8 @@ export const GetBubbleLayout = (item: NotificationBubbleItem, onClose: () => voi
 
     switch(item.notificationType)
     {
+        case NotificationBubbleType.BADGE_RECEIVED:
+            return <NotificationBadgeReceivedBubbleView key={ item.id } { ...props } />;
         case NotificationBubbleType.CLUBGIFT:
             return <NotificationClubGiftBubbleView key={ item.id } { ...props } />;
         default:

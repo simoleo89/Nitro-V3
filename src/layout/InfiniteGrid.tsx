@@ -172,7 +172,7 @@ const InfiniteGridItem = forwardRef<HTMLDivElement, {
                     : (itemColor ? 'border-card-grid-item-border' : 'border-card-grid-item-border bg-card-grid-item'),
                 (itemUniqueSoldout || (itemUniqueNumber > 0)) && 'unique-item',
                 itemUniqueSoldout && 'sold-out',
-                itemUnseen && ' bg-green-500 bg-opacity-40',
+                itemUnseen && ' animate-pulse-glow-gold border-yellow-400/60',
                 className
             ) }
             style={ styleNames(

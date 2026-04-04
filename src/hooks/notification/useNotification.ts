@@ -1,4 +1,4 @@
-import { AchievementNotificationMessageEvent, ActivityPointNotificationMessageEvent, ClubGiftNotificationEvent, ClubGiftSelectedEvent, ConnectionErrorEvent, GetLocalizationManager, GetRoomEngine, GetSessionDataManager, HabboBroadcastMessageEvent, HotelClosedAndOpensEvent, HotelClosesAndWillOpenAtEvent, HotelWillCloseInMinutesEvent, InfoFeedEnableMessageEvent, MaintenanceStatusMessageEvent, ModeratorCautionEvent, ModeratorMessageEvent, MOTDNotificationEvent, NotificationDialogMessageEvent, PetLevelNotificationEvent, PetReceivedMessageEvent, RespectReceivedEvent, RoomEnterEffect, RoomEnterEvent, SimpleAlertMessageEvent, UserBannedMessageEvent, Vector3d, WiredRewardResultMessageEvent } from '@nitrots/nitro-renderer';
+import { AchievementNotificationMessageEvent, ActivityPointNotificationMessageEvent, BadgeReceivedEvent, ClubGiftNotificationEvent, ClubGiftSelectedEvent, ConnectionErrorEvent, GetLocalizationManager, GetRoomEngine, GetSessionDataManager, HabboBroadcastMessageEvent, HotelClosedAndOpensEvent, HotelClosesAndWillOpenAtEvent, HotelWillCloseInMinutesEvent, InfoFeedEnableMessageEvent, MaintenanceStatusMessageEvent, ModeratorCautionEvent, ModeratorMessageEvent, MOTDNotificationEvent, NotificationDialogMessageEvent, PetLevelNotificationEvent, PetReceivedMessageEvent, RespectReceivedEvent, RoomEnterEffect, RoomEnterEvent, SimpleAlertMessageEvent, UserBannedMessageEvent, Vector3d, WiredRewardResultMessageEvent } from '@nitrots/nitro-renderer';
 import { useCallback, useState } from 'react';
 import { useBetween } from 'use-between';
 import { GetConfigurationValue, LocalizeBadgeName, LocalizeText, NotificationAlertItem, NotificationAlertType, NotificationBubbleItem, NotificationBubbleType, NotificationConfirmItem, PlaySound, ProductImageUtility, TradingNotificationType } from '../../api';
@@ -215,6 +215,15 @@ const useNotificationState = () =>
         const internalLink = 'questengine/achievements/' + parser.data.category;
 
         showSingleBubble((text1 + ' ' + badgeName), NotificationBubbleType.ACHIEVEMENT, badgeImage, internalLink);
+    });
+
+    useMessageEvent<BadgeReceivedEvent>(BadgeReceivedEvent, event =>
+    {
+        const parser = event.getParser();
+        const badgeName = LocalizeBadgeName(parser.badgeCode);
+        const badgeImage = GetSessionDataManager().getBadgeUrl(parser.badgeCode);
+
+        showSingleBubble(badgeName, NotificationBubbleType.BADGE_RECEIVED, badgeImage, 'inventory/toggle');
     });
 
     useMessageEvent<ClubGiftNotificationEvent>(ClubGiftNotificationEvent, event =>

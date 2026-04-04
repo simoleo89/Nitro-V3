@@ -356,6 +356,9 @@ const useNotificationState = () =>
     {
         const parser = event.getParser();
 
+        // Skip badge notifications — handled by BadgeReceivedEvent with "Wear" button
+        if(parser.type === 'badge_received' || parser.type === 'badges' || parser.type.includes('badge')) return;
+
         showNotification(parser.type, parser.parameters);
     });
 

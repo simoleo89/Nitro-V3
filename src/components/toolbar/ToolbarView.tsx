@@ -6,6 +6,7 @@ import { Flex, LayoutAvatarImageView, LayoutItemCountView } from '../../common';
 import { useAchievements, useFriends, useInventoryUnseenTracker, useMessageEvent, useMessenger, useNitroEvent, useSessionInfo } from '../../hooks';
 import { ToolbarItemView } from './ToolbarItemView';
 import { ToolbarMeView } from './ToolbarMeView';
+import { YouTubePlayerView } from './YouTubePlayerView';
 
 export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
 {
@@ -18,6 +19,11 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
     const { requests = [] } = useFriends();
     const { iconState = MessengerIconState.HIDDEN } = useMessenger();
     const isMod = GetSessionDataManager().isModerator;
+
+    const openYouTubePlayer = () =>
+    {
+        window.dispatchEvent(new CustomEvent('youtube:toggle'));
+    };
 
     useMessageEvent<PerkAllowancesMessageEvent>(PerkAllowancesMessageEvent, event =>
     {
@@ -65,6 +71,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
 
     return (
         <>
+            <YouTubePlayerView />
             <AnimatePresence> { isMeExpanded && ( <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 					<ToolbarMeView setMeExpanded={ setMeExpanded } unseenAchievementCount={ getTotalUnseen } useGuideTool={ useGuideTool } />
 				</motion.div> )}
@@ -94,6 +101,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                     </ToolbarItemView>
                     { isInRoom &&
                         <ToolbarItemView icon="camera" onClick={ event => CreateLinkEvent('camera/toggle') } /> }
+                    <ToolbarItemView icon="youtube" onClick={ openYouTubePlayer } />
                     { isMod &&
                         <ToolbarItemView icon="modtools" onClick={ event => CreateLinkEvent('mod-tools/toggle') } /> }
                     { isMod &&

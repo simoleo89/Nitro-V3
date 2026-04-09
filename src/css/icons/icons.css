@@ -172,6 +172,13 @@
     height: 45px;
 }
 
+.nitro-icon.icon-youtube {
+    background-image: url("@/assets/images/toolbar/icons/youtube.svg");
+    background-size: contain;
+    width: 36px;
+    height: 36px;
+}
+
 .nitro-icon.icon-message {
     background-image: url("@/assets/images/toolbar/icons/message.png");
     width: 36px;

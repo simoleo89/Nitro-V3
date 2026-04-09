@@ -9,7 +9,6 @@
 
         &.type-0 {
 
-            // normal
             .message {
                 font-weight: 400;
             }
@@ -17,7 +16,6 @@
 
         &.type-1 {
 
-            // whisper
             .message {
                 font-weight: 400;
                 font-style: italic;
@@ -27,7 +25,6 @@
 
         &.type-2 {
 
-            // shout
             .message {
                 font-weight: 700;
             }

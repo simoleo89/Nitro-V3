@@ -226,6 +226,7 @@ const useNotificationState = () =>
     {
         const parser = event.getParser();
 
+        // Skip if AchievementNotificationMessageEvent already showed a notification for this badge
         if(recentBadgeNotifications.has(parser.badgeCode)) return;
 
         recentBadgeNotifications.add(parser.badgeCode);
@@ -233,6 +234,9 @@ const useNotificationState = () =>
 
         const badgeName = LocalizeBadgeName(parser.badgeCode);
         const badgeImage = GetSessionDataManager().getBadgeUrl(parser.badgeCode);
+        // senderName is non-empty only when a staff member awarded the badge
+        // via the `:badge` command. Empty for achievements, catalog buys,
+        // wired rewards, poll rewards, etc.
         const senderName = parser.senderName || '';
 
         showSingleBubble(badgeName, NotificationBubbleType.BADGE_RECEIVED, badgeImage, parser.badgeCode, senderName);

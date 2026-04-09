@@ -1,17 +1,8 @@
 import { ControlYoutubeDisplayPlaybackMessageComposer, YouTubeRoomBroadcastEvent, YouTubeRoomPlayComposer, YouTubeRoomWatchersEvent, YouTubeRoomWatchingComposer } from "@nitrots/nitro-renderer";
 import { FC, useEffect, useRef, useState } from "react";
 import YouTube from "react-youtube";
-import {
-    GetRoomSession,
-    GetSessionDataManager,
-    SendMessageComposer,
-    YoutubeVideoPlaybackStateEnum,
-} from "../../api";
-import {
-    NitroCardContentView,
-    NitroCardHeaderView,
-    NitroCardView,
-} from "../../common";
+import { GetRoomSession, GetSessionDataManager, LocalizeText, SendMessageComposer, YoutubeVideoPlaybackStateEnum } from "../../api";
+import { NitroCardContentView, NitroCardHeaderView, NitroCardView, LayoutAvatarImageView } from "../../common";
 import { useFurnitureYoutubeWidget, useMessageEvent } from "../../hooks";
 
 const CONTROL_COMMAND_PREVIOUS_VIDEO = 0;
@@ -33,14 +24,7 @@ const extractVideoId = (input: string): string => {
 
 export const YouTubePlayerView: FC<{}> = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [tab, setTab] = useState<
-        | "player"
-        | "playlist"
-        | "spectators"
-        | "settings"
-        | "history"
-        | "share"
-    >("player");
+    const [tab, setTab] = useState< | "player" | "playlist" | "spectators" | "settings" | "history" | "share" >("player");
     const [inputValue, setInputValue] = useState("");
     const [isRoomMode, setIsRoomMode] = useState(false);
     const [volume, setVolume] = useState(100);
@@ -53,65 +37,54 @@ export const YouTubePlayerView: FC<{}> = () => {
     const [showVolumeSlider, setShowVolumeSlider] = useState(true);
     const playerRef = useRef<any>(null);
 
-    const {
-        objectId: youtubeObjectId,
-        videoId: roomVideoId,
-        currentVideoState,
-        hasControl,
-    } = useFurnitureYoutubeWidget();
+    const { objectId: youtubeObjectId, videoId: roomVideoId, currentVideoState, hasControl } = useFurnitureYoutubeWidget();
 
-    const [spectators, setSpectators] = useState<
-        { id: number; name: string; look: string }[]
-    >([]);
-    // Room broadcast state: set when someone broadcasts a video to the room
+    const [spectators, setSpectators] = useState< { id: number; name: string; look: string }[] >([]);
     const [broadcastVideo, setBroadcastVideo] = useState("");
     const [broadcastSender, setBroadcastSender] = useState("");
     const [broadcastPlaylist, setBroadcastPlaylist] = useState<string[]>([]);
     const [watcherIds, setWatcherIds] = useState<Set<number>>(new Set());
-
-    // Listen for room-wide YouTube broadcast from the server
     useMessageEvent<YouTubeRoomBroadcastEvent>(YouTubeRoomBroadcastEvent, event => {
         const parser = event.getParser();
         setBroadcastVideo(parser.videoId);
         setBroadcastSender(parser.senderName);
         setBroadcastPlaylist(parser.playlist);
-        // Auto-open the player and load the broadcast video
         if (parser.videoId) {
             setInputValue(parser.videoId);
             setIsOpen(true);
             setTab("player");
+        } else {
+            setInputValue("");
+            setBroadcastVideo("");
+            setBroadcastSender("");
+            setBroadcastPlaylist([]);
         }
     });
 
-    // Listen for updated watcher list from the server
-    useMessageEvent<YouTubeRoomWatchersEvent>(YouTubeRoomWatchersEvent, event => {
-        setWatcherIds(new Set(event.getParser().watcherIds));
-        loadRoomUsers(); // refresh spectator list so we can mark watchers
-    });
+    useMessageEvent<YouTubeRoomWatchersEvent>(YouTubeRoomWatchersEvent, event => { setWatcherIds(new Set(event.getParser().watcherIds)); loadRoomUsers(); });
 
-    // Notify server when we open/close the YouTube player
+    const sentWatchingRef = useRef(false);
+    const hasVideo = !!(inputValue && extractVideoId(inputValue));
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && hasVideo && !sentWatchingRef.current) {
             try { SendMessageComposer(new YouTubeRoomWatchingComposer(true)); } catch(e) {}
-        }
-        return () => {
+            sentWatchingRef.current = true;
+        } else if ((!isOpen || !hasVideo) && sentWatchingRef.current) {
             try { SendMessageComposer(new YouTubeRoomWatchingComposer(false)); } catch(e) {}
-        };
-    }, [isOpen]);
+            sentWatchingRef.current = false;
+        }
+    }, [isOpen, hasVideo]);
 
-    // Enumerate room users via the session's userDataManager. Uses the
-    // same brute-force index scan that the old FurnitureYoutubeDisplayView
-    // used (and which worked). The fancier GetRoomEngine().getRoomObjects()
-    // approach doesn't reliably return objects when called from the toolbar
-    // context (outside the room widget tree).
     const loadRoomUsers = () => {
         try {
             const roomSession = GetRoomSession();
             if (!roomSession) { setSpectators([]); return; }
             const users: { id: number; name: string; look: string }[] = [];
+            const seen = new Set<number>();
             for (let i = 0; i < 500; i++) {
                 const userData = roomSession.userDataManager.getUserDataByIndex(i);
-                if (userData && userData.name && userData.type === 1) {
+                if (userData && userData.name && userData.type === 1 && !seen.has(userData.userId)) {
+                    seen.add(userData.userId);
                     users.push({ id: userData.userId, name: userData.name, look: userData.figure });
                 }
             }
@@ -121,8 +94,6 @@ export const YouTubePlayerView: FC<{}> = () => {
         }
     };
 
-    // Load room users when the player opens so the spectators count
-    // is visible on the tab button immediately.
     useEffect(() => {
         if (isOpen) loadRoomUsers();
     }, [isOpen]);
@@ -139,10 +110,6 @@ export const YouTubePlayerView: FC<{}> = () => {
     }, [youtubeObjectId, roomVideoId]);
 
     useEffect(() => {
-        // Hold the same handler reference for both add and remove. Using a
-        // fresh arrow function in the cleanup is a no-op because
-        // removeEventListener requires reference equality; every mount
-        // would otherwise leak a permanent listener on window.
         const handler = () => setIsOpen((p) => !p);
         window.addEventListener("youtube:toggle", handler);
         return () => window.removeEventListener("youtube:toggle", handler);
@@ -154,7 +121,6 @@ export const YouTubePlayerView: FC<{}> = () => {
             try {
                 const parsed = JSON.parse(savedHistory);
                 if (Array.isArray(parsed)) {
-                    // Accept both legacy {id,title,...} objects and plain string[]
                     setHistory(parsed.map((entry: any) => typeof entry === "string" ? entry : entry?.id).filter(Boolean));
                 }
             } catch (e) {}
@@ -240,10 +206,10 @@ export const YouTubePlayerView: FC<{}> = () => {
     if (!isOpen) return null;
 
     const videoId = extractVideoId(inputValue);
-    const isPlaying =
-        currentVideoState === YoutubeVideoPlaybackStateEnum.PLAYING;
+    const isPlaying = currentVideoState === YoutubeVideoPlaybackStateEnum.PLAYING;
     const isPaused = currentVideoState === YoutubeVideoPlaybackStateEnum.PAUSED;
-    const isMyRoom = GetSessionDataManager().isModerator || hasControl;
+    const roomSession = GetRoomSession();
+    const isMyRoom = GetSessionDataManager().isModerator || (roomSession && roomSession.isRoomOwner);
 
     const QuickVolumeButton = ({
         value,
@@ -265,10 +231,10 @@ export const YouTubePlayerView: FC<{}> = () => {
 
     return (
         <NitroCardView
-            className={`youtube-player-modal fixed ${isFullscreen ? "inset-0 w-full h-full z-[9999] rounded-none" : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1000] w-[550px]"}`}
+            className={`youtube-player-modal ${isFullscreen ? "!fixed inset-0 w-full h-full z-[9999] rounded-none" : "w-[550px]"}`}
         >
             <NitroCardHeaderView
-                headerText={isRoomMode ? "📺 YouTube TV (Kamer)" : "▶ YouTube"}
+                headerText={isRoomMode ? "📺 YouTube TV" : "▶ YouTube"}
                 onCloseClick={() => setIsOpen(false)}
             />
             <NitroCardContentView>
@@ -297,12 +263,12 @@ export const YouTubePlayerView: FC<{}> = () => {
                     >
                         📤
                     </button>
-                    {spectators.length > 0 && (
+                    {watcherIds.size > 0 && (
                         <button
                             onClick={() => { setTab("spectators"); loadRoomUsers(); }}
                             className={`px-3 py-1 rounded text-sm ${tab === "spectators" ? "bg-amber-600 text-white" : "bg-gray-700 text-gray-300"}`}
                         >
-                            👁️ {spectators.length}
+                            📺 {watcherIds.size}
                         </button>
                     )}
                     <button
@@ -318,22 +284,22 @@ export const YouTubePlayerView: FC<{}> = () => {
                         {isRoomMode && (
                             <div className="mb-2 p-2 bg-blue-900/50 rounded flex justify-between text-sm">
                                 <span className="text-blue-300">
-                                    📺 Verbonden met YouTube TV
+                                    📺 Connected with YouTube TV
                                 </span>
                                 <div className="flex gap-2">
                                     {isPlaying && (
                                         <span className="text-green-400">
-                                            ▶ Speelt
+                                            ▶ { LocalizeText('connection.login.play') }
                                         </span>
                                     )}
                                     {isPaused && (
                                         <span className="text-yellow-400">
-                                            ⏸ Gepauzeerd
+                                            ⏸ { LocalizeText('wiredfurni.params.clock_control.3') }
                                         </span>
                                     )}
                                     {isMyRoom && (
                                         <span className="text-green-400 text-xs">
-                                            ✓ Jij bent eigenaar
+                                            ✓ { LocalizeText('navigator.filter.owner') }
                                         </span>
                                     )}
                                 </div>
@@ -360,7 +326,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                             />
                         ) : (
                             <div className="h-[280px] flex items-center justify-center bg-gray-800 text-gray-500">
-                                Geen video geladen
+                                { LocalizeText('widget.furni.video_viewer.no_videos') }
                             </div>
                         )}
 
@@ -390,8 +356,23 @@ export const YouTubePlayerView: FC<{}> = () => {
                         )}
 
                         {broadcastVideo && broadcastSender && (
-                            <div className="mt-2 p-2 bg-purple-900/50 rounded text-sm">
-                                <span className="text-purple-300">📡 {broadcastSender} speelt voor de kamer</span>
+                            <div className="mt-2 p-2 bg-purple-900/50 rounded text-sm flex justify-between items-center">
+                                <span className="text-purple-300">📡 {broadcastSender} broadcasting</span>
+                                {isMyRoom && (
+                                    <button
+                                        onClick={() => {
+                                            try {
+                                                SendMessageComposer(new YouTubeRoomPlayComposer("", []));
+                                            } catch(e) {}
+                                            setBroadcastVideo("");
+                                            setBroadcastSender("");
+                                            setBroadcastPlaylist([]);
+                                        }}
+                                        className="px-2 py-0.5 bg-red-700 hover:bg-red-600 rounded text-white text-xs"
+                                    >
+                                        ⏹ { LocalizeText('useproduct.widget.cancel') }
+                                    </button>
+                                )}
                             </div>
                         )}
 
@@ -402,7 +383,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                                 onChange={(e) => setInputValue(e.target.value)}
                                 disabled={!!broadcastVideo && !isMyRoom}
                                 className={`flex-1 p-2 rounded text-white text-sm ${(!!broadcastVideo && !isMyRoom) ? "bg-gray-800" : "bg-gray-700"}`}
-                                placeholder="YouTube URL of video ID"
+                                placeholder="YouTube URL / video ID"
                             />
                             {isMyRoom && videoId && (
                                 <button
@@ -414,7 +395,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                                     className="px-3 bg-purple-600 rounded text-white text-sm whitespace-nowrap"
                                     title="Speel deze video voor iedereen in de kamer"
                                 >
-                                    📡 Kamer
+                                    📡  { LocalizeText('wiredchests.logs.type.1') }
                                 </button>
                             )}
                         </div>
@@ -428,7 +409,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                                 type="text"
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                placeholder="Video URL toevoegen..."
+                                placeholder="Add video URL..."
                                 className="flex-1 p-2 bg-gray-700 text-white rounded text-sm"
                                 onKeyDown={(e) =>
                                     e.key === "Enter" && addToPlaylist()
@@ -446,18 +427,18 @@ export const YouTubePlayerView: FC<{}> = () => {
                                 onClick={() => setInputValue("")}
                                 className="flex-1 px-3 py-2 bg-gray-700 rounded text-white text-sm"
                             >
-                                🔄 Nieuwe video
+                                🔄 New video
                             </button>
                             <button
                                 onClick={() => setPlaylist([])}
                                 className="px-3 py-2 bg-red-900 rounded text-white text-sm"
                             >
-                                🗑 Leeg
+                                🗑 Clear
                             </button>
                         </div>
                         {playlist.length === 0 ? (
                             <div className="p-4 text-center text-gray-500 text-sm">
-                                Playlist is leeg
+                                Playlist is empty
                             </div>
                         ) : (
                             <div className="max-h-[250px] overflow-y-auto space-y-1">
@@ -498,18 +479,18 @@ export const YouTubePlayerView: FC<{}> = () => {
                     <div className="space-y-2">
                         <div className="flex justify-between items-center">
                             <div className="text-gray-400 text-sm">
-                                🕐 Bekeken video's ({history.length})
+                                🕐 Watch history ({history.length})
                             </div>
                             <button
                                 onClick={() => setHistory([])}
                                 className="text-red-400 text-xs hover:text-red-300"
                             >
-                                🗑 Wissen
+                                🗑 Clear
                             </button>
                         </div>
                         {history.length === 0 ? (
                             <div className="p-4 text-center text-gray-500 text-sm">
-                                Nog geen video's bekeken
+                                No videos watched yet
                             </div>
                         ) : (
                             <div className="max-h-[300px] overflow-y-auto space-y-1">
@@ -536,7 +517,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                     <div className="space-y-3">
                         <div className="p-3 bg-gray-800 rounded">
                             <div className="text-gray-400 text-sm mb-2">
-                                📤 Video delen
+                                📤 Share video
                             </div>
                             {videoId ? (
                                 <div className="space-y-2">
@@ -561,13 +542,13 @@ export const YouTubePlayerView: FC<{}> = () => {
                                 </div>
                             ) : (
                                 <div className="text-gray-500 text-sm text-center py-4">
-                                    Selecteer eerst een video om te delen
+                                    Select a video first to share
                                 </div>
                             )}
                         </div>
                         <div className="p-3 bg-gray-800 rounded">
                             <div className="text-gray-400 text-sm mb-2">
-                                📋 Snel delen
+                                📋 Quick share
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <button
@@ -576,19 +557,19 @@ export const YouTubePlayerView: FC<{}> = () => {
                                             navigator.clipboard.writeText(
                                                 `📺 https://youtube.com/watch?v=${videoId}`,
                                             );
-                                            alert("Gekopieerd naar clipboard!");
+                                            alert("Copied to clipboard!");
                                         }
                                     }}
                                     disabled={!videoId}
                                     className="px-3 py-2 bg-gray-700 rounded text-white text-sm disabled:opacity-50"
                                 >
-                                    📋 Copy met emoji
+                                    📋 Copy with emoji
                                 </button>
                                 <button
                                     onClick={() => {
                                         if (videoId) {
                                             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                                                `Nu kijken: https://youtube.com/watch?v=${videoId}`,
+                                                'Now watching: https://youtube.com/watch?v=${videoId}',
                                             )}`;
                                             window.open(url, "_blank");
                                         }
@@ -603,11 +584,22 @@ export const YouTubePlayerView: FC<{}> = () => {
                     </div>
                 )}
 
-                {tab === "spectators" && (
+                {tab === "spectators" && (() => {
+                    const watchers: { id: number; name: string; look: string }[] = [];
+                    const rs = GetRoomSession();
+                    if (rs) {
+                        for (const uid of watcherIds) {
+                            const ud = rs.userDataManager.getUserData(uid);
+                            if (ud && ud.name) {
+                                watchers.push({ id: ud.userId, name: ud.name, look: ud.figure });
+                            }
+                        }
+                    }
+                    return (
                     <div className="p-3 bg-gray-800 rounded">
                         <div className="flex justify-between items-center mb-2">
                             <div className="text-gray-400 text-sm">
-                                👁️ Gebruikers in kamer ({spectators.length})
+                                📺 {watchers.length} watching
                             </div>
                             <button
                                 onClick={loadRoomUsers}
@@ -616,40 +608,31 @@ export const YouTubePlayerView: FC<{}> = () => {
                                 🔄
                             </button>
                         </div>
-                        {spectators.length === 0 ? (
+                        {watchers.length === 0 ? (
                             <div className="text-gray-500 text-sm text-center py-4">
-                                Geen gebruikers in deze kamer
+                                No one is watching
                             </div>
                         ) : (
                             <div className="max-h-[200px] overflow-y-auto space-y-1">
-                                {spectators.map((user) => (
+                                {watchers.map((user) => (
                                     <div
                                         key={user.id}
                                         className="flex items-center gap-2 p-2 bg-gray-700 rounded"
                                     >
-                                        <img
-                                            src={`https://www.habbo.com/habbo-imaging/avatarimage?figure=${user.look}&size=s&direction=2&head_direction=2`}
-                                            alt={user.name}
-                                            className="w-8 h-8 rounded"
-                                            onError={(e) => {
-                                                (
-                                                    e.target as HTMLImageElement
-                                                ).src =
-                                                    "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><circle cx='18' cy='18' r='18' fill='%23888'/></svg>";
-                                            }}
-                                        />
+                                        <div className="shrink-0 overflow-hidden">
+                                            <LayoutAvatarImageView figure={user.look} headOnly direction={2} scale={1} className="!w-[45px] !h-[65px] -mt-[5px] -ml-[5px]" />
+                                        </div>
                                         <span className="text-white text-sm flex-1">
                                             {user.name}
                                         </span>
-                                        {watcherIds.has(user.id) && (
-                                            <span className="text-amber-400 text-xs" title="Kijkt YouTube">📺</span>
-                                        )}
+                                        <span className="text-amber-400 text-xs">📺</span>
                                     </div>
                                 ))}
                             </div>
                         )}
                     </div>
-                )}
+                    );
+                })()}
 
                 {tab === "settings" && (
                     <div className="space-y-3">
@@ -701,7 +684,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                                     }
                                     className="w-4 h-4"
                                 />
-                                🔇 Dempen
+                                🔇 Mute
                             </label>
                             <label className="flex items-center gap-2 text-white text-sm cursor-pointer">
                                 <input
@@ -712,7 +695,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                                     }
                                     className="w-4 h-4"
                                 />
-                                🔁 Herhalen
+                                🔁 Loop
                             </label>
                             <label className="flex items-center gap-2 text-white text-sm cursor-pointer">
                                 <input
@@ -730,14 +713,20 @@ export const YouTubePlayerView: FC<{}> = () => {
                         <div className="p-2 bg-gray-800 rounded text-xs text-gray-400">
                             <div className="font-bold mb-1">ℹ️ Info</div>
                             <div>
-                                Room Mode:{" "}
-                                {isRoomMode ? "✓ Actief" : "✕ Niet actief"}
+                                📡 Broadcast:{" "}
+                                {broadcastVideo
+                                    ? <span className="text-green-400">✓ Active ({broadcastSender} playing)</span>
+                                    : <span className="text-gray-500">✕ No video</span>}
                             </div>
                             <div>
-                                Controle:{" "}
-                                {hasControl
-                                    ? "✓ Je hebt controle"
-                                    : "✕ Alleen kijken"}
+                                🎮 Controle:{" "}
+                                {isMyRoom
+                                    ? <span className="text-green-400">✓ You are the owner</span>
+                                    : <span className="text-gray-500">✕ Viewing only</span>}
+                            </div>
+                            <div>
+                                👁️ Viewers:{" "}
+                                <span className="text-amber-400">{watcherIds.size}</span>
                             </div>
                         </div>
                     </div>

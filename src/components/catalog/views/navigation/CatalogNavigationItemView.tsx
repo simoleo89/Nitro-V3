@@ -89,7 +89,7 @@ export const CatalogNavigationItemView: FC<CatalogNavigationItemViewProps> = pro
                 <div className="w-5 h-5 flex items-center justify-center shrink-0">
                     <CatalogIconView icon={ node.iconId } />
                 </div>
-                <span className="flex-1 truncate" title={ adminMode ? `Page ID: ${ node.pageId }` : undefined }>{ node.localization }</span>
+                <span className="flex-1 truncate" title={ adminMode ? `${ node.localization } (Page ID: ${ node.pageId })` : node.localization }>{ node.localization }</span>
                 { adminMode &&
                     <div className="flex items-center gap-1 opacity-0 group-hover/nav:opacity-100 transition-opacity">
                         <FaPlus

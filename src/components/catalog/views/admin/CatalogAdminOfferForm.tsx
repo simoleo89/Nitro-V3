@@ -102,29 +102,29 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
                         { isNew ? 'New Offer' : `Offer #${ offer.offerId }` }
                     </div>
                     { !isNew && offer.localizationName &&
-                        <div className="text-[9px] text-muted font-mono truncate">{ offer.localizationName }</div> }
+                        <div className="text-[9px] text-black/50 font-mono truncate">{ offer.localizationName }</div> }
                 </div>
             </div>
 
             { /* Identity */ }
-            <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Identity</div>
+            <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Identity</div>
                 <div className="flex flex-col gap-1.5">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-muted uppercase font-bold">Catalog Name</label>
+                        <label className="text-[9px] text-black/50 uppercase font-bold">Catalog Name</label>
                         <input className={ inputClass } placeholder="rare_dragon_lamp" type="text" value={ catalogName } onChange={ e => setCatalogName(e.target.value) } />
                     </div>
                     <div className="grid grid-cols-3 gap-1.5">
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-[9px] text-muted">Item IDs</label>
+                            <label className="text-[9px] text-black/50">Item IDs</label>
                             <input className={ inputClass } type="text" value={ itemIds } onChange={ e => setItemIds(e.target.value) } />
                         </div>
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-[9px] text-muted">Quantity</label>
+                            <label className="text-[9px] text-black/50">Quantity</label>
                             <input className={ inputClass } min={ 1 } type="number" value={ amount } onChange={ e => setAmount(parseInt(e.target.value) || 1) } />
                         </div>
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-[9px] text-muted">Order</label>
+                            <label className="text-[9px] text-black/50">Order</label>
                             <input className={ inputClass } min={ 0 } type="number" value={ orderNumber } onChange={ e => setOrderNumber(parseInt(e.target.value) || 0) } />
                         </div>
                     </div>
@@ -132,19 +132,19 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
             </div>
 
             { /* Pricing */ }
-            <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Pricing</div>
+            <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Pricing</div>
                 <div className="grid grid-cols-3 gap-1.5">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-muted">Credits</label>
+                        <label className="text-[9px] text-black/50">Credits</label>
                         <input className={ inputClass } min={ 0 } type="number" value={ costCredits } onChange={ e => setCostCredits(parseInt(e.target.value) || 0) } />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-muted">Points</label>
+                        <label className="text-[9px] text-black/50">Points</label>
                         <input className={ inputClass } min={ 0 } type="number" value={ costPoints } onChange={ e => setCostPoints(parseInt(e.target.value) || 0) } />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-muted">Points Type</label>
+                        <label className="text-[9px] text-black/50">Points Type</label>
                         <select className={ inputClass } value={ pointsType } onChange={ e => setPointsType(parseInt(e.target.value)) }>
                             <option value={ 0 }>Duckets</option>
                             <option value={ 5 }>Diamonds</option>
@@ -155,27 +155,27 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
             </div>
 
             { /* Options */ }
-            <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Options</div>
+            <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Options</div>
                 <div className="grid grid-cols-3 gap-1.5 mb-1.5">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-muted">Club Only</label>
+                        <label className="text-[9px] text-black/50">Club Only</label>
                         <select className={ inputClass } value={ clubOnly } onChange={ e => setClubOnly(e.target.value) }>
                             <option value="0">No</option>
                             <option value="1">Yes</option>
                         </select>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-muted">Limited</label>
+                        <label className="text-[9px] text-black/50">Limited</label>
                         <input className={ inputClass } min={ 0 } type="number" value={ limitedStack } onChange={ e => setLimitedStack(parseInt(e.target.value) || 0) } />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-muted">Offer Group</label>
+                        <label className="text-[9px] text-black/50">Offer Group</label>
                         <input className={ inputClass } type="number" value={ offerIdGroup } onChange={ e => setOfferIdGroup(parseInt(e.target.value) || -1) } />
                     </div>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                    <label className="text-[9px] text-muted">Extra Data</label>
+                    <label className="text-[9px] text-black/50">Extra Data</label>
                     <input className={ inputClass } placeholder="optional" type="text" value={ extradata } onChange={ e => setExtradata(e.target.value) } />
                 </div>
                 <label className="flex items-center gap-1.5 text-[10px] cursor-pointer mt-1.5">

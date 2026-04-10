@@ -90,7 +90,7 @@ export const CatalogAdminOfferPanel: FC<{}> = () =>
             <div className="flex-1 min-w-0 border-r-2 border-card-grid-item-border flex flex-col overflow-hidden">
                 { /* Top bar */ }
                 <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-card-grid-item-border bg-card-grid-item shrink-0">
-                    <div className="flex items-center gap-1 text-[10px] text-gray-600 min-w-0 flex-1">
+                    <div className="flex items-center gap-1 text-[10px] text-black/60 min-w-0 flex-1">
                         <FaStar className="text-[8px] text-primary shrink-0" />
                         <span className="truncate">{ breadcrumb }</span>
                         <span className="text-[9px] text-muted shrink-0">({ filteredOffers.length })</span>
@@ -114,7 +114,7 @@ export const CatalogAdminOfferPanel: FC<{}> = () =>
 
                 { /* Selection bar */ }
                 { selectedOfferIds.size > 0 &&
-                    <div className="flex items-center gap-2 px-2 py-1 bg-primary/10 border-b border-primary/20 shrink-0">
+                    <div className="flex items-center gap-2 px-2 py-1 bg-primary/20 border-b-2 border-primary/30 shrink-0">
                         <span className="text-[10px] font-bold text-primary">{ selectedOfferIds.size } selected</span>
                         <button className="text-[9px] text-muted hover:text-dark cursor-pointer" onClick={ handleSelectAll }>
                             <FaCheckSquare className="inline text-[8px] mr-0.5" /> All
@@ -149,11 +149,11 @@ export const CatalogAdminOfferPanel: FC<{}> = () =>
                 { /* Offer grid */ }
                 <div className="flex-1 overflow-y-auto p-2">
                     { !currentPage
-                        ? <div className="flex items-center justify-center h-full text-[11px] text-muted">
+                        ? <div className="flex items-center justify-center h-full text-[11px] text-black/40">
                             Select a page from Browse tab to see its offers
                         </div>
                         : filteredOffers.length === 0
-                            ? <div className="flex items-center justify-center h-full text-[11px] text-muted">
+                            ? <div className="flex items-center justify-center h-full text-[11px] text-black/40">
                                 { offerSearchQuery ? 'No matches' : 'No offers on this page' }
                             </div>
                             : <div className="grid grid-cols-6 gap-1">
@@ -171,7 +171,7 @@ export const CatalogAdminOfferPanel: FC<{}> = () =>
                                             title={ `${ offer.localizationName || offer.localizationId || '' } (#${ offer.offerId })` }
                                             onClick={ e => handleSelectOffer(offer, e) }
                                         >
-                                            <div className={ `absolute top-0.5 left-0.5 ${ isSelected ? 'opacity-100' : 'opacity-0 group-hover/offer:opacity-60' } transition-opacity` }>
+                                            <div className={ `absolute top-0.5 left-0.5 ${ isSelected ? 'opacity-100' : 'opacity-30 group-hover/offer:opacity-70' } transition-opacity` }>
                                                 <input
                                                     checked={ isSelected }
                                                     className="accent-success w-3 h-3 cursor-pointer"
@@ -197,7 +197,7 @@ export const CatalogAdminOfferPanel: FC<{}> = () =>
             <div className="w-[280px] min-w-[280px] overflow-y-auto p-2.5 bg-card-content-area">
                 { editingOffer
                     ? <CatalogAdminOfferForm isNew={ isNewOffer } offer={ editingOffer } pageId={ pageId } onClose={ () => setEditingOffer(null) } />
-                    : <div className="flex items-center justify-center h-full text-[11px] text-muted text-center px-4">
+                    : <div className="flex items-center justify-center h-full text-[11px] text-black/40 text-center px-4">
                         Click an offer to edit<br />Ctrl+click to multi-select
                     </div> }
             </div>

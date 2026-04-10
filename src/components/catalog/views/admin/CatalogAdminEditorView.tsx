@@ -29,8 +29,8 @@ export const CatalogAdminEditorView: FC<{}> = () =>
         <NitroCardView className="w-[900px] h-[600px]" uniqueKey="catalog-admin">
             <NitroCardHeaderView headerText="Catalog Admin Editor" onCloseClick={ () => setAdminMode(false) } />
 
-            { /* Tab bar + publish button */ }
-            <div className="flex items-center gap-1 px-2 py-1 bg-card-grid-item border-b border-card-grid-item-border shrink-0">
+            { /* Tab bar */ }
+            <div className="flex items-center gap-1 px-2 py-1.5 bg-card-tab-item border-b-2 border-card-grid-item-border shrink-0">
                 { TABS.map(tab =>
                 {
                     const Icon = tab.icon;
@@ -39,9 +39,9 @@ export const CatalogAdminEditorView: FC<{}> = () =>
                     return (
                         <button
                             key={ tab.key }
-                            className={ `flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${ isActive
+                            className={ `flex items-center gap-1.5 px-3 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${ isActive
                                 ? 'bg-primary text-white shadow-sm'
-                                : 'text-gray-600 hover:bg-card-grid-item-active hover:text-dark' }` }
+                                : 'text-black/60 hover:bg-black/10 hover:text-black' }` }
                             onClick={ () => setActiveTab(tab.key) }
                         >
                             <Icon className="text-[9px]" />
@@ -56,7 +56,7 @@ export const CatalogAdminEditorView: FC<{}> = () =>
 
                 { hasPendingChanges &&
                     <button
-                        className="flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-bold bg-success text-white hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50 animate-pulse"
+                        className="flex items-center gap-1.5 px-3 py-1 rounded text-[10px] font-bold bg-success text-white hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50"
                         disabled={ loading }
                         onClick={ () => publishCatalog() }
                     >

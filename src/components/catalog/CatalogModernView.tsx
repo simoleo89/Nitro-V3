@@ -1,6 +1,6 @@
 import { AddLinkEventTracker, GetSessionDataManager, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { FaCog, FaEyeSlash, FaHeart, FaStar } from 'react-icons/fa';
+import { FaCog, FaHeart, FaStar } from 'react-icons/fa';
 import { LocalizeText } from '../../api';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../common';
 import { useCatalog, useCatalogFavorites } from '../../hooks';
@@ -116,14 +116,13 @@ const CatalogModernViewInner: FC<{}> = () =>
                                 { /* Categories */ }
                                 { rootNode && rootNode.children.length > 0 && rootNode.children.map((child, index) =>
                                 {
-                                    if(!adminMode && !child.isVisible) return null;
-                                    const isHidden = !child.isVisible;
+                                    if(!child.isVisible) return null;
 
                                     return (
                                         <div
                                             key={ `${ child.pageId }-${ index }` }
-                                            className={ `group/cat flex items-center gap-2 mx-1 px-1.5 py-1 rounded cursor-pointer transition-all duration-150 ${ isHidden ? 'opacity-40' : '' } ${ child.isActive ? 'bg-card-grid-item-active border border-card-grid-item-border-active shadow-inner1px' : 'border border-transparent hover:bg-card-grid-item-active' }` }
-                                            title={ adminMode ? `${ child.localization } [ID: ${ child.pageId }]` : child.localization }
+                                            className={ `group/cat flex items-center gap-2 mx-1 px-1.5 py-1 rounded cursor-pointer transition-all duration-150 ${ child.isActive ? 'bg-card-grid-item-active border border-card-grid-item-border-active shadow-inner1px' : 'border border-transparent hover:bg-card-grid-item-active' }` }
+                                            title={ child.localization }
                                             onClick={ () =>
                                             {
                                                 if(searchResult) setSearchResult(null);
@@ -131,9 +130,8 @@ const CatalogModernViewInner: FC<{}> = () =>
                                                 activateNode(child);
                                             } }
                                         >
-                                            <div className="w-7 h-6 flex items-center justify-center shrink-0 relative">
+                                            <div className="w-7 h-6 flex items-center justify-center shrink-0">
                                                 <CatalogIconView icon={ child.iconId } />
-                                                { isHidden && <FaEyeSlash className="absolute -bottom-0.5 -right-0.5 text-[7px] text-danger" /> }
                                             </div>
                                             <span className={ `text-[11px] whitespace-nowrap overflow-hidden truncate opacity-0 group-hover/rail:opacity-100 transition-opacity duration-200 flex-1 ${ child.isActive ? 'font-bold text-dark' : 'text-gray-700' }` }>
                                                 { child.localization }

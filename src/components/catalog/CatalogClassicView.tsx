@@ -1,6 +1,6 @@
 import { AddLinkEventTracker, GetSessionDataManager, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { FaCog, FaEyeSlash } from 'react-icons/fa';
+import { FaCog } from 'react-icons/fa';
 import { GetConfigurationValue, LocalizeText } from '../../api';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardTabsItemView, NitroCardTabsView, NitroCardView } from '../../common';
 import { useCatalog } from '../../hooks';
@@ -93,8 +93,7 @@ const CatalogClassicViewInner: FC<{}> = () =>
                     <NitroCardTabsView>
                         { rootNode && (rootNode.children.length > 0) && rootNode.children.map((child, index) =>
                         {
-                            if(!adminMode && !child.isVisible) return null;
-                            const isHidden = !child.isVisible;
+                            if(!child.isVisible) return null;
 
                             return (
                                 <NitroCardTabsItemView key={ `${ child.pageId }-${ child.pageName }-${ index }` } isActive={ child.isActive } onClick={ () =>
@@ -102,10 +101,9 @@ const CatalogClassicViewInner: FC<{}> = () =>
                                     if(searchResult) setSearchResult(null);
                                     activateNode(child);
                                 } } >
-                                    <div className={ `flex items-center gap-${ GetConfigurationValue('catalog.tab.icons') ? 1 : 0 } ${ isHidden ? 'opacity-40' : '' }` }>
+                                    <div className={ `flex items-center gap-${ GetConfigurationValue('catalog.tab.icons') ? 1 : 0 }` }>
                                         { GetConfigurationValue('catalog.tab.icons') && <CatalogIconView icon={ child.iconId } /> }
                                         { child.localization }
-                                        { adminMode && isHidden && <FaEyeSlash className="text-[8px] text-danger ml-1" /> }
                                     </div>
                                 </NitroCardTabsItemView>
                             );

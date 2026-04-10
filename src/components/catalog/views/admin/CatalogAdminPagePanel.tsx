@@ -241,12 +241,12 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
             { /* Right: Form */ }
             <div className="flex-1 overflow-y-auto bg-card-content-area flex flex-col">
                 { !selectedNode
-                    ? <div className="flex items-center justify-center h-full text-[11px] text-muted">
+                    ? <div className="flex items-center justify-center h-full text-[11px] text-black/40">
                         Select a page from the tree to edit
                     </div>
                     : <>
                         { /* Page header */ }
-                        <div className="flex items-center justify-between px-3 py-1.5 border-b border-card-grid-item-border bg-card-grid-item shrink-0">
+                        <div className="flex items-center justify-between px-3 py-1.5 border-b-2 border-card-grid-item-border bg-card-grid-item shrink-0">
                             <span className="text-[11px] font-bold text-primary">
                                 { selectedNode.localization }
                                 <span className="text-muted font-normal ml-1">#{ selectedNode.pageId }</span>
@@ -264,35 +264,35 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                             { activeSection === 'identity' && (
                                 <div className="flex flex-col gap-2.5">
                                     { /* Identity */ }
-                                    <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Identity</div>
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Identity</div>
                                         <div className="grid grid-cols-4 gap-1.5">
                                             <div className="flex flex-col gap-0.5 col-span-2">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Caption</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Caption</label>
                                                 <input className={ inputClass } value={ caption } onChange={ e => setCaption(e.target.value) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Min Rank</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Min Rank</label>
                                                 <input className={ inputClass } min={ 1 } type="number" value={ minRank } onChange={ e => setMinRank(parseInt(e.target.value) || 1) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Order</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Order</label>
                                                 <input className={ inputClass } min={ 0 } type="number" value={ orderNum } onChange={ e => setOrderNum(parseInt(e.target.value) || 0) } />
                                             </div>
                                         </div>
                                     </div>
 
                                     { /* Layout */ }
-                                    <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Layout</div>
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Layout</div>
                                         <select className={ inputClass } value={ pageLayout } onChange={ e => setPageLayout(e.target.value) }>
                                             { LAYOUT_OPTIONS.map(l => <option key={ l.value } value={ l.value }>{ l.label } ({ l.value })</option>) }
                                         </select>
                                     </div>
 
                                     { /* Visibility */ }
-                                    <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Visibility</div>
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Visibility</div>
                                         <div className="flex items-center gap-4">
                                             <label className="flex items-center gap-1.5 text-[10px] cursor-pointer">
                                                 <input className="accent-primary" checked={ visible === '1' } type="checkbox" onChange={ e => setVisible(e.target.checked ? '1' : '0') } />
@@ -323,27 +323,27 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
                             { activeSection === 'content' && (
                                 <div className="flex flex-col gap-2.5">
-                                    <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Page Texts</div>
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Page Texts</div>
                                         <div className="flex flex-col gap-2">
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Headline (text 0)</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Headline (text 0)</label>
                                                 <input className={ inputClass } placeholder="Page headline" value={ pageHeadline } onChange={ e => setPageHeadline(e.target.value) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Teaser (text 1)</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Teaser (text 1)</label>
                                                 <input className={ inputClass } placeholder="Teaser text" value={ pageTeaser } onChange={ e => setPageTeaser(e.target.value) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Details (text 2)</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Details (text 2)</label>
                                                 <textarea className={ `${ inputClass } resize-none h-20` } placeholder="Detailed description" value={ pageTextDetails } onChange={ e => setPageTextDetails(e.target.value) } />
                                             </div>
                                         </div>
                                     </div>
 
                                     { /* Live preview */ }
-                                    <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Preview</div>
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Preview</div>
                                         <div className="bg-card-content-area rounded p-2 border border-card-grid-item-border">
                                             { headerImage &&
                                                 <img alt="" className="w-full h-auto rounded mb-1.5 max-h-[60px] object-contain" src={ headerImage } /> }
@@ -369,11 +369,11 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
                             { activeSection === 'images' && (
                                 <div className="flex flex-col gap-2.5">
-                                    <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Current Images</div>
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Current Images</div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="flex flex-col gap-1">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Header Image (image 0)</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Header Image (image 0)</label>
                                                 <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[60px] flex items-center justify-center">
                                                     { headerImage
                                                         ? <img alt="header" className="max-w-full max-h-[80px] object-contain" src={ headerImage } />
@@ -381,7 +381,7 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                                                 </div>
                                             </div>
                                             <div className="flex flex-col gap-1">
-                                                <label className="text-[9px] text-muted uppercase font-bold">Teaser Icon (image 1)</label>
+                                                <label className="text-[9px] text-black/50 uppercase font-bold">Teaser Icon (image 1)</label>
                                                 <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[60px] flex items-center justify-center">
                                                     { teaserImage
                                                         ? <img alt="teaser" className="max-w-[70px] max-h-[70px] object-contain" src={ teaserImage } />
@@ -401,8 +401,8 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
                             { activeSection === 'info' && pageInfo && (
                                 <div className="flex flex-col gap-2.5">
-                                    <div className="bg-white rounded border-2 border-card-grid-item-border p-2">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5">Page Info</div>
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Page Info</div>
                                         <div className="grid grid-cols-2 gap-1.5">
                                             { [
                                                 [ 'Page ID', `${ selectedNode.pageId }` ],

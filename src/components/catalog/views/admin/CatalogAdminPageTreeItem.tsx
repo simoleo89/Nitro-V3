@@ -73,11 +73,11 @@ export const CatalogAdminPageTreeItem: FC<CatalogAdminPageTreeItemProps> = props
     return (
         <div>
             { isDragOver === 'above' &&
-                <div className="h-0.5 bg-primary rounded-full mx-1" style={ { marginLeft: depth * 16 + 4 } } /> }
+                <div className="h-1 bg-primary rounded-full mx-1" style={ { marginLeft: depth * 16 + 4 } } /> }
 
             <div
                 className={ `group/tree flex items-center gap-1 px-1.5 py-[3px] mx-0.5 rounded cursor-pointer transition-all text-[11px]
-                    ${ isSelected ? 'bg-primary/10 border border-primary/30 font-bold' : 'border border-transparent hover:bg-card-grid-item-active' }
+                    ${ isSelected ? 'bg-primary/15 border border-primary/40 font-bold' : 'border border-transparent hover:bg-card-grid-item-active' }
                     ${ isHidden ? 'opacity-50' : '' }
                     ${ isDragOver === 'on' ? 'ring-2 ring-primary bg-primary/5' : '' }` }
                 draggable
@@ -88,7 +88,7 @@ export const CatalogAdminPageTreeItem: FC<CatalogAdminPageTreeItemProps> = props
                 onDragStart={ handleDragStart }
                 onDrop={ handleDrop }
             >
-                <FaGripVertical className="text-[7px] text-muted shrink-0 opacity-0 group-hover/tree:opacity-50 cursor-grab" />
+                <FaGripVertical className="text-[7px] text-black/25 shrink-0 group-hover/tree:text-black/50 cursor-grab" />
 
                 { hasBranch
                     ? <span
@@ -107,9 +107,9 @@ export const CatalogAdminPageTreeItem: FC<CatalogAdminPageTreeItemProps> = props
                     { node.localization }
                 </span>
 
-                { isHidden && <FaEyeSlash className="text-[8px] text-danger shrink-0" title="Hidden" /> }
+                { isHidden && <FaEyeSlash className="text-[10px] text-danger shrink-0" title="Page is hidden" /> }
 
-                <span className="text-[8px] text-muted opacity-0 group-hover/tree:opacity-100 shrink-0">
+                <span className="text-[8px] text-black/40 group-hover/tree:text-black/60 shrink-0">
                     #{ node.pageId }
                 </span>
 
@@ -133,7 +133,7 @@ export const CatalogAdminPageTreeItem: FC<CatalogAdminPageTreeItemProps> = props
             </div>
 
             { isDragOver === 'below' &&
-                <div className="h-0.5 bg-primary rounded-full mx-1" style={ { marginLeft: depth * 16 + 4 } } /> }
+                <div className="h-1 bg-primary rounded-full mx-1" style={ { marginLeft: depth * 16 + 4 } } /> }
 
             { isOpen && hasBranch && node.children.map((child, index) =>
                 <CatalogAdminPageTreeItem

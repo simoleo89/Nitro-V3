@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FaImage, FaInfoCircle, FaPlus, FaSave, FaSearch, FaSpinner, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaFileAlt, FaImage, FaInfoCircle, FaPlus, FaSave, FaSearch, FaSpinner, FaTrash } from 'react-icons/fa';
 import { GetConfigurationValue, ICatalogNode, LocalizeText } from '../../../../api';
 import { useCatalog } from '../../../../hooks';
 import { IPageEditData, useCatalogAdmin } from '../../CatalogAdminContext';
@@ -177,22 +177,12 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
     const inputClass = 'text-[11px] border-2 border-card-grid-item-border rounded px-2 py-1 bg-white focus:outline-none focus:border-primary transition-colors w-full';
 
-    const sectionTab = (key: FormSection, label: string, icon?: FC<{ className?: string }>) =>
-    {
-        const Icon = icon;
-        const isActive = activeSection === key;
-
-        return (
-            <button
-                key={ key }
-                className={ `flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold cursor-pointer transition-all ${ isActive ? 'bg-primary text-white' : 'text-muted hover:text-dark hover:bg-card-grid-item-active' }` }
-                onClick={ () => setActiveSection(key) }
-            >
-                { Icon && <Icon className="text-[8px]" /> }
-                { label }
-            </button>
-        );
-    };
+    const SECTION_TABS: { key: FormSection; label: string; icon: FC<{ className?: string }> }[] = [
+        { key: 'identity', label: 'Edit', icon: FaEdit },
+        { key: 'content', label: 'Content', icon: FaFileAlt },
+        { key: 'images', label: 'Images', icon: FaImage },
+        { key: 'info', label: 'Info', icon: FaInfoCircle },
+    ];
 
     return (
         <div className="flex h-full overflow-hidden">
@@ -251,11 +241,25 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                                 { selectedNode.localization }
                                 <span className="text-muted font-normal ml-1">#{ selectedNode.pageId }</span>
                             </span>
-                            <div className="flex items-center gap-1">
-                                { sectionTab('identity', 'Edit') }
-                                { sectionTab('content', 'Content') }
-                                { sectionTab('images', 'Images', FaImage) }
-                                { sectionTab('info', 'Info', FaInfoCircle) }
+                            <div className="flex items-center gap-0.5 bg-black/5 rounded-lg p-0.5">
+                                { SECTION_TABS.map(tab =>
+                                {
+                                    const Icon = tab.icon;
+                                    const isActive = activeSection === tab.key;
+
+                                    return (
+                                        <button
+                                            key={ tab.key }
+                                            className={ `flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold cursor-pointer transition-all ${ isActive
+                                                ? 'bg-white text-primary shadow-sm'
+                                                : 'text-black/40 hover:text-black/70' }` }
+                                            onClick={ () => setActiveSection(tab.key) }
+                                        >
+                                            <Icon className="text-[9px]" />
+                                            { tab.label }
+                                        </button>
+                                    );
+                                }) }
                             </div>
                         </div>
 

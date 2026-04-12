@@ -26,7 +26,7 @@ export const CatalogAdminEditorView: FC<{}> = () =>
     if(!adminMode) return null;
 
     return (
-        <NitroCardView className="w-[900px] h-[600px]" uniqueKey="catalog-admin">
+        <NitroCardView className="w-[1000px] h-[650px]" uniqueKey="catalog-admin">
             <NitroCardHeaderView headerText="Catalog Admin Editor" onCloseClick={ () => setAdminMode(false) } />
 
             { /* Tab bar */ }
@@ -39,12 +39,12 @@ export const CatalogAdminEditorView: FC<{}> = () =>
                     return (
                         <button
                             key={ tab.key }
-                            className={ `flex items-center gap-1.5 px-3 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${ isActive
+                            className={ `flex items-center gap-1.5 px-3 py-1 rounded text-[12px] font-bold cursor-pointer transition-all ${ isActive
                                 ? 'bg-primary text-white shadow-sm'
-                                : 'text-black/60 hover:bg-black/10 hover:text-black' }` }
+                                : 'text-gray-700 hover:bg-white/30 hover:text-dark' }` }
                             onClick={ () => setActiveTab(tab.key) }
                         >
-                            <Icon className="text-[9px]" />
+                            <Icon className="text-[11px]" />
                             { tab.label }
                             { tab.key === 'publish' && hasPendingChanges &&
                                 <span className="min-w-[6px] h-[6px] bg-warning rounded-full animate-pulse" /> }
@@ -56,11 +56,11 @@ export const CatalogAdminEditorView: FC<{}> = () =>
 
                 { hasPendingChanges &&
                     <button
-                        className="flex items-center gap-1.5 px-3 py-1 rounded text-[10px] font-bold bg-success text-white hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50"
+                        className="flex items-center gap-1.5 px-3 py-1 rounded text-[12px] font-bold bg-success text-white hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50"
                         disabled={ loading }
                         onClick={ () => publishCatalog() }
                     >
-                        <FaCloudUploadAlt className="text-[9px]" />
+                        <FaCloudUploadAlt className="text-[11px]" />
                         Publish
                     </button> }
             </div>

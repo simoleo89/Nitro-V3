@@ -1,74 +1,67 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { FaSearch, FaSpinner, FaTimes } from 'react-icons/fa';
-import { GetConfigurationValue, LocalizeText } from '../../../../api';
+import { LocalizeText } from '../../../../api';
+import { CatalogIconView } from '../catalog-icon/CatalogIconView';
 
-export interface CatalogAdminImageBrowserProps
+export interface CatalogAdminIconBrowserProps
 {
-    type: 'header' | 'teaser';
-    currentImage?: string;
-    onSelect: (filename: string) => void;
+    currentIconId: number;
+    onSelect: (iconId: number) => void;
     onClose: () => void;
 }
 
-interface ImageResult
+interface IconResult
 {
-    images: string[];
+    icons: number[];
     total: number;
     offset: number;
     limit: number;
 }
 
-export const CatalogAdminImageBrowser: FC<CatalogAdminImageBrowserProps> = props =>
+export const CatalogAdminIconBrowser: FC<CatalogAdminIconBrowserProps> = props =>
 {
-    const { type, currentImage, onSelect, onClose } = props;
+    const { currentIconId, onSelect, onClose } = props;
 
-    const [ images, setImages ] = useState<string[]>([]);
+    const [ icons, setIcons ] = useState<number[]>([]);
     const [ total, setTotal ] = useState(0);
     const [ offset, setOffset ] = useState(0);
     const [ search, setSearch ] = useState('');
     const [ loading, setLoading ] = useState(false);
-    const [ selected, setSelected ] = useState<string | null>(null);
+    const [ selected, setSelected ] = useState<number | null>(null);
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
-    const limit = 80;
+    const limit = 120;
 
-    const buildImageUrl = useCallback((name: string) =>
-    {
-        const assetUrl = GetConfigurationValue<string>('catalog.asset.image.url');
-
-        return assetUrl.replace('%name%', name);
-    }, []);
-
-    const fetchImages = useCallback(async (searchQuery: string, newOffset: number, append: boolean) =>
+    const fetchIcons = useCallback(async (searchQuery: string, newOffset: number, append: boolean) =>
     {
         setLoading(true);
 
         try
         {
-            const params = new URLSearchParams({ type, limit: String(limit), offset: String(newOffset) });
+            const params = new URLSearchParams({ limit: String(limit), offset: String(newOffset) });
 
             if(searchQuery) params.set('search', searchQuery);
 
-            const res = await fetch(`/api/admin/catalog/images?${ params.toString() }`);
-            const data: ImageResult = await res.json();
+            const res = await fetch(`/api/admin/catalog/icons?${ params.toString() }`);
+            const data: IconResult = await res.json();
 
-            setImages(prev => append ? [ ...prev, ...data.images ] : data.images);
+            setIcons(prev => append ? [ ...prev, ...data.icons ] : data.icons);
             setTotal(data.total);
             setOffset(newOffset);
         }
         catch(e)
         {
-            console.error('Failed to fetch catalog images', e);
+            console.error('Failed to fetch catalog icons', e);
         }
         finally
         {
             setLoading(false);
         }
-    }, [ type ]);
+    }, []);
 
     useEffect(() =>
     {
-        fetchImages('', 0, false);
-    }, [ fetchImages ]);
+        fetchIcons('', 0, false);
+    }, [ fetchIcons ]);
 
     const handleSearchChange = useCallback((value: string) =>
     {
@@ -79,43 +72,31 @@ export const CatalogAdminImageBrowser: FC<CatalogAdminImageBrowserProps> = props
         debounceRef.current = setTimeout(() =>
         {
             setSelected(null);
-            fetchImages(value, 0, false);
+            fetchIcons(value, 0, false);
         }, 300);
-    }, [ fetchImages ]);
+    }, [ fetchIcons ]);
 
     const handleLoadMore = useCallback(() =>
     {
-        const newOffset = offset + limit;
-
-        fetchImages(search, newOffset, true);
-    }, [ offset, search, fetchImages ]);
-
-    const handleSelect = useCallback((name: string) =>
-    {
-        setSelected(name);
-    }, []);
+        fetchIcons(search, offset + limit, true);
+    }, [ offset, search, fetchIcons ]);
 
     const handleConfirm = useCallback(() =>
     {
-        if(selected) onSelect(selected);
+        if(selected !== null) onSelect(selected);
     }, [ selected, onSelect ]);
 
-    const handleDoubleClick = useCallback((name: string) =>
-    {
-        onSelect(name);
-    }, [ onSelect ]);
-
-    const hasMore = images.length < total;
+    const hasMore = icons.length < total;
 
     return (
         <div className="fixed inset-0 flex items-center justify-center" style={ { zIndex: 1000 } } onClick={ onClose }>
             <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]" />
 
-            <div className="relative bg-light rounded-lg w-[520px] h-[420px] border-2 border-card-border overflow-hidden shadow-lg flex flex-col" onClick={ e => e.stopPropagation() }>
+            <div className="relative bg-light rounded-lg w-[560px] h-[460px] border-2 border-card-border overflow-hidden shadow-lg flex flex-col" onClick={ e => e.stopPropagation() }>
                 { /* Header */ }
                 <div className="flex items-center justify-between px-3 py-2 bg-card-header shrink-0">
                     <span className="text-sm font-bold text-white">
-                        { type === 'header' ? LocalizeText('catalog.admin.browse.header') : LocalizeText('catalog.admin.browse.teaser') }
+                        Choose Icon
                     </span>
                     <div className="cursor-pointer" onClick={ onClose }>
                         <FaTimes className="text-white/70 hover:text-white text-xs" />
@@ -129,45 +110,39 @@ export const CatalogAdminImageBrowser: FC<CatalogAdminImageBrowserProps> = props
                         <input
                             autoFocus
                             className="w-full text-[13px] border border-card-grid-item-border rounded pl-7 pr-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                            placeholder={ LocalizeText('catalog.admin.search.images') }
+                            placeholder="Search by ID..."
                             type="text"
                             value={ search }
                             onChange={ e => handleSearchChange(e.target.value) }
                         />
                     </div>
-                    <span className="text-[12px] text-gray-600 shrink-0">{ total } { LocalizeText('catalog.admin.images.found') }</span>
+                    <span className="text-[12px] text-gray-600 shrink-0">{ total } icons</span>
                 </div>
 
                 { /* Grid */ }
                 <div className="flex-1 overflow-y-auto p-2">
-                    { images.length === 0 && !loading
+                    { icons.length === 0 && !loading
                         ? <div className="flex items-center justify-center h-full text-[13px] text-gray-600">
-                            { search ? LocalizeText('catalog.admin.images.noresults') : LocalizeText('catalog.admin.images.empty') }
+                            { search ? 'No icons found' : 'No icons available' }
                         </div>
-                        : <div className="grid grid-cols-5 gap-1.5">
-                            { images.map(name =>
+                        : <div className="grid grid-cols-10 gap-1">
+                            { icons.map(id =>
                             {
-                                const url = buildImageUrl(name);
-                                const isSelected = selected === name;
-                                const isCurrent = currentImage && currentImage.includes(name);
+                                const isSelected = selected === id;
+                                const isCurrent = currentIconId === id;
 
                                 return (
                                     <div
-                                        key={ name }
-                                        className={ `relative flex flex-col items-center justify-center p-1.5 rounded border-2 cursor-pointer transition-all min-h-[70px]
+                                        key={ id }
+                                        className={ `relative flex flex-col items-center justify-center p-1 rounded border-2 cursor-pointer transition-all h-[44px]
                                             ${ isSelected ? 'border-primary bg-primary/10 shadow-md' : isCurrent ? 'border-success/60 bg-success/5' : 'border-card-grid-item-border bg-white hover:border-primary/40 hover:shadow-sm' }` }
-                                        title={ name }
-                                        onClick={ () => handleSelect(name) }
-                                        onDoubleClick={ () => handleDoubleClick(name) }
+                                        title={ `Icon ${ id }` }
+                                        onClick={ () => setSelected(id) }
+                                        onDoubleClick={ () => onSelect(id) }
                                     >
-                                        <img
-                                            alt={ name }
-                                            className="max-w-full max-h-[48px] object-contain"
-                                            src={ url }
-                                            onError={ e => { (e.target as HTMLImageElement).style.display = 'none'; } }
-                                        />
-                                        <span className="text-[9px] text-gray-600 truncate w-full text-center mt-0.5">{ name }</span>
-                                        { isCurrent && <span className="absolute top-0.5 right-0.5 text-[9px] bg-success text-white px-1 rounded">current</span> }
+                                        <CatalogIconView icon={ id } className="w-6 h-6" />
+                                        <span className="text-[9px] text-gray-600 font-mono">{ id }</span>
+                                        { isCurrent && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-success rounded-full border border-white" /> }
                                     </div>
                                 );
                             }) }
@@ -184,7 +159,7 @@ export const CatalogAdminImageBrowser: FC<CatalogAdminImageBrowserProps> = props
                                 className="text-[12px] text-primary hover:text-secondary font-bold cursor-pointer transition-colors"
                                 onClick={ handleLoadMore }
                             >
-                                { LocalizeText('catalog.admin.images.loadmore') } ({ images.length }/{ total })
+                                Load more ({ icons.length }/{ total })
                             </button>
                         </div> }
                 </div>
@@ -192,7 +167,7 @@ export const CatalogAdminImageBrowser: FC<CatalogAdminImageBrowserProps> = props
                 { /* Footer */ }
                 <div className="flex items-center justify-between px-3 py-2 border-t border-card-grid-item-border bg-card-grid-item shrink-0">
                     <div className="text-[12px] text-gray-600 truncate flex-1 mr-2">
-                        { selected ? selected : LocalizeText('catalog.admin.images.selecthint') }
+                        { selected !== null ? `Icon #${ selected }` : 'Click an icon to select' }
                     </div>
                     <div className="flex gap-1.5">
                         <button
@@ -203,10 +178,10 @@ export const CatalogAdminImageBrowser: FC<CatalogAdminImageBrowserProps> = props
                         </button>
                         <button
                             className="px-3 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50"
-                            disabled={ !selected }
+                            disabled={ selected === null }
                             onClick={ handleConfirm }
                         >
-                            { LocalizeText('catalog.admin.images.confirm') }
+                            Confirm
                         </button>
                     </div>
                 </div>

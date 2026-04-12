@@ -1,8 +1,10 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FaEdit, FaFileAlt, FaFolderOpen, FaImage, FaInfoCircle, FaPlus, FaSave, FaSearch, FaSpinner, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaFileAlt, FaFolderOpen, FaImage, FaInfoCircle, FaPlus, FaSave, FaSearch, FaSpinner, FaTimes, FaTrash, FaUndo } from 'react-icons/fa';
 import { GetConfigurationValue, ICatalogNode, LocalizeText } from '../../../../api';
 import { useCatalog } from '../../../../hooks';
 import { IPageEditData, useCatalogAdmin } from '../../CatalogAdminContext';
+import { CatalogIconView } from '../catalog-icon/CatalogIconView';
+import { CatalogAdminIconBrowser } from './CatalogAdminIconBrowser';
 import { CatalogAdminImageBrowser } from './CatalogAdminImageBrowser';
 import { CatalogAdminPageTreeItem } from './CatalogAdminPageTreeItem';
 
@@ -58,10 +60,14 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
     const [ pageTeaser, setPageTeaser ] = useState('');
     const [ pageTextDetails, setPageTextDetails ] = useState('');
 
+    // Icon
+    const [ iconId, setIconId ] = useState(0);
+
     // Image previews
     const [ headerImage, setHeaderImage ] = useState<string | null>(null);
     const [ teaserImage, setTeaserImage ] = useState<string | null>(null);
     const [ browsingImageType, setBrowsingImageType ] = useState<'header' | 'teaser' | null>(null);
+    const [ browsingIcon, setBrowsingIcon ] = useState(false);
 
     const handleSelect = useCallback((node: ICatalogNode) =>
     {
@@ -72,6 +78,7 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
         setMinRank(1);
         setClubOnly('0');
         setOrderNum(0);
+        setIconId(node.iconId ?? 0);
         setPageHeadline('');
         setPageTeaser('');
         setPageTextDetails('');
@@ -140,13 +147,13 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
         const data: IPageEditData = {
             pageId: selectedNode.pageId, caption, pageLayout, minRank,
-            visible, enabled, clubOnly, orderNum,
+            visible, enabled, clubOnly, orderNum, iconId,
             parentId: selectedNode.parent?.pageId ?? -1,
             pageHeadline, pageTeaser, pageTextDetails,
         };
 
         catalogAdmin.savePage(data);
-    }, [ selectedNode, catalogAdmin, caption, pageLayout, minRank, visible, enabled, clubOnly, orderNum, pageHeadline, pageTeaser, pageTextDetails ]);
+    }, [ selectedNode, catalogAdmin, caption, pageLayout, minRank, visible, enabled, clubOnly, orderNum, iconId, pageHeadline, pageTeaser, pageTextDetails ]);
 
     const handleDeleteSelected = useCallback(() =>
     {
@@ -223,7 +230,7 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
         };
     }, [ selectedNode, currentPage ]);
 
-    const inputClass = 'text-[11px] border-2 border-card-grid-item-border rounded px-2 py-1 bg-white focus:outline-none focus:border-primary transition-colors w-full';
+    const inputClass = 'text-[13px] border-2 border-card-grid-item-border rounded px-2 py-1 bg-white focus:outline-none focus:border-primary transition-colors w-full';
 
     const SECTION_TABS: { key: FormSection; label: string; icon: FC<{ className?: string }> }[] = [
         { key: 'identity', label: 'Edit', icon: FaEdit },
@@ -235,12 +242,12 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
     return (
         <div className="flex h-full overflow-hidden">
             { /* Left: Page tree */ }
-            <div className="w-[240px] min-w-[240px] border-r-2 border-card-grid-item-border bg-card-grid-item flex flex-col overflow-hidden">
+            <div className="w-[320px] min-w-[320px] border-r-2 border-card-grid-item-border bg-card-grid-item flex flex-col overflow-hidden">
                 <div className="flex items-center gap-1 px-2 py-1.5 border-b border-card-grid-item-border">
                     <div className="flex-1 relative">
-                        <FaSearch className="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] text-muted" />
+                        <FaSearch className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-600" />
                         <input
-                            className="w-full text-[10px] border border-card-grid-item-border rounded pl-6 pr-2 py-1 bg-white focus:outline-none focus:border-primary transition-colors"
+                            className="w-full text-[12px] border border-card-grid-item-border rounded pl-6 pr-2 py-1 bg-white focus:outline-none focus:border-primary transition-colors"
                             placeholder="Search pages..."
                             type="text"
                             value={ searchQuery }
@@ -248,11 +255,11 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                         />
                     </div>
                     <button
-                        className="flex items-center gap-1 px-2 py-1 rounded text-[9px] font-bold bg-success/10 text-success border border-success/30 hover:bg-success/20 cursor-pointer transition-colors shrink-0"
+                        className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-bold bg-success/10 text-success border border-success/30 hover:bg-success/20 cursor-pointer transition-colors shrink-0"
                         title="Create root category"
                         onClick={ () => rootNode && handleCreateChild(rootNode.pageId) }
                     >
-                        <FaPlus className="text-[7px]" />
+                        <FaPlus className="text-[9px]" />
                     </button>
                 </div>
 
@@ -265,11 +272,8 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                                 key={ `${ child.pageId }-${ index }` }
                                 node={ child }
                                 selectedPageId={ selectedNode?.pageId }
-                                onCreateChild={ handleCreateChild }
-                                onDelete={ handleDelete }
                                 onReorder={ handleReorder }
                                 onSelect={ handleSelect }
-                                onToggleVisible={ handleToggleVisible }
                             />
                         );
                     }) }
@@ -279,17 +283,17 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
             { /* Right: Form */ }
             <div className="flex-1 overflow-y-auto bg-card-content-area flex flex-col">
                 { !selectedNode
-                    ? <div className="flex items-center justify-center h-full text-[11px] text-black/40">
+                    ? <div className="flex items-center justify-center h-full text-[13px] text-gray-700">
                         Select a page from the tree to edit
                     </div>
                     : <>
                         { /* Page header */ }
                         <div className="flex items-center justify-between px-3 py-1.5 border-b-2 border-card-grid-item-border bg-card-grid-item shrink-0">
-                            <span className="text-[11px] font-bold text-primary">
+                            <span className="text-[13px] font-bold text-primary">
                                 { selectedNode.localization }
-                                <span className="text-muted font-normal ml-1">#{ selectedNode.pageId }</span>
+                                <span className="text-gray-600 font-normal ml-1">#{ selectedNode.pageId }</span>
                             </span>
-                            <div className="flex items-center gap-0.5 bg-black/5 rounded-lg p-0.5">
+                            <div className="flex items-center gap-0.5 bg-white/40 rounded-lg p-0.5">
                                 { SECTION_TABS.map(tab =>
                                 {
                                     const Icon = tab.icon;
@@ -298,12 +302,12 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                                     return (
                                         <button
                                             key={ tab.key }
-                                            className={ `flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold cursor-pointer transition-all ${ isActive
+                                            className={ `flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-bold cursor-pointer transition-all ${ isActive
                                                 ? 'bg-white text-primary shadow-sm'
-                                                : 'text-black/40 hover:text-black/70' }` }
+                                                : 'text-gray-700 hover:text-dark' }` }
                                             onClick={ () => setActiveSection(tab.key) }
                                         >
-                                            <Icon className="text-[9px]" />
+                                            <Icon className="text-[11px]" />
                                             { tab.label }
                                         </button>
                                     );
@@ -317,26 +321,62 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                                 <div className="flex flex-col gap-2.5">
                                     { /* Identity */ }
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Identity</div>
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Identity</div>
                                         <div className="grid grid-cols-4 gap-1.5">
                                             <div className="flex flex-col gap-0.5 col-span-2">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Caption</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">Caption</label>
                                                 <input className={ inputClass } value={ caption } onChange={ e => setCaption(e.target.value) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Min Rank</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">Min Rank</label>
                                                 <input className={ inputClass } min={ 1 } type="number" value={ minRank } onChange={ e => setMinRank(parseInt(e.target.value) || 1) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Order</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">Order</label>
                                                 <input className={ inputClass } min={ 0 } type="number" value={ orderNum } onChange={ e => setOrderNum(parseInt(e.target.value) || 0) } />
                                             </div>
                                         </div>
                                     </div>
 
+                                    { /* Icon */ }
+                                    <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Icon</div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-12 bg-card-content-area rounded border border-card-grid-item-border flex items-center justify-center shrink-0">
+                                                <CatalogIconView icon={ iconId } className="w-9 h-9" />
+                                            </div>
+                                            <div className="flex flex-col gap-1 flex-1">
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">Icon ID: { iconId }</label>
+                                                <div className="flex items-center gap-1">
+                                                    <input className={ inputClass } min={ 0 } type="number" value={ iconId } onChange={ e => setIconId(parseInt(e.target.value) || 0) } />
+                                                    <button
+                                                        className="flex items-center gap-1 px-2.5 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer shrink-0"
+                                                        onClick={ () => setBrowsingIcon(true) }
+                                                    >
+                                                        <FaFolderOpen className="text-[10px]" /> Browse
+                                                    </button>
+                                                    <button
+                                                        className="px-2 py-1 rounded text-[11px] bg-card-grid-item text-gray-700 border border-card-grid-item-border hover:bg-card-grid-item-active transition-colors cursor-pointer shrink-0"
+                                                        title="Reset to original"
+                                                        onClick={ () => setIconId(selectedNode?.iconId ?? 0) }
+                                                    >
+                                                        <FaUndo className="text-[10px]" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    { browsingIcon &&
+                                        <CatalogAdminIconBrowser
+                                            currentIconId={ iconId }
+                                            onClose={ () => setBrowsingIcon(false) }
+                                            onSelect={ id => { setIconId(id); setBrowsingIcon(false); } }
+                                        /> }
+
                                     { /* Layout */ }
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Layout</div>
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Layout</div>
                                         <select className={ inputClass } value={ pageLayout } onChange={ e => setPageLayout(e.target.value) }>
                                             { LAYOUT_OPTIONS.map(l => <option key={ l.value } value={ l.value }>{ l.label } ({ l.value })</option>) }
                                         </select>
@@ -344,17 +384,17 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
                                     { /* Visibility */ }
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Visibility</div>
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Visibility</div>
                                         <div className="flex items-center gap-4">
-                                            <label className="flex items-center gap-1.5 text-[10px] cursor-pointer">
+                                            <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
                                                 <input className="accent-primary" checked={ visible === '1' } type="checkbox" onChange={ e => setVisible(e.target.checked ? '1' : '0') } />
                                                 Visible
                                             </label>
-                                            <label className="flex items-center gap-1.5 text-[10px] cursor-pointer">
+                                            <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
                                                 <input className="accent-primary" checked={ enabled === '1' } type="checkbox" onChange={ e => setEnabled(e.target.checked ? '1' : '0') } />
                                                 Enabled
                                             </label>
-                                            <label className="flex items-center gap-1.5 text-[10px] cursor-pointer">
+                                            <label className="flex items-center gap-1.5 text-[12px] cursor-pointer">
                                                 <input className="accent-primary" checked={ clubOnly === '1' } type="checkbox" onChange={ e => setClubOnly(e.target.checked ? '1' : '0') } />
                                                 Club Only
                                             </label>
@@ -363,11 +403,11 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
                                     { /* Actions */ }
                                     <div className="flex justify-between">
-                                        <button className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer" onClick={ handleDeleteSelected }>
-                                            <FaTrash className="text-[8px]" /> Delete
+                                        <button className="flex items-center gap-1 px-2 py-1 rounded text-[12px] font-bold bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer" onClick={ handleDeleteSelected }>
+                                            <FaTrash className="text-[10px]" /> Delete
                                         </button>
-                                        <button className="flex items-center gap-1 px-3 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSave }>
-                                            { loading ? <FaSpinner className="text-[8px] animate-spin" /> : <FaSave className="text-[8px]" /> } Save
+                                        <button className="flex items-center gap-1 px-3 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSave }>
+                                            { loading ? <FaSpinner className="text-[10px] animate-spin" /> : <FaSave className="text-[10px]" /> } Save
                                         </button>
                                     </div>
                                 </div>
@@ -376,18 +416,18 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                             { activeSection === 'content' && (
                                 <div className="flex flex-col gap-2.5">
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Page Texts</div>
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Page Texts</div>
                                         <div className="flex flex-col gap-2">
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Headline (text 0)</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">Headline (text 0)</label>
                                                 <input className={ inputClass } placeholder="Page headline" value={ pageHeadline } onChange={ e => setPageHeadline(e.target.value) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Teaser (text 1)</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">Teaser (text 1)</label>
                                                 <input className={ inputClass } placeholder="Teaser text" value={ pageTeaser } onChange={ e => setPageTeaser(e.target.value) } />
                                             </div>
                                             <div className="flex flex-col gap-0.5">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Details (text 2)</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">Details (text 2)</label>
                                                 <textarea className={ `${ inputClass } resize-none h-20` } placeholder="Detailed description" value={ pageTextDetails } onChange={ e => setPageTextDetails(e.target.value) } />
                                             </div>
                                         </div>
@@ -395,25 +435,25 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
 
                                     { /* Live preview */ }
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Preview</div>
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Preview</div>
                                         <div className="bg-card-content-area rounded p-2 border border-card-grid-item-border">
                                             { headerImage &&
                                                 <img alt="" className="w-full h-auto rounded mb-1.5 max-h-[60px] object-contain" src={ headerImage } /> }
                                             <div className="flex gap-2">
                                                 { teaserImage &&
                                                     <img alt="" className="w-[50px] h-[50px] object-contain shrink-0 rounded" src={ teaserImage } /> }
-                                                <div className="text-[10px] text-dark flex-1">
+                                                <div className="text-[12px] text-dark flex-1">
                                                     { pageHeadline && <div className="font-bold mb-0.5">{ pageHeadline }</div> }
-                                                    { pageTeaser && <div className="text-muted text-[9px]">{ pageTeaser }</div> }
-                                                    { pageTextDetails && <div className="text-[9px] mt-1 text-gray-600" dangerouslySetInnerHTML={ { __html: pageTextDetails.replace(/\n/g, '<br />') } } /> }
+                                                    { pageTeaser && <div className="text-gray-700 text-[11px]">{ pageTeaser }</div> }
+                                                    { pageTextDetails && <div className="text-[11px] mt-1 text-gray-600" dangerouslySetInnerHTML={ { __html: pageTextDetails.replace(/\n/g, '<br />') } } /> }
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="flex justify-end">
-                                        <button className="flex items-center gap-1 px-3 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSave }>
-                                            { loading ? <FaSpinner className="text-[8px] animate-spin" /> : <FaSave className="text-[8px]" /> } Save
+                                        <button className="flex items-center gap-1 px-3 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSave }>
+                                            { loading ? <FaSpinner className="text-[10px] animate-spin" /> : <FaSave className="text-[10px]" /> } Save
                                         </button>
                                     </div>
                                 </div>
@@ -422,60 +462,60 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                             { activeSection === 'images' && (
                                 <div className="flex flex-col gap-2.5">
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">{ LocalizeText('catalog.admin.section.images') }</div>
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">{ LocalizeText('catalog.admin.section.images') }</div>
                                         <div className="grid grid-cols-2 gap-3">
                                             { /* Header image */ }
                                             <div className="flex flex-col gap-1.5">
-                                                <label className="text-[9px] text-gray-700 uppercase font-bold">{ LocalizeText('catalog.admin.label.headerimage') }</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">{ LocalizeText('catalog.admin.label.headerimage') }</label>
                                                 <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[70px] flex items-center justify-center">
                                                     { headerImage
                                                         ? <img alt="header" className="max-w-full max-h-[80px] object-contain" src={ headerImage } />
-                                                        : <span className="text-[9px] text-gray-600">{ LocalizeText('catalog.admin.noimage') }</span> }
+                                                        : <span className="text-[11px] text-gray-600">{ LocalizeText('catalog.admin.noimage') }</span> }
                                                 </div>
                                                 <div className="flex gap-1">
                                                     <button
-                                                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer"
+                                                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer"
                                                         onClick={ () => setBrowsingImageType('header') }
                                                     >
-                                                        <FaFolderOpen className="text-[8px]" /> { LocalizeText('catalog.admin.browse') }
+                                                        <FaFolderOpen className="text-[10px]" /> { LocalizeText('catalog.admin.browse') }
                                                     </button>
                                                     { headerImage &&
                                                         <button
-                                                            className="px-2 py-1 rounded text-[10px] bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer"
+                                                            className="px-2 py-1 rounded text-[12px] bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer"
                                                             onClick={ () => setHeaderImage(null) }
                                                         >
-                                                            <FaTimes className="text-[8px]" />
+                                                            <FaTimes className="text-[10px]" />
                                                         </button> }
                                                 </div>
                                             </div>
                                             { /* Teaser image */ }
                                             <div className="flex flex-col gap-1.5">
-                                                <label className="text-[9px] text-gray-700 uppercase font-bold">{ LocalizeText('catalog.admin.label.teaserimage') }</label>
+                                                <label className="text-[11px] text-gray-700 uppercase font-bold">{ LocalizeText('catalog.admin.label.teaserimage') }</label>
                                                 <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[70px] flex items-center justify-center">
                                                     { teaserImage
                                                         ? <img alt="teaser" className="max-w-[70px] max-h-[70px] object-contain" src={ teaserImage } />
-                                                        : <span className="text-[9px] text-gray-600">{ LocalizeText('catalog.admin.noimage') }</span> }
+                                                        : <span className="text-[11px] text-gray-600">{ LocalizeText('catalog.admin.noimage') }</span> }
                                                 </div>
                                                 <div className="flex gap-1">
                                                     <button
-                                                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer"
+                                                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer"
                                                         onClick={ () => setBrowsingImageType('teaser') }
                                                     >
-                                                        <FaFolderOpen className="text-[8px]" /> { LocalizeText('catalog.admin.browse') }
+                                                        <FaFolderOpen className="text-[10px]" /> { LocalizeText('catalog.admin.browse') }
                                                     </button>
                                                     { teaserImage &&
                                                         <button
-                                                            className="px-2 py-1 rounded text-[10px] bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer"
+                                                            className="px-2 py-1 rounded text-[12px] bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer"
                                                             onClick={ () => setTeaserImage(null) }
                                                         >
-                                                            <FaTimes className="text-[8px]" />
+                                                            <FaTimes className="text-[10px]" />
                                                         </button> }
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="flex justify-end mt-2">
-                                            <button className="flex items-center gap-1 px-3 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSaveImages }>
-                                                { loading ? <FaSpinner className="text-[8px] animate-spin" /> : <FaSave className="text-[8px]" /> } { LocalizeText('catalog.admin.save.images') }
+                                            <button className="flex items-center gap-1 px-3 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSaveImages }>
+                                                { loading ? <FaSpinner className="text-[10px] animate-spin" /> : <FaSave className="text-[10px]" /> } { LocalizeText('catalog.admin.save.images') }
                                             </button>
                                         </div>
                                     </div>
@@ -493,12 +533,12 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                             { activeSection === 'info' && pageInfo && (
                                 <div className="flex flex-col gap-2.5">
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Page Info</div>
+                                        <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Page Info</div>
                                         <div className="grid grid-cols-2 gap-1.5">
                                             { [
                                                 [ 'Page ID', `${ selectedNode.pageId }` ],
                                                 [ 'Page Name', pageInfo.pageName || '-' ],
-                                                [ 'Icon ID', `${ pageInfo.iconId }` ],
+                                                [ 'Icon ID', `${ iconId }` ],
                                                 [ 'Layout', pageLayout ],
                                                 [ 'Offers', `${ pageInfo.offerCount }` ],
                                                 [ 'Children', `${ pageInfo.childCount }` ],
@@ -506,8 +546,8 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                                                 [ 'Enabled', enabled === '1' ? 'Yes' : 'No' ],
                                             ].map(([ label, value ]) => (
                                                 <div key={ label } className="flex items-center justify-between bg-card-content-area rounded px-2 py-1 border border-card-grid-item-border">
-                                                    <span className="text-[9px] text-muted font-bold uppercase">{ label }</span>
-                                                    <span className="text-[10px] font-mono text-dark">{ value }</span>
+                                                    <span className="text-[11px] text-gray-700 font-bold uppercase">{ label }</span>
+                                                    <span className="text-[12px] font-mono text-dark">{ value }</span>
                                                 </div>
                                             )) }
                                         </div>

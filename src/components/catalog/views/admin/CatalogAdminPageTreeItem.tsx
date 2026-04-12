@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react';
-import { FaCaretDown, FaCaretRight, FaEyeSlash, FaGripVertical, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaCaretDown, FaCaretRight, FaEyeSlash, FaGripVertical } from 'react-icons/fa';
 import { ICatalogNode } from '../../../../api';
 import { CatalogIconView } from '../catalog-icon/CatalogIconView';
 
@@ -9,15 +9,12 @@ export interface CatalogAdminPageTreeItemProps
     depth?: number;
     selectedPageId?: number;
     onSelect: (node: ICatalogNode) => void;
-    onCreateChild: (parentId: number) => void;
-    onDelete: (pageId: number, name: string) => void;
-    onToggleVisible: (pageId: number) => void;
     onReorder: (pageId: number, newParentId: number, newIndex: number) => void;
 }
 
 export const CatalogAdminPageTreeItem: FC<CatalogAdminPageTreeItemProps> = props =>
 {
-    const { node, depth = 0, selectedPageId, onSelect, onCreateChild, onDelete, onToggleVisible, onReorder } = props;
+    const { node, depth = 0, selectedPageId, onSelect, onReorder } = props;
     const [ isOpen, setIsOpen ] = useState(node.isOpen);
     const [ isDragOver, setIsDragOver ] = useState<'above' | 'on' | 'below' | null>(null);
 
@@ -73,67 +70,50 @@ export const CatalogAdminPageTreeItem: FC<CatalogAdminPageTreeItemProps> = props
     return (
         <div>
             { isDragOver === 'above' &&
-                <div className="h-1 bg-primary rounded-full mx-1" style={ { marginLeft: depth * 16 + 4 } } /> }
+                <div className="h-[3px] bg-primary rounded-full mx-1" style={ { marginLeft: depth * 18 + 4 } } /> }
 
             <div
-                className={ `group/tree flex items-center gap-1 px-1.5 py-[3px] mx-0.5 rounded cursor-pointer transition-all text-[11px]
-                    ${ isSelected ? 'bg-primary/15 border border-primary/40 font-bold' : 'border border-transparent hover:bg-card-grid-item-active' }
-                    ${ isHidden ? 'opacity-50' : '' }
+                className={ `group/tree flex items-center gap-1.5 px-2 py-1 mx-1 my-[1px] rounded cursor-pointer transition-all text-[13px]
+                    ${ isSelected ? 'bg-primary/20 border border-primary/40 font-semibold shadow-sm' : 'border border-transparent hover:bg-white/50' }
+                    ${ isHidden ? 'opacity-40' : '' }
                     ${ isDragOver === 'on' ? 'ring-2 ring-primary bg-primary/5' : '' }` }
                 draggable
-                style={ { paddingLeft: depth * 16 + 6 } }
+                style={ { paddingLeft: depth * 18 + 8 } }
                 onClick={ () => onSelect(node) }
                 onDragLeave={ () => setIsDragOver(null) }
                 onDragOver={ handleDragOver }
                 onDragStart={ handleDragStart }
                 onDrop={ handleDrop }
             >
-                <FaGripVertical className="text-[7px] text-black/25 shrink-0 group-hover/tree:text-black/50 cursor-grab" />
+                <FaGripVertical className="text-[12px] text-slate-500 shrink-0 group-hover/tree:text-slate-800 cursor-grab" />
 
                 { hasBranch
                     ? <span
-                        className="text-[9px] text-muted shrink-0 cursor-pointer hover:text-primary"
+                        className="text-[15px] text-slate-700 shrink-0 cursor-pointer hover:text-primary w-4 flex items-center justify-center"
                         onClick={ e => { e.stopPropagation(); setIsOpen(!isOpen); } }
                     >
                         { isOpen ? <FaCaretDown /> : <FaCaretRight /> }
                     </span>
-                    : <span className="w-[9px] shrink-0" /> }
+                    : <span className="w-4 shrink-0" /> }
 
-                <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                <div className="w-6 h-6 flex items-center justify-center shrink-0">
                     <CatalogIconView icon={ node.iconId } />
                 </div>
 
-                <span className="flex-1 truncate" title={ `${ node.localization } (ID: ${ node.pageId })` }>
+                <span className="flex-1 truncate text-dark" title={ `${ node.localization } (ID: ${ node.pageId })` }>
                     { node.localization }
                 </span>
 
-                { isHidden && <FaEyeSlash className="text-[10px] text-danger shrink-0" title="Page is hidden" /> }
+                { isHidden && <FaEyeSlash className="text-[12px] text-danger shrink-0" title="Page is hidden" /> }
 
-                <span className="text-[8px] text-black/40 group-hover/tree:text-black/60 shrink-0">
+                <span className="text-[11px] text-slate-500 shrink-0 font-mono">
                     #{ node.pageId }
                 </span>
 
-                <div className="flex items-center gap-0.5 opacity-0 group-hover/tree:opacity-100 shrink-0">
-                    <FaPlus
-                        className="text-[8px] text-success hover:text-green-700 cursor-pointer"
-                        title="Create child page"
-                        onClick={ e => { e.stopPropagation(); onCreateChild(node.pageId); } }
-                    />
-                    <FaEyeSlash
-                        className={ `text-[8px] cursor-pointer ${ isHidden ? 'text-success hover:text-green-700' : 'text-muted hover:text-danger' }` }
-                        title={ isHidden ? 'Show page' : 'Hide page' }
-                        onClick={ e => { e.stopPropagation(); onToggleVisible(node.pageId); } }
-                    />
-                    <FaTrash
-                        className="text-[8px] text-danger/50 hover:text-danger cursor-pointer"
-                        title="Delete page"
-                        onClick={ e => { e.stopPropagation(); onDelete(node.pageId, node.localization); } }
-                    />
-                </div>
             </div>
 
             { isDragOver === 'below' &&
-                <div className="h-1 bg-primary rounded-full mx-1" style={ { marginLeft: depth * 16 + 4 } } /> }
+                <div className="h-[3px] bg-primary rounded-full mx-1" style={ { marginLeft: depth * 18 + 4 } } /> }
 
             { isOpen && hasBranch && node.children.map((child, index) =>
                 <CatalogAdminPageTreeItem
@@ -141,11 +121,8 @@ export const CatalogAdminPageTreeItem: FC<CatalogAdminPageTreeItemProps> = props
                     depth={ depth + 1 }
                     node={ child }
                     selectedPageId={ selectedPageId }
-                    onCreateChild={ onCreateChild }
-                    onDelete={ onDelete }
                     onReorder={ onReorder }
                     onSelect={ onSelect }
-                    onToggleVisible={ onToggleVisible }
                 />
             ) }
         </div>

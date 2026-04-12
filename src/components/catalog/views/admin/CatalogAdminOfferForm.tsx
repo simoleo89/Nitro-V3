@@ -87,7 +87,7 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
     if(!offer) return null;
 
     const iconUrl = !isNew && offer.product?.getIconUrl?.(offer);
-    const inputClass = 'text-[11px] border-2 border-card-grid-item-border rounded px-2 py-1 bg-white focus:outline-none focus:border-primary transition-colors w-full';
+    const inputClass = 'text-[13px] border-2 border-card-grid-item-border rounded px-2 py-1 bg-white focus:outline-none focus:border-primary transition-colors w-full';
 
     return (
         <div className="flex flex-col gap-2">
@@ -98,33 +98,33 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
                         <img alt="" className="max-w-[36px] max-h-[36px] object-contain" src={ iconUrl } />
                     </div> }
                 <div className="flex-1 min-w-0">
-                    <div className="text-[11px] font-bold text-primary truncate">
+                    <div className="text-[13px] font-bold text-primary truncate">
                         { isNew ? 'New Offer' : `Offer #${ offer.offerId }` }
                     </div>
                     { !isNew && offer.localizationName &&
-                        <div className="text-[9px] text-black/50 font-mono truncate">{ offer.localizationName }</div> }
+                        <div className="text-[11px] text-gray-700 font-mono truncate">{ offer.localizationName }</div> }
                 </div>
             </div>
 
             { /* Identity */ }
             <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Identity</div>
+                <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Identity</div>
                 <div className="flex flex-col gap-1.5">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-black/50 uppercase font-bold">Catalog Name</label>
+                        <label className="text-[11px] text-gray-700 uppercase font-bold">Catalog Name</label>
                         <input className={ inputClass } placeholder="rare_dragon_lamp" type="text" value={ catalogName } onChange={ e => setCatalogName(e.target.value) } />
                     </div>
                     <div className="grid grid-cols-3 gap-1.5">
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-[9px] text-black/50">Item IDs</label>
+                            <label className="text-[11px] text-gray-700">Item IDs</label>
                             <input className={ inputClass } type="text" value={ itemIds } onChange={ e => setItemIds(e.target.value) } />
                         </div>
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-[9px] text-black/50">Quantity</label>
+                            <label className="text-[11px] text-gray-700">Quantity</label>
                             <input className={ inputClass } min={ 1 } type="number" value={ amount } onChange={ e => setAmount(parseInt(e.target.value) || 1) } />
                         </div>
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-[9px] text-black/50">Order</label>
+                            <label className="text-[11px] text-gray-700">Order</label>
                             <input className={ inputClass } min={ 0 } type="number" value={ orderNumber } onChange={ e => setOrderNumber(parseInt(e.target.value) || 0) } />
                         </div>
                     </div>
@@ -133,18 +133,18 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
 
             { /* Pricing */ }
             <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Pricing</div>
+                <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Pricing</div>
                 <div className="grid grid-cols-3 gap-1.5">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-black/50">Credits</label>
+                        <label className="text-[11px] text-gray-700">Credits</label>
                         <input className={ inputClass } min={ 0 } type="number" value={ costCredits } onChange={ e => setCostCredits(parseInt(e.target.value) || 0) } />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-black/50">Points</label>
+                        <label className="text-[11px] text-gray-700">Points</label>
                         <input className={ inputClass } min={ 0 } type="number" value={ costPoints } onChange={ e => setCostPoints(parseInt(e.target.value) || 0) } />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-black/50">Points Type</label>
+                        <label className="text-[11px] text-gray-700">Points Type</label>
                         <select className={ inputClass } value={ pointsType } onChange={ e => setPointsType(parseInt(e.target.value)) }>
                             <option value={ 0 }>Duckets</option>
                             <option value={ 5 }>Diamonds</option>
@@ -156,29 +156,29 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
 
             { /* Options */ }
             <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Options</div>
+                <div className="text-[11px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Options</div>
                 <div className="grid grid-cols-3 gap-1.5 mb-1.5">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-black/50">Club Only</label>
+                        <label className="text-[11px] text-gray-700">Club Only</label>
                         <select className={ inputClass } value={ clubOnly } onChange={ e => setClubOnly(e.target.value) }>
                             <option value="0">No</option>
                             <option value="1">Yes</option>
                         </select>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-black/50">Limited</label>
+                        <label className="text-[11px] text-gray-700">Limited</label>
                         <input className={ inputClass } min={ 0 } type="number" value={ limitedStack } onChange={ e => setLimitedStack(parseInt(e.target.value) || 0) } />
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] text-black/50">Offer Group</label>
+                        <label className="text-[11px] text-gray-700">Offer Group</label>
                         <input className={ inputClass } type="number" value={ offerIdGroup } onChange={ e => setOfferIdGroup(parseInt(e.target.value) || -1) } />
                     </div>
                 </div>
                 <div className="flex flex-col gap-0.5">
-                    <label className="text-[9px] text-black/50">Extra Data</label>
+                    <label className="text-[11px] text-gray-700">Extra Data</label>
                     <input className={ inputClass } placeholder="optional" type="text" value={ extradata } onChange={ e => setExtradata(e.target.value) } />
                 </div>
-                <label className="flex items-center gap-1.5 text-[10px] cursor-pointer mt-1.5">
+                <label className="flex items-center gap-1.5 text-[12px] cursor-pointer mt-1.5">
                     <input className="accent-primary" checked={ haveOffer === '1' } type="checkbox" onChange={ e => setHaveOffer(e.target.checked ? '1' : '0') } />
                     Have Offer
                 </label>
@@ -188,16 +188,16 @@ export const CatalogAdminOfferForm: FC<CatalogAdminOfferFormProps> = props =>
             <div className="flex justify-between">
                 <div className="flex items-center gap-1">
                     { !isNew &&
-                        <button className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer" onClick={ handleDelete }>
-                            <FaTrash className="text-[8px]" /> Delete
+                        <button className="flex items-center gap-1 px-2 py-1 rounded text-[12px] font-bold bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer" onClick={ handleDelete }>
+                            <FaTrash className="text-[10px]" /> Delete
                         </button> }
                     { !isNew &&
-                        <button className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-info/10 text-info border border-info/30 hover:bg-info/20 transition-colors cursor-pointer" title="Duplicate" onClick={ handleDuplicate }>
-                            <FaCopy className="text-[8px]" /> Copy
+                        <button className="flex items-center gap-1 px-2 py-1 rounded text-[12px] font-bold bg-info/10 text-info border border-info/30 hover:bg-info/20 transition-colors cursor-pointer" title="Duplicate" onClick={ handleDuplicate }>
+                            <FaCopy className="text-[10px]" /> Copy
                         </button> }
                 </div>
-                <button className="flex items-center gap-1 px-3 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSave }>
-                    { loading ? <FaSpinner className="text-[8px] animate-spin" /> : <FaSave className="text-[8px]" /> }
+                <button className="flex items-center gap-1 px-3 py-1 rounded text-[12px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSave }>
+                    { loading ? <FaSpinner className="text-[10px] animate-spin" /> : <FaSave className="text-[10px]" /> }
                     { isNew ? 'Create' : 'Save' }
                 </button>
             </div>

@@ -25,8 +25,8 @@ const CatalogClassicViewInner: FC<{}> = () =>
     // Resizable nav column
     const [ navWidth, setNavWidth ] = useState(() =>
     {
-        try { const s = localStorage.getItem('catalog.classic.nav.width'); return s ? Math.min(300, Math.max(100, parseInt(s))) : 160; }
-        catch { return 160; }
+        try { const s = localStorage.getItem('catalog.classic.nav.width'); return s ? Math.min(350, Math.max(100, parseInt(s))) : 220; }
+        catch { return 220; }
     });
     const isResizing = useRef(false);
 

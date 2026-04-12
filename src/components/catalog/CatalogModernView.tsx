@@ -30,8 +30,8 @@ const CatalogModernViewInner: FC<{}> = () =>
     // Resizable nav column
     const [ navWidth, setNavWidth ] = useState(() =>
     {
-        try { const s = localStorage.getItem('catalog.nav.width'); return s ? Math.min(350, Math.max(140, parseInt(s))) : 250; }
-        catch { return 250; }
+        try { const s = localStorage.getItem('catalog.nav.width'); return s ? Math.min(400, Math.max(140, parseInt(s))) : 280; }
+        catch { return 280; }
     });
     const isResizing = useRef(false);
 

@@ -1,4 +1,4 @@
-import { NitroCard } from '@layout/NitroCard';
+import { NitroCard } from '@/layout/NitroCard';
 import { AddLinkEventTracker, ConvertGlobalRoomIdMessageComposer, FindNewFriendsMessageComposer, HabboWebTools, ILinkEventTracker, LegacyExternalInterface, NavigatorInitComposer, NavigatorSearchComposer, RemoveLinkEventTracker, RoomSessionEvent } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';

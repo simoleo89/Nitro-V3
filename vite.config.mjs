@@ -3,9 +3,10 @@ import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
-const legacyRendererRoot = resolve(__dirname, '..', 'renderer');
-const currentRendererRoot = resolve(__dirname, '..', 'Nitro_Render_V3');
-const rendererRoot = existsSync(currentRendererRoot) ? currentRendererRoot : legacyRendererRoot;
+const rendererCandidates = [ 'Nitro_Render_V3', 'renderer3', 'renderer' ];
+const rendererRoot = rendererCandidates
+    .map(name => resolve(__dirname, '..', name))
+    .find(p => existsSync(p)) || resolve(__dirname, '..', 'renderer');
 
 export default defineConfig({
     plugins: [ react() ],

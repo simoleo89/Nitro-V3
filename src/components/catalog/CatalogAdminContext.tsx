@@ -1,4 +1,4 @@
-import { CatalogAdminCreateOfferComposer, CatalogAdminCreatePageComposer, CatalogAdminDeleteOfferComposer, CatalogAdminDeletePageComposer, CatalogAdminMoveOfferComposer, CatalogAdminMovePageComposer, CatalogAdminPublishComposer, CatalogAdminResultEvent, CatalogAdminSaveOfferComposer, CatalogAdminSavePageComposer } from '@nitrots/nitro-renderer';
+import { CatalogAdminCreateOfferComposer, CatalogAdminCreatePageComposer, CatalogAdminDeleteOfferComposer, CatalogAdminDeletePageComposer, CatalogAdminMoveOfferComposer, CatalogAdminMovePageComposer, CatalogAdminPublishComposer, CatalogAdminResultEvent, CatalogAdminSaveOfferComposer, CatalogAdminSavePageComposer, CatalogAdminSavePageImagesComposer } from '@nitrots/nitro-renderer';
 import { createContext, FC, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ICatalogNode, IPurchasableOffer, NotificationAlertType, SendMessageComposer } from '../../api';
 import { useMessageEvent, useNotification } from '../../hooks';
@@ -68,6 +68,7 @@ interface ICatalogAdminContext
     savePage: (data: IPageEditData) => void;
     createPage: (data: IPageEditData) => void;
     deletePage: (pageId: number) => void;
+    savePageImages: (pageId: number, headerImage: string, teaserImage: string) => void;
     saveOffer: (data: IOfferEditData) => void;
     createOffer: (data: IOfferEditData) => void;
     deleteOffer: (offerId: number) => void;
@@ -161,6 +162,7 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
                     'savePage': 'Page saved (publish to apply)',
                     'createPage': 'Page created (publish to apply)',
                     'deletePage': 'Page deleted (publish to apply)',
+                    'saveImages': 'Images saved (publish to apply)',
                     'saveOffer': 'Offer saved (publish to apply)',
                     'createOffer': 'Offer created (publish to apply)',
                     'deleteOffer': 'Offer deleted (publish to apply)',
@@ -208,6 +210,14 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
         setLastError(null);
         pendingActionRef.current = 'deletePage';
         SendMessageComposer(new CatalogAdminDeletePageComposer(pageId));
+    }, []);
+
+    const savePageImages = useCallback((pageId: number, headerImage: string, teaserImage: string) =>
+    {
+        setLoading(true);
+        setLastError(null);
+        pendingActionRef.current = 'saveImages';
+        SendMessageComposer(new CatalogAdminSavePageImagesComposer(pageId, headerImage, teaserImage));
     }, []);
 
     const saveOffer = useCallback((data: IOfferEditData) =>
@@ -360,7 +370,7 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
             selectedOfferIds, toggleOfferSelection, selectAllOffers, clearOfferSelection,
             offerSearchQuery, setOfferSearchQuery,
             loading, lastError, hasPendingChanges,
-            savePage, createPage, deletePage,
+            savePage, createPage, deletePage, savePageImages,
             saveOffer, createOffer, deleteOffer, duplicateOffer, batchUpdateOfferPrices,
             reorderOffers, reorderPage, togglePageEnabled, togglePageVisible,
             publishCatalog

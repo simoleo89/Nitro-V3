@@ -1,8 +1,9 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FaEdit, FaFileAlt, FaImage, FaInfoCircle, FaPlus, FaSave, FaSearch, FaSpinner, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaFileAlt, FaFolderOpen, FaImage, FaInfoCircle, FaPlus, FaSave, FaSearch, FaSpinner, FaTimes, FaTrash } from 'react-icons/fa';
 import { GetConfigurationValue, ICatalogNode, LocalizeText } from '../../../../api';
 import { useCatalog } from '../../../../hooks';
 import { IPageEditData, useCatalogAdmin } from '../../CatalogAdminContext';
+import { CatalogAdminImageBrowser } from './CatalogAdminImageBrowser';
 import { CatalogAdminPageTreeItem } from './CatalogAdminPageTreeItem';
 
 const LAYOUT_OPTIONS = [
@@ -60,6 +61,7 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
     // Image previews
     const [ headerImage, setHeaderImage ] = useState<string | null>(null);
     const [ teaserImage, setTeaserImage ] = useState<string | null>(null);
+    const [ browsingImageType, setBrowsingImageType ] = useState<'header' | 'teaser' | null>(null);
 
     const handleSelect = useCallback((node: ICatalogNode) =>
     {
@@ -153,6 +155,52 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
         catalogAdmin?.deletePage(selectedNode.pageId);
         setSelectedNode(null);
     }, [ selectedNode, catalogAdmin ]);
+
+    const buildImageUrl = useCallback((name: string) =>
+    {
+        if(!name) return null;
+
+        return GetConfigurationValue<string>('catalog.asset.image.url').replace('%name%', name);
+    }, []);
+
+    const handleImageSelect = useCallback((filename: string) =>
+    {
+        const url = buildImageUrl(filename);
+
+        if(browsingImageType === 'header')
+        {
+            setHeaderImage(url);
+        }
+        else if(browsingImageType === 'teaser')
+        {
+            setTeaserImage(url);
+        }
+
+        setBrowsingImageType(null);
+    }, [ browsingImageType, buildImageUrl ]);
+
+    const handleSaveImages = useCallback(() =>
+    {
+        if(!selectedNode || !catalogAdmin?.savePageImages) return;
+
+        // Extract filename from URL for the composer
+        const extractName = (url: string | null) =>
+        {
+            if(!url) return '';
+
+            const assetUrl = GetConfigurationValue<string>('catalog.asset.image.url');
+            const prefix = assetUrl.split('%name%')[0];
+            const suffix = assetUrl.split('%name%')[1];
+            let name = url;
+
+            if(prefix && name.startsWith(prefix)) name = name.substring(prefix.length);
+            if(suffix && name.endsWith(suffix)) name = name.substring(0, name.length - suffix.length);
+
+            return name;
+        };
+
+        catalogAdmin.savePageImages(selectedNode.pageId, extractName(headerImage), extractName(teaserImage));
+    }, [ selectedNode, catalogAdmin, headerImage, teaserImage ]);
 
     const filterNodes = useCallback((node: ICatalogNode): boolean =>
     {
@@ -374,32 +422,71 @@ export const CatalogAdminPagePanel: FC<{}> = () =>
                             { activeSection === 'images' && (
                                 <div className="flex flex-col gap-2.5">
                                     <div className="bg-white rounded border border-card-grid-item-border p-2.5 shadow-sm">
-                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">Current Images</div>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <div className="flex flex-col gap-1">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Header Image (image 0)</label>
-                                                <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[60px] flex items-center justify-center">
+                                        <div className="text-[9px] text-primary uppercase font-bold mb-1.5 border-l-2 border-l-primary pl-1.5">{ LocalizeText('catalog.admin.section.images') }</div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            { /* Header image */ }
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-[9px] text-gray-700 uppercase font-bold">{ LocalizeText('catalog.admin.label.headerimage') }</label>
+                                                <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[70px] flex items-center justify-center">
                                                     { headerImage
                                                         ? <img alt="header" className="max-w-full max-h-[80px] object-contain" src={ headerImage } />
-                                                        : <span className="text-[9px] text-muted">No image</span> }
+                                                        : <span className="text-[9px] text-gray-600">{ LocalizeText('catalog.admin.noimage') }</span> }
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <button
+                                                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer"
+                                                        onClick={ () => setBrowsingImageType('header') }
+                                                    >
+                                                        <FaFolderOpen className="text-[8px]" /> { LocalizeText('catalog.admin.browse') }
+                                                    </button>
+                                                    { headerImage &&
+                                                        <button
+                                                            className="px-2 py-1 rounded text-[10px] bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer"
+                                                            onClick={ () => setHeaderImage(null) }
+                                                        >
+                                                            <FaTimes className="text-[8px]" />
+                                                        </button> }
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col gap-1">
-                                                <label className="text-[9px] text-black/50 uppercase font-bold">Teaser Icon (image 1)</label>
-                                                <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[60px] flex items-center justify-center">
+                                            { /* Teaser image */ }
+                                            <div className="flex flex-col gap-1.5">
+                                                <label className="text-[9px] text-gray-700 uppercase font-bold">{ LocalizeText('catalog.admin.label.teaserimage') }</label>
+                                                <div className="bg-card-content-area rounded border border-card-grid-item-border p-2 min-h-[70px] flex items-center justify-center">
                                                     { teaserImage
                                                         ? <img alt="teaser" className="max-w-[70px] max-h-[70px] object-contain" src={ teaserImage } />
-                                                        : <span className="text-[9px] text-muted">No image</span> }
+                                                        : <span className="text-[9px] text-gray-600">{ LocalizeText('catalog.admin.noimage') }</span> }
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <button
+                                                        className="flex-1 flex items-center justify-center gap-1 px-2 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer"
+                                                        onClick={ () => setBrowsingImageType('teaser') }
+                                                    >
+                                                        <FaFolderOpen className="text-[8px]" /> { LocalizeText('catalog.admin.browse') }
+                                                    </button>
+                                                    { teaserImage &&
+                                                        <button
+                                                            className="px-2 py-1 rounded text-[10px] bg-danger/10 text-danger border border-danger/30 hover:bg-danger/20 transition-colors cursor-pointer"
+                                                            onClick={ () => setTeaserImage(null) }
+                                                        >
+                                                            <FaTimes className="text-[8px]" />
+                                                        </button> }
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="bg-warning/10 rounded border border-warning/30 p-2">
-                                        <div className="text-[9px] text-warning font-bold">Image editing requires custom composer</div>
-                                        <div className="text-[9px] text-muted mt-0.5">
-                                            Images are currently read-only. A custom CatalogAdminSavePageImagesComposer needs to be added to the renderer and Arcturus emulator to enable image editing.
+                                        <div className="flex justify-end mt-2">
+                                            <button className="flex items-center gap-1 px-3 py-1 rounded text-[10px] font-bold bg-primary text-white hover:bg-secondary transition-colors cursor-pointer disabled:opacity-50" disabled={ loading } onClick={ handleSaveImages }>
+                                                { loading ? <FaSpinner className="text-[8px] animate-spin" /> : <FaSave className="text-[8px]" /> } { LocalizeText('catalog.admin.save.images') }
+                                            </button>
                                         </div>
                                     </div>
+
+                                    { browsingImageType &&
+                                        <CatalogAdminImageBrowser
+                                            currentImage={ browsingImageType === 'header' ? headerImage : teaserImage }
+                                            type={ browsingImageType }
+                                            onClose={ () => setBrowsingImageType(null) }
+                                            onSelect={ handleImageSelect }
+                                        /> }
                                 </div>
                             ) }
 

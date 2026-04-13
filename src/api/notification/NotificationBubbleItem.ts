@@ -9,8 +9,9 @@ export class NotificationBubbleItem
     private _notificationType: string;
     private _iconUrl: string;
     private _linkUrl: string;
+    private _senderName: string;
 
-    constructor(message: string, notificationType: string = NotificationBubbleType.INFO, iconUrl: string = null, linkUrl: string = null)
+    constructor(message: string, notificationType: string = NotificationBubbleType.INFO, iconUrl: string = null, linkUrl: string = null, senderName: string = '')
     {
         NotificationBubbleItem.ITEM_ID += 1;
 
@@ -19,6 +20,7 @@ export class NotificationBubbleItem
         this._notificationType = notificationType;
         this._iconUrl = iconUrl;
         this._linkUrl = linkUrl;
+        this._senderName = senderName;
     }
 
     public get id(): number
@@ -44,5 +46,10 @@ export class NotificationBubbleItem
     public get linkUrl(): string
     {
         return this._linkUrl;
+    }
+
+    public get senderName(): string
+    {
+        return this._senderName;
     }
 }

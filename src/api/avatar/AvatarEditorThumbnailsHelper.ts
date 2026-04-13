@@ -1,9 +1,61 @@
 import { AvatarFigurePartType, AvatarScaleType, AvatarSetType, GetAssetManager, GetAvatarRenderManager, IFigurePart, IGraphicAsset, IPartColor, NitroAlphaFilter, NitroContainer, NitroRectangle, NitroSprite, TextureUtils } from '@nitrots/nitro-renderer';
 import { IAvatarEditorCategoryPartItem } from './IAvatarEditorCategoryPartItem';
 
+const MAX_CACHE_BYTES = 200 * 1024 * 1024;
+
+class LRUImageCache
+{
+    private _cache: Map<string, string> = new Map();
+    private _currentBytes: number = 0;
+
+    public get(key: string): string | undefined
+    {
+        const value = this._cache.get(key);
+
+        if(value !== undefined)
+        {
+            this._cache.delete(key);
+            this._cache.set(key, value);
+        }
+
+        return value;
+    }
+
+    public set(key: string, value: string): void
+    {
+        if(this._cache.has(key))
+        {
+            const old = this._cache.get(key);
+
+            this._currentBytes -= (key.length + old.length) * 2;
+            this._cache.delete(key);
+        }
+
+        const entryBytes = (key.length + value.length) * 2;
+
+        while(this._currentBytes + entryBytes > MAX_CACHE_BYTES && this._cache.size > 0)
+        {
+            const firstKey = this._cache.keys().next().value;
+            const firstValue = this._cache.get(firstKey);
+
+            this._currentBytes -= (firstKey.length + firstValue.length) * 2;
+            this._cache.delete(firstKey);
+        }
+
+        this._cache.set(key, value);
+        this._currentBytes += entryBytes;
+    }
+
+    public clear(): void
+    {
+        this._cache.clear();
+        this._currentBytes = 0;
+    }
+}
+
 export class AvatarEditorThumbnailsHelper
 {
-    private static THUMBNAIL_CACHE: Map<string, string> = new Map();
+    private static THUMBNAIL_CACHE: LRUImageCache = new LRUImageCache();
     private static THUMB_DIRECTIONS: number[] = [ 2, 6, 0, 4, 3, 1 ];
     private static ALPHA_FILTER: NitroAlphaFilter = new NitroAlphaFilter({ alpha: 0.2 });
     private static DRAW_ORDER: string[] = [
@@ -37,9 +89,18 @@ export class AvatarEditorThumbnailsHelper
         'ptr',
     ];
 
-    private static getThumbnailKey(setType: string, part: IAvatarEditorCategoryPartItem): string
+    private static getThumbnailKey(setType: string, part: IAvatarEditorCategoryPartItem, partColors?: IPartColor[], isDisabled?: boolean): string
     {
-        return `${ setType }-${ part.partSet.id }`;
+        let key = `${ setType }-${ part.partSet.id }`;
+
+        if(partColors?.length)
+        {
+            key += '-' + partColors.map(c => c?.rgb?.toString(16) ?? '0').join(',');
+        }
+
+        if(isDisabled) key += '-d';
+
+        return key;
     }
 
     public static clearCache(): void
@@ -51,7 +112,7 @@ export class AvatarEditorThumbnailsHelper
     {
         if(!setType || !setType.length || !part || !part.partSet || !part.partSet.parts || !part.partSet.parts.length) return null;
 
-        const thumbnailKey = this.getThumbnailKey(setType, part);
+        const thumbnailKey = this.getThumbnailKey(setType, part, useColors ? partColors : null, isDisabled);
         const cached = this.THUMBNAIL_CACHE.get(thumbnailKey);
 
         if(cached) return cached;
@@ -145,7 +206,7 @@ export class AvatarEditorThumbnailsHelper
     {
         if(!figureString || !figureString.length) return null;
 
-        const thumbnailKey = figureString;
+        const thumbnailKey = figureString + (isDisabled ? '-d' : '');
         const cached = this.THUMBNAIL_CACHE.get(thumbnailKey);
 
         if(cached) return cached;

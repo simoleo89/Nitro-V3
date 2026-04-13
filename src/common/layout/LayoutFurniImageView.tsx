@@ -1,5 +1,5 @@
 import { GetRoomEngine, IGetImageListener, ImageResult, TextureUtils, Vector3d } from '@nitrots/nitro-renderer';
-import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ProductTypeEnum } from '../../api';
 import { Base, BaseProps } from '../Base';
 
@@ -16,6 +16,23 @@ export const LayoutFurniImageView: FC<LayoutFurniImageViewProps> = props =>
 {
     const { productType = 's', productClassId = -1, direction = 2, extraData = '', scale = 1, style = {}, ...rest } = props;
     const [ imageElement, setImageElement ] = useState<HTMLImageElement>(null);
+    const isMounted = useRef(true);
+
+    useEffect(() =>
+    {
+        isMounted.current = true;
+
+        return () => { isMounted.current = false; };
+    }, []);
+
+    const updateImage = useCallback(async (texture: any) =>
+    {
+        if(!texture) return;
+
+        const image = await TextureUtils.generateImage(texture);
+
+        if(image && isMounted.current) setImageElement(image);
+    }, []);
 
     const getStyle = useMemo(() =>
     {
@@ -42,10 +59,12 @@ export const LayoutFurniImageView: FC<LayoutFurniImageViewProps> = props =>
 
     useEffect(() =>
     {
+        setImageElement(null);
+
         let imageResult: ImageResult = null;
 
         const listener: IGetImageListener = {
-            imageReady: async (id, texture, image) => setImageElement(await TextureUtils.generateImage(texture)),
+            imageReady: (result) => updateImage(result?.data),
             imageFailed: null
         };
 
@@ -59,12 +78,8 @@ export const LayoutFurniImageView: FC<LayoutFurniImageViewProps> = props =>
                 break;
         }
 
-        if(!imageResult) return;
-
-        (async () => setImageElement(await TextureUtils.generateImage(imageResult.data)))();
-    }, [ productType, productClassId, direction, extraData ]);
-
-    if(!imageElement) return null;
+        if(imageResult?.data) updateImage(imageResult.data);
+    }, [ productType, productClassId, direction, extraData, updateImage ]);
 
     return <Base classNames={ [ 'furni-image' ] } style={ getStyle } { ...rest } />;
 };

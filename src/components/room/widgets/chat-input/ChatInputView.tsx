@@ -279,7 +279,7 @@ export const ChatInputView: FC<{}> = props =>
 
     return (
         createPortal(
-            <div className="nitro-chat-input-container relative flex h-[38px] w-full items-center justify-between overflow-visible rounded-[12px] border-2 border-black bg-white pr-[8px]">
+            <div className="nitro-chat-input-container flex justify-between items-center h-10 border-2 border-black bg-gray-200 pr-2.5 overflow-visible rounded-lg lg:relative lg:w-full max-lg:fixed max-lg:bottom-[70px] max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:z-50 max-lg:w-[80vw] max-lg:max-w-[500px] max-lg:shadow-lg">
                 { commandSelectorVisible &&
                     <ChatInputCommandSelectorView
                         commands={ filteredCommands }

@@ -46,13 +46,10 @@
     }
 
     .nitro-room-tools {
-        background: rgba(10, 10, 12, 0.58);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+        background: #212131;
+        box-shadow: inset 0px 5px rgba(6, 6, 6, 0.6), inset 0 -4px rgba(0, 0, 0, 0.6);
+        border-top-right-radius: .25rem;
+        border-bottom-right-radius: .25rem;
         transition: all .2s ease;
         z-index: 71;
         margin-left: 0;
@@ -65,7 +62,7 @@
             background: transparent;
             padding: 3px 0px;
             color: #FFF;
-            border-color: rgba(#000, 0.3);
+            border-color: rgba(0, 0, 0, 0.3);
             cursor: pointer;
 
             &:hover {
@@ -103,9 +100,8 @@
     }
 
     .nitro-room-history {
-        background: rgba(10, 10, 12, 0.58);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+        background: #212131;
+        box-shadow: inset 0px 5px rgba(6, 6, 6, 0.6), inset 0 -4px rgba(0, 0, 0, 0.6);
         transition: all .2s ease;
         width: 150px;
         overflow: hidden;
@@ -114,9 +110,8 @@
     }
 
     .nitro-room-tools-info {
-        background: rgba(10, 10, 12, 0.58);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+        background: #212131;
+        box-shadow: inset 0px 5px rgba(6, 6, 6, 0.6), inset 0 -4px rgba(0, 0, 0, 0.6);
         transition: all .2s ease;
         max-width: 250px;
         border-radius: 14px;
@@ -137,9 +132,9 @@
     left: 50%;
     transform: translateX(-50%);
     font-size: large;
-    background: rgba(#000, 0.95);
-    box-shadow: inset 0px 5px lighten(rgba(#000, .6), 2.5), inset 0 -4px darken(rgba(#000, .6), 4);
-    border-radius: $border-radius;
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: inset 0px 5px rgba(6, 6, 6, 0.6), inset 0 -4px rgba(0, 0, 0, 0.6);
+    border-radius: 0.25rem;
     transition: all 0.2s ease;
     z-index: 21;
 

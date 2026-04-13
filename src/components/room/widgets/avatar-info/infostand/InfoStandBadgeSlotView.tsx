@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
-import { LocalizeText } from '../../../../../api';
+import { GetConfigurationValue, LocalizeText } from '../../../../../api';
 import { LayoutBadgeImageView } from '../../../../../common';
 import { useInventoryBadges } from '../../../../../hooks';
 
@@ -14,7 +14,7 @@ interface InfoStandBadgeSlotProps
 const BadgeMiniPicker: FC<{
     onSelect: (badgeCode: string) => void;
     onClose: () => void;
-    activeBadgeCodes: string[];
+    activeBadgeCodes: (string | null)[];
 }> = ({ onSelect, onClose, activeBadgeCodes }) =>
 {
     const { badgeCodes = [], requestBadges = null } = useInventoryBadges();
@@ -26,7 +26,8 @@ const BadgeMiniPicker: FC<{
         if(badgeCodes.length === 0) requestBadges();
     }, []);
 
-    const availableBadges = badgeCodes.filter(code => !activeBadgeCodes.includes(code));
+    const activeSet = new Set(activeBadgeCodes.filter(Boolean));
+    const availableBadges = badgeCodes.filter(code => !activeSet.has(code));
     const filtered = search.length > 0
         ? availableBadges.filter(code => code.toLowerCase().includes(search.toLowerCase()))
         : availableBadges;
@@ -78,12 +79,24 @@ const BadgeMiniPicker: FC<{
 
 export const InfoStandBadgeSlotView: FC<InfoStandBadgeSlotProps> = ({ slotIndex, badgeCode: badgeCodeFromProps, isOwnUser }) =>
 {
-    const { activeBadgeCodes = [], setBadgeAtSlot = null, swapBadges = null } = useInventoryBadges();
+    const { activeBadgeCodes = [], setBadgeAtSlot = null, swapBadges = null, removeBadge = null, requestBadges = null } = useInventoryBadges();
     const [ isDragOver, setIsDragOver ] = useState(false);
+    const [ isDragging, setIsDragging ] = useState(false);
+    const [ justDropped, setJustDropped ] = useState(false);
     const [ showPicker, setShowPicker ] = useState(false);
 
-    const hookBadge = activeBadgeCodes.length > 0 ? (activeBadgeCodes[slotIndex] ?? null) : null;
-    const badgeCode = isOwnUser ? (hookBadge ?? badgeCodeFromProps ?? null) : (badgeCodeFromProps ?? null);
+    const hookInitialized = activeBadgeCodes.length > 0;
+
+    // Load badge data for own user so hook is initialized before any DnD
+    useEffect(() =>
+    {
+        if(isOwnUser && !hookInitialized) requestBadges();
+    }, [ isOwnUser, hookInitialized, requestBadges ]);
+    const hookBadge = hookInitialized ? (activeBadgeCodes[slotIndex] ?? null) : null;
+    // Once hook has data, use ONLY hook data for own user (no stale props fallback)
+    const badgeCode = isOwnUser
+        ? (hookInitialized ? hookBadge : (badgeCodeFromProps ?? null))
+        : (badgeCodeFromProps ?? null);
 
     const onDragStart = useCallback((event: React.DragEvent) =>
     {
@@ -91,7 +104,15 @@ export const InfoStandBadgeSlotView: FC<InfoStandBadgeSlotProps> = ({ slotIndex,
         event.dataTransfer.setData('badgeCode', badgeCode);
         event.dataTransfer.setData('infostandSlot', slotIndex.toString());
         event.dataTransfer.effectAllowed = 'move';
+        setIsDragging(true);
+
+        const badgeUrl = GetConfigurationValue<string>('badge.asset.url').replace('%badgename%', badgeCode);
+        const img = new Image();
+        img.src = badgeUrl;
+        event.dataTransfer.setDragImage(img, 20, 20);
     }, [ badgeCode, slotIndex, isOwnUser ]);
+
+    const onDragEnd = useCallback(() => setIsDragging(false), []);
 
     const onDragOver = useCallback((event: React.DragEvent) =>
     {
@@ -124,6 +145,9 @@ export const InfoStandBadgeSlotView: FC<InfoStandBadgeSlotProps> = ({ slotIndex,
         {
             setBadgeAtSlot(droppedBadgeCode, slotIndex);
         }
+
+        setJustDropped(true);
+        setTimeout(() => setJustDropped(false), 300);
     }, [ isOwnUser, slotIndex, swapBadges, setBadgeAtSlot ]);
 
     const handleSlotClick = useCallback(() =>
@@ -132,6 +156,13 @@ export const InfoStandBadgeSlotView: FC<InfoStandBadgeSlotProps> = ({ slotIndex,
 
         setShowPicker(true);
     }, [ isOwnUser, badgeCode ]);
+
+    const handleDoubleClick = useCallback(() =>
+    {
+        if(!isOwnUser || !badgeCode) return;
+
+        removeBadge(badgeCode);
+    }, [ isOwnUser, badgeCode, removeBadge ]);
 
     const handlePickerSelect = useCallback((code: string) =>
     {
@@ -145,15 +176,19 @@ export const InfoStandBadgeSlotView: FC<InfoStandBadgeSlotProps> = ({ slotIndex,
                 className={ `flex items-center justify-center relative w-[40px] h-[40px] bg-no-repeat bg-center transition-all duration-150
                     ${ isOwnUser && badgeCode ? 'cursor-grab active:cursor-grabbing' : '' }
                     ${ isOwnUser && !badgeCode ? 'cursor-pointer' : '' }
-                    ${ isOwnUser ? 'hover:scale-110 hover:brightness-125 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.3)]' : '' }
-                    ${ isDragOver ? 'scale-115 ring-2 ring-blue-400/60 rounded-sm bg-blue-400/15' : '' }
+                    ${ isDragging ? 'opacity-30 scale-90' : '' }
+                    ${ isOwnUser && !isDragging ? 'hover:scale-110 hover:brightness-125 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.3)]' : '' }
+                    ${ isDragOver ? 'scale-110 ring-2 ring-blue-400/60 rounded-sm bg-blue-400/15 animate-pulse-glow' : '' }
+                    ${ justDropped ? 'animate-drop-settle' : '' }
                     ${ isOwnUser && !badgeCode ? 'opacity-40 hover:opacity-70 border border-dashed border-white/20 rounded-sm' : '' }` }
                 draggable={ isOwnUser && !!badgeCode }
+                onDragEnd={ onDragEnd }
                 onDragLeave={ onDragLeave }
                 onDragOver={ onDragOver }
                 onDragStart={ onDragStart }
                 onDrop={ onDrop }
-                onClick={ handleSlotClick }>
+                onClick={ handleSlotClick }
+                onDoubleClick={ handleDoubleClick }>
                 { badgeCode
                     ? <LayoutBadgeImageView badgeCode={ badgeCode } showInfo={ true } />
                     : isOwnUser && <FaPlus className="text-white/30 text-[10px]" /> }

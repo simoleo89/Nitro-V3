@@ -26,3 +26,4 @@ export * from './room/widgets';
 export * from './user';
 export * from './utils';
 export * from './wired';
+export * from './youtube';

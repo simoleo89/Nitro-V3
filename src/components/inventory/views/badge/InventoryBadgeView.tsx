@@ -1,7 +1,7 @@
 import { DeleteBadgeMessageComposer } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
-import { LocalizeBadgeName, LocalizeText, SendMessageComposer, UnseenItemCategory } from '../../../../api';
+import { GetConfigurationValue, LocalizeBadgeName, LocalizeText, SendMessageComposer, UnseenItemCategory } from '../../../../api';
 import { LayoutBadgeImageView } from '../../../../common';
 import { useInventoryBadges, useInventoryUnseenTracker, useNotification } from '../../../../hooks';
 import { InfiniteGrid, NitroButton } from '../../../../layout';
@@ -18,6 +18,8 @@ const ActiveBadgeSlot: FC<{
 }> = ({ slotIndex, badgeCode, onDropBadge, onRemoveBadge, onDragStartFromSlot, onSelectBadge, isSelected }) =>
 {
     const [ isDragOver, setIsDragOver ] = useState(false);
+    const [ isDragging, setIsDragging ] = useState(false);
+    const [ justDropped, setJustDropped ] = useState(false);
 
     const onDragOver = useCallback((event: React.DragEvent) =>
     {
@@ -35,24 +37,36 @@ const ActiveBadgeSlot: FC<{
 
         const droppedBadgeCode = event.dataTransfer.getData('badgeCode');
         const sourceSlotStr = event.dataTransfer.getData('activeSlot');
-        const sourceSlot = sourceSlotStr ? parseInt(sourceSlotStr) : undefined;
+        const sourceSlot = sourceSlotStr !== '' ? parseInt(sourceSlotStr) : undefined;
 
-        if(droppedBadgeCode) onDropBadge(droppedBadgeCode, slotIndex, sourceSlot);
+        if(droppedBadgeCode)
+        {
+            onDropBadge(droppedBadgeCode, slotIndex, sourceSlot);
+            setJustDropped(true);
+            setTimeout(() => setJustDropped(false), 300);
+        }
     }, [ slotIndex, onDropBadge ]);
 
     const onDragStart = useCallback((event: React.DragEvent) =>
     {
         if(!badgeCode) return;
         onDragStartFromSlot(event, badgeCode, slotIndex);
+        setIsDragging(true);
     }, [ badgeCode, slotIndex, onDragStartFromSlot ]);
+
+    const onDragEnd = useCallback(() => setIsDragging(false), []);
 
     return (
         <div
-            className={ `flex items-center justify-center rounded-md border-2 cursor-pointer aspect-square transition-colors
-                ${ isDragOver ? 'border-blue-400 bg-blue-400/20' : '' }
+            className={ `flex items-center justify-center rounded-md border-2 aspect-square transition-all duration-150
+                ${ badgeCode ? 'cursor-grab active:cursor-grabbing' : 'cursor-default' }
+                ${ isDragging ? 'opacity-30 scale-95' : '' }
+                ${ isDragOver ? 'border-blue-400 bg-blue-400/20 animate-pulse-glow scale-105' : '' }
+                ${ justDropped ? 'animate-drop-settle' : '' }
                 ${ isSelected && badgeCode ? 'border-card-grid-item-active bg-card-grid-item-active' : 'border-card-grid-item-border bg-card-grid-item' }
                 ${ !badgeCode ? 'border-dashed opacity-60' : '' }` }
             draggable={ !!badgeCode }
+            onDragEnd={ onDragEnd }
             onDragLeave={ onDragLeave }
             onDragOver={ onDragOver }
             onDragStart={ onDragStart }
@@ -73,8 +87,9 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
     const { isUnseen = null, removeUnseen = null } = useInventoryUnseenTracker();
     const { showConfirm = null } = useNotification();
     const [ isDragOverInventory, setIsDragOverInventory ] = useState(false);
+    const [ isDraggingFromActive, setIsDraggingFromActive ] = useState(false);
 
-    const maxSlots = 5;
+    const maxSlots = useMemo(() => GetConfigurationValue<number>('user.badges.max.slots', 5), []);
     const displayCodes = (filteredBadgeCodes !== null ? filteredBadgeCodes : badgeCodes);
 
     const attemptDeleteBadge = () =>
@@ -95,12 +110,10 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
     {
         if(sourceSlot !== undefined)
         {
-            // Reorder within active badges
             reorderBadges(sourceSlot, slotIndex);
         }
         else
         {
-            // Drop from inventory to active slot
             setBadgeAtSlot(badgeCode, slotIndex);
         }
     }, [ setBadgeAtSlot, reorderBadges ]);
@@ -111,6 +124,11 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
         event.dataTransfer.setData('activeSlot', slotIndex.toString());
         event.dataTransfer.setData('source', 'active');
         event.dataTransfer.effectAllowed = 'move';
+
+        const badgeUrl = GetConfigurationValue<string>('badge.asset.url').replace('%badgename%', badgeCode);
+        const img = new Image();
+        img.src = badgeUrl;
+        event.dataTransfer.setDragImage(img, 20, 20);
     }, []);
 
     const handleRemoveBadge = useCallback((badgeCode: string) =>
@@ -121,18 +139,24 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
     // Handle drop on inventory area (remove from active)
     const onInventoryDragOver = useCallback((event: React.DragEvent) =>
     {
-        const source = event.dataTransfer.types.includes('activeslot') ? 'active' : '';
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
+        const fromActive = event.dataTransfer.types.includes('activeslot');
+        setIsDraggingFromActive(fromActive);
         setIsDragOverInventory(true);
     }, []);
 
-    const onInventoryDragLeave = useCallback(() => setIsDragOverInventory(false), []);
+    const onInventoryDragLeave = useCallback(() =>
+    {
+        setIsDragOverInventory(false);
+        setIsDraggingFromActive(false);
+    }, []);
 
     const onInventoryDrop = useCallback((event: React.DragEvent) =>
     {
         event.preventDefault();
         setIsDragOverInventory(false);
+        setIsDraggingFromActive(false);
 
         const badgeCode = event.dataTransfer.getData('badgeCode');
         const source = event.dataTransfer.getData('source');
@@ -169,10 +193,18 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
     return (
         <div className="grid h-full grid-cols-12 gap-2">
             <div
-                className={ `flex flex-col col-span-7 gap-1 overflow-hidden rounded transition-colors ${ isDragOverInventory ? 'bg-blue-400/10' : '' }` }
+                className={ `relative flex flex-col col-span-7 gap-1 overflow-hidden rounded transition-all duration-200
+                    ${ isDragOverInventory && isDraggingFromActive ? 'bg-red-500/10 ring-2 ring-inset ring-red-400/30 animate-pulse-glow-red' : '' }
+                    ${ isDragOverInventory && !isDraggingFromActive ? 'bg-blue-400/10' : '' }` }
                 onDragLeave={ onInventoryDragLeave }
                 onDragOver={ onInventoryDragOver }
                 onDrop={ onInventoryDrop }>
+                { isDragOverInventory && isDraggingFromActive && (
+                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+                        <FaTrashAlt className="text-red-400/60 text-2xl mb-1" />
+                        <span className="text-red-400/60 text-xs font-medium">{ LocalizeText('inventory.badges.clearbadge') }</span>
+                    </div>
+                ) }
                 <InfiniteGrid<string>
                     columnCount={ 5 }
                     estimateSize={ 50 }

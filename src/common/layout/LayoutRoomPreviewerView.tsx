@@ -24,15 +24,13 @@ export const LayoutRoomPreviewerView: FC<{
         const width = elementRef.current.parentElement.clientWidth;
         const texture = TextureUtils.createRenderTexture(width, height);
 
-        const update = async (ticker: NitroTicker) =>
+        const paintToDOM = () =>
         {
             if(!roomPreviewer || !elementRef.current) return;
 
-            roomPreviewer.updatePreviewRoomView();
-
             const renderingCanvas = roomPreviewer.getRenderingCanvas();
 
-            if(!renderingCanvas.canvasUpdated) return;
+            if(!renderingCanvas) return;
 
             GetRenderer().render({
                 target: texture,
@@ -40,12 +38,27 @@ export const LayoutRoomPreviewerView: FC<{
                 clear: true
             });
 
-            let canvas = GetRenderer().texture.generateCanvas(texture);
+            const canvas = GetRenderer().texture.generateCanvas(texture);
             const base64 = canvas.toDataURL('image/png');
 
-            canvas = null;
+            canvas.width = 0;
+            canvas.height = 0;
 
             elementRef.current.style.backgroundImage = `url(${ base64 })`;
+        };
+
+        const update = (ticker: NitroTicker) =>
+        {
+            if(!roomPreviewer || !elementRef.current) return;
+
+            roomPreviewer.updatePreviewRoomView();
+
+            const renderingCanvas = roomPreviewer.getRenderingCanvas();
+
+            if(renderingCanvas && renderingCanvas.canvasUpdated)
+            {
+                paintToDOM();
+            }
         };
 
         GetTicker().add(update);
@@ -58,7 +71,7 @@ export const LayoutRoomPreviewerView: FC<{
 
             roomPreviewer.modifyRoomCanvas(width, height);
 
-            update(GetTicker());
+            paintToDOM();
         });
 
         roomPreviewer.getRoomCanvas(width, height);

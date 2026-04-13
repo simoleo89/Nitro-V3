@@ -144,7 +144,11 @@ module.exports = {
         'grid-rows-11',
         'grid-rows-12',
         'justify-end',
-        'items-end'
+        'items-end',
+        'animate-pulse-glow',
+        'animate-pulse-glow-red',
+        'animate-drop-settle',
+        'animate-pulse-glow-gold'
     ],
     darkMode: 'class',
     variants: {

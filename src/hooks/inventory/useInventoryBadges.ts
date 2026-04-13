@@ -11,19 +11,31 @@ const useInventoryBadgesState = () =>
     const [ needsUpdate, setNeedsUpdate ] = useState(true);
     const [ badgeCodes, setBadgeCodes ] = useState<string[]>([]);
     const [ badgeIds, setBadgeIds ] = useState<Map<string, number>>(new Map<string, number>());
-    const [ activeBadgeCodes, setActiveBadgeCodes ] = useState<string[]>([]);
+    const [ activeBadgeCodes, setActiveBadgeCodes ] = useState<(string | null)[]>([]);
     const [ selectedBadgeCode, setSelectedBadgeCode ] = useState<string>(null);
     const { isVisible = false, activate = null, deactivate = null } = useSharedVisibility();
     const { isUnseen = null, resetCategory = null } = useInventoryUnseenTracker();
 
     const maxBadgeCount = GetConfigurationValue<number>('user.badges.max.slots', 5);
-    const localChangeRef = useRef(false);
-    const isWearingBadge = (badgeCode: string) => (activeBadgeCodes.indexOf(badgeCode) >= 0);
-    const canWearBadges = () => (activeBadgeCodes.length < maxBadgeCount);
+    const pendingUpdatesRef = useRef(0);
+    const isWearingBadge = (badgeCode: string) => activeBadgeCodes.some(code => code === badgeCode);
+    const canWearBadges = () => (activeBadgeCodes.filter(Boolean).length < maxBadgeCount);
 
-    const sendActiveBadges = (badges: string[]) =>
+    const toFixedSlots = (arr: (string | null)[]): (string | null)[] =>
     {
-        localChangeRef.current = true;
+        const seen = new Set<string>();
+        return Array.from({ length: maxBadgeCount }, (_, i) =>
+        {
+            const code = arr[i] || null;
+            if(!code || seen.has(code)) return null;
+            seen.add(code);
+            return code;
+        });
+    };
+
+    const sendActiveBadges = (badges: (string | null)[]) =>
+    {
+        pendingUpdatesRef.current++;
         const composer = new SetActivatedBadgesComposer();
         for(let i = 0; i < maxBadgeCount; i++) composer.addActivatedBadge(badges[i] ?? '');
         SendMessageComposer(composer);
@@ -33,24 +45,23 @@ const useInventoryBadgesState = () =>
     {
         setActiveBadgeCodes(prevValue =>
         {
-            const newValue = [ ...prevValue ];
-
-            const index = newValue.indexOf(badgeCode);
+            const slots = toFixedSlots(prevValue);
+            const index = slots.indexOf(badgeCode);
 
             if(index === -1)
             {
-                if(newValue.length >= maxBadgeCount) return prevValue;
+                const emptySlot = slots.indexOf(null);
+                if(emptySlot === -1) return prevValue;
 
-                newValue.push(badgeCode);
+                slots[emptySlot] = badgeCode;
             }
             else
             {
-                newValue.splice(index, 1);
+                slots[index] = null;
             }
 
-            sendActiveBadges(newValue);
-
-            return newValue;
+            sendActiveBadges(slots);
+            return slots;
         });
     };
 
@@ -82,14 +93,15 @@ const useInventoryBadgesState = () =>
             return newValue;
         });
 
-        // Skip overwriting activeBadgeCodes if we recently made a local change
-        if(localChangeRef.current)
+        // Skip overwriting activeBadgeCodes if we have pending local changes
+        if(pendingUpdatesRef.current > 0)
         {
-            localChangeRef.current = false;
+            pendingUpdatesRef.current--;
         }
         else
         {
-            setActiveBadgeCodes(parser.getActiveBadgeCodes());
+            const serverBadges = parser.getActiveBadgeCodes();
+            setActiveBadgeCodes(toFixedSlots(serverBadges));
         }
 
         setBadgeCodes(allBadgeCodes);
@@ -159,8 +171,7 @@ const useInventoryBadgesState = () =>
     {
         setActiveBadgeCodes(prevValue =>
         {
-            // Build a fixed-size array of maxBadgeCount slots
-            const slots: (string | null)[] = Array.from({ length: maxBadgeCount }, (_, i) => prevValue[i] ?? null);
+            const slots = toFixedSlots(prevValue);
 
             // Remove badge if already in another slot
             const existingIndex = slots.indexOf(badgeCode);
@@ -169,11 +180,8 @@ const useInventoryBadgesState = () =>
             // Place badge at target slot
             slots[slotIndex] = badgeCode;
 
-            // Compact: remove nulls, keep order
-            const result = slots.filter(Boolean) as string[];
-
-            sendActiveBadges(result);
-            return result;
+            sendActiveBadges(slots);
+            return slots;
         });
     };
 
@@ -181,10 +189,14 @@ const useInventoryBadgesState = () =>
     {
         setActiveBadgeCodes(prevValue =>
         {
-            const result = prevValue.filter(code => code !== badgeCode);
+            const slots = toFixedSlots(prevValue);
+            const index = slots.indexOf(badgeCode);
+            if(index === -1) return prevValue;
 
-            sendActiveBadges(result);
-            return result;
+            slots[index] = null;
+
+            sendActiveBadges(slots);
+            return slots;
         });
     };
 
@@ -193,14 +205,14 @@ const useInventoryBadgesState = () =>
         setActiveBadgeCodes(prevValue =>
         {
             if(fromIndex === toIndex) return prevValue;
-            if(fromIndex >= prevValue.length) return prevValue;
 
-            const newValue = [ ...prevValue ];
-            const [ moved ] = newValue.splice(fromIndex, 1);
-            newValue.splice(toIndex, 0, moved);
+            const slots = toFixedSlots(prevValue);
+            const temp = slots[fromIndex];
+            slots[fromIndex] = slots[toIndex];
+            slots[toIndex] = temp;
 
-            sendActiveBadges(newValue);
-            return newValue;
+            sendActiveBadges(slots);
+            return slots;
         });
     };
 
@@ -210,19 +222,13 @@ const useInventoryBadgesState = () =>
         {
             if(fromIndex === toIndex) return prevValue;
 
-            // Build fixed-size array so swap works even with empty slots
-            const slots: (string | null)[] = Array.from({ length: maxBadgeCount }, (_, i) => prevValue[i] ?? null);
-
-            // Swap the two slots
+            const slots = toFixedSlots(prevValue);
             const temp = slots[fromIndex];
             slots[fromIndex] = slots[toIndex];
             slots[toIndex] = temp;
 
-            // Compact: remove nulls, keep order
-            const result = slots.filter(Boolean) as string[];
-
-            sendActiveBadges(result);
-            return result;
+            sendActiveBadges(slots);
+            return slots;
         });
     };
 

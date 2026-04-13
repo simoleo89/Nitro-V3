@@ -2,6 +2,33 @@
 
 @config "../../tailwind.config.js";
 
+@theme {
+    --animate-pulse-glow: pulseGlow 1.2s ease-in-out infinite;
+    --animate-pulse-glow-red: pulseGlowRed 1.2s ease-in-out infinite;
+    --animate-drop-settle: dropSettle 0.3s ease-out;
+    --animate-pulse-glow-gold: pulseGlowGold 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 6px rgba(59, 130, 246, 0.3); }
+    50%      { box-shadow: 0 0 14px rgba(59, 130, 246, 0.6); }
+}
+
+@keyframes pulseGlowRed {
+    0%, 100% { box-shadow: 0 0 6px rgba(239, 68, 68, 0.3); }
+    50%      { box-shadow: 0 0 14px rgba(239, 68, 68, 0.6); }
+}
+
+@keyframes dropSettle {
+    0%   { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulseGlowGold {
+    0%, 100% { box-shadow: 0 0 6px rgba(255, 193, 7, 0.4); }
+    50%      { box-shadow: 0 0 14px rgba(255, 193, 7, 0.7); }
+}
+
 @font-face {
     font-family: Ubuntu;
     src: url("@/assets/webfonts/Ubuntu-C.ttf");

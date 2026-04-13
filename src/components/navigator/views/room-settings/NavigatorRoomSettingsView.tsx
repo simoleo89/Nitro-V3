@@ -7,6 +7,7 @@ import { NavigatorRoomSettingsAccessTabView } from './NavigatorRoomSettingsAcces
 import { NavigatorRoomSettingsBasicTabView } from './NavigatorRoomSettingsBasicTabView';
 import { NavigatorRoomSettingsModTabView } from './NavigatorRoomSettingsModTabView';
 import { NavigatorRoomSettingsRightsTabView } from './NavigatorRoomSettingsRightsTabView';
+import { NavigatorRoomSettingsMiscTabView } from './NavigatorRoomSettingsMiscTabView';
 import { NavigatorRoomSettingsVipChatTabView } from './NavigatorRoomSettingsVipChatTabView';
 
 const TABS: string[] = [
@@ -14,7 +15,8 @@ const TABS: string[] = [
     'navigator.roomsettings.tab.2',
     'navigator.roomsettings.tab.3',
     'navigator.roomsettings.tab.4',
-    'navigator.roomsettings.tab.5'
+    'navigator.roomsettings.tab.5',
+    'product.type.other'
 ];
 
 export const NavigatorRoomSettingsView: FC<{}> = props =>
@@ -205,6 +207,8 @@ export const NavigatorRoomSettingsView: FC<{}> = props =>
                     <NavigatorRoomSettingsVipChatTabView handleChange={ handleChange } roomData={ roomData } /> }
                 { (currentTab === TABS[4]) &&
                     <NavigatorRoomSettingsModTabView handleChange={ handleChange } roomData={ roomData } /> }
+                { (currentTab === TABS[5]) &&
+                    <NavigatorRoomSettingsMiscTabView roomData={ roomData } /> }
             </NitroCardContentView>
         </NitroCardView>
     );

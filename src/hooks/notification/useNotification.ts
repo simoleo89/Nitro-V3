@@ -1,4 +1,4 @@
-import { AchievementNotificationMessageEvent, ActivityPointNotificationMessageEvent, ClubGiftNotificationEvent, ClubGiftSelectedEvent, ConnectionErrorEvent, GetLocalizationManager, GetRoomEngine, GetSessionDataManager, HabboBroadcastMessageEvent, HotelClosedAndOpensEvent, HotelClosesAndWillOpenAtEvent, HotelWillCloseInMinutesEvent, InfoFeedEnableMessageEvent, MaintenanceStatusMessageEvent, ModeratorCautionEvent, ModeratorMessageEvent, MOTDNotificationEvent, NotificationDialogMessageEvent, PetLevelNotificationEvent, PetReceivedMessageEvent, RespectReceivedEvent, RoomEnterEffect, RoomEnterEvent, SimpleAlertMessageEvent, UserBannedMessageEvent, Vector3d, WiredRewardResultMessageEvent } from '@nitrots/nitro-renderer';
+import { AchievementNotificationMessageEvent, ActivityPointNotificationMessageEvent, BadgeReceivedEvent, ClubGiftNotificationEvent, ClubGiftSelectedEvent, ConnectionErrorEvent, GetLocalizationManager, GetRoomEngine, GetSessionDataManager, HabboBroadcastMessageEvent, HotelClosedAndOpensEvent, HotelClosesAndWillOpenAtEvent, HotelWillCloseInMinutesEvent, InfoFeedEnableMessageEvent, MaintenanceStatusMessageEvent, ModeratorCautionEvent, ModeratorMessageEvent, MOTDNotificationEvent, NotificationDialogMessageEvent, PetLevelNotificationEvent, PetReceivedMessageEvent, RespectReceivedEvent, RoomEnterEffect, RoomEnterEvent, SimpleAlertMessageEvent, UserBannedMessageEvent, Vector3d, WiredRewardResultMessageEvent } from '@nitrots/nitro-renderer';
 import { useCallback, useState } from 'react';
 import { useBetween } from 'use-between';
 import { GetConfigurationValue, LocalizeBadgeName, LocalizeText, NotificationAlertItem, NotificationAlertType, NotificationBubbleItem, NotificationBubbleType, NotificationConfirmItem, PlaySound, ProductImageUtility, TradingNotificationType } from '../../api';
@@ -14,6 +14,7 @@ const getTimeZeroPadded = (time: number) =>
 };
 
 let modDisclaimerTimeout: ReturnType<typeof setTimeout> = null;
+const recentBadgeNotifications = new Set<string>();
 
 const useNotificationState = () =>
 {
@@ -67,11 +68,11 @@ const useNotificationState = () =>
 
     const showNitroAlert = useCallback(() => simpleAlert(null, NotificationAlertType.NITRO), [ simpleAlert ]);
 
-    const showSingleBubble = useCallback((message: string, type: string, imageUrl: string = null, internalLink: string = null) =>
+    const showSingleBubble = useCallback((message: string, type: string, imageUrl: string = null, internalLink: string = null, senderName: string = '') =>
     {
         if(bubblesDisabled) return;
 
-        const notificationItem = new NotificationBubbleItem(message, type, imageUrl, internalLink);
+        const notificationItem = new NotificationBubbleItem(message, type, imageUrl, internalLink, senderName);
 
         setBubbleAlerts(prevValue =>
         {
@@ -219,12 +220,36 @@ const useNotificationState = () =>
     {
         const parser = event.getParser();
 
-        const text1 = LocalizeText('achievements.levelup.desc');
+        // Skip if BadgeReceivedEvent already showed a notification for this badge
+        if(recentBadgeNotifications.has(parser.data.badgeCode)) return;
+
+        recentBadgeNotifications.add(parser.data.badgeCode);
+        setTimeout(() => recentBadgeNotifications.delete(parser.data.badgeCode), 3000);
+
         const badgeName = LocalizeBadgeName(parser.data.badgeCode);
         const badgeImage = GetSessionDataManager().getBadgeUrl(parser.data.badgeCode);
-        const internalLink = 'questengine/achievements/' + parser.data.category;
 
-        showSingleBubble((text1 + ' ' + badgeName), NotificationBubbleType.ACHIEVEMENT, badgeImage, internalLink);
+        showSingleBubble(badgeName, NotificationBubbleType.BADGE_RECEIVED, badgeImage, parser.data.badgeCode);
+    });
+
+    useMessageEvent<BadgeReceivedEvent>(BadgeReceivedEvent, event =>
+    {
+        const parser = event.getParser();
+
+        // Skip if AchievementNotificationMessageEvent already showed a notification for this badge
+        if(recentBadgeNotifications.has(parser.badgeCode)) return;
+
+        recentBadgeNotifications.add(parser.badgeCode);
+        setTimeout(() => recentBadgeNotifications.delete(parser.badgeCode), 3000);
+
+        const badgeName = LocalizeBadgeName(parser.badgeCode);
+        const badgeImage = GetSessionDataManager().getBadgeUrl(parser.badgeCode);
+        // senderName is non-empty only when a staff member awarded the badge
+        // via the `:badge` command. Empty for achievements, catalog buys,
+        // wired rewards, poll rewards, etc.
+        const senderName = parser.senderName || '';
+
+        showSingleBubble(badgeName, NotificationBubbleType.BADGE_RECEIVED, badgeImage, parser.badgeCode, senderName);
     });
 
     useMessageEvent<ClubGiftNotificationEvent>(ClubGiftNotificationEvent, event =>
@@ -344,6 +369,9 @@ const useNotificationState = () =>
     useMessageEvent<NotificationDialogMessageEvent>(NotificationDialogMessageEvent, event =>
     {
         const parser = event.getParser();
+
+        // Skip badge notifications — handled by BadgeReceivedEvent with "Wear" button
+        if(parser.type === 'badge_received' || parser.type === 'badges' || parser.type.includes('badge')) return;
 
         showNotification(parser.type, parser.parameters);
     });

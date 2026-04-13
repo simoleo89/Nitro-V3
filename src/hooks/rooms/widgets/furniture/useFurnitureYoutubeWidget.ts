@@ -127,7 +127,7 @@ const useFurnitureYoutubeWidgetState = () =>
         onClose();
     });
 
-    return { objectId, videoId, videoStart, videoEnd, currentVideoState, selectedVideo, playlists, onClose, previous, next, pause, play, selectVideo };
+    return { objectId, videoId, videoStart, videoEnd, currentVideoState, selectedVideo, playlists, hasControl, onClose, previous, next, pause, play, selectVideo };
 };
 
 export const useFurnitureYoutubeWidget = useFurnitureYoutubeWidgetState;

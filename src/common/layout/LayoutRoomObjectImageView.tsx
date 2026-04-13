@@ -1,5 +1,5 @@
 import { GetRoomEngine, TextureUtils, Vector3d } from '@nitrots/nitro-renderer';
-import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FC, useEffect, useMemo, useRef, useState } from 'react';
 import { Base, BaseProps } from '../Base';
 
 interface LayoutRoomObjectImageViewProps extends BaseProps<HTMLDivElement>
@@ -15,6 +15,14 @@ export const LayoutRoomObjectImageView: FC<LayoutRoomObjectImageViewProps> = pro
 {
     const { roomId = -1, objectId = 1, category = -1, direction = 2, scale = 1, style = {}, ...rest } = props;
     const [ imageElement, setImageElement ] = useState<HTMLImageElement>(null);
+    const isMounted = useRef(true);
+
+    useEffect(() =>
+    {
+        isMounted.current = true;
+
+        return () => { isMounted.current = false; };
+    }, []);
 
     const getStyle = useMemo(() =>
     {
@@ -42,15 +50,23 @@ export const LayoutRoomObjectImageView: FC<LayoutRoomObjectImageViewProps> = pro
     useEffect(() =>
     {
         const imageResult = GetRoomEngine().getRoomObjectImage(roomId, objectId, category, new Vector3d(direction * 45), 64, {
-            imageReady: async (id, texture, image) => setImageElement(await TextureUtils.generateImage(texture)),
+            imageReady: async (id, texture, image) =>
+            {
+                const img = await TextureUtils.generateImage(texture);
+
+                if(img && isMounted.current) setImageElement(img);
+            },
             imageFailed: null
         });
 
-        // needs (roomObjectImage.data.width > 140) || (roomObjectImage.data.height > 200) scale 1
-
         if(!imageResult) return;
 
-        (async () => setImageElement(await TextureUtils.generateImage(imageResult.data)))();
+        (async () =>
+        {
+            const img = await TextureUtils.generateImage(imageResult.data);
+
+            if(img && isMounted.current) setImageElement(img);
+        })();
     }, [ roomId, objectId, category, direction, scale ]);
 
     if(!imageElement) return null;

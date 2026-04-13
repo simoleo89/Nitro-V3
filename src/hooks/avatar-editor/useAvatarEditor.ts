@@ -1,7 +1,7 @@
 import { AvatarEditorFigureCategory, AvatarFigureContainer, AvatarFigurePartType, FigureSetIdsMessageEvent, GetAvatarRenderManager, GetSessionDataManager, GetWardrobeMessageComposer, IAvatarFigureContainer, IFigurePartSet, IPalette, IPartColor, SetType, UserWardrobePageEvent } from '@nitrots/nitro-renderer';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useBetween } from 'use-between';
-import { AvatarEditorColorSorter, AvatarEditorPartSorter, AvatarEditorThumbnailsHelper, GetClubMemberLevel, GetConfigurationValue, IAvatarEditorCategory, IAvatarEditorCategoryPartItem, Randomizer, SendMessageComposer } from '../../api';
+import { AvatarEditorColorSorter, AvatarEditorPartSorter, GetClubMemberLevel, GetConfigurationValue, IAvatarEditorCategory, IAvatarEditorCategoryPartItem, Randomizer, SendMessageComposer } from '../../api';
 import { useMessageEvent } from '../events';
 import { useFigureData } from './useFigureData';
 
@@ -243,11 +243,6 @@ const useAvatarEditorState = () =>
 
         setSavedFigures(savedFigures);
     });
-
-    useEffect(() =>
-    {
-        AvatarEditorThumbnailsHelper.clearCache();
-    }, [ selectedColorParts ]);
 
     useEffect(() =>
     {

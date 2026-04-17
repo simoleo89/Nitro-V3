@@ -23,4 +23,5 @@ export interface IPurchasableOffer
     isLazy: boolean;
     products: IProduct[];
     itemIds: string;
+    haveOffer: boolean;
 }

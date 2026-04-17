@@ -61,7 +61,7 @@ export const CatalogAdminOfferEditView: FC<{}> = () =>
             setAmount(editingOffer.product?.productCount || 1);
             setClubOnly(editingOffer.clubLevel > 0 ? '1' : '0');
             setExtradata(editingOffer.product?.extraParam || '');
-            setHaveOffer('1');
+            setHaveOffer(editingOffer.haveOffer ? '1' : '0');
             setOfferIdGroup(editingOffer.offerId || -1);
             setLimitedStack(0);
             setOrderNumber(0);

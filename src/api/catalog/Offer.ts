@@ -31,8 +31,9 @@ export class Offer implements IPurchasableOffer
     private _badgeCode: string;
     private _bundlePurchaseAllowed: boolean = false;
     private _itemIds: string = '';
+    private _haveOffer: boolean = false;
 
-    constructor(offerId: number, localizationId: string, isRentOffer: boolean, priceInCredits: number, priceInActivityPoints: number, activityPointType: number, giftable: boolean, clubLevel: number, products: IProduct[], bundlePurchaseAllowed: boolean, itemIds: string = '')
+    constructor(offerId: number, localizationId: string, isRentOffer: boolean, priceInCredits: number, priceInActivityPoints: number, activityPointType: number, giftable: boolean, clubLevel: number, products: IProduct[], bundlePurchaseAllowed: boolean, itemIds: string = '', haveOffer: boolean = false)
     {
         this._offerId = offerId;
         this._localizationId = localizationId;
@@ -45,6 +46,7 @@ export class Offer implements IPurchasableOffer
         this._products = products;
         this._bundlePurchaseAllowed = bundlePurchaseAllowed;
         this._itemIds = itemIds || '';
+        this._haveOffer = haveOffer;
 
         this.setPricingModelForProducts();
         this.setPricingType();
@@ -181,6 +183,11 @@ export class Offer implements IPurchasableOffer
         return this._itemIds;
     }
 
+    public get haveOffer(): boolean
+    {
+        return this._haveOffer;
+    }
+
     private setPricingModelForProducts(): void
     {
         const products = Product.stripAddonProducts(this._products);
@@ -243,7 +250,7 @@ export class Offer implements IPurchasableOffer
             products.push(new Product(product.productType, product.productClassId, product.extraParam, product.productCount, productData, furnitureData));
         }
 
-        const offer = new Offer(this.offerId, this.localizationId, this.isRentOffer, this.priceInCredits, this.priceInActivityPoints, this.activityPointType, this.giftable, this.clubLevel, products, this.bundlePurchaseAllowed, this.itemIds);
+        const offer = new Offer(this.offerId, this.localizationId, this.isRentOffer, this.priceInCredits, this.priceInActivityPoints, this.activityPointType, this.giftable, this.clubLevel, products, this.bundlePurchaseAllowed, this.itemIds, this.haveOffer);
 
         offer.page = this.page;
 

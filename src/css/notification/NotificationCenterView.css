@@ -19,7 +19,7 @@
             min-width: auto;
         }
     }
-	
+
 	&.nitro-alert-credits {
         width: 370px;
         .notification-text {
@@ -32,6 +32,19 @@
         width: 250px;
         .notification-text {
             min-width: 225px;
+        }
+    }
+
+    &.nitro-alert-system {
+        width: auto;
+        min-width: 260px;
+        max-width: 90vw;
+        min-height: auto;
+        max-height: none;
+        height: auto;
+
+        .notification-text {
+            min-width: auto;
         }
     }
 }

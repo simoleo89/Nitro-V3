@@ -1,0 +1,261 @@
+/* ─── Classic Login View ─────────────────────────────────────────────────
+   Port of the old Nitro HotelView background layering, used exclusively by
+   the login screen. Assets are driven by ui-config.json:
+     loginview.images.background        → .login-background
+     loginview.images.background.colour → .nitro-login-view base colour
+     loginview.images.sun               → .login-sun
+     loginview.images.drape             → .login-drape
+     loginview.images.left              → .login-left
+     loginview.images.right             → .login-right
+     loginview.images.right.repeat      → .login-right-repeat
+
+   Class names are deliberately prefixed so HotelView.css rules
+   (.left { left: 18vw !important } etc.) cannot clobber us.
+   --------------------------------------------------------------------- */
+
+.nitro-login-view {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #6eadc8;
+    z-index: 100;
+}
+
+.nitro-login-view .login-layer {
+    position: absolute;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+
+.nitro-login-view .login-background {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: repeat-x;
+    background-position: center top;
+}
+
+.nitro-login-view .login-sun {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background-size: contain;
+    background-position: center top;
+}
+
+.nitro-login-view .login-drape {
+    top: 0;
+    left: 0;
+    width: 190px;
+    height: 220px;
+    z-index: 3;
+}
+
+.nitro-login-view .login-left {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-position: left bottom;
+    background-size: auto;
+    background-repeat: no-repeat;
+}
+
+.nitro-login-view .login-right-repeat {
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100%;
+    background-repeat: repeat-y;
+    background-position: right top;
+}
+
+.nitro-login-view .login-right {
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    height: 100%;
+    background-position: right bottom;
+}
+
+/* ─── Foreground Login Card Stack ───────────────────────────────────── */
+
+.nitro-login-view .login-stack {
+    position: absolute;
+    top: 50%;
+    right: 8vw;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 260px;
+    z-index: 50;
+    pointer-events: auto;
+}
+
+.nitro-login-card {
+    background: #a2bfd1;
+    border: 2px solid #3f6a85;
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #0a2e45;
+    font-family: Ubuntu, 'Helvetica Neue', Arial, sans-serif;
+    box-shadow: inset 0 2px rgba(255, 255, 255, 0.35), 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+.nitro-login-card .card-title {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #ffffff;
+    background: #3f6a85;
+    padding: 4px 26px;
+    margin: -12px -14px 10px -14px;
+    border-radius: 6px 6px 0 0;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.nitro-login-card .card-title .nitro-card-close-button {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.nitro-login-card .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.nitro-login-card .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nitro-login-card .field label {
+    font-size: 11px;
+    color: #0a2e45;
+    font-weight: 600;
+}
+
+.nitro-login-card .field input {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 20px;
+    border: 1px solid #7595ac;
+    background: #ffffff;
+    color: #0a2e45;
+    font-size: 12px;
+    outline: none;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nitro-login-card .field input:focus {
+    border-color: #3f6a85;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(63, 106, 133, 0.3);
+}
+
+.nitro-login-card .submit-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.nitro-login-card button.ok-button {
+    cursor: pointer;
+    background: #ffffff;
+    border: 1px solid #3f6a85;
+    border-radius: 4px;
+    padding: 3px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0a2e45;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.8), 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.nitro-login-card button.ok-button:hover {
+    background: #e9f1f7;
+}
+
+.nitro-login-card button.ok-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.nitro-login-card .forgot {
+    display: block;
+    text-align: center;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #134b6e;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.nitro-login-card .error-line {
+    color: #a81a12;
+    background: #fde6e4;
+    border: 1px solid #e0a7a2;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 11px;
+    text-align: center;
+}
+
+.nitro-login-card .info-line {
+    color: #0a4d2e;
+    background: #e5f5ec;
+    border: 1px solid #a4d4b8;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 11px;
+    text-align: center;
+}
+
+.nitro-login-card .register-card-body a {
+    color: #134b6e;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.nitro-login-card .turnstile-slot {
+    display: flex;
+    justify-content: center;
+    margin-top: 4px;
+    min-height: 65px;
+}
+
+.nitro-login-card .turnstile-slot iframe {
+    max-width: 100%;
+}
+
+/* Modal overlay used for register + forgot password dialogs */
+
+.nitro-login-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.nitro-login-modal .dialog {
+    width: 320px;
+    max-width: calc(100% - 40px);
+}
+

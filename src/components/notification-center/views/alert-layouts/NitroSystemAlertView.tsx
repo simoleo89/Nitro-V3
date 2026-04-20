@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { GetRendererVersion, GetUIVersion, NotificationAlertItem } from '../../../../api';
+import { GetConfigurationValue, GetRendererVersion, GetUIVersion, NotificationAlertItem } from '../../../../api';
 import { Button, Column, Grid, LayoutNotificationAlertView, LayoutNotificationAlertViewProps, Text } from '../../../../common';
 
 interface NotificationDefaultAlertViewProps extends LayoutNotificationAlertViewProps
@@ -9,10 +9,11 @@ interface NotificationDefaultAlertViewProps extends LayoutNotificationAlertViewP
 
 export const NitroSystemAlertView: FC<NotificationDefaultAlertViewProps> = props =>
 {
-    const { title = 'Nitro', onClose = null, ...rest } = props;
+    const { title = 'Nitro', onClose = null, classNames = [], ...rest } = props;
+    const adsEnabled = GetConfigurationValue<boolean>('show.google.ads', false);
 
     return (
-        <LayoutNotificationAlertView title={ title } onClose={ onClose } { ...rest }>
+        <LayoutNotificationAlertView title={ title } onClose={ onClose } classNames={ [ 'nitro-alert-system', ...classNames ] } { ...rest }>
             <Grid>
                 <Column size={ 12 }>
                     <Column alignItems="center" gap={ 0 }>
@@ -23,6 +24,8 @@ export const NitroSystemAlertView: FC<NotificationDefaultAlertViewProps> = props
                         <Text><b>Renderer:</b> v{ GetRendererVersion() }</Text>
                         <Column fullWidth gap={ 1 }>
                             <Button fullWidth variant="success" onClick={ event => window.open('https://discord.nitrodev.co') }>Discord</Button>
+                            { adsEnabled &&
+                                <Button fullWidth onClick={ () => window.dispatchEvent(new CustomEvent('ads:toggle')) }>Show Ad</Button> }
                         </Column>
                     </Column>
 					<div className="alertView_nitro-coolui-logo"></div>
@@ -35,7 +38,7 @@ export const NitroSystemAlertView: FC<NotificationDefaultAlertViewProps> = props
 						</Column>
 					</Column>
                 </Column>
-			
+
             </Grid>
         </LayoutNotificationAlertView>
     );

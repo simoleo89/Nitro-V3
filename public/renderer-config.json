@@ -39,6 +39,13 @@
 	"room.color.skip.transition": true,
 	"room.landscapes.enabled": true,
 	"room.zoom.enabled": true,
+	"login.screen.enabled": false,
+    "login.endpoint": "https://websocket.yourdomain.com/api/auth/login",
+    "login.register.endpoint": "https://websocket.yourdomain.com/api/auth/register",
+    "login.forgot.endpoint": "https://websocket.yourdomain.com/api/auth/forgot-password",
+    "login.logout.endpoint": "https://websocket.yourdomain.com/api/auth/logout",
+    "login.turnstile.enabled": false,
+    "login.turnstile.sitekey": "",
 	"avatar.mandatory.libraries": [
 		"bd:1",
 		"li:0"

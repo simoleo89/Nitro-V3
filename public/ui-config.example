@@ -27,6 +27,17 @@
     "guides.enabled": true,
     "toolbar.hide.quests": true,
     "catalog.style.new": true,
+	"loginview": {
+        "images": {
+            "background": "${asset.url}/c_images/reception/stretch_blue.png",
+            "background.colour": "#6eadc8",
+            "sun": "${asset.url}/c_images/reception/sun.png",
+            "drape": "${asset.url}/c_images/reception/drape.png",
+            "left": "${asset.url}/c_images/reception/ts.png",
+            "right": "${asset.url}/c_images/reception/US_right.png",
+            "right.repeat": "${asset.url}/c_images/reception/US_top_right.png"
+        }
+    },
     "navigator.room.models": [
         {
             "clubLevel": 0,

@@ -3,6 +3,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { GetUIVersion } from './api';
 import { Base } from './common';
 import { LoadingView } from './components/loading/LoadingView';
+import { LoginView } from './components/login/LoginView';
 import { MainView } from './components/MainView';
 import { ReconnectView } from './components/reconnect/ReconnectView';
 import { useMessageEvent, useNitroEvent } from './hooks';
@@ -14,12 +15,24 @@ export const App: FC<{}> = props =>
     const [ isReady, setIsReady ] = useState(false);
     const [ errorMessage, setErrorMessage ] = useState('');
     const [ homeUrl, setHomeUrl ] = useState('');
+    const [ showLogin, setShowLogin ] = useState(false);
+    const [ prepareTrigger, setPrepareTrigger ] = useState(0);
     const showSessionExpired = useCallback(() =>
     {
         const baseUrl = window.location.origin + '/';
         setHomeUrl(baseUrl);
         setErrorMessage('Your session has expired.\nPlease log in again to enter the hotel.');
         setIsReady(false);
+        setShowLogin(false);
+    }, []);
+
+    const handleAuthenticated = useCallback((ssoTicket: string) =>
+    {
+        if(!ssoTicket) return;
+        window.NitroConfig['sso.ticket'] = ssoTicket;
+        setShowLogin(false);
+        setErrorMessage('');
+        setPrepareTrigger(prev => prev + 1);
     }, []);
 
     // Listen for socket closed events (code 1000 "Bye" - server rejected SSO)
@@ -48,6 +61,36 @@ export const App: FC<{}> = props =>
 
                 if(!ssoTicket || ssoTicket === '')
                 {
+                    // Configuration is loaded lazily — fetch it up-front so the login
+                    // screen toggle and Turnstile keys are available before we decide.
+                    let configInitError: unknown = null;
+                    try { await GetConfiguration().init(); }
+                    catch(e) { configInitError = e; }
+
+                    const rawLoginEnabled = GetConfiguration().getValue<unknown>('login.screen.enabled', false);
+                    const loginScreenEnabled = rawLoginEnabled === true || rawLoginEnabled === 'true' || rawLoginEnabled === 1;
+
+                    if(configInitError)
+                    {
+                        NitroLogger.error('[LoginScreen] Failed to load renderer-config.json — cannot resolve login.screen.enabled', configInitError);
+                    }
+
+                    if(loginScreenEnabled)
+                    {
+                        setIsReady(false);
+                        setShowLogin(true);
+                        return;
+                    }
+
+                    if(configInitError)
+                    {
+                        setHomeUrl(window.location.origin + '/');
+                        setErrorMessage(`Unable to load renderer-config.json.\n${ String((configInitError as Error)?.message ?? configInitError) }`);
+                        setIsReady(false);
+                        setShowLogin(false);
+                        return;
+                    }
+
                     showSessionExpired();
                     return;
                 }
@@ -120,12 +163,13 @@ export const App: FC<{}> = props =>
         {
             if(heartbeatInterval !== null) window.clearInterval(heartbeatInterval);
         };
-    }, []);
+    }, [ prepareTrigger ]);
 
     return (
         <Base fit overflow="hidden" className={ !(window.devicePixelRatio % 1) && 'image-rendering-pixelated' }>
-            { !isReady &&
+            { !isReady && !showLogin &&
                 <LoadingView isError={ errorMessage.length > 0 } message={ errorMessage } homeUrl={ homeUrl } /> }
+            { !isReady && showLogin && <LoginView onAuthenticated={ handleAuthenticated } /> }
             { isReady && <MainView /> }
             <ReconnectView />
             <Base id="draggable-windows-container" />

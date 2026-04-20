@@ -1,6 +1,6 @@
 import { CreateLinkEvent, HabboClubLevelEnum } from '@nitrots/nitro-renderer';
-import { FC, useEffect, useMemo, useState } from 'react';
-import { FaChevronDown, FaQuestionCircle } from 'react-icons/fa';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FaChevronDown, FaQuestionCircle, FaSignOutAlt } from 'react-icons/fa';
 import { FriendlyTime, GetConfigurationValue, LocalizeText } from '../../api';
 import { Column, Flex, LayoutCurrencyIcon, Text } from '../../common';
 import { usePurse } from '../../hooks';
@@ -58,6 +58,33 @@ export const PurseView: FC<{}> = props => {
         return () => window.clearTimeout(timeout);
     }, [ isOpen ]);
 
+    const handleLogout = useCallback(async (event: React.MouseEvent) =>
+    {
+        event.stopPropagation();
+
+        const logoutUrl = GetConfigurationValue<string>('login.logout.endpoint', '/api/auth/logout');
+        const ssoTicket = (window.NitroConfig?.['sso.ticket'] as string) ?? '';
+
+        try
+        {
+            await fetch(logoutUrl, {
+                method: 'POST',
+                credentials: 'include',
+                keepalive: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'NitroPurseLogout'
+                },
+                body: JSON.stringify({ ssoTicket })
+            });
+        }
+        catch { /* best-effort — proceed with local logout regardless */ }
+
+        if(window.NitroConfig) window.NitroConfig['sso.ticket'] = '';
+        window.location.reload();
+    }, []);
+
     if (!purse) return null;
 
     return (
@@ -96,6 +123,9 @@ export const PurseView: FC<{}> = props => {
                                     </button>
                                     <button type="button" className="nitro-purse__action-button nitro-purse__action-button--settings" onClick={ event => { event.stopPropagation(); CreateLinkEvent('user-settings/toggle'); } } title={ LocalizeText('widget.memenu.settings.title') }>
                                         <i className="nitro-icon icon-cog" />
+                                    </button>
+                                    <button type="button" className="nitro-purse__action-button nitro-purse__action-button--logout" onClick={ handleLogout } title="Log out">
+                                        <FaSignOutAlt />
                                     </button>
                                 </div>
                             </div>

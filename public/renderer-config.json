@@ -1,5 +1,6 @@
 {
 	"socket.url": "ws://localhost:2096",
+	"api.url": "http://localhost:2096",
 	"asset.url": "https://localhost/nitro/bundled",
 	"image.library.url": "https://localhost/c_images/",
 	"hof.furni.url": "https://localhost/c_images/dcr/hof_furni",
@@ -40,10 +41,10 @@
 	"room.landscapes.enabled": true,
 	"room.zoom.enabled": true,
 	"login.screen.enabled": false,
-    "login.endpoint": "${socket.url}/api/auth/login",
-    "login.register.endpoint": "${socket.url}/api/auth/register",
-    "login.forgot.endpoint": "${socket.url}/api/auth/forgot-password",
-    "login.logout.endpoint": "${socket.url}/api/auth/logout",
+    "login.endpoint": "${api.url}/api/auth/login",
+    "login.register.endpoint": "${api.url}/api/auth/register",
+    "login.forgot.endpoint": "${api.url}/api/auth/forgot-password",
+    "login.logout.endpoint": "${api.url}/api/auth/logout",
     "login.turnstile.enabled": false,
     "login.turnstile.sitekey": "",
 	"avatar.mandatory.libraries": [

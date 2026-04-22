@@ -14,8 +14,8 @@ const interpolate = (value: string | null | undefined): string =>
 
 const LOCK_KEY = 'nitro.login.lock';
 const MAX_ATTEMPTS = 5;
-const LOCK_WINDOW_MS = 60_000; // rolling 60s window
-const LOCK_DURATION_MS = 2 * 60_000; // 2 minute lockout
+const LOCK_WINDOW_MS = 60_000;
+const LOCK_DURATION_MS = 2 * 60_000;
 
 type AttemptState = { attempts: number; firstAt: number; lockedUntil: number };
 
@@ -33,7 +33,7 @@ const readLock = (): AttemptState =>
 const writeLock = (state: AttemptState) =>
 {
     try { sessionStorage.setItem(LOCK_KEY, JSON.stringify(state)); }
-    catch { /* ignore */ }
+    catch { }
 };
 
 export interface LoginViewProps
@@ -51,6 +51,8 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
     const [ submitting, setSubmitting ] = useState(false);
     const [ loginTurnstileToken, setLoginTurnstileToken ] = useState('');
     const [ loginTurnstileResetSignal, setLoginTurnstileResetSignal ] = useState(0);
+    const [ loginServerReachable, setLoginServerReachable ] = useState<boolean | null>(null);
+    const [ loginPingingServer, setLoginPingingServer ] = useState(false);
     const submitTimeRef = useRef(0);
 
     const loginImages: Record<string, string> = ((GetConfigurationValue<Record<string, unknown>>('loginview', {})?.['images']) as Record<string, string>) ?? {};
@@ -62,22 +64,6 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
     const left = interpolate(loginImages['left'] || GetConfigurationValue<string>('login_left', ''));
     const rightRepeat = interpolate(loginImages['right.repeat'] || GetConfigurationValue<string>('login_right.repeat', ''));
     const right = interpolate(loginImages['right'] || GetConfigurationValue<string>('login_right', ''));
-
-    useEffect(() =>
-    {
-        // eslint-disable-next-line no-console
-        console.info('[LoginView] resolved background assets', {
-            'asset.url':            GetConfigurationValue<string>('asset.url', ''),
-            login_background:       background,
-            'login_background.colour': backgroundColor,
-            login_sun:              sun,
-            login_drape:            drape,
-            login_left:             left,
-            login_right:            right,
-            'login_right.repeat':   rightRepeat
-        });
-    }, [ background, backgroundColor, sun, drape, left, right, rightRepeat ]);
-
     const loginUrl = GetConfigurationValue<string>('login.endpoint', '/api/auth/login');
     const registerUrl = GetConfigurationValue<string>('login.register.endpoint', '/api/auth/register');
     const forgotUrl = GetConfigurationValue<string>('login.forgot.endpoint', '/api/auth/forgot-password');
@@ -88,33 +74,18 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
         || rawTurnstileEnabled === 1
         || rawTurnstileEnabled === '1') && !!turnstileSiteKey;
 
-    useEffect(() =>
-    {
-        // eslint-disable-next-line no-console
-        console.info('[LoginView] turnstile config', {
-            rawTurnstileEnabled,
-            turnstileEnabled,
-            turnstileSiteKey: turnstileSiteKey ? (turnstileSiteKey.slice(0, 6) + '…') : '(empty)'
-        });
-    }, [ rawTurnstileEnabled, turnstileEnabled, turnstileSiteKey ]);
-
     const resetLoginTurnstile = useCallback(() =>
     {
         setLoginTurnstileToken('');
         setLoginTurnstileResetSignal(prev => prev + 1);
     }, []);
 
-    // Clear error on mode change but keep the success notification so users
-    // returning to the login form can read it (e.g. "Account created").
-    // Reset the login captcha only when we're actually on the login form.
     useEffect(() =>
     {
         setError(null);
         if(mode === 'login') resetLoginTurnstile();
     }, [ mode, resetLoginTurnstile ]);
 
-    // Auto-dismiss the info notification after a few seconds so it doesn't
-    // hang around forever once the user has seen it.
     useEffect(() =>
     {
         if(!info) return;
@@ -162,10 +133,64 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
 
         let payload: Record<string, unknown> = {};
         try { payload = await response.json(); }
-        catch { /* ignore non-json responses */ }
+        catch { }
 
         return { ok: response.ok, status: response.status, payload };
     }, []);
+
+    const healthUrl = GetConfigurationValue<string>('login.health.endpoint', '/api/health');
+    const healthMethodRaw = GetConfigurationValue<string>('login.health.method', 'GET');
+    const healthMethod = (healthMethodRaw || 'GET').toUpperCase();
+    const checkServerReachable = useCallback(async (): Promise<boolean> =>
+    {
+        if(!healthUrl) return true;
+        try
+        {
+            const controller = new AbortController();
+            const timer = window.setTimeout(() => controller.abort(), 5000);
+            try
+            {
+                const response = await fetch(healthUrl, { method: healthMethod, credentials: 'omit', signal: controller.signal });
+                if(response.status === 403) return false;
+                if(response.status >= 500) return false;
+                return true;
+            }
+            finally
+            {
+                window.clearTimeout(timer);
+            }
+        }
+        catch
+        {
+            return false;
+        }
+    }, [ healthUrl, healthMethod ]);
+
+    const pingLoginServer = useCallback(async () =>
+    {
+        setLoginPingingServer(true);
+        try
+        {
+            const ok = await checkServerReachable();
+            setLoginServerReachable(ok);
+            return ok;
+        }
+        finally
+        {
+            setLoginPingingServer(false);
+        }
+    }, [ checkServerReachable ]);
+
+    useEffect(() =>
+    {
+        let cancelled = false;
+        (async () =>
+        {
+            const ok = await checkServerReachable();
+            if(!cancelled) setLoginServerReachable(ok);
+        })();
+        return () => { cancelled = true; };
+    }, [ checkServerReachable ]);
 
     const handleLoginSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) =>
     {
@@ -202,6 +227,12 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
 
         try
         {
+            const serverOk = await pingLoginServer();
+            if(!serverOk)
+            {
+                setError('The gameserver is not running. Please try again later.');
+                return;
+            }
             const { ok, payload } = await postJson(loginUrl, {
                 username: username.trim(),
                 password,
@@ -232,14 +263,60 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
         {
             setSubmitting(false);
         }
-    }, [ submitting, username, password, turnstileEnabled, loginTurnstileToken, loginUrl, postJson, clearLock, recordFailure, onAuthenticated, resetLoginTurnstile ]);
+    }, [ submitting, username, password, turnstileEnabled, loginTurnstileToken, loginUrl, postJson, clearLock, recordFailure, onAuthenticated, resetLoginTurnstile, pingLoginServer ]);
 
-    // Register + forgot-password submit handlers receive the Turnstile token
-    // from the dialog (the dialog owns its own widget lifecycle), so the
-    // login widget underneath can't reset or overwrite it while the user
-    // is working on the modal.
+    const checkEmailUrl = GetConfigurationValue<string>('login.check-email.endpoint', '/api/auth/check-email');
+    const checkUsernameUrl = GetConfigurationValue<string>('login.check-username.endpoint', '/api/auth/check-username');
+    const imagingUrl = GetConfigurationValue<string>('login.register.imaging.url', 'https://www.habbo.com/habbo-imaging/avatarimage?figure={figure}&gender={gender}&direction=2&head_direction=2&size=l');
+    const interpretAvailability = (ok: boolean, status: number, payload: Record<string, unknown>): { available: boolean; error?: string } =>
+    {
+        const isTrue = (v: unknown) => v === true || v === 'true' || v === 1 || v === '1';
+        const isFalse = (v: unknown) => v === false || v === 'false' || v === 0 || v === '0';
 
-    const handleRegisterSubmit = useCallback(async (body: { username: string; email: string; password: string; turnstileToken: string; }, onDialogReset: () => void) =>
+        if(ok)
+        {
+            if(isTrue(payload.available) || isFalse(payload.exists) || isFalse(payload.taken) || isFalse(payload.inUse) || isFalse(payload.in_use)) return { available: true };
+            if(isFalse(payload.available) || isTrue(payload.exists) || isTrue(payload.taken) || isTrue(payload.inUse) || isTrue(payload.in_use)) return { available: false, error: typeof payload.error === 'string' ? payload.error : undefined };
+            return { available: true };
+        }
+
+        if(status === 404 || status === 405 || status === 501) return { available: true };
+        if(status === 409) return { available: false, error: typeof payload.error === 'string' ? payload.error : undefined };
+
+        return { available: true };
+    };
+
+    const checkEmailAvailable = useCallback(async (email: string): Promise<{ available: boolean; error?: string }> =>
+    {
+        try
+        {
+            const { ok, status, payload } = await postJson(checkEmailUrl, { email });
+            const result = interpretAvailability(ok, status, payload);
+            if(result.available) return { available: true };
+            return { available: false, error: result.error || 'This email is already in use.' };
+        }
+        catch
+        {
+            return { available: true };
+        }
+    }, [ checkEmailUrl, postJson ]);
+
+    const checkUsernameAvailable = useCallback(async (username: string): Promise<{ available: boolean; error?: string }> =>
+    {
+        try
+        {
+            const { ok, status, payload } = await postJson(checkUsernameUrl, { username });
+            const result = interpretAvailability(ok, status, payload);
+            if(result.available) return { available: true };
+            return { available: false, error: result.error || 'This Habbo name is already taken.' };
+        }
+        catch
+        {
+            return { available: true };
+        }
+    }, [ checkUsernameUrl, postJson ]);
+
+    const handleRegisterSubmit = useCallback(async (body: { username: string; email: string; password: string; figure: string; gender: string; turnstileToken: string; }, onDialogReset: () => void) =>
     {
         if(turnstileEnabled && !body.turnstileToken)
         {
@@ -257,6 +334,8 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
                 username: body.username,
                 email: body.email,
                 password: body.password,
+                figure: body.figure,
+                gender: body.gender,
                 turnstileToken: turnstileEnabled ? body.turnstileToken : undefined
             });
 
@@ -382,14 +461,22 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
                                 onError={ () => setLoginTurnstileToken('') }
                                 resetSignal={ loginTurnstileResetSignal }
                             /> }
+                        { loginServerReachable === false &&
+                            <div className="error-line server-offline">
+                                The gameserver isn't running right now. Please try again in a moment.
+                                <button type="button" className="retry-link" onClick={ pingLoginServer } disabled={ loginPingingServer }>
+                                    { loginPingingServer ? 'Checking…' : 'Retry' }
+                                </button>
+                            </div>
+                        }
                         { error && <div className="error-line">{ error }</div> }
                         { info && <div className="info-line">{ info }</div> }
                         <div className="submit-row">
                             <button
                                 type="submit"
                                 className="ok-button"
-                                disabled={ submitting || isLocked }
-                            >OK</button>
+                                disabled={ submitting || isLocked || loginServerReachable === false || loginPingingServer }
+                            >{ loginPingingServer ? 'Checking…' : 'OK' }</button>
                         </div>
                         <a className="forgot" onClick={ () => setMode('forgot') }>Forgotten your password?</a>
                     </form>
@@ -400,6 +487,10 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
                 <RegisterDialog
                     onCancel={ () => setMode('login') }
                     onSubmit={ handleRegisterSubmit }
+                    onCheckEmail={ checkEmailAvailable }
+                    onCheckUsername={ checkUsernameAvailable }
+                    onCheckServer={ checkServerReachable }
+                    imagingUrl={ imagingUrl }
                     submitting={ submitting }
                     error={ error }
                     info={ info }
@@ -433,19 +524,165 @@ interface DialogSharedProps
 
 interface RegisterDialogProps extends DialogSharedProps
 {
-    onSubmit: (body: { username: string; email: string; password: string; turnstileToken: string; }, onDialogReset: () => void) => void;
+    onSubmit: (body: { username: string; email: string; password: string; figure: string; gender: string; turnstileToken: string; }, onDialogReset: () => void) => void;
+    onCheckEmail: (email: string) => Promise<{ available: boolean; error?: string }>;
+    onCheckUsername: (username: string) => Promise<{ available: boolean; error?: string }>;
+    onCheckServer: () => Promise<boolean>;
+    imagingUrl: string;
 }
+
+type RegisterStep = 'credentials' | 'avatar';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type GenderKey = 'M' | 'F';
+
+const PART_ROWS: string[] = [ 'hr', 'hd', 'ch', 'lg', 'sh' ];
+
+const FALLBACK_DEFAULTS: Record<GenderKey, Record<string, { partId: number; colors: number[] }>> = {
+    M: {
+        hr: { partId: 180, colors: [ 45 ] },
+        hd: { partId: 180, colors: [ 1 ] },
+        ch: { partId: 215, colors: [ 66 ] },
+        lg: { partId: 270, colors: [ 82 ] },
+        sh: { partId: 290, colors: [ 80 ] }
+    },
+    F: {
+        hr: { partId: 515, colors: [ 45 ] },
+        hd: { partId: 600, colors: [ 1 ] },
+        ch: { partId: 660, colors: [ 100 ] },
+        lg: { partId: 716, colors: [ 82 ] },
+        sh: { partId: 725, colors: [ 61 ] }
+    }
+};
+
+const FALLBACK_HEX: Record<number, string> = {
+    1: '#ffcb98', 8: '#f4ac54', 14: '#f5da88', 19: '#b87560', 20: '#9c543f',
+    45: '#e8c498', 61: '#f1ece3', 66: '#96743d', 80: '#4f4d4d', 82: '#7f4f30',
+    92: '#ececec', 100: '#c7ddff', 106: '#c6e6bd', 110: '#91a7c8', 143: '#ffffff'
+};
+
+interface FigureColor { id: number; hexCode: string; club: number; selectable: boolean; }
+interface FigurePalette { id: number; colors: FigureColor[]; }
+interface FigureSet { id: number; gender: 'M' | 'F' | 'U'; club: number; selectable: boolean; }
+interface FigureSetType { type: string; paletteId: number; sets: FigureSet[]; }
+interface FigureData { palettes: FigurePalette[]; setTypes: FigureSetType[]; }
+
+interface PartSelection { partId: number; colors: number[]; }
+type FigureSelection = Record<string, PartSelection>;
+
+const buildFigureString = (selection: FigureSelection): string =>
+{
+    const seen = new Set<string>();
+    const parts: string[] = [];
+    const push = (setType: string) =>
+    {
+        if(seen.has(setType)) return;
+        seen.add(setType);
+        const sel = selection[setType];
+        if(!sel || sel.partId < 0) return;
+        const tail = (sel.colors && sel.colors.length) ? `-${ sel.colors.join('-') }` : '';
+        parts.push(`${ setType }-${ sel.partId }${ tail }`);
+    };
+    for(const setType of PART_ROWS) push(setType);
+    for(const setType of Object.keys(selection)) push(setType);
+    return parts.join('.');
+};
+
+const buildImagingUrl = (template: string, figure: string, gender: GenderKey): string =>
+    template
+        .replace(/\{figure\}/g, encodeURIComponent(figure))
+        .replace(/\{gender\}/g, gender)
+        .replace(/\{direction\}/g, '2');
+
+const HEAD_ONLY_PARTS = new Set([ 'hr', 'hd' ]);
+
+const buildPartPreviewUrl = (
+    template: string,
+    setType: string,
+    selection: FigureSelection,
+    gender: GenderKey
+): string =>
+{
+    const defaults = FALLBACK_DEFAULTS[gender];
+    const partSel = selection[setType] ?? defaults[setType];
+    const tail = (partSel.colors && partSel.colors.length) ? `-${ partSel.colors.join('-') }` : '';
+    const isHeadOnly = HEAD_ONLY_PARTS.has(setType);
+
+    let parts: string[];
+    if(isHeadOnly)
+    {
+        const hd = defaults.hd;
+        const pieces = new Map<string, string>();
+        pieces.set('hd', `hd-${ hd.partId }-${ hd.colors.join('-') }`);
+        pieces.set(setType, `${ setType }-${ partSel.partId }${ tail }`);
+        parts = Array.from(pieces.values());
+    }
+    else
+    {
+        const hd = defaults.hd;
+        parts = [
+            `hd-${ hd.partId }-${ hd.colors.join('-') }`,
+            `${ setType }-${ partSel.partId }${ tail }`
+        ];
+    }
+
+    const figure = parts.join('.');
+    let url = template
+        .replace(/\{figure\}/g, encodeURIComponent(figure))
+        .replace(/\{gender\}/g, gender)
+        .replace(/\{direction\}/g, '2');
+
+    url = url.replace(/size=l/, 'size=s').replace(/size=m/, 'size=s');
+    if(!/size=/.test(url)) url += (url.includes('?') ? '&' : '?') + 'size=s';
+    if(isHeadOnly && !/headonly=/.test(url)) url += '&headonly=1';
+
+    return url;
+};
 
 const RegisterDialog: FC<RegisterDialogProps> = props =>
 {
-    const { onCancel, onSubmit, submitting, error, info, turnstileEnabled, turnstileSiteKey } = props;
-    const [ username, setUsername ] = useState('');
+    const { onCancel, onSubmit, onCheckEmail, onCheckUsername, onCheckServer, imagingUrl, submitting, error, info, turnstileEnabled, turnstileSiteKey } = props;
+
+    const [ step, setStep ] = useState<RegisterStep>('credentials');
     const [ email, setEmail ] = useState('');
     const [ password, setPassword ] = useState('');
     const [ confirm, setConfirm ] = useState('');
+    const [ username, setUsername ] = useState('');
+    const [ gender, setGender ] = useState<GenderKey>('F');
+    const [ selection, setSelection ] = useState<FigureSelection>(() => ({ ...FALLBACK_DEFAULTS.F }));
     const [ localError, setLocalError ] = useState<string | null>(null);
+    const [ checking, setChecking ] = useState(false);
     const [ turnstileToken, setTurnstileToken ] = useState('');
     const [ resetSignal, setResetSignal ] = useState(0);
+    const [ serverReachable, setServerReachable ] = useState<boolean | null>(null);
+    const [ pingingServer, setPingingServer ] = useState(false);
+
+    const pingServer = useCallback(async () =>
+    {
+        setPingingServer(true);
+        try
+        {
+            const ok = await onCheckServer();
+            setServerReachable(ok);
+            return ok;
+        }
+        finally
+        {
+            setPingingServer(false);
+        }
+    }, [ onCheckServer ]);
+
+    useEffect(() =>
+    {
+        let cancelled = false;
+        (async () =>
+        {
+            const ok = await onCheckServer();
+            if(!cancelled) setServerReachable(ok);
+        })();
+        return () => { cancelled = true; };
+    }, [ onCheckServer ]);
 
     const resetWidget = useCallback(() =>
     {
@@ -453,81 +690,456 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
         setResetSignal(prev => prev + 1);
     }, []);
 
-    const handle = (event: FormEvent<HTMLFormElement>) =>
+    useEffect(() => { setLocalError(null); }, [ step ]);
+
+    const [ figureData, setFigureData ] = useState<FigureData | null>(null);
+    const figureDataUrlRaw = GetConfigurationValue<string>('avatar.figuredata.url', '');
+    const figureDataUrl = useMemo(() =>
+    {
+        if(!figureDataUrlRaw) return '';
+        try { return GetConfiguration().interpolate(figureDataUrlRaw); }
+        catch { return figureDataUrlRaw; }
+    }, [ figureDataUrlRaw ]);
+
+    useEffect(() =>
+    {
+        if(step !== 'avatar' || figureData || !figureDataUrl) return;
+        let cancelled = false;
+        fetch(figureDataUrl, { credentials: 'omit' })
+            .then(r => r.ok ? r.json() : null)
+            .then(json => { if(!cancelled && json) setFigureData(json as FigureData); })
+            .catch(() => { });
+        return () => { cancelled = true; };
+    }, [ step, figureData, figureDataUrl ]);
+
+    const partOptions = useMemo(() =>
+    {
+        const result: Record<string, Record<GenderKey, number[]>> = {};
+        if(!figureData) return result;
+        for(const st of figureData.setTypes)
+        {
+            if(!PART_ROWS.includes(st.type)) continue;
+            const forGender = (g: GenderKey) => st.sets
+                .filter(s => s.selectable && s.club === 0 && (s.gender === g || s.gender === 'U'))
+                .map(s => s.id);
+            result[st.type] = { M: forGender('M'), F: forGender('F') };
+        }
+        return result;
+    }, [ figureData ]);
+
+    const paletteOptions = useMemo(() =>
+    {
+        const result: Record<string, { id: number; hex: string }[]> = {};
+        if(!figureData) return result;
+        for(const st of figureData.setTypes)
+        {
+            if(!PART_ROWS.includes(st.type)) continue;
+            const palette = figureData.palettes.find(p => p.id === st.paletteId);
+            if(!palette) { result[st.type] = []; continue; }
+            result[st.type] = palette.colors
+                .filter(c => c.selectable && c.club === 0)
+                .map(c => ({ id: c.id, hex: '#' + c.hexCode.toUpperCase() }));
+        }
+        return result;
+    }, [ figureData ]);
+
+    const hexFor = useCallback((setType: string, colorId: number): string =>
+    {
+        const list = paletteOptions[setType];
+        if(list)
+        {
+            const found = list.find(c => c.id === colorId);
+            if(found) return found.hex;
+        }
+        return FALLBACK_HEX[colorId] || '#c9c9c9';
+    }, [ paletteOptions ]);
+
+    const [ hotLooks, setHotLooks ] = useState<{ gender: GenderKey; figure: string }[]>([]);
+    const [ hotLookIndex, setHotLookIndex ] = useState(-1);
+
+    useEffect(() =>
+    {
+        if(step !== 'avatar' || hotLooks.length) return;
+        let cancelled = false;
+        fetch('hotlooks.json', { credentials: 'omit' })
+            .then(r => r.ok ? r.json() : null)
+            .then((json: unknown) =>
+            {
+                if(cancelled || !Array.isArray(json)) return;
+                const parsed: { gender: GenderKey; figure: string }[] = [];
+                for(const entry of json as Record<string, unknown>[])
+                {
+                    const rawGender = typeof entry._gender === 'string' ? entry._gender.toUpperCase() : '';
+                    const figure = typeof entry._figure === 'string' ? entry._figure : '';
+                    if((rawGender !== 'M' && rawGender !== 'F') || !figure) continue;
+                    parsed.push({ gender: rawGender as GenderKey, figure });
+                }
+                if(parsed.length) setHotLooks(parsed);
+            })
+            .catch(() => { });
+        return () => { cancelled = true; };
+    }, [ step, hotLooks.length ]);
+
+    const applyLook = useCallback((figure: string, lookGender: GenderKey) =>
+    {
+        const next: FigureSelection = {};
+        for(const setPart of figure.split('.'))
+        {
+            const bits = setPart.split('-');
+            if(bits.length < 2) continue;
+            const setType = bits[0];
+            const partId = parseInt(bits[1], 10);
+            if(!setType || Number.isNaN(partId)) continue;
+            const colors: number[] = [];
+            for(let i = 2; i < bits.length; i++)
+            {
+                const c = parseInt(bits[i], 10);
+                if(!Number.isNaN(c)) colors.push(c);
+            }
+            next[setType] = { partId, colors };
+        }
+
+        for(const setType of PART_ROWS)
+        {
+            if(!next[setType]) next[setType] = { ...FALLBACK_DEFAULTS[lookGender][setType] };
+        }
+        setGender(lookGender);
+        setSelection(next);
+    }, []);
+
+    const cycleHotLook = useCallback(() =>
+    {
+        if(!hotLooks.length) return;
+        const nextIdx = (hotLookIndex + 1) % hotLooks.length;
+        setHotLookIndex(nextIdx);
+        const look = hotLooks[nextIdx];
+        applyLook(look.figure, look.gender);
+    }, [ hotLooks, hotLookIndex, applyLook ]);
+
+    const credentialsValid =
+        EMAIL_REGEX.test(email.trim()) &&
+        password.length >= 8 &&
+        password === confirm;
+
+    const handleCredentialsNext = async (event: FormEvent<HTMLFormElement>) =>
     {
         event.preventDefault();
         setLocalError(null);
 
-        if(!username.trim() || !email.trim() || !password)
+        if(!email.trim() || !password || !confirm)
         {
             setLocalError('Please fill in every field.');
             return;
         }
-
+        if(!EMAIL_REGEX.test(email.trim()))
+        {
+            setLocalError('Please enter a valid email address.');
+            return;
+        }
         if(password.length < 8)
         {
             setLocalError('Your password must be at least 8 characters.');
             return;
         }
-
         if(password !== confirm)
         {
             setLocalError('Passwords do not match.');
             return;
         }
 
-        onSubmit({ username: username.trim(), email: email.trim(), password, turnstileToken }, resetWidget);
+        setChecking(true);
+        try
+        {
+            const serverOk = await pingServer();
+            if(!serverOk)
+            {
+                setLocalError('The gameserver is not running. Please try again later.');
+                return;
+            }
+            const result = await onCheckEmail(email.trim());
+            if(!result.available)
+            {
+                setLocalError(result.error || 'This email is already in use.');
+                return;
+            }
+            setStep('avatar');
+        }
+        finally
+        {
+            setChecking(false);
+        }
     };
+
+    const applyGender = (newGender: GenderKey) =>
+    {
+        setGender(newGender);
+        setSelection({ ...FALLBACK_DEFAULTS[newGender] });
+        setHotLookIndex(-1);
+    };
+
+    const getPartList = useCallback((setType: string): number[] =>
+    {
+        const loaded = partOptions[setType]?.[gender];
+        if(loaded && loaded.length) return loaded;
+        const fallback = FALLBACK_DEFAULTS[gender][setType]?.partId;
+        return fallback !== undefined ? [ fallback ] : [];
+    }, [ partOptions, gender ]);
+
+    const getColorList = useCallback((setType: string): number[] =>
+    {
+        const loaded = paletteOptions[setType];
+        if(loaded && loaded.length) return loaded.map(c => c.id);
+        const fallback = FALLBACK_DEFAULTS[gender][setType]?.colors?.[0];
+        return fallback !== undefined ? [ fallback ] : [];
+    }, [ paletteOptions, gender ]);
+
+    const cyclePart = (setType: string, direction: 1 | -1) =>
+    {
+        const options = getPartList(setType);
+        if(!options.length) return;
+        const current = selection[setType]?.partId ?? options[0];
+        const idx = options.indexOf(current);
+        const nextIdx = ((idx === -1 ? 0 : idx) + direction + options.length) % options.length;
+        const colors = getColorList(setType);
+        setSelection(prev => ({
+            ...prev,
+            [setType]: {
+                partId: options[nextIdx],
+                colors: prev[setType]?.colors ?? [ colors[0] ?? 0 ]
+            }
+        }));
+    };
+
+    const cycleColor = (setType: string, direction: 1 | -1) =>
+    {
+        const colors = getColorList(setType);
+        if(!colors.length) return;
+        const currentColor = selection[setType]?.colors?.[0] ?? colors[0];
+        const idx = colors.indexOf(currentColor);
+        const nextIdx = ((idx === -1 ? 0 : idx) + direction + colors.length) % colors.length;
+        const parts = getPartList(setType);
+        setSelection(prev => ({
+            ...prev,
+            [setType]: {
+                partId: prev[setType]?.partId ?? parts[0],
+                colors: [ colors[nextIdx] ]
+            }
+        }));
+    };
+
+    const figure = buildFigureString(selection);
+    const previewSrc = buildImagingUrl(imagingUrl, figure, gender);
+
+    const handleAvatarSubmit = async (event: FormEvent<HTMLFormElement>) =>
+    {
+        event.preventDefault();
+        setLocalError(null);
+
+        const trimmed = username.trim();
+        if(!trimmed)
+        {
+            setLocalError('Please choose a Habbo name.');
+            return;
+        }
+        if(trimmed.length < 3 || trimmed.length > 16)
+        {
+            setLocalError('Habbo name must be 3–16 characters.');
+            return;
+        }
+
+        if(turnstileEnabled && !turnstileToken)
+        {
+            setLocalError('Please complete the security check.');
+            return;
+        }
+
+        setChecking(true);
+        try
+        {
+            const serverOk = await pingServer();
+            if(!serverOk)
+            {
+                setLocalError('The gameserver is not running. Please try again later.');
+                return;
+            }
+            const result = await onCheckUsername(trimmed);
+            if(!result.available)
+            {
+                setLocalError(result.error || 'This Habbo name is already taken.');
+                return;
+            }
+        }
+        finally
+        {
+            setChecking(false);
+        }
+
+        onSubmit({
+            username: trimmed,
+            email: email.trim(),
+            password,
+            figure,
+            gender,
+            turnstileToken
+        }, resetWidget);
+    };
+
+    const busy = submitting || checking || pingingServer;
+    const serverOffline = serverReachable === false;
 
     return (
         <div className="nitro-login-modal">
-            <div className="dialog">
+            <div className={ `dialog ${ step === 'avatar' ? 'dialog-avatar' : '' }` }>
                 <div className="nitro-login-card">
                     <div className="card-title">
-                        <span>Create a Habbo</span>
+                        <span>Habbo Details</span>
                         <span className="nitro-card-close-button" role="button" aria-label="Close" onClick={ onCancel } />
                     </div>
-                    <form className="card-body" onSubmit={ handle } autoComplete="on">
-                        <div className="field">
-                            <label htmlFor="register-username">Habbo name</label>
-                            <input id="register-username" type="text" maxLength={ 32 } autoComplete="username"
-                                value={ username } onChange={ e => setUsername(e.target.value) } />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="register-email">Email</label>
-                            <input id="register-email" type="email" maxLength={ 120 } autoComplete="email"
-                                value={ email } onChange={ e => setEmail(e.target.value) } />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="register-password">Password</label>
-                            <input id="register-password" type="password" maxLength={ 128 } autoComplete="new-password"
-                                value={ password } onChange={ e => setPassword(e.target.value) } />
-                        </div>
-                        <div className="field">
-                            <label htmlFor="register-confirm">Confirm password</label>
-                            <input id="register-confirm" type="password" maxLength={ 128 } autoComplete="new-password"
-                                value={ confirm } onChange={ e => setConfirm(e.target.value) } />
-                        </div>
-                        { turnstileEnabled &&
-                            <TurnstileWidget
-                                siteKey={ turnstileSiteKey }
-                                size="compact"
-                                onToken={ setTurnstileToken }
-                                onExpire={ () => setTurnstileToken('') }
-                                onError={ () => setTurnstileToken('') }
-                                resetSignal={ resetSignal }
-                            /> }
-                        { (localError || error) && <div className="error-line">{ localError || error }</div> }
-                        { info && <div className="info-line">{ info }</div> }
-                        <div className="submit-row">
-                            <button type="submit" className="ok-button" disabled={ submitting }>Create account</button>
-                        </div>
-                    </form>
+
+                    { step === 'credentials' &&
+                        <form className="card-body" onSubmit={ handleCredentialsNext } autoComplete="on">
+                            <div className="register-intro">
+                                Let's create your account. Enter your email and pick a password — we'll check that email isn't already in use.
+                            </div>
+                            { serverOffline &&
+                                <div className="error-line server-offline">
+                                    The gameserver isn't running right now, so new accounts can't be created. Please try again in a moment.
+                                    <button type="button" className="retry-link" onClick={ pingServer } disabled={ pingingServer }>
+                                        { pingingServer ? 'Checking…' : 'Retry' }
+                                    </button>
+                                </div>
+                            }
+                            <div className="field">
+                                <label htmlFor="register-email">Email</label>
+                                <input id="register-email" type="email" maxLength={ 120 } autoComplete="email"
+                                    value={ email } onChange={ e => setEmail(e.target.value) } />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="register-password">Password</label>
+                                <input id="register-password" type="password" maxLength={ 128 } autoComplete="new-password"
+                                    value={ password } onChange={ e => setPassword(e.target.value) } />
+                            </div>
+                            <div className="field">
+                                <label htmlFor="register-confirm">Confirm password</label>
+                                <input id="register-confirm" type="password" maxLength={ 128 } autoComplete="new-password"
+                                    value={ confirm } onChange={ e => setConfirm(e.target.value) } />
+                            </div>
+                            { (localError || error) && <div className="error-line">{ localError || error }</div> }
+                            { info && <div className="info-line">{ info }</div> }
+                            <div className="step-footer">
+                                <span className="step-indicator">1/2</span>
+                                <button type="submit" className="ok-button" disabled={ !credentialsValid || busy || serverOffline }>
+                                    { checking || pingingServer ? 'Checking…' : 'Next' }
+                                </button>
+                            </div>
+                        </form>
+                    }
+
+                    { step === 'avatar' &&
+                        <form className="card-body" onSubmit={ handleAvatarSubmit } autoComplete="on">
+                            <div className="register-intro">
+                                Now it's time to make your own Habbo character! To make your own Habbo, please start by choosing your Habbo Name.
+                            </div>
+                            { serverOffline &&
+                                <div className="error-line server-offline">
+                                    The gameserver isn't running right now, so new accounts can't be created. Please try again in a moment.
+                                    <button type="button" className="retry-link" onClick={ pingServer } disabled={ pingingServer }>
+                                        { pingingServer ? 'Checking…' : 'Retry' }
+                                    </button>
+                                </div>
+                            }
+                            <div className="field">
+                                <input id="register-username" type="text" maxLength={ 16 } autoComplete="username" placeholder="HabboName"
+                                    value={ username } onChange={ e => setUsername(e.target.value) } />
+                            </div>
+
+                            <div className="gender-row">
+                                <label>
+                                    <input type="radio" name="register-gender" checked={ gender === 'F' } onChange={ () => applyGender('F') } />
+                                    <span>Girl</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="register-gender" checked={ gender === 'M' } onChange={ () => applyGender('M') } />
+                                    <span>Boy</span>
+                                </label>
+                            </div>
+
+                            <div className="avatar-builder">
+                                <div className="avatar-part-col">
+                                    { PART_ROWS.map(setType => {
+                                        const partPreviewSrc = buildPartPreviewUrl(imagingUrl, setType, selection, gender);
+                                        return (
+                                            <div className="avatar-part-row" key={ `part-${ setType }` }>
+                                                <button type="button" className="arrow-btn" aria-label={ `Previous ${ setType }` }
+                                                    onClick={ () => cyclePart(setType, -1) }>&lsaquo;</button>
+                                                <div className={ `part-preview part-preview-${ setType }` }>
+                                                    <img src={ partPreviewSrc } alt={ `${ setType } preview` } onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } />
+                                                </div>
+                                                <button type="button" className="arrow-btn" aria-label={ `Next ${ setType }` }
+                                                    onClick={ () => cyclePart(setType, 1) }>&rsaquo;</button>
+                                            </div>
+                                        );
+                                    }) }
+                                </div>
+
+                                <div className="avatar-preview">
+                                    <img src={ previewSrc } alt="Habbo preview" onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } />
+                                </div>
+
+                                <div className="avatar-color-col">
+                                    { PART_ROWS.map(setType => {
+                                        const fallbackColor = FALLBACK_DEFAULTS[gender][setType]?.colors?.[0] ?? 0;
+                                        const currentColor = selection[setType]?.colors?.[0] ?? fallbackColor;
+                                        const swatchHex = hexFor(setType, currentColor);
+                                        return (
+                                            <div className="avatar-color-row" key={ `color-${ setType }` }>
+                                                <button type="button" className="arrow-btn" aria-label={ `Previous color ${ setType }` }
+                                                    onClick={ () => cycleColor(setType, -1) }>&lsaquo;</button>
+                                                <div className="color-swatch" style={ { background: swatchHex } } />
+                                                <button type="button" className="arrow-btn" aria-label={ `Next color ${ setType }` }
+                                                    onClick={ () => cycleColor(setType, 1) }>&rsaquo;</button>
+                                            </div>
+                                        );
+                                    }) }
+                                </div>
+                            </div>
+
+                            <div className="hot-looks-row">
+                                <button type="button" className="ok-button hot-looks-button"
+                                    onClick={ cycleHotLook }
+                                    disabled={ !hotLooks.length || busy }
+                                    title={ hotLooks.length ? `${ hotLooks.length } looks available` : 'No hot looks loaded' }>
+                                    Hot Looks{ hotLookIndex >= 0 && hotLooks.length ? ` (${ hotLookIndex + 1 }/${ hotLooks.length })` : '' }
+                                </button>
+                            </div>
+
+                            { turnstileEnabled &&
+                                <TurnstileWidget
+                                    siteKey={ turnstileSiteKey }
+                                    size="compact"
+                                    onToken={ setTurnstileToken }
+                                    onExpire={ () => setTurnstileToken('') }
+                                    onError={ () => setTurnstileToken('') }
+                                    resetSignal={ resetSignal }
+                                /> }
+                            { (localError || error) && <div className="error-line">{ localError || error }</div> }
+                            { info && <div className="info-line">{ info }</div> }
+
+                            <div className="step-footer step-footer-split">
+                                <button type="button" className="ok-button back-button" onClick={ () => setStep('credentials') } disabled={ busy }>Back</button>
+                                <span className="step-indicator">2/2</span>
+                                <button type="submit" className="ok-button" disabled={ !username.trim() || busy || serverOffline }>
+                                    { submitting ? 'Creating…' : (checking || pingingServer) ? 'Checking…' : 'Next' }
+                                </button>
+                            </div>
+                        </form>
+                    }
                 </div>
             </div>
         </div>
     );
 };
+
 
 interface ForgotDialogProps extends DialogSharedProps
 {

@@ -1,18 +1,3 @@
-/* ─── Classic Login View ─────────────────────────────────────────────────
-   Port of the old Nitro HotelView background layering, used exclusively by
-   the login screen. Assets are driven by ui-config.json:
-     loginview.images.background        → .login-background
-     loginview.images.background.colour → .nitro-login-view base colour
-     loginview.images.sun               → .login-sun
-     loginview.images.drape             → .login-drape
-     loginview.images.left              → .login-left
-     loginview.images.right             → .login-right
-     loginview.images.right.repeat      → .login-right-repeat
-
-   Class names are deliberately prefixed so HotelView.css rules
-   (.left { left: 18vw !important } etc.) cannot clobber us.
-   --------------------------------------------------------------------- */
-
 .nitro-login-view {
     position: fixed;
     inset: 0;
@@ -82,7 +67,7 @@
     background-position: right bottom;
 }
 
-/* ─── Foreground Login Card Stack ───────────────────────────────────── */
+/* ─── Foreground Login Card Stack ─── */
 
 .nitro-login-view .login-stack {
     position: absolute;
@@ -242,8 +227,6 @@
     max-width: 100%;
 }
 
-/* Modal overlay used for register + forgot password dialogs */
-
 .nitro-login-modal {
     position: fixed;
     inset: 0;
@@ -257,5 +240,217 @@
 .nitro-login-modal .dialog {
     width: 320px;
     max-width: calc(100% - 40px);
+}
+
+.nitro-login-modal .dialog.dialog-avatar {
+    width: 400px;
+}
+
+/* ─── Multi-step register dialog ─── */
+
+.nitro-login-card .register-intro {
+    background: #eef4f8;
+    border: 1px solid #b6cfdd;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #0a2e45;
+}
+
+.nitro-login-card .step-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.nitro-login-card .step-footer-split {
+    justify-content: space-between;
+}
+
+.nitro-login-card .step-indicator {
+    font-size: 11px;
+    color: #134b6e;
+    font-weight: 600;
+}
+
+.nitro-login-card .back-button {
+    background: #d5e2eb;
+}
+
+/* ─── Avatar builder (pre-login) ─── */
+
+.nitro-login-card .gender-row {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.nitro-login-card .gender-row label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.nitro-login-card .avatar-builder {
+    display: grid;
+    grid-template-columns: 74px 1fr 74px;
+    gap: 6px;
+    align-items: stretch;
+    background: repeating-linear-gradient(
+        0deg,
+        #ffffff 0,
+        #ffffff 8px,
+        #e5ecf1 8px,
+        #e5ecf1 16px
+    );
+    border: 1px solid #7595ac;
+    border-radius: 6px;
+    padding: 6px;
+}
+
+.nitro-login-card .avatar-part-col,
+.nitro-login-card .avatar-color-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.nitro-login-card .avatar-part-row,
+.nitro-login-card .avatar-color-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3px;
+    min-height: 44px;
+}
+
+.nitro-login-card .arrow-btn {
+    width: 16px;
+    height: 20px;
+    line-height: 1;
+    padding: 0;
+    border: 1px solid #7595ac;
+    border-radius: 3px;
+    background: #ffffff;
+    color: #0a2e45;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.8), 0 1px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+}
+
+.nitro-login-card .arrow-btn:hover {
+    background: #e9f1f7;
+}
+
+.nitro-login-card .part-preview {
+    flex: 1;
+    height: 44px;
+    border: 1px solid #7595ac;
+    border-radius: 3px;
+    background: #ffffff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.nitro-login-card .part-preview img {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    pointer-events: none;
+    user-select: none;
+    max-width: none;
+    height: auto;
+}
+
+.nitro-login-card .part-preview-hr img,
+.nitro-login-card .part-preview-hd img {
+    width: 40px;
+    height: auto;
+}
+
+.nitro-login-card .part-preview-ch img {
+    width: 50px;
+    margin-top: 8px;
+}
+
+.nitro-login-card .part-preview-lg img {
+    width: 50px;
+    margin-top: -8px;
+}
+
+.nitro-login-card .part-preview-sh img {
+    width: 50px;
+    margin-top: -22px;
+}
+
+.nitro-login-card .color-swatch {
+    flex: 1;
+    height: 18px;
+    border: 1px solid #7595ac;
+    border-radius: 3px;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.nitro-login-card .avatar-preview {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 130px;
+    overflow: hidden;
+}
+
+.nitro-login-card .avatar-preview img {
+    max-width: 100%;
+    max-height: 140px;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+}
+
+.nitro-login-card .hot-looks-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.nitro-login-card .server-offline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    text-align: left;
+}
+
+.nitro-login-card .server-offline .retry-link {
+    background: #ffffff;
+    border: 1px solid #3f6a85;
+    border-radius: 4px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0a2e45;
+    cursor: pointer;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.8), 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.nitro-login-card .server-offline .retry-link:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.nitro-login-card .hot-looks-button {
+    padding: 4px 14px;
+    font-size: 11px;
 }
 

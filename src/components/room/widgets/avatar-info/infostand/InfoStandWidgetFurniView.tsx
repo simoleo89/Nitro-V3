@@ -681,7 +681,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
                                                 return (
                                                     <Flex key={ index } alignItems="center" gap={ 1 }>
                                                         <Text small wrap align="end" className="col-span-4" variant="white">{ key }</Text>
-                                                        <NitroInput type="text" value={ furniValues[index] } onChange={ event => onFurniSettingChange(index, event.target.value) } />
+                                                        <NitroInput type="text" className="text-black" style={ { color: '#000' } } value={ furniValues[index] } onChange={ event => onFurniSettingChange(index, event.target.value) } />
                                                     </Flex>);
                                             }) }
                                         </div>
@@ -696,7 +696,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
                                         return (
                                             <Flex key={ index } alignItems="center" gap={ 1 }>
                                                 <Text small wrap align="end" className="col-span-4" variant="white">{ key }</Text>
-                                                <NitroInput type="text" value={ customValues[index] } onChange={ event => onCustomVariableChange(index, event.target.value) } />
+                                                <NitroInput type="text" className="text-black" style={ { color: '#000' } } value={ customValues[index] } onChange={ event => onCustomVariableChange(index, event.target.value) } />
                                             </Flex>);
                                     }) }
                                 </div>

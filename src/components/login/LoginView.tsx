@@ -64,6 +64,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
     const [ mode, setMode ] = useState<DialogMode>('login');
     const [ username, setUsername ] = useState('');
     const [ password, setPassword ] = useState('');
+    const [ rememberMe, setRememberMe ] = useState(false);
     const [ error, setError ] = useState<string | null>(null);
     const [ info, setInfo ] = useState<string | null>(null);
     const [ submitting, setSubmitting ] = useState(false);
@@ -255,6 +256,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
             const { ok, payload } = await postJson(loginUrl, {
                 username: username.trim(),
                 password,
+                remember: rememberMe,
                 turnstileToken: turnstileEnabled ? loginTurnstileToken : undefined
             });
 
@@ -262,6 +264,14 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
 
             if(ok && ssoTicket)
             {
+                try
+                {
+                    const rememberToken = typeof payload.rememberToken === 'string' ? payload.rememberToken : '';
+                    if(rememberMe && rememberToken) window.localStorage.setItem('nitro.remember.token', rememberToken);
+                    else window.localStorage.removeItem('nitro.remember.token');
+                }
+                catch { /* localStorage may be disabled in private mode */ }
+
                 clearLock();
                 onAuthenticated(ssoTicket);
                 return;
@@ -282,7 +292,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
         {
             setSubmitting(false);
         }
-    }, [ submitting, username, password, turnstileEnabled, loginTurnstileToken, loginUrl, postJson, clearLock, recordFailure, onAuthenticated, resetLoginTurnstile, pingLoginServer ]);
+    }, [ submitting, username, password, rememberMe, turnstileEnabled, loginTurnstileToken, loginUrl, postJson, clearLock, recordFailure, onAuthenticated, resetLoginTurnstile, pingLoginServer ]);
 
     const checkEmailUrl = GetConfigurationValue<string>('login.check-email.endpoint', '/api/auth/check-email');
     const checkUsernameUrl = GetConfigurationValue<string>('login.check-username.endpoint', '/api/auth/check-username');
@@ -472,6 +482,10 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
                                 onChange={ e => setPassword(e.target.value) }
                             />
                         </div>
+                        <label className="remember-me">
+                            <input type="checkbox" checked={ rememberMe } onChange={ e => setRememberMe(e.target.checked) } />
+                            <span>{ t('login.remember_me', 'Remember me') }</span>
+                        </label>
                         { turnstileEnabled && mode === 'login' &&
                             <TurnstileWidget
                                 siteKey={ turnstileSiteKey }

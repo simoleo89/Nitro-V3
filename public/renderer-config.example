@@ -45,6 +45,11 @@
     "login.register.endpoint": "${api.url}/api/auth/register",
     "login.forgot.endpoint": "${api.url}/api/auth/forgot-password",
     "login.logout.endpoint": "${api.url}/api/auth/logout",
+	"login.health.endpoint": "${api.url}/api/health",
+    "login.check-email.endpoint": "${api.url}/api/auth/check-email",
+    "login.check-username.endpoint": "${api.url}/api/auth/check-username",
+    "login.room_templates.endpoint": "${api.url}/api/auth/room-templates",
+	"login.remember.endpoint": "${api.url}/api/auth/remember",
     "login.turnstile.enabled": false,
     "login.turnstile.sitekey": "",
 	"avatar.mandatory.libraries": [

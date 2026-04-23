@@ -64,6 +64,9 @@ export const PurseView: FC<{}> = props => {
 
         const logoutUrl = GetConfigurationValue<string>('login.logout.endpoint', '/api/auth/logout');
         const ssoTicket = (window.NitroConfig?.['sso.ticket'] as string) ?? '';
+        let rememberToken = '';
+        try { rememberToken = window.localStorage.getItem('nitro.remember.token') ?? ''; }
+        catch { /* localStorage may be disabled */ }
 
         try
         {
@@ -76,11 +79,12 @@ export const PurseView: FC<{}> = props => {
                     'Accept': 'application/json',
                     'X-Requested-With': 'NitroPurseLogout'
                 },
-                body: JSON.stringify({ ssoTicket })
+                body: JSON.stringify({ ssoTicket, rememberToken })
             });
         }
         catch { /* best-effort — proceed with local logout regardless */ }
 
+        try { window.localStorage.removeItem('nitro.remember.token'); } catch { /* noop */ }
         if(window.NitroConfig) window.NitroConfig['sso.ticket'] = '';
         window.location.reload();
     }, []);

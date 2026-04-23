@@ -1,5 +1,6 @@
 {
 	"socket.url": "ws://localhost:2096",
+	"crypto.ws.enabled": false,
 	"api.url": "http://localhost:2096",
 	"asset.url": "https://localhost/nitro/bundled",
 	"image.library.url": "https://localhost/c_images/",

@@ -39,6 +39,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
     const [ groupName, setGroupName ] = useState<string>(null);
     const [ isJukeBox, setIsJukeBox ] = useState<boolean>(false);
     const [ isSongDisk, setIsSongDisk ] = useState<boolean>(false);
+    const [ isBranded, setIsBranded ] = useState<boolean>(false);
     const [ songId, setSongId ] = useState<number>(-1);
     const [ songName, setSongName ] = useState<string>('');
     const [ songCreator, setSongCreator ] = useState<string>('');
@@ -315,6 +316,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
         setIsJukeBox(furniIsJukebox);
         setIsSongDisk(furniIsSongDisk);
         setSongId(furniSongId);
+        setIsBranded(!!avatarInfo.extraParam && avatarInfo.extraParam.indexOf(RoomWidgetEnumItemExtradataParameter.BRANDING_OPTIONS) === 0);
 
         if(avatarInfo.groupId) SendMessageComposer(new GroupInformationComposer(avatarInfo.groupId, false));
     }, [ roomSession, avatarInfo ]);
@@ -474,22 +476,24 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
                         </Flex>
                         <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
                     </div>
-                    <div className="flex flex-col gap-1">
-                        <Flex gap={ 1 } position="relative">
-                            { avatarInfo.stuffData.isUnique &&
-                                <div className="absolute inset-e-0">
-                                    <LayoutLimitedEditionCompactPlateView uniqueNumber={ avatarInfo.stuffData.uniqueNumber } uniqueSeries={ avatarInfo.stuffData.uniqueSeries } />
-                                </div> }
-                            { (avatarInfo.stuffData.rarityLevel > -1) &&
-                                <div className="absolute inset-e-0">
-                                    <LayoutRarityLevelView level={ avatarInfo.stuffData.rarityLevel } />
-                                </div> }
-                            <Flex center fullWidth>
-                                <LayoutRoomObjectImageView category={ avatarInfo.category } objectId={ avatarInfo.id } roomId={ roomSession.roomId } />
+                    { !isBranded &&
+                        <div className="flex flex-col gap-1">
+                            <Flex gap={ 1 } position="relative">
+                                { avatarInfo.stuffData.isUnique &&
+                                    <div className="absolute inset-e-0">
+                                        <LayoutLimitedEditionCompactPlateView uniqueNumber={ avatarInfo.stuffData.uniqueNumber } uniqueSeries={ avatarInfo.stuffData.uniqueSeries } />
+                                    </div> }
+                                { (avatarInfo.stuffData.rarityLevel > -1) &&
+                                    <div className="absolute inset-e-0">
+                                        <LayoutRarityLevelView level={ avatarInfo.stuffData.rarityLevel } />
+                                    </div> }
+                                <Flex center fullWidth>
+                                    <LayoutRoomObjectImageView category={ avatarInfo.category } objectId={ avatarInfo.id } roomId={ roomSession.roomId } />
+                                </Flex>
                             </Flex>
-                        </Flex>
-                        <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
-                    </div>
+                            <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                        </div>
+                    }
                     <div className="flex flex-col gap-1">
                         <Text fullWidth small textBreak wrap variant="white">{ avatarInfo.description }</Text>
                         <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />

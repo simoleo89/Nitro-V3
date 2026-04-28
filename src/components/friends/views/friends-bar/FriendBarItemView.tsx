@@ -62,8 +62,8 @@ export const FriendBarItemView: FC<{ friend: MessengerFriend }> = props => {
 
     return (
         <div ref={elementRef} className="relative">
-            <div className="absolute left-[-4px] bottom-[-2px] z-10 h-[66px] w-[34px] overflow-hidden pointer-events-none">
-                {(friend.id > 0) ? (
+            {(friend.id > 0) ? (
+                <div className="absolute left-[-4px] bottom-[-2px] z-10 h-[66px] w-[34px] overflow-hidden pointer-events-none">
                     <LayoutAvatarImageView
                         direction={2}
                         figure={friend.figure}
@@ -71,10 +71,12 @@ export const FriendBarItemView: FC<{ friend: MessengerFriend }> = props => {
                         className="block pointer-events-none drop-shadow-[1px_1px_0_rgba(0,0,0,0.6)]"
                         style={ { marginLeft: '-28px', marginTop: '-10px' } }
                     />
-                ) : (
-                    <LayoutBadgeImageView badgeCode="ADM" isGroup={false} className="scale-75 block pointer-events-none drop-shadow-[1px_1px_0_rgba(0,0,0,0.6)]" />
-                )}
-            </div>
+                </div>
+            ) : (
+                <div className="absolute left-[6px] top-1/2 -translate-y-1/2 z-10 flex h-[28px] w-[28px] items-center justify-center pointer-events-none">
+                    <LayoutBadgeImageView badgeCode="ADM" isGroup={false} className="block pointer-events-none drop-shadow-[1px_1px_0_rgba(0,0,0,0.6)]" />
+                </div>
+            )}
             <motion.button
                 type="button"
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}

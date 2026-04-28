@@ -3,6 +3,12 @@ import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from
 import { GetConfigurationValue, LocalizeText } from '../../api';
 import { TurnstileWidget } from './TurnstileWidget';
 
+/**
+ * Looks up a localized string. Falls back to `fallback` when the key is
+ * missing (LocalizeText returns the key itself) or when the localization
+ * manager isn't ready yet (login runs very early). Parameters are
+ * %name%-substituted into the fallback so the UI stays correct pre-init.
+ */
 const t = (key: string, fallback: string, params?: string[], replacements?: string[]): string =>
 {
     try
@@ -10,7 +16,7 @@ const t = (key: string, fallback: string, params?: string[], replacements?: stri
         const value = LocalizeText(key, params ?? null, replacements ?? null);
         if(value && value !== key) return value;
     }
-    catch {}
+    catch { /* localization manager not initialised yet */ }
 
     if(!params || !replacements) return fallback;
     let out = fallback;
@@ -22,6 +28,39 @@ const t = (key: string, fallback: string, params?: string[], replacements?: stri
 };
 
 type DialogMode = 'login' | 'register' | 'forgot';
+
+interface BanInfo
+{
+    type: 'account' | 'ip' | 'machine' | 'super' | string;
+    reason: string;
+    permanent: boolean;
+    expiresAt?: number;
+}
+
+const parseBan = (payload: Record<string, unknown>): BanInfo | null =>
+{
+    const raw = payload?.ban;
+    if(!raw || typeof raw !== 'object') return null;
+    const ban = raw as Record<string, unknown>;
+    const type = typeof ban.type === 'string' ? ban.type : 'account';
+    const reason = typeof ban.reason === 'string' ? ban.reason : '';
+    const permanent = ban.permanent === true || ban.permanent === 'true';
+    const expiresAt = typeof ban.expiresAt === 'number' ? ban.expiresAt : undefined;
+    return { type, reason, permanent, expiresAt };
+};
+
+const formatRemaining = (epochSeconds: number): string =>
+{
+    const totalSeconds = Math.max(0, epochSeconds - Math.floor(Date.now() / 1000));
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    if(days > 0) return `${ days }d ${ hours }h ${ minutes }m`;
+    if(hours > 0) return `${ hours }h ${ minutes }m`;
+    if(minutes > 0) return `${ minutes }m ${ seconds }s`;
+    return `${ seconds }s`;
+};
 
 const interpolate = (value: string | null | undefined): string =>
 {
@@ -66,6 +105,8 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
     const [ password, setPassword ] = useState('');
     const [ rememberMe, setRememberMe ] = useState(false);
     const [ error, setError ] = useState<string | null>(null);
+    const [ banInfo, setBanInfo ] = useState<BanInfo | null>(null);
+    const [ , setBanTick ] = useState(0);
     const [ info, setInfo ] = useState<string | null>(null);
     const [ submitting, setSubmitting ] = useState(false);
     const [ loginTurnstileToken, setLoginTurnstileToken ] = useState('');
@@ -103,8 +144,24 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
     useEffect(() =>
     {
         setError(null);
+        setBanInfo(null);
         if(mode === 'login') resetLoginTurnstile();
     }, [ mode, resetLoginTurnstile ]);
+
+    useEffect(() =>
+    {
+        if(!banInfo || banInfo.permanent || !banInfo.expiresAt) return;
+        const interval = window.setInterval(() =>
+        {
+            if(banInfo.expiresAt && banInfo.expiresAt <= Math.floor(Date.now() / 1000))
+            {
+                setBanInfo(null);
+                return;
+            }
+            setBanTick(t => t + 1);
+        }, 1000);
+        return () => window.clearInterval(interval);
+    }, [ banInfo ]);
 
     useEffect(() =>
     {
@@ -243,6 +300,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
         }
 
         setError(null);
+        setBanInfo(null);
         setSubmitting(true);
 
         try
@@ -274,6 +332,14 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
 
                 clearLock();
                 onAuthenticated(ssoTicket);
+                return;
+            }
+
+            const ban = parseBan(payload);
+            if(ban)
+            {
+                setBanInfo(ban);
+                resetLoginTurnstile();
                 return;
             }
 
@@ -503,13 +569,29 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
                                 </button>
                             </div>
                         }
+                        { banInfo &&
+                            <div className="error-line ban-message">
+                                <div className="ban-title">
+                                    { banInfo.type === 'ip'
+                                        ? t('nitro.login.error.banned.ip.title', 'This connection is banned')
+                                        : t('nitro.login.error.banned.account.title', 'Your account is banned') }
+                                </div>
+                                { banInfo.permanent
+                                    ? <div className="ban-status">{ t('nitro.login.error.banned.permanent', 'This is a permanent ban.') }</div>
+                                    : (banInfo.expiresAt
+                                        ? <div className="ban-status">{ t('nitro.login.error.banned.temporary', 'You can log in again in %time%.', [ 'time' ], [ formatRemaining(banInfo.expiresAt) ]) }</div>
+                                        : null) }
+                                { banInfo.reason &&
+                                    <div className="ban-reason">{ t('nitro.login.error.banned.reason', 'Reason: %reason%', [ 'reason' ], [ banInfo.reason ]) }</div> }
+                            </div>
+                        }
                         { error && <div className="error-line">{ error }</div> }
                         { info && <div className="info-line">{ info }</div> }
                         <div className="submit-row">
                             <button
                                 type="submit"
                                 className="ok-button"
-                                disabled={ submitting || isLocked || loginServerReachable === false || loginPingingServer }
+                                disabled={ submitting || isLocked || loginServerReachable === false || loginPingingServer || !!banInfo }
                             >{ loginPingingServer ? t('nitro.login.server.checking', 'Checking…') : t('login.title', 'Log in') }</button>
                         </div>
                         <a className="forgot" onClick={ () => setMode('forgot') }>{ t('login.forgot_password', 'Forgotten your password?') }</a>

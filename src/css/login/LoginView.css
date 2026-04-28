@@ -225,6 +225,33 @@
     text-align: center;
 }
 
+.nitro-login-card .error-line.ban-message {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 10px;
+    text-align: left;
+    line-height: 1.35;
+}
+
+.nitro-login-card .error-line.ban-message .ban-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.nitro-login-card .error-line.ban-message .ban-status {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.nitro-login-card .error-line.ban-message .ban-reason {
+    font-size: 11px;
+    font-style: italic;
+    word-break: break-word;
+}
+
 .nitro-login-card .register-card-body a {
     color: #134b6e;
     text-decoration: underline;

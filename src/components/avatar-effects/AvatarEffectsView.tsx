@@ -1,6 +1,6 @@
 import { AddLinkEventTracker, AvatarDirectionAngle, AvatarEffectActivatedComposer, GetConfiguration, GetSessionDataManager, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useEffect, useState } from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FaChevronLeft, FaChevronRight, FaSearch } from 'react-icons/fa';
 import { LocalizeText, SendMessageComposer } from '../../api';
 import { Button, Column, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../common';
 import { AvatarEffectPreviewView } from './AvatarEffectPreviewView';
@@ -14,6 +14,7 @@ interface EffectMapEntry
 }
 
 const DEFAULT_DIRECTION = 4;
+const PAGE_SIZE = 50;
 
 export const AvatarEffectsView: FC<{}> = () =>
 {
@@ -22,6 +23,8 @@ export const AvatarEffectsView: FC<{}> = () =>
     const [ loadError, setLoadError ] = useState<string>(null);
     const [ selectedId, setSelectedId ] = useState<number>(0);
     const [ direction, setDirection ] = useState<number>(DEFAULT_DIRECTION);
+    const [ query, setQuery ] = useState<string>('');
+    const [ visibleCount, setVisibleCount ] = useState<number>(PAGE_SIZE);
 
     useEffect(() =>
     {
@@ -107,48 +110,160 @@ export const AvatarEffectsView: FC<{}> = () =>
 
     const onClose = useCallback(() => setIsVisible(false), []);
 
+    const filteredEffects = useMemo(() =>
+    {
+        const trimmed = query.trim().toLowerCase();
+        if(!trimmed) return effects;
+        return effects.filter(e =>
+            e.id.toLowerCase().includes(trimmed) ||
+            e.lib.toLowerCase().includes(trimmed));
+    }, [ effects, query ]);
+
+    const onQueryChange = useCallback((event: ChangeEvent<HTMLInputElement>) =>
+    {
+        setQuery(event.target.value);
+        setVisibleCount(PAGE_SIZE);
+    }, []);
+
+    const visibleEffects = filteredEffects.slice(0, visibleCount);
+    const hasMore = filteredEffects.length > visibleEffects.length;
+    const selectedEffect = selectedId ? effects.find(e => parseInt(e.id, 10) === selectedId) : null;
+
+    const selectedRowRef = useRef<HTMLButtonElement>(null);
+
+    const jumpToSelected = useCallback(() =>
+    {
+        if(!selectedId) return;
+
+        const indexInFiltered = filteredEffects.findIndex(e => parseInt(e.id, 10) === selectedId);
+        const indexInAll = effects.findIndex(e => parseInt(e.id, 10) === selectedId);
+
+        if(indexInFiltered === -1)
+        {
+            setQuery('');
+            if(indexInAll >= 0 && indexInAll >= visibleCount)
+            {
+                setVisibleCount(Math.ceil((indexInAll + 1) / PAGE_SIZE) * PAGE_SIZE);
+            }
+        }
+        else if(indexInFiltered >= visibleCount)
+        {
+            setVisibleCount(Math.ceil((indexInFiltered + 1) / PAGE_SIZE) * PAGE_SIZE);
+        }
+
+        requestAnimationFrame(() =>
+        {
+            selectedRowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    }, [ selectedId, filteredEffects, effects, visibleCount ]);
+
     if(!isVisible) return null;
 
     return (
-        <NitroCardView className="nitro-avatar-effects w-[620px] h-[460px]" uniqueKey="avatar-effects" theme="primary-slim">
+        <NitroCardView className="nitro-avatar-effects w-[640px] h-[480px]" isResizable={ false } uniqueKey="avatar-effects" theme="primary-slim">
             <NitroCardHeaderView headerText={ LocalizeText('product.type.effect') || 'Avatar effect' } onCloseClick={ onClose } />
             <NitroCardContentView className="flex flex-row gap-3 text-black">
                 <Column overflow="hidden" className="w-[220px] items-center justify-between">
-                    <div className="figure-preview-container overflow-hidden relative w-full h-[280px] bg-black rounded-md">
+                    <div className="figure-preview-container overflow-hidden relative w-full h-[280px] bg-gradient-to-b from-[#1a1a1a] to-black rounded-md shadow-inner">
                         <AvatarEffectPreviewView figure={ figure } gender={ gender } direction={ direction } effect={ selectedId } height={ 280 } zoom={ 2 } />
-                        <div className="arrow-container absolute bottom-2 left-0 right-0 flex justify-between px-3 z-10">
-                            <button type="button" className="text-white/80 hover:text-white drop-shadow-[1px_1px_0_rgba(0,0,0,0.8)]" onClick={ () => rotateFigure(1) }><FaChevronLeft /></button>
-                            <button type="button" className="text-white/80 hover:text-white drop-shadow-[1px_1px_0_rgba(0,0,0,0.8)]" onClick={ () => rotateFigure(-1) }><FaChevronRight /></button>
+                        <div className="arrow-container absolute inset-y-0 left-0 right-0 flex items-center justify-between px-1 z-10 pointer-events-none">
+                            <button
+                                type="button"
+                                className="pointer-events-auto flex items-center justify-center w-7 h-7 rounded-full bg-black/45 hover:bg-black/70 border border-white/15 text-white shadow-md backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
+                                onClick={ () => rotateFigure(1) }
+                                aria-label="Rotate left"
+                            >
+                                <FaChevronLeft className="w-3 h-3" />
+                            </button>
+                            <button
+                                type="button"
+                                className="pointer-events-auto flex items-center justify-center w-7 h-7 rounded-full bg-black/45 hover:bg-black/70 border border-white/15 text-white shadow-md backdrop-blur-sm transition-all hover:scale-110 active:scale-95"
+                                onClick={ () => rotateFigure(-1) }
+                                aria-label="Rotate right"
+                            >
+                                <FaChevronRight className="w-3 h-3" />
+                            </button>
                         </div>
+                        { selectedEffect &&
+                            <div className="absolute top-2 left-2 right-2 bg-black/55 backdrop-blur-sm rounded px-2 py-1 text-white text-xs leading-tight">
+                                <div className="font-mono opacity-70 text-[10px]">#{ parseInt(selectedEffect.id, 10) }</div>
+                                <div className="font-semibold truncate">{ selectedEffect.lib }</div>
+                            </div>
+                        }
                     </div>
                     <Button variant="success" disabled={ !selectedId } onClick={ applySelectedEffect } className="w-full mt-2">
                         { LocalizeText('inventory.effects.activate') || 'Use' }
                     </Button>
                 </Column>
-                <Column overflow="auto" className="flex-1 min-h-0">
-                    { loadError && <div className="text-red-600 text-xs px-2 py-1">{ loadError }</div> }
-                    { !loadError && !effects.length && <div className="text-xs px-2 py-1 opacity-70">{ LocalizeText('generic.loading') || 'Loading…' }</div> }
-                    { !!effects.length &&
-                        <div className="grid grid-cols-3 gap-2 p-1">
-                            { effects.map(effect =>
-                            {
-                                const id = parseInt(effect.id, 10);
-                                const isSelected = (id === selectedId);
-                                return (
-                                    <button
-                                        key={ effect.id }
-                                        type="button"
-                                        onClick={ () => setSelectedId(id) }
-                                        className={ `flex flex-col items-center justify-end h-[88px] px-1 py-1 rounded border text-[10px] truncate w-full ${ isSelected ? 'border-[#3a78c4] bg-[#cfe1f5]' : 'border-[#2a2a2a]/15 bg-[#f3f3f3] hover:bg-[#e7eef7]' }` }
-                                        title={ effect.lib }
-                                    >
-                                        <span className="self-start opacity-60">#{ id }</span>
-                                        <span className="truncate w-full text-center font-semibold">{ effect.lib }</span>
-                                    </button>
-                                );
-                            }) }
-                        </div>
-                    }
+                <Column overflow="hidden" className="flex-1 min-h-0">
+                    <div className="relative">
+                        <FaSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#888] text-sm pointer-events-none" />
+                        <input
+                            type="text"
+                            value={ query }
+                            onChange={ onQueryChange }
+                            placeholder={ LocalizeText('generic.search') || 'Search by name or #number' }
+                            className="w-full pl-8 pr-3 py-1.5 text-sm border border-[#2a2a2a]/20 rounded-md bg-white outline-none transition-colors focus:border-[#3a78c4] focus:shadow-[0_0_0_2px_rgba(58,120,196,0.15)]"
+                        />
+                    </div>
+                    <div className="flex items-center justify-between px-1 py-1 text-[11px] uppercase tracking-wide text-[#666] border-b border-[#2a2a2a]/10">
+                        <span>{ filteredEffects.length === effects.length ? `${ effects.length } effects` : `${ filteredEffects.length } of ${ effects.length }` }</span>
+                        { selectedId > 0 &&
+                            <button
+                                type="button"
+                                onClick={ jumpToSelected }
+                                className="text-[#3a78c4] hover:text-[#2a5d9e] hover:underline normal-case font-semibold cursor-pointer"
+                                title="Jump to selected effect"
+                            >
+                                #{ selectedId } selected
+                            </button> }
+                    </div>
+                    <div className="flex-1 min-h-0 overflow-auto">
+                        { loadError && <div className="text-red-600 text-sm px-2 py-3">{ loadError }</div> }
+                        { !loadError && !effects.length && <div className="text-sm px-2 py-3 opacity-70">{ LocalizeText('generic.loading') || 'Loading…' }</div> }
+                        { !!effects.length && !filteredEffects.length &&
+                            <div className="text-sm px-2 py-3 opacity-70 italic">{ LocalizeText('generic.search.noresults') || 'No effects match your search.' }</div>
+                        }
+                        { !!visibleEffects.length &&
+                            <ul className="flex flex-col">
+                                { visibleEffects.map((effect, index) =>
+                                {
+                                    const id = parseInt(effect.id, 10);
+                                    const isSelected = (id === selectedId);
+                                    return (
+                                        <li key={ effect.id }>
+                                            <button
+                                                ref={ isSelected ? selectedRowRef : undefined }
+                                                type="button"
+                                                onClick={ () => setSelectedId(id) }
+                                                className={ `flex w-full items-center gap-3 px-3 py-1.5 text-sm border-l-[3px] transition-colors ${
+                                                    isSelected
+                                                        ? 'border-[#3a78c4] bg-[#cfe1f5] text-[#1d3a5e]'
+                                                        : `border-transparent hover:bg-[#eef3f9] ${ index % 2 === 0 ? 'bg-white' : 'bg-[#fafafa]' }`
+                                                }` }
+                                                title={ effect.lib }
+                                            >
+                                                <span className={ `font-mono text-xs w-12 text-right shrink-0 ${ isSelected ? 'opacity-80' : 'opacity-50' }` }>#{ id }</span>
+                                                <span className="truncate font-semibold">{ effect.lib }</span>
+                                            </button>
+                                        </li>
+                                    );
+                                }) }
+                                { hasMore &&
+                                    <li className="px-3 py-2 border-t border-[#2a2a2a]/10 mt-1">
+                                        <button
+                                            type="button"
+                                            onClick={ () => setVisibleCount(prev => prev + PAGE_SIZE) }
+                                            className="w-full text-sm font-semibold text-[#3a78c4] hover:text-[#2a5d9e] hover:bg-[#eef3f9] cursor-pointer py-1.5 rounded-md transition-colors"
+                                        >
+                                            { LocalizeText('navigator.show.more') || 'See More' }
+                                            <span className="opacity-60 ml-1 font-normal">({ filteredEffects.length - visibleEffects.length } more)</span>
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
                 </Column>
             </NitroCardContentView>
         </NitroCardView>

@@ -89,13 +89,13 @@ export const AvatarEditorModelView: FC<{
                     <div className="flex-1 min-w-0 overflow-hidden avatar-editor-palette-set-view">
                         { advancedColorMode
                             ? <AvatarEditorAdvancedColorView category={ activeCategory } paletteIndex={ 0 } />
-                            : <AvatarEditorPaletteSetView category={ activeCategory } columnCount={ 14 } paletteIndex={ 0 } /> }
+                            : <AvatarEditorPaletteSetView category={ activeCategory } columnCount={ maxPaletteCount === 2 ? 5 : 14 } paletteIndex={ 0 } /> }
                     </div> }
                 { (maxPaletteCount === 2) &&
                     <div className="flex-1 min-w-0 overflow-hidden avatar-editor-palette-set-view">
                         { advancedColorMode
                             ? <AvatarEditorAdvancedColorView category={ activeCategory } paletteIndex={ 1 } />
-                            : <AvatarEditorPaletteSetView category={ activeCategory } columnCount={ 14 } paletteIndex={ 1 } /> }
+                            : <AvatarEditorPaletteSetView category={ activeCategory } columnCount={ 5 } paletteIndex={ 1 } /> }
                     </div> }
             </div>
         </div>

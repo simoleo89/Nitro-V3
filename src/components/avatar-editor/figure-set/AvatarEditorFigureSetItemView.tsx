@@ -77,7 +77,7 @@ export const AvatarEditorFigureSetItemView: FC<{
             itemActive={ isSelected }
             itemImage={ (!partItem.isClear && isHead) ? assetUrl : undefined }
             className={ `avatar-parts mx-auto${ isSelected ? ' part-selected' : '' }${ !partItem.isClear && isSellableNotOwned ? ' pet-sellable-locked' : '' }` }
-            style={ isHead ? { backgroundSize: '200%', backgroundPosition: 'center -32px' } : undefined }
+            style={ isHead ? { backgroundSize: 'auto 80%', backgroundPosition: 'center', imageRendering: 'pixelated' } : undefined }
             { ...rest }
         >
             { !partItem.isClear && assetUrl && !isHead &&

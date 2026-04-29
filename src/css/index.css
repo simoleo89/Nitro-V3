@@ -1823,7 +1823,7 @@ body {
     position: relative;
     aspect-ratio: 1;
     width: 100%;
-    max-width: 42px;
+    max-width: 64px;
     border-radius: 0.3rem !important;
     overflow: hidden !important;
     background-color: #e9e8e4;

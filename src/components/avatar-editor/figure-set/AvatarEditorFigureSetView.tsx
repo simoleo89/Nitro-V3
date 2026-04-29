@@ -30,12 +30,12 @@ export const AvatarEditorFigureSetView: FC<{
     };
 
     return (
-        <InfiniteGrid<IAvatarEditorCategoryPartItem> columnCount={ columnCount } estimateSize={ estimateSize } itemRender={ (item: IAvatarEditorCategoryPartItem) =>
+        <InfiniteGrid<IAvatarEditorCategoryPartItem> columnCount={ columnCount } itemMinWidth={ 42 } rowGap={ 8 } estimateSize={ estimateSize } itemRender={ (item: IAvatarEditorCategoryPartItem) =>
         {
             if(!item) return null;
 
             return (
-                <AvatarEditorFigureSetItemView isSelected={ isPartItemSelected(item) } partItem={ item } setType={ category.setType } width={ `calc(100% / ${ columnCount })` } onClick={ event => selectEditorPart(category.setType, item.partSet?.id ?? -1) } />
+                <AvatarEditorFigureSetItemView isSelected={ isPartItemSelected(item) } partItem={ item } setType={ category.setType } onClick={ event => selectEditorPart(category.setType, item.partSet?.id ?? -1) } />
             );
         } } items={ category.partItems } overscan={ columnCount } />
     );

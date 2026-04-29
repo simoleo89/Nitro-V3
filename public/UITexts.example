@@ -168,6 +168,7 @@
     "nitro.login.error.missing_username": "Please choose a Habbo name.",
     "nitro.login.error.username_length": "Habbo name must be 3–16 characters.",
     "nitro.login.error.username_taken": "This Habbo name is already taken.",
-    "nitro.login.error.missing_email": "Please enter your email address."
+    "nitro.login.error.missing_email": "Please enter your email address.",
+	"inventory.effects.activate": "Use selected effect"
 }
 }

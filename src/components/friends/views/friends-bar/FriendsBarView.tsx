@@ -37,7 +37,7 @@ export const FriendBarView: FC<{ onlineFriends: MessengerFriend[]; requestsCount
         >
             { (requestsCount > 0) &&
                 <motion.div variants={ itemVariants }>
-                    <div className="flex h-[34px] items-center rounded-[7px] border border-[#9fc56f] bg-[#5f7d2f] px-[10px] text-[0.74rem] font-bold whitespace-nowrap text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_2px_0_rgba(0,0,0,0.25)]">
+                    <div className="flex h-[34px] items-center rounded-[7px] border border-[#9fc56f] bg-[#5f7d2f] px-[10px] text-[0.83rem] whitespace-nowrap text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_2px_0_rgba(0,0,0,0.25)]">
                         { requestsCount } { LocalizeText('friendbar.requests.title') }
                     </div>
                 </motion.div> }
@@ -82,7 +82,7 @@ export const FriendBarView: FC<{ onlineFriends: MessengerFriend[]; requestsCount
                         animate="visible"
                         exit="exit"
                     >
-                        <div className="flex h-[34px] items-center rounded-[7px] border border-[#9fc56f] bg-[#5f7d2f] px-[10px] text-[0.74rem] font-medium whitespace-nowrap text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_2px_0_rgba(0,0,0,0.25)]">
+                        <div className="flex h-[34px] items-center rounded-[7px] border border-[#9fc56f] bg-[#5f7d2f] px-[10px] text-[0.83rem] font-medium whitespace-nowrap text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_2px_0_rgba(0,0,0,0.25)]">
                             Nessun amico online
                         </div>
                     </motion.div> }

@@ -10,19 +10,54 @@ type Props<T> = {
     overscan?: number;
     estimateSize?: number;
     squareItems?: boolean;
+    itemMinWidth?: number;
+    rowGap?: number;
     itemRender?: (item: T, index?: number) => ReactElement;
 }
 
+const GRID_GAP_PX = 4;
+
 const InfiniteGridRoot = <T,>(props: Props<T>) =>
 {
-    const { items = [], columnCount = 4, overscan = 5, estimateSize = 45, squareItems = false, itemRender = null } = props;
+    const { items = [], columnCount: columnCountProp = 4, overscan = 5, estimateSize = 45, squareItems = false, itemMinWidth = null, rowGap = null, itemRender = null } = props;
     const parentRef = useRef<HTMLDivElement>(null);
+    const [ measuredColumnCount, setMeasuredColumnCount ] = useState<number>(columnCountProp);
+
+    const columnCount = (itemMinWidth && itemMinWidth > 0) ? measuredColumnCount : columnCountProp;
+    const rowsContainerClassName = (rowGap !== null) ? 'flex flex-col w-full relative' : 'flex flex-col w-full *:pb-1 relative';
+
+    useEffect(() =>
+    {
+        if(!itemMinWidth || itemMinWidth <= 0) return;
+
+        const element = parentRef.current;
+        if(!element) return;
+
+        const recompute = () =>
+        {
+            const width = element.clientWidth;
+            const cols = Math.max(1, Math.floor((width + GRID_GAP_PX) / (itemMinWidth + GRID_GAP_PX)));
+            setMeasuredColumnCount(prev => prev === cols ? prev : cols);
+        };
+
+        recompute();
+
+        const observer = new ResizeObserver(recompute);
+        observer.observe(element);
+
+        return () => observer.disconnect();
+    }, [ itemMinWidth ]);
+
+    const autoFillStyle = (itemMinWidth && itemMinWidth > 0)
+        ? { gridTemplateColumns: `repeat(auto-fill, ${ itemMinWidth }px)` }
+        : null;
+    const fixedColsClass = (itemMinWidth && itemMinWidth > 0) ? '' : `grid-cols-${ columnCountProp }`;
 
     if(squareItems)
     {
         return (
             <div ref={ parentRef } className="overflow-y-auto size-full">
-                <div className={ `grid grid-cols-${ columnCount } gap-1 w-full` }>
+                <div className={ `grid ${ fixedColsClass } gap-1 w-full` } style={ autoFillStyle ?? undefined }>
                     { items.map((item, index) =>
                     {
                         if(!item) return <Fragment key={ `${ index }-empty` } />;
@@ -78,7 +113,7 @@ const InfiniteGridRoot = <T,>(props: Props<T>) =>
             ref={ parentRef }
             className="overflow-y-auto size-full">
             <div
-                className="flex flex-col w-full *:pb-1 relative"
+                className={ rowsContainerClassName }
                 style={ {
                     height: virtualizer.getTotalSize()
                 } }>
@@ -86,10 +121,12 @@ const InfiniteGridRoot = <T,>(props: Props<T>) =>
                     <div
                         key={ virtualRow.key + 'a' }
                         ref={ virtualizer.measureElement }
-                        className={ `grid grid-cols-${ columnCount } gap-1 absolute top-0 left-0 last:pb-0 w-full` }
+                        className={ `grid ${ fixedColsClass } gap-1 absolute top-0 left-0 last:pb-0 w-full` }
                         data-index={ virtualRow.index }
                         style={ {
-                            ...(!squareItems && { height: virtualRow.size }),
+                            ...(!squareItems && rowGap === null && { height: virtualRow.size }),
+                            ...(autoFillStyle ?? {}),
+                            ...(rowGap !== null && { paddingBottom: `${ rowGap }px` }),
                             transform: `translateY(${ virtualRow.start }px)`
                         } }>
                         { Array.from(Array(columnCount)).map((e, i) =>

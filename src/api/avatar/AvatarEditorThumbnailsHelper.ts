@@ -227,9 +227,11 @@ export class AvatarEditorThumbnailsHelper
 
                 if(isDisabled) sprite.filters = [ AvatarEditorThumbnailsHelper.ALPHA_FILTER ];
 
+                const frame = AvatarEditorThumbnailsHelper.findOpaqueBoundsFrame(sprite, texture.width, texture.height);
+
                 const imageUrl = await TextureUtils.generateImageUrl({
                     target: sprite,
-                    frame: new NitroRectangle(0, 0, texture.width, texture.height)
+                    frame
                 });
 
                 sprite.destroy();
@@ -242,6 +244,50 @@ export class AvatarEditorThumbnailsHelper
 
             resetFigure(figureString);
         });
+    }
+
+    private static findOpaqueBoundsFrame(sprite: NitroSprite, fallbackWidth: number, fallbackHeight: number): NitroRectangle
+    {
+        try
+        {
+            const data = TextureUtils.getPixels(sprite);
+            if(!data) return new NitroRectangle(0, 0, fallbackWidth, fallbackHeight);
+
+            const pixels = data.pixels as Uint8ClampedArray | Uint8Array;
+            const width = data.width;
+            const height = data.height;
+            if(!pixels || width <= 0 || height <= 0) return new NitroRectangle(0, 0, fallbackWidth, fallbackHeight);
+
+            const ALPHA_THRESHOLD = 8;
+
+            let minX = width;
+            let minY = height;
+            let maxX = -1;
+            let maxY = -1;
+
+            for(let y = 0; y < height; y++)
+            {
+                const rowStart = y * width * 4;
+                for(let x = 0; x < width; x++)
+                {
+                    if(pixels[rowStart + (x * 4) + 3] > ALPHA_THRESHOLD)
+                    {
+                        if(x < minX) minX = x;
+                        if(x > maxX) maxX = x;
+                        if(y < minY) minY = y;
+                        if(y > maxY) maxY = y;
+                    }
+                }
+            }
+
+            if(maxX < minX || maxY < minY) return new NitroRectangle(0, 0, fallbackWidth, fallbackHeight);
+
+            return new NitroRectangle(minX, minY, (maxX - minX) + 1, (maxY - minY) + 1);
+        }
+        catch
+        {
+            return new NitroRectangle(0, 0, fallbackWidth, fallbackHeight);
+        }
     }
 
     private static sortByDrawOrder(a: IFigurePart, b: IFigurePart): number

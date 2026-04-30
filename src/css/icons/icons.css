@@ -4,6 +4,10 @@
     background-position: center;
     background-repeat: no-repeat;
     outline: 0;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: -moz-crisp-edges !important;
+    image-rendering: crisp-edges !important;
+    image-rendering: pixelated !important;
 }
 
 .nitro-icon:hover {

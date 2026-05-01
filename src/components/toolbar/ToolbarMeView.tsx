@@ -42,6 +42,7 @@ export const ToolbarMeView: FC<PropsWithChildren<{
             <div className="navigation-item relative nitro-icon icon-me-profile cursor-pointer" onClick={ event => GetUserProfile(GetSessionDataManager().userId) } />
             <div className="navigation-item relative nitro-icon icon-me-rooms cursor-pointer" onClick={ event => CreateLinkEvent('navigator/search/myworld_view') } />
             <div className="navigation-item relative nitro-icon icon-me-clothing cursor-pointer" onClick={ event => CreateLinkEvent('avatar-editor/toggle') } />
+            <div className="navigation-item relative nitro-icon icon-me-badge-creator cursor-pointer" onClick={ event => CreateLinkEvent('badge-creator/toggle') } title={ LocalizeText('toolbar.icon.label.badge_creator') } />
             <div className="navigation-item relative nitro-icon icon-me-settings cursor-pointer" onClick={ event => CreateLinkEvent('user-settings/toggle') } />
             <div className="navigation-item relative nitro-icon icon-me-forums cursor-pointer" onClick={ event => CreateLinkEvent('groupforum/toggle') } title={ LocalizeText('toolbar.icon.label.forums') } />
             { children }

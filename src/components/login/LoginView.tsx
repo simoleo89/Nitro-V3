@@ -1,5 +1,5 @@
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { GetConfigurationValue } from '../../api';
+import { GetConfigurationValue, persistAccessTokenFromPayload } from '../../api';
 import { ForgotDialog } from './components/ForgotDialog';
 import { NewsWindow } from './components/NewsWindow';
 import { RegisterDialog } from './components/RegisterDialog';
@@ -244,6 +244,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated }) =>
                     const rememberToken = typeof payload.rememberToken === 'string' ? payload.rememberToken : '';
                     if(rememberMe && rememberToken) window.localStorage.setItem('nitro.remember.token', rememberToken);
                     else window.localStorage.removeItem('nitro.remember.token');
+                    persistAccessTokenFromPayload(payload);
                 }
                 catch {}
 

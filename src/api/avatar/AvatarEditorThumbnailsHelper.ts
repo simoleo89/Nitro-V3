@@ -224,11 +224,8 @@ export class AvatarEditorThumbnailsHelper
 
                 const texture = avatarImage.processAsTexture(AvatarSetType.HEAD, false);
                 const sprite = new NitroSprite(texture);
-
                 if(isDisabled) sprite.filters = [ AvatarEditorThumbnailsHelper.ALPHA_FILTER ];
-
                 const frame = AvatarEditorThumbnailsHelper.findOpaqueBoundsFrame(sprite, texture.width, texture.height);
-
                 const imageUrl = await TextureUtils.generateImageUrl({
                     target: sprite,
                     frame
@@ -257,7 +254,6 @@ export class AvatarEditorThumbnailsHelper
             const width = data.width;
             const height = data.height;
             if(!pixels || width <= 0 || height <= 0) return new NitroRectangle(0, 0, fallbackWidth, fallbackHeight);
-
             const ALPHA_THRESHOLD = 8;
 
             let minX = width;

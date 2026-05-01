@@ -1,7 +1,7 @@
-import { DeleteBadgeMessageComposer } from '@nitrots/nitro-renderer';
+import { CreateLinkEvent, DeleteBadgeMessageComposer } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { FaTrashAlt } from 'react-icons/fa';
-import { GetConfigurationValue, LocalizeBadgeName, LocalizeText, SendMessageComposer, UnseenItemCategory } from '../../../../api';
+import { FaPaintBrush, FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
+import { deleteCustomBadge, ensureCustomBadgeTexts, fetchCustomBadges, GetConfigurationValue, isCustomBadgeCode, LocalizeBadgeName, LocalizeText, refreshCustomBadgeTexts, SendMessageComposer, UnseenItemCategory } from '../../../../api';
 import { LayoutBadgeImageView } from '../../../../common';
 import { useInventoryBadges, useInventoryUnseenTracker, useNotification } from '../../../../hooks';
 import { InfiniteGrid, NitroButton } from '../../../../layout';
@@ -90,7 +90,60 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
     const [ isDraggingFromActive, setIsDraggingFromActive ] = useState(false);
 
     const maxSlots = useMemo(() => GetConfigurationValue<number>('user.badges.max.slots', 5), []);
-    const displayCodes = (filteredBadgeCodes !== null ? filteredBadgeCodes : badgeCodes);
+
+    const [ ownCustomBadgeIds, setOwnCustomBadgeIds ] = useState<Set<string>>(() => new Set());
+    const [ filter, setFilter ] = useState<'all' | 'custom'>('all');
+
+    const refreshOwnCustomBadges = useCallback(async () =>
+    {
+        try
+        {
+            const data = await fetchCustomBadges();
+            setOwnCustomBadgeIds(new Set((data.badges ?? []).map(b => b.badgeId)));
+        }
+        catch
+        {
+            setOwnCustomBadgeIds(new Set());
+        }
+    }, []);
+
+    useEffect(() => { refreshOwnCustomBadges(); }, [ refreshOwnCustomBadges ]);
+    useEffect(() => { ensureCustomBadgeTexts(); }, []);
+
+    const baseCodes = (filteredBadgeCodes !== null ? filteredBadgeCodes : badgeCodes);
+    const customCount = useMemo(() => baseCodes.filter(c => isCustomBadgeCode(c)).length, [ baseCodes ]);
+    const displayCodes = useMemo(() =>
+        filter === 'custom' ? baseCodes.filter(c => isCustomBadgeCode(c)) : baseCodes,
+    [ baseCodes, filter ]);
+
+    const isOwnCustomBadge = (code: string | null) => !!code && isCustomBadgeCode(code) && ownCustomBadgeIds.has(code);
+
+    const handleEditCustom = useCallback(() =>
+    {
+        if(!selectedBadgeCode) return;
+        CreateLinkEvent(`badge-creator/edit/${ selectedBadgeCode }`);
+    }, [ selectedBadgeCode ]);
+
+    const handleDeleteCustom = useCallback(() =>
+    {
+        if(!selectedBadgeCode) return;
+        const target = selectedBadgeCode;
+        showConfirm(
+            LocalizeText('inventory.delete.confirm_delete.info', [ 'furniname', 'amount' ], [ LocalizeBadgeName(target), '1' ]),
+            async () =>
+            {
+                try
+                {
+                    await deleteCustomBadge(target);
+                    await refreshOwnCustomBadges();
+                    refreshCustomBadgeTexts();
+                }
+                catch { /* error already surfaced server-side */ }
+            },
+            null, null, null,
+            LocalizeText('inventory.delete.confirm_delete.title')
+        );
+    }, [ selectedBadgeCode, showConfirm, refreshOwnCustomBadges ]);
 
     const attemptDeleteBadge = () =>
     {
@@ -205,6 +258,28 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
                         <span className="text-red-400/60 text-xs font-medium">{ LocalizeText('inventory.badges.clearbadge') }</span>
                     </div>
                 ) }
+                <div className="flex items-center gap-1 text-xs">
+                    <button
+                        type="button"
+                        className={ `px-2 py-0.5 rounded ${ filter === 'all' ? 'bg-card-grid-item-active text-white' : 'bg-card-grid-item' }` }
+                        onClick={ () => setFilter('all') }>
+                        { LocalizeText('inventory.badges.tab.all') !== 'inventory.badges.tab.all' ? LocalizeText('inventory.badges.tab.all') : 'All' } ({ baseCodes.length })
+                    </button>
+                    <button
+                        type="button"
+                        className={ `px-2 py-0.5 rounded ${ filter === 'custom' ? 'bg-card-grid-item-active text-white' : 'bg-card-grid-item' }` }
+                        onClick={ () => setFilter('custom') }>
+                        { LocalizeText('inventory.badges.tab.custom') !== 'inventory.badges.tab.custom' ? LocalizeText('inventory.badges.tab.custom') : 'Custom' } ({ customCount })
+                    </button>
+                    <button
+                        type="button"
+                        className="ml-auto px-2 py-0.5 rounded bg-card-grid-item flex items-center gap-1"
+                        onClick={ () => CreateLinkEvent('badge-creator/show') }
+                        title={ LocalizeText('inventory.badges.create') !== 'inventory.badges.create' ? LocalizeText('inventory.badges.create') : 'Open badge creator' }>
+                        <FaPaintBrush className="fa-icon text-[10px]" />
+                        <span>{ LocalizeText('inventory.badges.create') !== 'inventory.badges.create' ? LocalizeText('inventory.badges.create') : 'Create' }</span>
+                    </button>
+                </div>
                 <InfiniteGrid<string>
                     columnCount={ 5 }
                     estimateSize={ 50 }
@@ -242,8 +317,12 @@ export const InventoryBadgeView: FC<{ filteredBadgeCodes?: string[] }> = props =
                                 onClick={ event => toggleBadge(selectedBadgeCode) }>
                                 { LocalizeText(isWearingBadge(selectedBadgeCode) ? 'inventory.badges.clearbadge' : 'inventory.badges.wearbadge') }
                             </NitroButton>
+                            { isOwnCustomBadge(selectedBadgeCode) &&
+                                <NitroButton className="p-1" title={ LocalizeText('inventory.badges.edit') !== 'inventory.badges.edit' ? LocalizeText('inventory.badges.edit') : 'Edit' } onClick={ handleEditCustom }>
+                                    <FaPencilAlt className="fa-icon" />
+                                </NitroButton> }
                             { !isWearingBadge(selectedBadgeCode) &&
-                                <NitroButton className="bg-danger! hover:bg-danger/80! p-1" onClick={ attemptDeleteBadge }>
+                                <NitroButton className="bg-danger! hover:bg-danger/80! p-1" onClick={ isOwnCustomBadge(selectedBadgeCode) ? handleDeleteCustom : attemptDeleteBadge }>
                                     <FaTrashAlt className="fa-icon" />
                                 </NitroButton> }
                         </div>

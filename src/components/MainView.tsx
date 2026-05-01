@@ -4,6 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import { useNitroEvent } from '../hooks';
 import { AchievementsView } from './achievements/AchievementsView';
 import { AvatarEditorView } from './avatar-editor';
+import { BadgeCreatorView } from './badge-creator';
 import { AvatarEffectsView } from './avatar-effects';
 import { CameraWidgetView } from './camera/CameraWidgetView';
 import { CampaignView } from './campaign/CampaignView';
@@ -106,6 +107,7 @@ export const MainView: FC<{}> = props =>
             <ChatHistoryView />
             <WiredView />
             <AvatarEditorView />
+            <BadgeCreatorView />
             <AvatarEffectsView />
             <AchievementsView />
             <NavigatorView />

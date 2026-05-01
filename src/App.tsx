@@ -1,6 +1,6 @@
 import { GetAssetManager, GetAvatarRenderManager, GetCommunication, GetConfiguration, GetLocalizationManager, GetRoomEngine, GetRoomSessionManager, GetSessionDataManager, GetSoundManager, GetStage, GetTexturePool, GetTicker, HabboWebTools, LegacyExternalInterface, LoadGameUrlEvent, NitroEventType, NitroLogger, NitroVersion, PrepareRenderer } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useState } from 'react';
-import { GetUIVersion } from './api';
+import { clearAccessToken, getAccessToken, getAccessTokenExpiresAt, GetUIVersion, persistAccessTokenFromPayload } from './api';
 import { Base } from './common';
 import { LoadingView } from './components/loading/LoadingView';
 import { LoginView } from './components/login/LoginView';
@@ -106,15 +106,49 @@ export const App: FC<{}> = props =>
                                                 window.localStorage.setItem('nitro.remember.token', payload.rememberToken);
                                         }
                                         catch {}
+                                        persistAccessTokenFromPayload(payload);
                                     }
                                 }
                                 else if(response.status === 401)
                                 {
                                     try { window.localStorage.removeItem('nitro.remember.token'); } catch {}
+                                    clearAccessToken();
                                 }
                             }
                             catch {}
                         }
+                    }
+                }
+
+                if(ssoTicket)
+                {
+                    const expiresAt = getAccessTokenExpiresAt();
+                    const nowSec = Math.floor(Date.now() / 1000);
+                    const accessNeedsRefresh = !getAccessToken() || (expiresAt > 0 && expiresAt - nowSec < 60);
+
+                    if(accessNeedsRefresh)
+                    {
+                        const ssoTokenUrlTemplate = GetConfiguration().getValue<string>('login.sso-token.endpoint', '/api/auth/sso-token');
+                        const ssoTokenUrl = GetConfiguration().interpolate(ssoTokenUrlTemplate);
+                        try
+                        {
+                            const response = await fetch(ssoTokenUrl, {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'NitroSsoExchange'
+                                },
+                                body: JSON.stringify({ ssoTicket })
+                            });
+                            if(response.ok)
+                            {
+                                const payload = await response.json();
+                                persistAccessTokenFromPayload(payload);
+                            }
+                        }
+                        catch {}
                     }
                 }
 
@@ -219,10 +253,12 @@ export const App: FC<{}> = props =>
                             {
                                 try { window.localStorage.setItem('nitro.remember.token', payload.rememberToken); } catch {}
                             }
+                            persistAccessTokenFromPayload(payload);
                         }
                         else if(resp.status === 401)
                         {
                             try { window.localStorage.removeItem('nitro.remember.token'); } catch {}
+                            clearAccessToken();
                         }
                     }
                     catch {}

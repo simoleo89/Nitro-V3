@@ -55,6 +55,13 @@
 	"login.remember.endpoint": "${api.url}/api/auth/remember",
 	"login.server_key.endpoint": "${api.url}/api/auth/server-key",
 	"login.news.endpoint": "${api.url}/api/auth/news",
+	"login.sso-token.endpoint": "${api.url}/api/auth/sso-token",
+	"login.refresh.endpoint": "${api.url}/api/auth/refresh",
+	"badges.custom.list.endpoint":   "${api.url}/api/badges/custom",
+	"badges.custom.create.endpoint": "${api.url}/api/badges/custom",
+	"badges.custom.update.endpoint": "${api.url}/api/badges/custom/%badgeId%",
+	"badges.custom.delete.endpoint": "${api.url}/api/badges/custom/%badgeId%",
+	"badges.custom.texts.endpoint": "${api.url}/api/badges/custom/texts",
     "login.turnstile.enabled": true,
     "login.turnstile.sitekey": "",
     "avatar.mandatory.libraries": [

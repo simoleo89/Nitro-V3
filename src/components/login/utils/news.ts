@@ -9,8 +9,12 @@ export const resolveNewsImage = (raw: string | null | undefined): string =>
     const value = (raw ?? '').trim();
     if(!value) return '';
     if(/^https?:\/\//i.test(value)) return value;
-    if(value.startsWith('//')) return value;
-    if(value.startsWith('/') && !value.startsWith('//')) return value;
+    if(value.startsWith('//')) return window.location.protocol + value;
+    if(value.startsWith('/'))
+    {
+        try { return new URL(value, window.location.origin).href; }
+        catch { return window.location.origin + value; }
+    }
     if(value.startsWith('data:'))
     {
         return /^data:image\/[a-z0-9.+-]+[,;]/i.test(value) ? value : '';

@@ -2,7 +2,7 @@ import { FC, useRef, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { LocalizeText, MessengerFriend } from '../../../../api';
 import { FriendBarItemView } from './FriendBarItemView';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 const MAX_DISPLAY_COUNT = 3;
 

@@ -1,7 +1,7 @@
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
+import * as Popover from '@radix-ui/react-popover';
 import { FC, useState } from 'react';
-import { Popover } from 'react-tiny-popover';
 
 interface ChatInputEmojiSelectorViewProps
 {
@@ -19,19 +19,18 @@ export const ChatInputEmojiSelectorView: FC<ChatInputEmojiSelectorViewProps> = p
         setSelectorVisible(false);
     };
 
-    const toggleSelector = () => setSelectorVisible(prev => !prev);
-
     return (
         <div>
-            <Popover
-                containerClassName="z-[1070]"
-                content={ <Picker data={ data } onEmojiSelect={ handleEmojiSelect } /> }
-                isOpen={ selectorVisible }
-                positions={ [ 'top' ] }
-                onClickOutside={ () => setSelectorVisible(false) }
-            >
-                <div className="cursor-pointer text-lg select-none px-1" onClick={ toggleSelector }>🙂</div>
-            </Popover>
+            <Popover.Root open={ selectorVisible } onOpenChange={ setSelectorVisible }>
+                <Popover.Trigger asChild>
+                    <div className="cursor-pointer text-lg select-none px-1">🙂</div>
+                </Popover.Trigger>
+                <Popover.Portal>
+                    <Popover.Content className="z-[1070]" side="top" sideOffset={ 6 }>
+                        <Picker data={ data } onEmojiSelect={ handleEmojiSelect } />
+                    </Popover.Content>
+                </Popover.Portal>
+            </Popover.Root>
         </div>
     );
 };

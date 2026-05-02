@@ -1,5 +1,5 @@
-import { FC, ReactNode, useEffect, useState } from 'react';
-import { Transition } from 'react-transition-group';
+import { AnimatePresence, motion } from 'motion/react';
+import { FC, ReactNode } from 'react';
 import { getTransitionAnimationStyle } from './TransitionAnimationStyles';
 
 interface TransitionAnimationProps
@@ -15,38 +15,19 @@ export const TransitionAnimation: FC<TransitionAnimationProps> = props =>
 {
     const { type = null, inProp = false, timeout = 300, className = null, children = null } = props;
 
-    const [ isChildrenVisible, setChildrenVisible ] = useState(false);
-
-    useEffect(() =>
-    {
-        let timeoutData: ReturnType<typeof setTimeout> = null;
-
-        if(inProp)
-        {
-            setChildrenVisible(true);
-        }
-        else
-        {
-            timeoutData = setTimeout(() =>
-            {
-                setChildrenVisible(false);
-                clearTimeout(timeout);
-            }, timeout);
-        }
-
-        return () =>
-        {
-            if(timeoutData) clearTimeout(timeoutData);
-        };
-    }, [ inProp, timeout ]);
-
     return (
-        <Transition in={ inProp } timeout={ timeout }>
-            { state => (
-                <div className={ (className ?? '') + ' animate__animated' } style={ { ...getTransitionAnimationStyle(type, state, timeout) } }>
-                    { isChildrenVisible && children }
-                </div>
+        <AnimatePresence>
+            { inProp && (
+                <motion.div
+                    animate={ { opacity: 1 } }
+                    className={ (className ?? '') + ' animate__animated' }
+                    exit={ { opacity: 0 } }
+                    initial={ { opacity: 0 } }
+                    style={ { ...getTransitionAnimationStyle(type, 'entering', timeout) } }
+                    transition={ { duration: timeout / 1000 } }>
+                    { children }
+                </motion.div>
             ) }
-        </Transition>
+        </AnimatePresence>
     );
 };

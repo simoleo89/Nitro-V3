@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { Flex, FlexProps } from '../Flex';
 

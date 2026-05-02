@@ -1,7 +1,9 @@
 import { CSSProperties } from 'react';
-import { TransitionStatus } from 'react-transition-group';
-import { ENTERING, EXITING } from 'react-transition-group/Transition';
 import { TransitionAnimationTypes } from './TransitionAnimationTypes';
+
+export type TransitionStatus = 'entering' | 'entered' | 'exiting' | 'exited' | 'unmounted';
+const ENTERING: TransitionStatus = 'entering';
+const EXITING: TransitionStatus = 'exiting';
 
 export function getTransitionAnimationStyle(type: string, transition: TransitionStatus, timeout: number = 300): Partial<CSSProperties>
 {

@@ -5,7 +5,12 @@ import { defineConfig } from 'vite';
 
 const legacyRendererRoot = resolve(__dirname, '..', 'renderer');
 const currentRendererRoot = resolve(__dirname, '..', 'Nitro_Render_V3');
-const rendererRoot = existsSync(currentRendererRoot) ? currentRendererRoot : legacyRendererRoot;
+const localRendererRoot = resolve(__dirname, '..', 'renderer3');
+const rendererRoot = existsSync(localRendererRoot)
+    ? localRendererRoot
+    : existsSync(currentRendererRoot)
+        ? currentRendererRoot
+        : legacyRendererRoot;
 
 export default defineConfig({
     plugins: [ react() ],

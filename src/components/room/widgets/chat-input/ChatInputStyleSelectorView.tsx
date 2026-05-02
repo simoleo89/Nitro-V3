@@ -1,5 +1,5 @@
+import * as Popover from '@radix-ui/react-popover';
 import { FC, useState } from 'react';
-import { ArrowContainer, Popover } from 'react-tiny-popover';
 import { Flex, Grid, NitroCardContentView } from '../../../../common';
 
 interface ChatInputStyleSelectorViewProps
@@ -21,41 +21,31 @@ export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = p
   };
 
   return (
-    <Popover
-      padding={12}
-      isOpen={selectorVisible}
-      positions={['top']}
-      reposition={false}
-      containerClassName="max-w-[276px] not-italic font-normal leading-normal text-left no-underline text-shadow-none normal-case tracking-[normal] [word-break:normal] [word-spacing:normal] whitespace-normal text-[.7875rem] [word-wrap:break-word] bg-[#dfdfdf] bg-clip-padding border border-[solid] border-[#283F5D] rounded-[.25rem] [box-shadow:0_2px_#00000073] z-1070"
-      content={({ position, childRect, popoverRect }) => (
-        <ArrowContainer
-          arrowColor={'black'}
-          arrowSize={7}
-          arrowStyle={{ bottom: 'calc(-.5rem - 1px)' }}
-          childRect={childRect}
-          popoverRect={popoverRect}
-          position={position}
-        >
+    <Popover.Root open={ selectorVisible } onOpenChange={ setSelectorVisible }>
+      <Popover.Trigger asChild>
+        <div className="chatstyles-anchor">
+          <div className="nitro-icon chatstyles-icon" />
+        </div>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content
+          className="max-w-[276px] not-italic font-normal leading-normal text-left no-underline text-shadow-none normal-case tracking-[normal] [word-break:normal] [word-spacing:normal] whitespace-normal text-[.7875rem] [word-wrap:break-word] bg-[#dfdfdf] bg-clip-padding border border-[solid] border-[#283F5D] rounded-[.25rem] [box-shadow:0_2px_#00000073] z-[1070]"
+          side="top"
+          sideOffset={ 12 }>
           <NitroCardContentView className="bg-transparent max-h-[210px]!" overflow="hidden">
-            <Grid columnCount={3} overflow="auto">
-              {chatStyleIds && chatStyleIds.length > 0 && chatStyleIds.map(styleId => (
-                <Flex key={styleId} center pointer className="h-[35px] w-[65px]" onClick={() => selectStyle(styleId)}>
+            <Grid columnCount={ 3 } overflow="auto">
+              { chatStyleIds && chatStyleIds.length > 0 && chatStyleIds.map(styleId => (
+                <Flex key={ styleId } center pointer className="h-[35px] w-[65px]" onClick={ () => selectStyle(styleId) }>
                   <div className="bubble-container relative w-[50px]">
-                    <div className={`relative max-w-[65px] min-h-[26px] text-[14px] chat-bubble bubble-${styleId}`} />
+                    <div className={ `relative max-w-[65px] min-h-[26px] text-[14px] chat-bubble bubble-${ styleId }` } />
                   </div>
                 </Flex>
-              ))}
+              )) }
             </Grid>
           </NitroCardContentView>
-        </ArrowContainer>
-      )}
-    >
-      <div
-        className="chatstyles-anchor"
-        onClick={() => setSelectorVisible(v => !v)}
-      >
-        <div className="nitro-icon chatstyles-icon" />
-      </div>
-    </Popover>
+          <Popover.Arrow className="fill-black" height={ 7 } width={ 14 } />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 };

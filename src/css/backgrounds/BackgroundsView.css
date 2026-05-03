@@ -78,6 +78,656 @@
   background: none;
 }
 
+.profile-card-background {
+  background-repeat: repeat;
+  background-position: top left;
+  background-size: auto;
+  &.card-background-0 {
+    background-image: url('@/assets/images/backgrounds/background/bg_0.png');
+  }
+  &.card-background-1 {
+    background-image: url('@/assets/images/backgrounds/background/bg_1.png');
+  }
+  &.card-background-2 {
+    background-image: url('@/assets/images/backgrounds/background/bg_2.png');
+  }
+  &.card-background-3 {
+    background-image: url('@/assets/images/backgrounds/background/bg_3.png');
+  }
+  &.card-background-4 {
+    background-image: url('@/assets/images/backgrounds/background/bg_4.png');
+  }
+  &.card-background-5 {
+    background-image: url('@/assets/images/backgrounds/background/bg_5.png');
+  }
+  &.card-background-6 {
+    background-image: url('@/assets/images/backgrounds/background/bg_6.png');
+  }
+  &.card-background-7 {
+    background-image: url('@/assets/images/backgrounds/background/bg_7.png');
+  }
+  &.card-background-8 {
+    background-image: url('@/assets/images/backgrounds/background/bg_8.png');
+  }
+  &.card-background-9 {
+    background-image: url('@/assets/images/backgrounds/background/bg_9.png');
+  }
+  &.card-background-10 {
+    background-image: url('@/assets/images/backgrounds/background/bg_10.png');
+  }
+  &.card-background-11 {
+    background-image: url('@/assets/images/backgrounds/background/bg_11.png');
+  }
+  &.card-background-12 {
+    background-image: url('@/assets/images/backgrounds/background/bg_12.png');
+  }
+  &.card-background-13 {
+    background-image: url('@/assets/images/backgrounds/background/bg_13.png');
+  }
+  &.card-background-14 {
+    background-image: url('@/assets/images/backgrounds/background/bg_14.png');
+  }
+  &.card-background-15 {
+    background-image: url('@/assets/images/backgrounds/background/bg_15.png');
+  }
+  &.card-background-16 {
+    background-image: url('@/assets/images/backgrounds/background/bg_16.png');
+  }
+  &.card-background-17 {
+    background-image: url('@/assets/images/backgrounds/background/bg_17.png');
+  }
+  &.card-background-18 {
+    background-image: url('@/assets/images/backgrounds/background/bg_18.png');
+  }
+  &.card-background-19 {
+    background-image: url('@/assets/images/backgrounds/background/bg_19.png');
+  }
+  &.card-background-20 {
+    background-image: url('@/assets/images/backgrounds/background/bg_20.png');
+  }
+  &.card-background-21 {
+    background-image: url('@/assets/images/backgrounds/background/bg_21.png');
+  }
+  &.card-background-22 {
+    background-image: url('@/assets/images/backgrounds/background/bg_22.png');
+  }
+  &.card-background-23 {
+    background-image: url('@/assets/images/backgrounds/background/bg_23.png');
+  }
+  &.card-background-24 {
+    background-image: url('@/assets/images/backgrounds/background/bg_24.png');
+  }
+  &.card-background-25 {
+    background-image: url('@/assets/images/backgrounds/background/bg_25.png');
+  }
+  &.card-background-26 {
+    background-image: url('@/assets/images/backgrounds/background/bg_26.png');
+  }
+  &.card-background-27 {
+    background-image: url('@/assets/images/backgrounds/background/bg_27.png');
+  }
+  &.card-background-28 {
+    background-image: url('@/assets/images/backgrounds/background/bg_28.png');
+  }
+  &.card-background-29 {
+    background-image: url('@/assets/images/backgrounds/background/bg_29.png');
+  }
+  &.card-background-30 {
+    background-image: url('@/assets/images/backgrounds/background/bg_30.png');
+  }
+  &.card-background-31 {
+    background-image: url('@/assets/images/backgrounds/background/bg_31.png');
+  }
+  &.card-background-32 {
+    background-image: url('@/assets/images/backgrounds/background/bg_32.png');
+  }
+  &.card-background-33 {
+    background-image: url('@/assets/images/backgrounds/background/bg_33.png');
+  }
+  &.card-background-34 {
+    background-image: url('@/assets/images/backgrounds/background/bg_34.png');
+  }
+  &.card-background-35 {
+    background-image: url('@/assets/images/backgrounds/background/bg_35.png');
+  }
+  &.card-background-36 {
+    background-image: url('@/assets/images/backgrounds/background/bg_36.gif');
+  }
+  &.card-background-37 {
+    background-image: url('@/assets/images/backgrounds/background/bg_37.png');
+  }
+  &.card-background-38 {
+    background-image: url('@/assets/images/backgrounds/background/bg_38.png');
+  }
+  &.card-background-39 {
+    background-image: url('@/assets/images/backgrounds/background/bg_39.png');
+  }
+  &.card-background-40 {
+    background-image: url('@/assets/images/backgrounds/background/bg_40.png');
+  }
+  &.card-background-41 {
+    background-image: url('@/assets/images/backgrounds/background/bg_41.png');
+  }
+  &.card-background-42 {
+    background-image: url('@/assets/images/backgrounds/background/bg_42.png');
+  }
+  &.card-background-43 {
+    background-image: url('@/assets/images/backgrounds/background/bg_43.png');
+  }
+  &.card-background-44 {
+    background-image: url('@/assets/images/backgrounds/background/bg_44.png');
+  }
+  &.card-background-45 {
+    background-image: url('@/assets/images/backgrounds/background/bg_45.png');
+  }
+  &.card-background-46 {
+    background-image: url('@/assets/images/backgrounds/background/bg_46.png');
+  }
+  &.card-background-47 {
+    background-image: url('@/assets/images/backgrounds/background/bg_47.png');
+  }
+  &.card-background-48 {
+    background-image: url('@/assets/images/backgrounds/background/bg_48.png');
+  }
+  &.card-background-49 {
+    background-image: url('@/assets/images/backgrounds/background/bg_49.png');
+  }
+  &.card-background-50 {
+    background-image: url('@/assets/images/backgrounds/background/bg_50.png');
+  }
+  &.card-background-51 {
+    background-image: url('@/assets/images/backgrounds/background/bg_51.gif');
+  }
+  &.card-background-52 {
+    background-image: url('@/assets/images/backgrounds/background/bg_52.gif');
+  }
+  &.card-background-53 {
+    background-image: url('@/assets/images/backgrounds/background/bg_53.gif');
+  }
+  &.card-background-54 {
+    background-image: url('@/assets/images/backgrounds/background/bg_54.gif');
+  }
+  &.card-background-55 {
+    background-image: url('@/assets/images/backgrounds/background/bg_55.gif');
+  }
+  &.card-background-56 {
+    background-image: url('@/assets/images/backgrounds/background/bg_56.gif');
+  }
+  &.card-background-57 {
+    background-image: url('@/assets/images/backgrounds/background/bg_57.gif');
+  }
+  &.card-background-58 {
+    background-image: url('@/assets/images/backgrounds/background/bg_58.gif');
+  }
+  &.card-background-59 {
+    background-image: url('@/assets/images/backgrounds/background/bg_59.gif');
+  }
+  &.card-background-60 {
+    background-image: url('@/assets/images/backgrounds/background/bg_60.gif');
+  }
+  &.card-background-61 {
+    background-image: url('@/assets/images/backgrounds/background/bg_61.gif');
+  }
+  &.card-background-62 {
+    background-image: url('@/assets/images/backgrounds/background/bg_62.gif');
+  }
+  &.card-background-63 {
+    background-image: url('@/assets/images/backgrounds/background/bg_63.gif');
+  }
+  &.card-background-64 {
+    background-image: url('@/assets/images/backgrounds/background/bg_64.gif');
+  }
+  &.card-background-65 {
+    background-image: url('@/assets/images/backgrounds/background/bg_65.gif');
+  }
+  &.card-background-66 {
+    background-image: url('@/assets/images/backgrounds/background/bg_66.gif');
+  }
+  &.card-background-67 {
+    background-image: url('@/assets/images/backgrounds/background/bg_67.gif');
+  }
+  &.card-background-68 {
+    background-image: url('@/assets/images/backgrounds/background/bg_68.gif');
+  }
+  &.card-background-69 {
+    background-image: url('@/assets/images/backgrounds/background/bg_69.gif');
+  }
+  &.card-background-70 {
+    background-image: url('@/assets/images/backgrounds/background/bg_70.gif');
+  }
+  &.card-background-71 {
+    background-image: url('@/assets/images/backgrounds/background/bg_71.gif');
+  }
+  &.card-background-72 {
+    background-image: url('@/assets/images/backgrounds/background/bg_72.gif');
+  }
+  &.card-background-73 {
+    background-image: url('@/assets/images/backgrounds/background/bg_73.gif');
+  }
+  &.card-background-74 {
+    background-image: url('@/assets/images/backgrounds/background/bg_74.gif');
+  }
+  &.card-background-75 {
+    background-image: url('@/assets/images/backgrounds/background/bg_75.gif');
+  }
+  &.card-background-76 {
+    background-image: url('@/assets/images/backgrounds/background/bg_76.gif');
+  }
+  &.card-background-77 {
+    background-image: url('@/assets/images/backgrounds/background/bg_77.gif');
+  }
+  &.card-background-78 {
+    background-image: url('@/assets/images/backgrounds/background/bg_78.gif');
+  }
+  &.card-background-79 {
+    background-image: url('@/assets/images/backgrounds/background/bg_79.gif');
+  }
+  &.card-background-80 {
+    background-image: url('@/assets/images/backgrounds/background/bg_80.gif');
+  }
+  &.card-background-81 {
+    background-image: url('@/assets/images/backgrounds/background/bg_81.gif');
+  }
+  &.card-background-82 {
+    background-image: url('@/assets/images/backgrounds/background/bg_82.gif');
+  }
+  &.card-background-83 {
+    background-image: url('@/assets/images/backgrounds/background/bg_83.gif');
+  }
+  &.card-background-84 {
+    background-image: url('@/assets/images/backgrounds/background/bg_84.gif');
+  }
+  &.card-background-85 {
+    background-image: url('@/assets/images/backgrounds/background/bg_85.gif');
+  }
+  &.card-background-86 {
+    background-image: url('@/assets/images/backgrounds/background/bg_86.png');
+  }
+  &.card-background-87 {
+    background-image: url('@/assets/images/backgrounds/background/bg_87.gif');
+  }
+  &.card-background-88 {
+    background-image: url('@/assets/images/backgrounds/background/bg_88.gif');
+  }
+  &.card-background-89 {
+    background-image: url('@/assets/images/backgrounds/background/bg_89.gif');
+  }
+  &.card-background-90 {
+    background-image: url('@/assets/images/backgrounds/background/bg_90.gif');
+  }
+  &.card-background-91 {
+    background-image: url('@/assets/images/backgrounds/background/bg_91.gif');
+  }
+  &.card-background-92 {
+    background-image: url('@/assets/images/backgrounds/background/bg_92.gif');
+  }
+  &.card-background-93 {
+    background-image: url('@/assets/images/backgrounds/background/bg_93.gif');
+  }
+  &.card-background-94 {
+    background-image: url('@/assets/images/backgrounds/background/bg_94.gif');
+  }
+  &.card-background-95 {
+    background-image: url('@/assets/images/backgrounds/background/bg_95.gif');
+  }
+  &.card-background-96 {
+    background-image: url('@/assets/images/backgrounds/background/bg_96.gif');
+  }
+  &.card-background-97 {
+    background-image: url('@/assets/images/backgrounds/background/bg_97.gif');
+  }
+  &.card-background-98 {
+    background-image: url('@/assets/images/backgrounds/background/bg_98.gif');
+  }
+  &.card-background-99 {
+    background-image: url('@/assets/images/backgrounds/background/bg_99.gif');
+  }
+  &.card-background-100 {
+    background-image: url('@/assets/images/backgrounds/background/bg_100.gif');
+  }
+  &.card-background-101 {
+    background-image: url('@/assets/images/backgrounds/background/bg_101.png');
+  }
+  &.card-background-102 {
+    background-image: url('@/assets/images/backgrounds/background/bg_102.gif');
+  }
+  &.card-background-103 {
+    background-image: url('@/assets/images/backgrounds/background/bg_103.gif');
+  }
+  &.card-background-104 {
+    background-image: url('@/assets/images/backgrounds/background/bg_104.gif');
+  }
+  &.card-background-105 {
+    background-image: url('@/assets/images/backgrounds/background/bg_105.gif');
+  }
+  &.card-background-106 {
+    background-image: url('@/assets/images/backgrounds/background/bg_106.gif');
+  }
+  &.card-background-107 {
+    background-image: url('@/assets/images/backgrounds/background/bg_107.gif');
+  }
+  &.card-background-108 {
+    background-image: url('@/assets/images/backgrounds/background/bg_108.gif');
+  }
+  &.card-background-109 {
+    background-image: url('@/assets/images/backgrounds/background/bg_109.gif');
+  }
+  &.card-background-110 {
+    background-image: url('@/assets/images/backgrounds/background/bg_110.gif');
+  }
+  &.card-background-111 {
+    background-image: url('@/assets/images/backgrounds/background/bg_111.gif');
+  }
+  &.card-background-112 {
+    background-image: url('@/assets/images/backgrounds/background/bg_112.gif');
+  }
+  &.card-background-113 {
+    background-image: url('@/assets/images/backgrounds/background/bg_113.gif');
+  }
+  &.card-background-114 {
+    background-image: url('@/assets/images/backgrounds/background/bg_114.gif');
+  }
+  &.card-background-115 {
+    background-image: url('@/assets/images/backgrounds/background/bg_115.gif');
+  }
+  &.card-background-116 {
+    background-image: url('@/assets/images/backgrounds/background/bg_116.gif');
+  }
+  &.card-background-117 {
+    background-image: url('@/assets/images/backgrounds/background/bg_117.gif');
+  }
+  &.card-background-118 {
+    background-image: url('@/assets/images/backgrounds/background/bg_118.gif');
+  }
+  &.card-background-119 {
+    background-image: url('@/assets/images/backgrounds/background/bg_119.gif');
+  }
+  &.card-background-120 {
+    background-image: url('@/assets/images/backgrounds/background/bg_120.gif');
+  }
+  &.card-background-121 {
+    background-image: url('@/assets/images/backgrounds/background/bg_121.gif');
+  }
+  &.card-background-122 {
+    background-image: url('@/assets/images/backgrounds/background/bg_122.gif');
+  }
+  &.card-background-123 {
+    background-image: url('@/assets/images/backgrounds/background/bg_123.gif');
+  }
+  &.card-background-124 {
+    background-image: url('@/assets/images/backgrounds/background/bg_124.gif');
+  }
+  &.card-background-125 {
+    background-image: url('@/assets/images/backgrounds/background/bg_125.gif');
+  }
+  &.card-background-126 {
+    background-image: url('@/assets/images/backgrounds/background/bg_126.gif');
+  }
+  &.card-background-127 {
+    background-image: url('@/assets/images/backgrounds/background/bg_127.gif');
+  }
+  &.card-background-128 {
+    background-image: url('@/assets/images/backgrounds/background/bg_128.gif');
+  }
+  &.card-background-129 {
+    background-image: url('@/assets/images/backgrounds/background/bg_129.gif');
+  }
+  &.card-background-130 {
+    background-image: url('@/assets/images/backgrounds/background/bg_130.gif');
+  }
+  &.card-background-131 {
+    background-image: url('@/assets/images/backgrounds/background/bg_131.gif');
+  }
+  &.card-background-132 {
+    background-image: url('@/assets/images/backgrounds/background/bg_132.gif');
+  }
+  &.card-background-133 {
+    background-image: url('@/assets/images/backgrounds/background/bg_133.gif');
+  }
+  &.card-background-134 {
+    background-image: url('@/assets/images/backgrounds/background/bg_134.gif');
+  }
+  &.card-background-135 {
+    background-image: url('@/assets/images/backgrounds/background/bg_135.gif');
+  }
+  &.card-background-136 {
+    background-image: url('@/assets/images/backgrounds/background/bg_136.gif');
+  }
+  &.card-background-137 {
+    background-image: url('@/assets/images/backgrounds/background/bg_137.gif');
+  }
+  &.card-background-138 {
+    background-image: url('@/assets/images/backgrounds/background/bg_138.gif');
+  }
+  &.card-background-139 {
+    background-image: url('@/assets/images/backgrounds/background/bg_139.gif');
+  }
+  &.card-background-140 {
+    background-image: url('@/assets/images/backgrounds/background/bg_140.gif');
+  }
+  &.card-background-141 {
+    background-image: url('@/assets/images/backgrounds/background/bg_141.gif');
+  }
+  &.card-background-142 {
+    background-image: url('@/assets/images/backgrounds/background/bg_142.gif');
+  }
+  &.card-background-143 {
+    background-image: url('@/assets/images/backgrounds/background/bg_143.gif');
+  }
+  &.card-background-144 {
+    background-image: url('@/assets/images/backgrounds/background/bg_144.gif');
+  }
+  &.card-background-145 {
+    background-image: url('@/assets/images/backgrounds/background/bg_145.gif');
+  }
+  &.card-background-146 {
+    background-image: url('@/assets/images/backgrounds/background/bg_146.gif');
+  }
+  &.card-background-147 {
+    background-image: url('@/assets/images/backgrounds/background/bg_147.gif');
+  }
+  &.card-background-148 {
+    background-image: url('@/assets/images/backgrounds/background/bg_148.gif');
+  }
+  &.card-background-149 {
+    background-image: url('@/assets/images/backgrounds/background/bg_149.gif');
+  }
+  &.card-background-150 {
+    background-image: url('@/assets/images/backgrounds/background/bg_150.gif');
+  }
+  &.card-background-151 {
+    background-image: url('@/assets/images/backgrounds/background/bg_151.gif');
+  }
+  &.card-background-152 {
+    background-image: url('@/assets/images/backgrounds/background/bg_152.gif');
+  }
+  &.card-background-153 {
+    background-image: url('@/assets/images/backgrounds/background/bg_153.gif');
+  }
+  &.card-background-154 {
+    background-image: url('@/assets/images/backgrounds/background/bg_154.gif');
+  }
+  &.card-background-155 {
+    background-image: url('@/assets/images/backgrounds/background/bg_155.gif');
+  }
+  &.card-background-156 {
+    background-image: url('@/assets/images/backgrounds/background/bg_156.gif');
+  }
+  &.card-background-157 {
+    background-image: url('@/assets/images/backgrounds/background/bg_157.gif');
+  }
+  &.card-background-158 {
+    background-image: url('@/assets/images/backgrounds/background/bg_158.gif');
+  }
+  &.card-background-159 {
+    background-image: url('@/assets/images/backgrounds/background/bg_159.gif');
+  }
+  &.card-background-160 {
+    background-image: url('@/assets/images/backgrounds/background/bg_160.gif');
+  }
+  &.card-background-161 {
+    background-image: url('@/assets/images/backgrounds/background/bg_161.gif');
+  }
+  &.card-background-162 {
+    background-image: url('@/assets/images/backgrounds/background/bg_162.gif');
+  }
+  &.card-background-163 {
+    background-image: url('@/assets/images/backgrounds/background/bg_163.gif');
+  }
+  &.card-background-164 {
+    background-image: url('@/assets/images/backgrounds/background/bg_164.gif');
+  }
+  &.card-background-165 {
+    background-image: url('@/assets/images/backgrounds/background/bg_165.gif');
+  }
+  &.card-background-166 {
+    background-image: url('@/assets/images/backgrounds/background/bg_166.gif');
+  }
+  &.card-background-167 {
+    background-image: url('@/assets/images/backgrounds/background/bg_167.gif');
+  }
+  &.card-background-168 {
+    background-image: url('@/assets/images/backgrounds/background/bg_168.gif');
+  }
+  &.card-background-169 {
+    background-image: url('@/assets/images/backgrounds/background/bg_169.gif');
+  }
+  &.card-background-170 {
+    background-image: url('@/assets/images/backgrounds/background/bg_170.png');
+  }
+  &.card-background-171 {
+    background-image: url('@/assets/images/backgrounds/background/bg_171.png');
+  }
+  &.card-background-172 {
+    background-image: url('@/assets/images/backgrounds/background/bg_172.png');
+  }
+  &.card-background-173 {
+    background-image: url('@/assets/images/backgrounds/background/bg_173.png');
+  }
+  &.card-background-174 {
+    background-image: url('@/assets/images/backgrounds/background/bg_174.png');
+  }
+  &.card-background-175 {
+    background-image: url('@/assets/images/backgrounds/background/bg_175.png');
+  }
+  &.card-background-176 {
+    background-image: url('@/assets/images/backgrounds/background/bg_176.png');
+  }
+  &.card-background-177 {
+    background-image: url('@/assets/images/backgrounds/background/bg_177.gif');
+  }
+  &.card-background-178 {
+    background-image: url('@/assets/images/backgrounds/background/bg_178.png');
+  }
+  &.card-background-179 {
+    background-image: url('@/assets/images/backgrounds/background/bg_179.png');
+  }
+  &.card-background-180 {
+    background-image: url('@/assets/images/backgrounds/background/bg_180.png');
+  }
+  &.card-background-181 {
+    background-image: url('@/assets/images/backgrounds/background/bg_181.png');
+  }
+  &.card-background-182 {
+    background-image: url('@/assets/images/backgrounds/background/bg_182.png');
+  }
+  &.card-background-183 {
+    background-image: url('@/assets/images/backgrounds/background/bg_183.png');
+  }
+  &.card-background-184 {
+    background-image: url('@/assets/images/backgrounds/background/bg_184.png');
+  }
+  &.card-background-185 {
+    background-image: url('@/assets/images/backgrounds/background/bg_185.png');
+  }
+  &.card-background-186 {
+    background-image: url('@/assets/images/backgrounds/background/bg_186.png');
+  }
+  &.card-background-187 {
+    background-image: url('@/assets/images/backgrounds/background/bg_187.gif');
+  }
+}
+
+.profile-card-background.card-background-1 {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-2 {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a8a3 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-3 {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-4 {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-5 {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-6 {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-7 {
+  background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-8 {
+  background: linear-gradient(135deg, #243949 0%, #517fa4 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-9 {
+  background-image: repeating-linear-gradient(45deg, #ff6b9d 0 10px, #c06c84 10px 20px);
+  background-color: #c06c84;
+  background-size: auto;
+}
+.profile-card-background.card-background-10 {
+  background-image: repeating-linear-gradient(90deg, #2b5876 0 8px, #4e4376 8px 16px);
+  background-color: #2b5876;
+  background-size: auto;
+}
+.profile-card-background.card-background-11 {
+  background-image: radial-gradient(circle, #ffd54f 1.5px, transparent 2px);
+  background-color: #2c3e50;
+  background-size: 12px 12px;
+  background-repeat: repeat;
+}
+.profile-card-background.card-background-12 {
+  background-image: linear-gradient(45deg, #1a1a2e 25%, transparent 25%), linear-gradient(-45deg, #1a1a2e 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1a1a2e 75%), linear-gradient(-45deg, transparent 75%, #1a1a2e 75%);
+  background-color: #16213e;
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-repeat: repeat;
+}
+.profile-card-background.card-background-13 {
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-14 {
+  background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.profile-card-background.card-background-15 {
+  background-image: linear-gradient(0deg, transparent 49%, rgba(255,255,255,0.08) 49% 51%, transparent 51%), linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.08) 49% 51%, transparent 51%);
+  background-color: #1a1a2e;
+  background-size: 24px 24px;
+  background-repeat: repeat;
+}
+
 .profile-background {
   background-repeat: no-repeat;
   background-position: center;

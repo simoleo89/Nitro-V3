@@ -18,6 +18,7 @@ export const UserContainerView: FC<{
     const infostandBackgroundClass = `background-${userProfile.backgroundId ?? 'default'}`;
     const infostandStandClass = `stand-${userProfile.standId ?? 'default'}`;
     const infostandOverlayClass = `overlay-${userProfile.overlayId ?? 'default'}`;
+    const profileCardBgClass = userProfile.cardBackgroundId ? `card-background-${userProfile.cardBackgroundId}` : '';
 
     const addFriend = () =>
     {
@@ -32,7 +33,7 @@ export const UserContainerView: FC<{
     }, [ userProfile ]);
 
     return (
-        <div className="flex gap-2">
+        <div className={`flex gap-2 p-2 rounded profile-card-background ${profileCardBgClass}`}>
             <div className={`flex flex-col justify-center items-center w-[75px] h-[120px] rounded-sm relative overflow-hidden profile-background ${infostandBackgroundClass}`}>
                 <div className={`absolute inset-0 profile-stand ${infostandStandClass}`} />
                 <LayoutAvatarImageView direction={ 2 } figure={ userProfile.figure } />

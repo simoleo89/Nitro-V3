@@ -1,4 +1,4 @@
-import { CrackableDataType, CreateLinkEvent, FurnitureFloorUpdateEvent, GetRoomEngine, GetSoundManager, GroupInformationComposer, GroupInformationEvent, NowPlayingEvent, RoomControllerLevel, RoomObjectCategory, RoomObjectOperationType, RoomObjectVariable, RoomWidgetEnumItemExtradataParameter, RoomWidgetFurniInfoUsagePolicyEnum, SetObjectDataMessageComposer, SongInfoReceivedEvent, StringDataType, UpdateFurniturePositionComposer } from '@nitrots/nitro-renderer';
+import { CrackableDataType, CreateLinkEvent, FurnitureFloorUpdateEvent, GetRoomEngine, GetSessionDataManager, GetSoundManager, GroupInformationComposer, GroupInformationEvent, NowPlayingEvent, RoomControllerLevel, RoomObjectCategory, RoomObjectOperationType, RoomObjectVariable, RoomWidgetEnumItemExtradataParameter, RoomWidgetFurniInfoUsagePolicyEnum, SetObjectDataMessageComposer, SongInfoReceivedEvent, StringDataType, UpdateFurniturePositionComposer } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { FaCrosshairs, FaRulerVertical, FaTimes } from 'react-icons/fa';
 import { GrFormNextLink, GrRotateLeft, GrRotateRight } from 'react-icons/gr';
@@ -585,19 +585,20 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
                                             onClick={ () => setDropdownOpen(!dropdownOpen) }>
                                             { dropdownOpen ? `${LocalizeText('widget.furni.present.close')} Buildtools` : `${LocalizeText('navigator.roomsettings.doormode.open')} Buildtools` }
                                         </button>
-                                        <button
-                                            className="w-full text-white text-xs bg-[#1e7295] hover:bg-[#1a617f] border border-[#ffffff33] rounded px-2 py-1 cursor-pointer transition-colors"
-                                            onClick={ () =>
-                                            {
-                                                const roomObject = GetRoomEngine().getRoomObject(roomSession.roomId, avatarInfo.id, avatarInfo.isWallItem ? RoomObjectCategory.WALL : RoomObjectCategory.FLOOR);
-                                                const typeId = roomObject?.model?.getValue(RoomObjectVariable.FURNITURE_TYPE_ID);
+                                        { GetSessionDataManager().isModerator &&
+                                            <button
+                                                className="w-full text-white text-xs bg-[#1e7295] hover:bg-[#1a617f] border border-[#ffffff33] rounded px-2 py-1 cursor-pointer transition-colors"
+                                                onClick={ () =>
+                                                {
+                                                    const roomObject = GetRoomEngine().getRoomObject(roomSession.roomId, avatarInfo.id, avatarInfo.isWallItem ? RoomObjectCategory.WALL : RoomObjectCategory.FLOOR);
+                                                    const typeId = roomObject?.model?.getValue(RoomObjectVariable.FURNITURE_TYPE_ID);
 
-                                                CreateLinkEvent('furni-editor/show');
+                                                    CreateLinkEvent('furni-editor/show');
 
-                                                if(typeId) window.dispatchEvent(new CustomEvent('furni-editor:open', { detail: { spriteId: typeId } }));
-                                            } }>
-                                            Edit Furni
-                                        </button>
+                                                    if(typeId) window.dispatchEvent(new CustomEvent('furni-editor:open', { detail: { spriteId: typeId } }));
+                                                } }>
+                                                Edit Furni
+                                            </button> }
                                         { dropdownOpen &&
                                             <div className="flex gap-[4px] w-full">
                                                 { /* Left panel: position + rotation */ }

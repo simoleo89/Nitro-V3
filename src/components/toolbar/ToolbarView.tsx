@@ -184,7 +184,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                                             </motion.div> }
                                     </AnimatePresence>
                                     <motion.div whileHover={ { scale: 1.15 } } whileTap={ { scale: 1 } } className="cursor-pointer" onClick={ event => { setMeExpanded(value => !value); event.stopPropagation(); } }>
-                                        <LayoutAvatarImageView headOnly={ true } direction={ 2 } figure={ userFigure } className="tb-icon !h-[63px] !w-[32px] !bg-center !bg-no-repeat" style={ { marginTop: '2px' } } />
+                                        <LayoutAvatarImageView headOnly={ true } direction={ 2 } figure={ userFigure } className="tb-icon !h-[63px] !w-[32px] !bg-center !bg-no-repeat" style={ { marginTop: '12px' } } />
                                     </motion.div>
                                     { (getTotalUnseen > 0) &&
                                         <LayoutItemCountView count={ getTotalUnseen } className="pointer-events-none absolute -right-1 -top-1 z-10" /> }
@@ -279,7 +279,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                                         </motion.div> }
                                     </AnimatePresence>
                                     <motion.div whileHover={ { scale: 1.08 } } whileTap={ { scale: 0.95 } } className="cursor-pointer" onClick={ event => { setMeExpanded(value => !value); event.stopPropagation(); } }>
-                                        <LayoutAvatarImageView headOnly={ true } direction={ 2 } figure={ userFigure } className="tb-icon !h-[44px] !w-[32px] !bg-center !bg-no-repeat" style={ { marginTop: '4px' } } />
+                                        <LayoutAvatarImageView headOnly={ true } direction={ 2 } figure={ userFigure } className="tb-icon !h-[44px] !w-[32px] !bg-center !bg-no-repeat" style={ { marginTop: '9px' } } />
                                     </motion.div>
                                     { (getTotalUnseen > 0) &&
                                         <LayoutItemCountView count={ getTotalUnseen } className="pointer-events-none absolute -right-1 -top-1 z-10" /> }

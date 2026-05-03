@@ -1346,6 +1346,23 @@
             "isAmbassadorOnly": false
         }
     ],
+    "cards.data": [
+        { "backgroundId": 1, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 2, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 3, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 4, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 5, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 6, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 7, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 8, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 9, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 10, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 11, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 12, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 13, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 14, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false },
+        { "backgroundId": 15, "minRank": 0, "isHcOnly": false, "isAmbassadorOnly": false }
+    ],
     "stands.data": [
         {
             "standId": 0,

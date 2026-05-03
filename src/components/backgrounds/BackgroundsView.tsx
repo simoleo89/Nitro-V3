@@ -20,9 +20,11 @@ interface BackgroundsViewProps {
     setSelectedStand: Dispatch<SetStateAction<number>>;
     selectedOverlay: number;
     setSelectedOverlay: Dispatch<SetStateAction<number>>;
+    selectedCardBackground: number;
+    setSelectedCardBackground: Dispatch<SetStateAction<number>>;
 }
 
-const TABS = ['backgrounds', 'stands', 'overlays'] as const;
+const TABS = ['backgrounds', 'stands', 'overlays', 'cards'] as const;
 type TabType = typeof TABS[number];
 
 export const BackgroundsView: FC<BackgroundsViewProps> = ({
@@ -32,7 +34,9 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
     selectedStand,
     setSelectedStand,
     selectedOverlay,
-    setSelectedOverlay
+    setSelectedOverlay,
+    selectedCardBackground,
+    setSelectedCardBackground
 }) => {
     const [activeTab, setActiveTab] = useState<TabType>('backgrounds');
     const { roomSession } = useRoom();
@@ -58,20 +62,21 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
     const allData = useMemo(() => ({
         backgrounds: processData(GetConfigurationValue('backgrounds.data'), 'background'),
         stands: processData(GetConfigurationValue('stands.data'), 'stand'),
-        overlays: processData(GetConfigurationValue('overlays.data'), 'overlay')
+        overlays: processData(GetConfigurationValue('overlays.data'), 'overlay'),
+        cards: processData(GetConfigurationValue('cards.data') || GetConfigurationValue('backgrounds.data'), 'background')
     }), [processData]);
 
     const handleSelection = useCallback((id: number) => {
         if (!roomSession) return;
 
-        const setters = { backgrounds: setSelectedBackground, stands: setSelectedStand, overlays: setSelectedOverlay };
-        
-        const currentValues = { backgrounds: selectedBackground, stands: selectedStand, overlays: selectedOverlay };
+        const setters = { backgrounds: setSelectedBackground, stands: setSelectedStand, overlays: setSelectedOverlay, cards: setSelectedCardBackground };
+
+        const currentValues = { backgrounds: selectedBackground, stands: selectedStand, overlays: selectedOverlay, cards: selectedCardBackground };
 
         setters[activeTab](id);
         const newValues = { ...currentValues, [activeTab]: id };
-        roomSession.sendBackgroundMessage( newValues.backgrounds, newValues.stands, newValues.overlays );
-    }, [activeTab, roomSession, selectedBackground, selectedStand, selectedOverlay, setSelectedBackground, setSelectedStand, setSelectedOverlay]);
+        roomSession.sendBackgroundMessage( newValues.backgrounds, newValues.stands, newValues.overlays, newValues.cards );
+    }, [activeTab, roomSession, selectedBackground, selectedStand, selectedOverlay, selectedCardBackground, setSelectedBackground, setSelectedStand, setSelectedOverlay, setSelectedCardBackground]);
 
     const renderItem = useCallback((item: ItemData, type: string) => (
         <Flex
@@ -81,7 +86,10 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
             onClick={() => item.selectable && handleSelection(item.id)}
             className={item.selectable ? '' : 'non-selectable'}
         >
-            <Base className={`profile-${type} ${type}-${item.id}`} />
+            <Base
+                className={`profile-${type} ${type}-${item.id}`}
+                style={type === 'card-background' ? { width: 60, height: 80, borderRadius: 4 } : undefined}
+            />
             {item.isHcOnly && <LayoutCurrencyIcon position="absolute" className="top-1 inset-e-1" type="hc" />}
         </Flex>
     ), [handleSelection]);
@@ -103,7 +111,7 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
             <NitroCardContentView gap={1}>
                 <Text bold center>Select an Option</Text>
                 <Grid gap={1} columnCount={7} overflow="auto">
-                    {allData[activeTab].map(item => renderItem(item, activeTab.slice(0, -1)))}
+                    {allData[activeTab].map(item => renderItem(item, activeTab === 'cards' ? 'card-background' : activeTab.slice(0, -1)))}
                 </Grid>
             </NitroCardContentView>
         </NitroCardView>

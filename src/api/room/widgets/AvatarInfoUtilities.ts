@@ -186,6 +186,7 @@ export class AvatarInfoUtilities
 		userInfo.backgroundId = userData.background;
         userInfo.standId = userData.stand;
         userInfo.overlayId = userData.overlay;
+        userInfo.cardBackgroundId = userData.cardBackground ?? 0;
         userInfo.achievementScore = userData.activityPoints;
         userInfo.webID = userData.webID;
         userInfo.roomIndex = userData.roomIndex;

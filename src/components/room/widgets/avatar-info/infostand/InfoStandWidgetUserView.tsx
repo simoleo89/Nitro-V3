@@ -24,12 +24,14 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
   const [backgroundId, setBackgroundId] = useState<number>(null);
   const [standId, setStandId] = useState<number>(null);
   const [overlayId, setOverlayId] = useState<number>(null);
+  const [cardBackgroundId, setCardBackgroundId] = useState<number>(null);
   const [isVisible, setIsVisible] = useState(false);
   const { roomSession = null } = useRoom();
 
   const infostandBackgroundClass = `background-${backgroundId ?? 'default'}`;
   const infostandStandClass = `stand-${standId ?? 'default'}`;
   const infostandOverlayClass = `overlay-${overlayId ?? 'default'}`;
+  const infostandCardBackgroundClass = cardBackgroundId ? `card-background-${cardBackgroundId}` : '';
 
   const handleProfileClick = useCallback(() => { GetUserProfile(avatarInfo.webID); }, [avatarInfo.webID]);
 
@@ -91,6 +93,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
       newValue.backgroundId = event.backgroundId;
       newValue.standId = event.standId;
       newValue.overlayId = event.overlayId;
+      newValue.cardBackgroundId = event.cardBackgroundId ?? 0;
       return newValue;
     });
   });
@@ -125,6 +128,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
     setBackgroundId(avatarInfo.backgroundId);
     setStandId(avatarInfo.standId);
     setOverlayId(avatarInfo.overlayId);
+    setCardBackgroundId(avatarInfo.cardBackgroundId ?? 0);
 
     SendMessageComposer(new UserRelationshipsComposer(avatarInfo.webID));
 
@@ -135,6 +139,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
       setBackgroundId(null);
       setStandId(null);
       setOverlayId(null);
+      setCardBackgroundId(null);
     };
   }, [avatarInfo]);
 
@@ -142,7 +147,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
 
   return (
     <>
-      <Column className="relative min-w-[190px] max-w-[190px] z-30 pointer-events-auto bg-[rgba(28,28,32,0.95)] [box-shadow:inset_0_5px_#22222799,inset_0_-4px_#12121599] rounded">
+      <Column className={`relative min-w-[190px] max-w-[190px] z-30 pointer-events-auto ${cardBackgroundId ? '' : 'bg-[rgba(28,28,32,0.95)]'} [box-shadow:inset_0_5px_#22222799,inset_0_-4px_#12121599] rounded overflow-hidden profile-card-background ${infostandCardBackgroundClass}`}>
         <Column className="h-full p-[8px] overflow-auto" gap={1} overflow="visible">
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between">
@@ -277,6 +282,8 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = props =
             setSelectedStand={setStandId}
             selectedOverlay={overlayId}
             setSelectedOverlay={setOverlayId}
+            selectedCardBackground={cardBackgroundId}
+            setSelectedCardBackground={setCardBackgroundId}
           />
         </div>
       )}

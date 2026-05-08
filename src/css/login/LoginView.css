@@ -708,6 +708,22 @@
     }
 }
 
+@media (min-width: 600px) and (max-width: 1100px) {
+    .nitro-login-view .login-stack {
+        right: 16px;
+        width: auto;
+        max-width: min(540px, calc(100vw - 32px));
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 12px;
+        row-gap: 14px;
+    }
+
+    .nitro-login-view .login-stack > .nitro-login-card:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+}
+
 /* ─── Login News Window (Habbo flavour) ─── */
 
 .nitro-login-view .login-news-stack {
@@ -1062,6 +1078,13 @@
     .nitro-login-view .news-sparkle,
     .nitro-login-card.nitro-news-card .news-ribbon-text {
         animation: none !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    .nitro-login-view .login-news-stack {
+        left: 24px;
+        top: 45%;
     }
 }
 

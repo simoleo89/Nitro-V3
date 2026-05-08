@@ -215,6 +215,11 @@ const ASSET_LOADER_JS = `(() => {
     return new URL(".", source);
   };
 
+  const getDeployBase = () => {
+    try { return new URL("..", getBase()); }
+    catch { return new URL("/", location.href); }
+  };
+
   const withCacheBust = (url) => {
     url.searchParams.set("v", Date.now().toString(36));
     return url;
@@ -242,9 +247,14 @@ const ASSET_LOADER_JS = `(() => {
 
   const resolveAssetCandidates = (path) => {
     const base = getBase();
+    const deploy = getDeployBase();
     const normalized = path.replace(/^\\.\\//, "");
     const file = normalized.split("/").pop();
+    const relative = normalized.replace(/^\\//, "");
     const urls = [
+      new URL("src/assets/" + file, deploy),
+      new URL("assets/" + file, deploy),
+      new URL(relative, deploy),
       new URL("./src/assets/" + file, base),
       new URL("./assets/" + file, base),
       new URL("/src/assets/" + file, base.origin),
@@ -376,7 +386,10 @@ const ASSET_LOADER_JS = `(() => {
 
   const fetchManifest = async () => {
     const base = getBase();
+    const deploy = getDeployBase();
     const candidates = [
+      new URL(".vite/manifest.json", deploy),
+      new URL("manifest.json", deploy),
       new URL(".vite/manifest.json", base.origin + "/"),
       new URL("manifest.json", base.origin + "/"),
       new URL(".vite/manifest.json", base),
@@ -392,7 +405,11 @@ const ASSET_LOADER_JS = `(() => {
         const json = await response.json();
         if(json && typeof json === "object") {
           debug("loader: manifest from " + candidate.href);
-          return { manifest: json, base: new URL(".", candidate.href) };
+          let manifestBase = new URL(".", candidate.href);
+          if(/\\/\\.vite\\/manifest\\.json$/.test(candidate.pathname)) {
+            manifestBase = new URL("..", manifestBase);
+          }
+          return { manifest: json, base: manifestBase };
         }
       } catch {}
     }
@@ -418,18 +435,24 @@ const ASSET_LOADER_JS = `(() => {
   const resolveManifestPath = (manifestBase, file) => {
     if(/^https?:\\/\\//i.test(file)) return file;
     if(file.startsWith("/")) return file;
-    return new URL(file, manifestBase.origin + "/").pathname;
+    return new URL(file, manifestBase).pathname;
   };
 
   const isLoaderUrl = (href) => /(?:^|\\/)bootstrap\\.js(?:$|\\?|#)/i.test(href) || /(?:^|\\/)asset-loader\\.js(?:$|\\?|#)/i.test(href);
 
   const fetchEntryFromIndexHtml = async () => {
     const base = getBase();
+    const deploy = getDeployBase();
     const candidates = [
+      new URL("index.html", deploy),
+      new URL("./", deploy),
       new URL("/index.html", base.origin + "/"),
       new URL("/", base.origin + "/")
     ];
+    const seen = new Set();
     for(const candidate of candidates) {
+      if(seen.has(candidate.href)) continue;
+      seen.add(candidate.href);
       try {
         const response = await fetch(withCacheBust(new URL(candidate.href)), { cache: "no-store" });
         if(!response.ok) continue;

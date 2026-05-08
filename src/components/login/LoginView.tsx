@@ -1,6 +1,6 @@
-import { GetConfiguration } from '@nitrots/nitro-renderer';
+import { AvatarScaleType, AvatarSetType, GetAvatarRenderManager, GetConfiguration, IAvatarImage } from '@nitrots/nitro-renderer';
 import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ClearRememberLogin, GetConfigurationValue, GetOptionalConfigurationValue, GetRememberLogin, StoreRememberLoginFromPayload } from '../../api';
+import { ClearRememberLogin, GetConfigurationValue, GetRememberLogin, StoreRememberLoginFromPayload } from '../../api';
 import { configFileUrl } from '../../secure-assets';
 import flagBr from '../../assets/images/flag_icon/flag_icon_br.png';
 import flagDe from '../../assets/images/flag_icon/flag_icon_de.png';
@@ -195,7 +195,6 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
     const [ localeApplying, setLocaleApplying ] = useState(false);
     const [ localeError, setLocaleError ] = useState('');
     const [ loginViewConfig, setLoginViewConfig ] = useState<Record<string, unknown>>(() => GetConfigurationValue<Record<string, unknown>>('loginview', {}));
-    const [ , setLocalizationVersion ] = useState(0);
     const submitTimeRef = useRef(0);
     const preloadedLoginImagesRef = useRef<Set<string>>(new Set());
 
@@ -206,22 +205,9 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
 
     const configuredLoginWidgets = useMemo<Record<string, unknown>>(() =>
         (loginViewConfig?.['widgets'] as Record<string, unknown>) ?? {}, [ loginViewConfig ]);
-    useEffect(() =>
-    {
-        const refreshLocalization = () => setLocalizationVersion(value => (value + 1));
-        window.addEventListener('nitro-localization-updated', refreshLocalization);
-        return () => window.removeEventListener('nitro-localization-updated', refreshLocalization);
-    }, []);
-
-    const loginImages = useMemo<Record<string, string>>(() =>
-    {
-        const configured = (loginViewConfig?.['images'] as Record<string, string>) ?? {};
-        return { ...getDefaultLoginImages(), ...configured };
-    }, [ loginViewConfig ]);
-
+  
     const loginWidgetSlots = useMemo(() =>
     {
-        const configuredLoginWidgets = (loginViewConfig?.['widgets'] as Record<string, unknown>) ?? {};
         return Object.entries(configuredLoginWidgets)
             .filter(([ key, value ]) => key.startsWith('slot.') && key.endsWith('.widget') && typeof value === 'string' && value.length > 0)
             .map(([ key, value ]) =>
@@ -233,7 +219,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
             })
             .filter(slot => slot.slotNum > 0)
             .sort((a, b) => a.slotNum - b.slotNum);
-    }, [ loginViewConfig ]);
+    }, [ configuredLoginWidgets ]);
 
     const backgroundColor = (loginImages['background.colour'] || GetConfigurationValue<string>('login_background.colour', '#6eadc8'));
     const background = interpolate(loginImages['background'] || GetConfigurationValue<string>('login_background', ''));
@@ -242,11 +228,15 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
     const left = interpolate(loginImages['left'] || GetConfigurationValue<string>('login_left', ''));
     const rightRepeat = interpolate(loginImages['right.repeat'] || GetConfigurationValue<string>('login_right.repeat', ''));
     const right = interpolate(loginImages['right'] || GetConfigurationValue<string>('login_right', ''));
+    const widgetImageUrls = useMemo(() => loginWidgetSlots
+        .map(slot => typeof slot.conf.image === 'string' ? interpolate(slot.conf.image) : '')
+        .filter(Boolean), [ loginWidgetSlots ]);
+    const loginImageUrls = useMemo(() => [ background, sun, drape, left, rightRepeat, right, ...widgetImageUrls ].filter(Boolean), [ background, sun, drape, left, rightRepeat, right, widgetImageUrls ]);
+    const [ loginImagesVersion, setLoginImagesVersion ] = useState(0);
     const loginUrl = GetConfigurationValue<string>('login.endpoint', '/api/auth/login');
     const registerUrl = GetConfigurationValue<string>('login.register.endpoint', '/api/auth/register');
     const forgotUrl = GetConfigurationValue<string>('login.forgot.endpoint', '/api/auth/forgot-password');
-    const configuredNewsUrl = interpolate(GetOptionalConfigurationValue<string>('login.news.url', ''));
-    const newsUrl = configuredNewsUrl || configFileUrl('news.json');
+    const newsUrl = interpolate(GetConfigurationValue<string>('login.news.url', ''));
     const turnstileSiteKey = GetConfigurationValue<string>('login.turnstile.sitekey', '');
     const rawTurnstileEnabled = GetConfigurationValue<unknown>('login.turnstile.enabled', false);
     const turnstileEnabled = (rawTurnstileEnabled === true
@@ -413,7 +403,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
     }, []);
 
     const healthUrl = GetConfigurationValue<string>('login.health.endpoint', '');
-    const healthMethodRaw = GetOptionalConfigurationValue<string>('login.health.method', 'GET');
+    const healthMethodRaw = GetConfigurationValue<string>('login.health.method', 'GET');
     const healthMethod = (healthMethodRaw || 'GET').toUpperCase();
     const checkServerReachable = useCallback(async (): Promise<boolean> =>
     {
@@ -527,7 +517,6 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
 
     const checkEmailUrl = GetConfigurationValue<string>('login.check-email.endpoint', '/api/auth/check-email');
     const checkUsernameUrl = GetConfigurationValue<string>('login.check-username.endpoint', '/api/auth/check-username');
-    const imagingUrl = GetOptionalConfigurationValue<string>('login.register.imaging.url', '');
     const interpretAvailability = (ok: boolean, status: number, payload: Record<string, unknown>): { available: boolean; error?: string } =>
     {
         const isTrue = (v: unknown) => v === true || v === 'true' || v === 1 || v === '1';
@@ -675,6 +664,9 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
             { left ? <img className="login-left login-layer login-layer-img" src={ left } alt="" draggable={ false } /> : null }
             { rightRepeat ? <div className="login-right-repeat login-layer" style={ { backgroundImage: `url(${ rightRepeat })` } } /> : null }
             { right ? <img className="login-right login-layer login-layer-img" src={ right } alt="" draggable={ false } /> : null }
+            <div className="login-image-preloader" aria-hidden="true" data-version={ loginImagesVersion }>
+                { loginImageUrls.map(url => <img key={ url } src={ url } decoding="async" loading="eager" alt="" />) }
+            </div>
 
             { loginWidgetSlots.length > 0 &&
                 <div className="login-widgets">
@@ -815,7 +807,6 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
                     onCheckEmail={ checkEmailAvailable }
                     onCheckUsername={ checkUsernameAvailable }
                     onCheckServer={ checkServerReachable }
-                    imagingUrl={ imagingUrl }
                     submitting={ submitting }
                     error={ error }
                     info={ info }
@@ -853,7 +844,6 @@ interface RegisterDialogProps extends DialogSharedProps
     onCheckEmail: (email: string) => Promise<{ available: boolean; error?: string }>;
     onCheckUsername: (username: string) => Promise<{ available: boolean; error?: string }>;
     onCheckServer: () => Promise<boolean>;
-    imagingUrl: string;
 }
 
 type RegisterStep = 'credentials' | 'avatar';
@@ -914,60 +904,160 @@ const buildFigureString = (selection: FigureSelection): string =>
     return parts.join('.');
 };
 
-const buildImagingUrl = (template: string, figure: string, gender: GenderKey): string =>
-    template
-        .replace(/\{figure\}/g, encodeURIComponent(figure))
-        .replace(/\{gender\}/g, gender)
-        .replace(/\{direction\}/g, '2');
-
 const HEAD_ONLY_PARTS = new Set([ 'hr', 'hd' ]);
 
-const buildPartPreviewUrl = (
-    template: string,
-    setType: string,
-    selection: FigureSelection,
-    gender: GenderKey
-): string =>
+const buildPartPreviewFigure = (setType: string, selection: FigureSelection, gender: GenderKey): string =>
 {
     const defaults = FALLBACK_DEFAULTS[gender];
     const partSel = selection[setType] ?? defaults[setType];
     const tail = (partSel.colors && partSel.colors.length) ? `-${ partSel.colors.join('-') }` : '';
-    const isHeadOnly = HEAD_ONLY_PARTS.has(setType);
+    const hd = defaults.hd;
+    const head = `hd-${ hd.partId }-${ hd.colors.join('-') }`;
+    const part = `${ setType }-${ partSel.partId }${ tail }`;
 
-    let parts: string[];
-    if(isHeadOnly)
+    return setType === 'hd' ? part : `${ head }.${ part }`;
+};
+
+const AVATAR_PREVIEW_CACHE = new Map<string, string>();
+const AVATAR_PREVIEW_CACHE_MAX = 200;
+
+const AVATAR_PREVIEW_MAX_ATTEMPTS = 4;
+const AVATAR_PREVIEW_TIMEOUT_MS = 8000;
+
+const renderAvatarPreview = (figure: string, gender: GenderKey, setType: string): Promise<string> =>
+{
+    if(!figure) return Promise.resolve('');
+
+    const cacheKey = `${ gender }|${ setType }|${ figure }`;
+    const cached = AVATAR_PREVIEW_CACHE.get(cacheKey);
+    if(cached) return Promise.resolve(cached);
+
+    return new Promise<string>(resolve =>
     {
-        const hd = defaults.hd;
-        const pieces = new Map<string, string>();
-        pieces.set('hd', `hd-${ hd.partId }-${ hd.colors.join('-') }`);
-        pieces.set(setType, `${ setType }-${ partSel.partId }${ tail }`);
-        parts = Array.from(pieces.values());
-    }
-    else
+        let avatarImage: IAvatarImage | null = null;
+        let resolved = false;
+        let attempts = 0;
+        let timer: number | null = null;
+
+        const finish = (url: string) =>
+        {
+            if(resolved) return;
+            resolved = true;
+            if(timer !== null) window.clearTimeout(timer);
+            try { avatarImage?.dispose(); } catch {}
+            avatarImage = null;
+            if(url)
+            {
+                AVATAR_PREVIEW_CACHE.set(cacheKey, url);
+                if(AVATAR_PREVIEW_CACHE.size > AVATAR_PREVIEW_CACHE_MAX)
+                {
+                    const firstKey = AVATAR_PREVIEW_CACHE.keys().next().value;
+                    if(firstKey) AVATAR_PREVIEW_CACHE.delete(firstKey);
+                }
+            }
+            resolve(url);
+        };
+
+        timer = window.setTimeout(() => finish(''), AVATAR_PREVIEW_TIMEOUT_MS);
+
+        const attempt = () =>
+        {
+            if(resolved) return;
+            if(attempts >= AVATAR_PREVIEW_MAX_ATTEMPTS) { finish(''); return; }
+            attempts++;
+
+            try { avatarImage?.dispose(); } catch {}
+            avatarImage = null;
+
+            try
+            {
+                avatarImage = GetAvatarRenderManager().createAvatarImage(figure, AvatarScaleType.LARGE, gender, {
+                    resetFigure: () => attempt(),
+                    dispose: () => {},
+                    disposed: false
+                });
+            }
+            catch
+            {
+                finish('');
+                return;
+            }
+
+            if(!avatarImage) { finish(''); return; }
+
+            if(avatarImage.isPlaceholder()) return;
+
+            try
+            {
+                const url = avatarImage.processAsImageUrl(setType);
+                if(url) finish(url);
+            }
+            catch
+            {
+                finish('');
+            }
+        };
+
+        attempt();
+    });
+};
+
+const useAvatarPreview = (figure: string, gender: GenderKey, setType: string): string =>
+{
+    const [ url, setUrl ] = useState<string>(() =>
+        AVATAR_PREVIEW_CACHE.get(`${ gender }|${ setType }|${ figure }`) ?? '');
+
+    useEffect(() =>
     {
-        const hd = defaults.hd;
-        parts = [
-            `hd-${ hd.partId }-${ hd.colors.join('-') }`,
-            `${ setType }-${ partSel.partId }${ tail }`
-        ];
-    }
+        const cacheKey = `${ gender }|${ setType }|${ figure }`;
+        const cached = AVATAR_PREVIEW_CACHE.get(cacheKey);
+        if(cached)
+        {
+            setUrl(cached);
+            return;
+        }
 
-    const figure = parts.join('.');
-    let url = template
-        .replace(/\{figure\}/g, encodeURIComponent(figure))
-        .replace(/\{gender\}/g, gender)
-        .replace(/\{direction\}/g, '2');
-
-    url = url.replace(/size=l/, 'size=s').replace(/size=m/, 'size=s');
-    if(!/size=/.test(url)) url += (url.includes('?') ? '&' : '?') + 'size=s';
-    if(isHeadOnly && !/headonly=/.test(url)) url += '&headonly=1';
+        let cancelled = false;
+        setUrl('');
+        renderAvatarPreview(figure, gender, setType).then(result =>
+        {
+            if(!cancelled) setUrl(result);
+        });
+        return () => { cancelled = true; };
+    }, [ figure, gender, setType ]);
 
     return url;
 };
 
+interface AvatarPartRowProps
+{
+    setType: string;
+    selection: FigureSelection;
+    gender: GenderKey;
+    onPrev: () => void;
+    onNext: () => void;
+}
+
+const AvatarPartRow: FC<AvatarPartRowProps> = ({ setType, selection, gender, onPrev, onNext }) =>
+{
+    const figure = useMemo(() => buildPartPreviewFigure(setType, selection, gender), [ setType, selection, gender ]);
+    const previewSetType = HEAD_ONLY_PARTS.has(setType) ? AvatarSetType.HEAD : AvatarSetType.FULL;
+    const url = useAvatarPreview(figure, gender, previewSetType);
+
+    return (
+        <div className="avatar-part-row">
+            <button type="button" className="arrow-btn" aria-label={ `Previous ${ setType }` } onClick={ onPrev }>&lsaquo;</button>
+            <div className={ `part-preview part-preview-${ setType }` }>
+                { url && <img src={ url } alt={ `${ setType } preview` } onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } /> }
+            </div>
+            <button type="button" className="arrow-btn" aria-label={ `Next ${ setType }` } onClick={ onNext }>&rsaquo;</button>
+        </div>
+    );
+};
+
 const RegisterDialog: FC<RegisterDialogProps> = props =>
 {
-    const { onCancel, onSubmit, onCheckEmail, onCheckUsername, onCheckServer, imagingUrl, submitting, error, info, turnstileEnabled, turnstileSiteKey } = props;
+    const { onCancel, onSubmit, onCheckEmail, onCheckUsername, onCheckServer, submitting, error, info, turnstileEnabled, turnstileSiteKey } = props;
 
     const [ step, setStep ] = useState<RegisterStep>('credentials');
     const [ email, setEmail ] = useState('');
@@ -1253,7 +1343,7 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
     };
 
     const figure = buildFigureString(selection);
-    const previewSrc = buildImagingUrl(imagingUrl, figure, gender);
+    const previewSrc = useAvatarPreview(figure, gender, AvatarSetType.FULL);
 
     const handleAvatarSubmit = async (event: FormEvent<HTMLFormElement>) =>
     {
@@ -1391,24 +1481,20 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
 
                             <div className="avatar-builder">
                                 <div className="avatar-part-col">
-                                    { PART_ROWS.map(setType => {
-                                        const partPreviewSrc = buildPartPreviewUrl(imagingUrl, setType, selection, gender);
-                                        return (
-                                            <div className="avatar-part-row" key={ `part-${ setType }` }>
-                                                <button type="button" className="arrow-btn" aria-label={ `Previous ${ setType }` }
-                                                    onClick={ () => cyclePart(setType, -1) }>&lsaquo;</button>
-                                                <div className={ `part-preview part-preview-${ setType }` }>
-                                                    <img src={ partPreviewSrc } alt={ `${ setType } preview` } onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } />
-                                                </div>
-                                                <button type="button" className="arrow-btn" aria-label={ `Next ${ setType }` }
-                                                    onClick={ () => cyclePart(setType, 1) }>&rsaquo;</button>
-                                            </div>
-                                        );
-                                    }) }
+                                    { PART_ROWS.map(setType => (
+                                        <AvatarPartRow
+                                            key={ `part-${ setType }` }
+                                            setType={ setType }
+                                            selection={ selection }
+                                            gender={ gender }
+                                            onPrev={ () => cyclePart(setType, -1) }
+                                            onNext={ () => cyclePart(setType, 1) }
+                                        />
+                                    )) }
                                 </div>
 
                                 <div className="avatar-preview">
-                                    <img src={ previewSrc } alt="Habbo preview" onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } />
+                                    { previewSrc && <img src={ previewSrc } alt="Habbo preview" onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } /> }
                                 </div>
 
                                 <div className="avatar-color-col">

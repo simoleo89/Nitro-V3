@@ -1,5 +1,5 @@
 import { GetAssetManager, GetAvatarRenderManager, GetCommunication, GetConfiguration, GetLocalizationManager, GetRoomEngine, GetRoomSessionManager, GetSessionDataManager, GetSoundManager, GetStage, GetTexturePool, GetTicker, HabboWebTools, LegacyExternalInterface, LoadGameUrlEvent, NitroEventType, NitroLogger, NitroVersion, PrepareRenderer } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { ClearRememberLogin, GetRememberLogin, GetUIVersion, StoreRememberLoginFromPayload } from './api';
 import { Base } from './common';
 import { LoadingView } from './components/loading/LoadingView';
@@ -316,6 +316,8 @@ export const App: FC<{}> = props =>
         };
     }, []);
 
+    const onSessionExpired = useEffectEvent(() => showSessionExpired());
+
     useEffect(() =>
     {
         const prepare = async (width: number, height: number) =>
@@ -379,7 +381,7 @@ export const App: FC<{}> = props =>
                             return;
                         }
 
-                        showSessionExpired();
+                        onSessionExpired();
                         return;
                     }
                 }
@@ -432,7 +434,7 @@ export const App: FC<{}> = props =>
             {
                 NitroLogger.error(err);
                 setIsEnteringHotel(false);
-                showSessionExpired();
+                onSessionExpired();
             }
         };
 

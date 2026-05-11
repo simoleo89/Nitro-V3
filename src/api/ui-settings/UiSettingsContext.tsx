@@ -60,6 +60,13 @@ const saveSettings = (settings: IUiSettings): void =>
     {}
 };
 
+const ALL_CSS_VARS = [
+    '--ui-accent-color', '--ui-accent-dark',
+    '--ui-ctx-bg', '--ui-ctx-header-bg', '--ui-ctx-item-bg1', '--ui-ctx-item-bg2',
+    '--ui-btn-primary-bg', '--ui-btn-primary-border',
+    '--ui-dark-bg', '--ui-dark-border'
+];
+
 const sendComposer = (composer: any): void =>
 {
     try
@@ -188,13 +195,6 @@ export const UiSettingsProvider: FC<PropsWithChildren> = ({ children }) =>
     }, [ settings ]);
 
     const isCustomActive = settings.colorMode !== 'default';
-
-    const ALL_CSS_VARS = [
-        '--ui-accent-color', '--ui-accent-dark',
-        '--ui-ctx-bg', '--ui-ctx-header-bg', '--ui-ctx-item-bg1', '--ui-ctx-item-bg2',
-        '--ui-btn-primary-bg', '--ui-btn-primary-border',
-        '--ui-dark-bg', '--ui-dark-border'
-    ];
 
     useEffect(() =>
     {

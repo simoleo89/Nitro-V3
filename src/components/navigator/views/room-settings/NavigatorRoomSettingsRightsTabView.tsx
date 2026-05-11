@@ -100,7 +100,7 @@ export const NavigatorRoomSettingsRightsTabView: FC<NavigatorRoomSettingsTabView
         if(!roomData) return;
 
         SendMessageComposer(new RoomUsersWithRightsComposer(roomData.roomId));
-    }, [ roomData?.roomId ]);
+    }, [ roomData ]);
 
     return (
         <Grid>

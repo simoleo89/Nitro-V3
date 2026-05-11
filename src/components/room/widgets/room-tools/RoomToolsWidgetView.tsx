@@ -119,16 +119,6 @@ export const RoomToolsWidgetView: FC<{}> = props =>
         setRoomHistory(JSON.parse(window.localStorage.getItem('nitro.room.history') || '[]'));
     }, []);
 
-    useEffect(() =>
-    {
-        const handleTabClose = () =>
-        {
-            window.localStorage.removeItem('nitro.room.history');
-        };
-        window.addEventListener('beforeunload', handleTabClose);
-        return () => window.removeEventListener('beforeunload', handleTabClose);
-    }, []);
-
     return (
         <div className="flex space-x-2 nitro-room-tools-container">
             <div className="flex flex-col items-center justify-center p-2 nitro-room-tools">

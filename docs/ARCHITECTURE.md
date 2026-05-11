@@ -367,3 +367,93 @@ Anything else (the per-tab `WiredCreatorTools` split, the
 `react-compiler/react-compiler` warnings, the `set-state-in-effect`
 sweep, the `LoginView` dialog split) is a downstream consequence of these
 five — easier and safer once the foundations are in place.
+
+---
+
+## Known logic bugs (independent of structural refactor)
+
+These are runtime bugs spotted while doing the structural work. They are
+**not** fixed by the patterns above — they need their own PRs with manual
+QA. Listing them here because there is currently no GitHub Issues board on
+this repo.
+
+### Open
+
+#### `MainView` — race between `RoomSessionEvent.CREATED` and `ENDED`
+
+`src/components/MainView.tsx:47-48` writes the same `landingViewVisible`
+state from two independent listeners with no session-token guard:
+
+```ts
+useNitroEvent(RoomSessionEvent.CREATED, () => setLandingViewVisible(false));
+useNitroEvent(RoomSessionEvent.ENDED, e => setLandingViewVisible(e.openLandingView));
+```
+
+If the events arrive out of order (fast reconnect, network reordering),
+the final state contradicts the actual session state — landing view stuck
+open inside a room, or stuck closed at the hotel view. Resolves on next
+room change.
+
+**Fix shape** (deferred until `useNitroEventReducer` companion lands —
+see proposal #1):
+
+```ts
+// One reducer owns both events + the active session token
+const { sessionId, landingViewVisible } = useNitroEventReducer<...>(
+    [RoomSessionEvent.CREATED, RoomSessionEvent.ENDED],
+    (state, e) => {
+        if (e.type === RoomSessionEvent.CREATED) {
+            return { sessionId: e.session.roomId, landingViewVisible: false };
+        }
+        if (state.sessionId !== null && e.session.roomId !== state.sessionId) {
+            return state; // stale ENDED for old session, ignore
+        }
+        return { sessionId: null, landingViewVisible: e.openLandingView };
+    },
+    { sessionId: null, landingViewVisible: true }
+);
+```
+
+**Severity**: edge case, observed only after unstable websocket
+reconnects. UX-degrading, not data-corrupting.
+
+#### `LayoutFurniImageView` / `LayoutAvatarImageView` — async fetch race
+
+In both files an effect kicks off an async `processAsImageUrl` /
+`generateImage` and writes the result via `setImageElement`. If props
+change twice in quick succession, the first fetch can resolve **after**
+the second one and overwrite the newer image with the older one.
+
+**Fix shape**: capture a request-id ref at the start of the effect, only
+write the result if the ref hasn't been bumped meanwhile. Or — better —
+once React Query (#2) is enabled, model the image fetch as a query keyed
+on the props tuple; React Query handles cancellation and ordering for
+free.
+
+**Severity**: visible only on slow connections / rapid prop changes. Not
+data-corrupting.
+
+### Recently fixed (in this branch)
+
+- **Doorbell close button didn't close** while users were pending
+  (`useEffect(() => setIsVisible(!!users.length))` overrode the close).
+  Fixed by `src/features/doorbell/views/DoorbellWidgetView.tsx` (separate
+  `dismissed` state, visibility computed in render).
+- **Doorbell optimistic remove without rollback** — the original
+  `answer()` removed the user from the local list before the server
+  confirmed via `RSDE_ACCEPTED`/`RSDE_REJECTED`, leaving client and
+  server desynced if the network dropped. Fixed by removing the local
+  `removeUser` call: the server-driven events now own the list. Note:
+  a "pending" indicator (so users see their answer is in flight) is
+  desirable — separate small PR.
+- **`localStorage` room history wiped on every tab close**
+  (`RoomToolsWidgetView.tsx`, `useEffect` on `beforeunload` removing
+  `nitro.room.history`). Fixed by removing the `beforeunload` handler;
+  history now persists across sessions, which is the only sensible
+  meaning of `localStorage`. If "session-only" was the intent, the right
+  primitive is `sessionStorage` — file an issue if that's actually
+  desired.
+- **`AvatarInfoPetTrainingPanelView` null-pointer** —
+  `roomSession.userDataManager.getPetData(parser.petId)` could throw if
+  `roomSession` was null at the moment the event arrived (between rooms).
+  Fixed with `?.` chain.

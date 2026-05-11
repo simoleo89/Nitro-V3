@@ -1,6 +1,6 @@
-import { GetCommunication, IMessageEvent, MessageEvent } from '@nitrots/nitro-renderer';
+import { GetCommunication, IMessageComposer, IMessageEvent, MessageEvent } from '@nitrots/nitro-renderer';
 import { QueryKey, useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { SendMessageComposer } from '../SendMessageComposer';
+import { SendMessageComposer } from '../nitro/SendMessageComposer';
 
 export interface NitroQueryConfig<TParser extends IMessageEvent, TData>
 {
@@ -14,7 +14,7 @@ export interface NitroQueryConfig<TParser extends IMessageEvent, TData>
      * `null` skips sending (useful when the server pushes the event
      * unprompted — you only want subscription, not a request).
      */
-    request: (() => unknown) | null;
+    request: (() => IMessageComposer<unknown[]>) | null;
     /**
      * The parser class to listen for as the response.
      */
@@ -64,7 +64,7 @@ export const useNitroQuery = <TParser extends IMessageEvent, TData = TParser>(
 
     const options: UseQueryOptions<TData, Error, TData> = {
         queryKey: key,
-        queryFn: () => awaitNitroResponse<TParser, TData>({ key, request, parser, select, accept, timeoutMs }),
+        queryFn: () => awaitNitroResponse<TParser, TData>({ request, parser, select, accept, timeoutMs }),
         enabled,
         staleTime,
         refetchOnMount
@@ -105,7 +105,7 @@ export const awaitNitroResponse = <TParser extends IMessageEvent, TData>(
 
                 try
                 {
-                    resolve(select ? select(event) : (event));
+                    resolve(select ? select(event) : (event as unknown as TData));
                 }
                 catch(err)
                 {

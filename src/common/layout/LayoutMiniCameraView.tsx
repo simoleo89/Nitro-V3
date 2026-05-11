@@ -12,7 +12,7 @@ interface LayoutMiniCameraViewProps {
 export const LayoutMiniCameraView: FC<LayoutMiniCameraViewProps> = props =>
 {
     const { roomId = -1, textureReceiver = null, onClose = null } = props;
-    const elementRef = useRef<HTMLDivElement>();
+    const elementRef = useRef<HTMLDivElement>(null);
 
     const getCameraBounds = () =>
     {

@@ -11,7 +11,7 @@ export const CatalogBundleGridWidgetView: FC<CatalogBundleGridWidgetViewProps> =
 {
     const { columnCount = 5, children = null, ...rest } = props;
     const { currentOffer = null } = useCatalog();
-    const elementRef = useRef<HTMLDivElement>();
+    const elementRef = useRef<HTMLDivElement>(null);
 
     useEffect(() =>
     {

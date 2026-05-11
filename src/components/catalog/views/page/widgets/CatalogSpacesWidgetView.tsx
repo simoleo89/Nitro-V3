@@ -18,7 +18,7 @@ export const CatalogSpacesWidgetView: FC<CatalogSpacesWidgetViewProps> = props =
     const [ selectedGroupIndex, setSelectedGroupIndex ] = useState(-1);
     const [ selectedOfferForGroup, setSelectedOfferForGroup ] = useState<IPurchasableOffer[]>(null);
     const { currentPage = null, currentOffer = null, setCurrentOffer = null, setPurchaseOptions = null } = useCatalog();
-    const elementRef = useRef<HTMLDivElement>();
+    const elementRef = useRef<HTMLDivElement>(null);
 
     const setSelectedOffer = (offer: IPurchasableOffer) =>
     {

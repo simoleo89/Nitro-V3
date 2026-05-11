@@ -10,7 +10,7 @@ import { RoomWidgetsView } from './widgets/RoomWidgetsView';
 export const RoomView: FC<{}> = (props) =>
 {
     const { roomSession = null } = useRoom();
-    const elementRef = useRef<HTMLDivElement>();
+    const elementRef = useRef<HTMLDivElement>(null);
 
     useEffect(() =>
     {

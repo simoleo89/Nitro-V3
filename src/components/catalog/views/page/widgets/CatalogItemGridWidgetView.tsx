@@ -16,7 +16,7 @@ export const CatalogItemGridWidgetView: FC<CatalogItemGridWidgetViewProps> = pro
     const { currentOffer = null, currentPage = null, selectCatalogOffer = null } = useCatalog();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
-    const elementRef = useRef<HTMLDivElement>();
+    const elementRef = useRef<HTMLDivElement>(null);
     const [ dragIndex, setDragIndex ] = useState<number | null>(null);
     const [ dropIndex, setDropIndex ] = useState<number | null>(null);
 

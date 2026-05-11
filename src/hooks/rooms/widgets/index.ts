@@ -3,6 +3,8 @@ export * from './useAvatarInfoWidget';
 export * from './useChatCommandSelector';
 export * from './useChatInputWidget';
 export * from './useChatWidget';
+export * from './useDoorbellActions';
+export * from './useDoorbellState';
 export * from './useDoorbellWidget';
 export * from './useFilterWordsWidget';
 export * from './useFriendRequestWidget';

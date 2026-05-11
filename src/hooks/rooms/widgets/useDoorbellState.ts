@@ -1,12 +1,10 @@
 import { RoomSessionDoorbellEvent } from '@nitrots/nitro-renderer';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { useNitroEvent } from '../../../hooks';
+import { useNitroEvent } from '../../events';
 
 /**
  * Reduces the three doorbell events (DOORBELL, RSDE_ACCEPTED, RSDE_REJECTED)
- * into a single users array.
- *
- * This is the proposal #4 split: data-only hook. Actions are in
+ * into a single users array. Data-only hook split — actions live in
  * useDoorbellActions.
  */
 export const useDoorbellState = (): readonly string[] =>

@@ -152,56 +152,34 @@ using `useMessageEventState` — they're not requests.
 
 ---
 
-### 3. Feature folders
+### 3. Feature folders ~~(adopted)~~ — **rejected, keep the current layout**
 
-**Problem.** The current layout splits ownership across three trees:
-```
-src/components/wired-tools/    (views)
-src/hooks/wired-tools/         (hooks)
-src/api/wired/                 (utility functions, mixed with the wired runtime)
-```
-A change to "the wired-tools panel" touches all three. Discoverability is
-poor: a new contributor reading `WiredCreatorToolsView.tsx` cannot guess
-`useWiredTools` lives 4 directory levels away.
+> **Update:** an earlier version of this document proposed a
+> `src/features/<feature>/` layout (vertical slices). The pilot on the
+> doorbell widget showed that the existing `src/components/<area>/` +
+> `src/hooks/<area>/` split is the convention the team wants to keep.
+> The pilot has been rolled back; this section is left as a record of
+> the decision.
 
-**Solution.** Feature folders. Each feature owns its complete vertical
-slice:
-```
-src/features/wired-tools/
-├── index.ts              (public API: only what other features can import)
-├── views/                (React components)
-├── hooks/                (feature-local hooks)
-├── state/                (zustand slices, when they exist)
-├── types.ts
-├── constants.ts
-└── helpers.ts
-```
+**Current convention** (the one to follow):
 
-**Rule.** A feature folder may import:
-- React, third-party libs, the renderer SDK
-- `src/common/` (UI primitives)
-- `src/api/` (cross-cutting helpers — `LocalizeText`, `SendMessageComposer`)
-- Other features **only via their public `index.ts`**
+- **Views** live under `src/components/<area>/<feature>/*.tsx`
+  (e.g. `src/components/room/widgets/doorbell/DoorbellWidgetView.tsx`).
+- **Hooks** live under `src/hooks/<area>/<feature?>/*.ts`
+  (e.g. `src/hooks/rooms/widgets/useDoorbellState.ts`). Multiple hooks
+  for the same widget go in the same folder as siblings, not in a
+  per-widget subfolder.
+- **Pure helpers / constants / types** that are specific to one view
+  go in sibling files next to the view (see
+  `src/components/wired-tools/WiredCreatorTools.{types,constants,helpers}.ts`
+  for the established pattern).
+- **Cross-cutting** utilities continue to live under `src/api/` and
+  `src/common/`.
 
-A feature folder must **not** reach into another feature's internals.
-
-**Status.** Pilot done on `src/features/doorbell/` (the doorbell widget,
-small enough to migrate cleanly in one PR). The legacy
-`src/components/room/widgets/doorbell/DoorbellWidgetView.tsx` and
-`src/hooks/rooms/widgets/useDoorbellWidget.ts` are kept as compat-shim
-re-exports (one line each) so existing import paths still work — they can
-be deleted in a follow-up PR.
-
-**Migration order suggested.**
-Smallest features first to validate the pattern, then bigger:
-1. doorbell (done)
-2. campaign, ads, mod-tools (each <500 lines)
-3. notification-center, help, hc-center
-4. catalog, inventory, navigator, wired-tools (multi-thousand lines each)
-
-A `jscodeshift` codemod could rewrite import paths in bulk, but each
-feature's relative-path imports (`../../api`, etc.) need to be re-targeted
-to the new depth — codemod-able but verify by running tsc per feature.
+Discoverability is acceptable as long as the **naming** is consistent —
+`useDoorbellState` / `useDoorbellActions` / `DoorbellWidgetView` are
+greppable in seconds even though they live in three separate directory
+trees.
 
 ---
 
@@ -230,9 +208,11 @@ a Zustand slice (#5). `useCatalogActions` is a stateless export — just
 functions that compose composers.
 
 **Status.** Pilot done on `useDoorbellWidget`:
-- `src/features/doorbell/hooks/useDoorbellState.ts` — the users list,
-  derived from three events using `useNitroEventReducer`-like pattern.
-- `src/features/doorbell/hooks/useDoorbellActions.ts` — `answer(name, flag)`.
+- `src/hooks/rooms/widgets/useDoorbellState.ts` — the users list,
+  derived from three events using a `useNitroEventReducer`-like pattern.
+- `src/hooks/rooms/widgets/useDoorbellActions.ts` — `answer(name, flag)`.
+- `src/hooks/rooms/widgets/useDoorbellWidget.ts` kept as a deprecated
+  shim that composes the two so existing consumers don't break.
 
 It's a small hook so the split looks almost theatrical, but the shape is
 the same one we want to apply to `useCatalog`.
@@ -261,7 +241,7 @@ There is no single source of truth, no devtools, no time-travel.
 **Solution.** Adopt **Zustand** for cross-feature UI state. Each feature
 owns one slice:
 ```ts
-// src/features/wired-tools/state/wiredToolsSlice.ts
+// src/state/wired-tools.ts (or src/components/wired-tools/wiredToolsStore.ts)
 export const useWiredToolsStore = create<WiredToolsState>()((set) => ({
     activeTab: 'monitor',
     setActiveTab: (tab) => set({ activeTab: tab }),
@@ -331,8 +311,11 @@ The current branch (`claude/update-react-typescript-He2rs`) has applied:
 - **`WiredCreatorToolsView` split** — types/constants/helpers extracted to
   sibling files; main view 4493 → 3901 lines.
 - **Pattern #1 (`useNitroEventState`)** — implemented + 1 pilot.
-- **Pattern #3 (feature folder)** — pilot on `src/features/doorbell/`.
-- **Pattern #4 (split god-hook)** — pilot on the doorbell hook.
+- **Pattern #3 (feature folder)** — **rejected**; the existing
+  `src/components/<area>/` + `src/hooks/<area>/` layout is kept.
+- **Pattern #4 (split god-hook)** — applied to the doorbell hook:
+  `src/hooks/rooms/widgets/useDoorbellState.ts` (data) +
+  `src/hooks/rooms/widgets/useDoorbellActions.ts` (actions).
 - **Pattern #2 (`useNitroQuery`)** — adapter prototype written, not yet
   enabled (needs `yarn add @tanstack/react-query`).
 - **Pattern #5 (Zustand store)** — skeleton written, not yet enabled
@@ -349,19 +332,18 @@ Order of value/risk for the next contributor:
 1. **Enable React Query** (`yarn add @tanstack/react-query`) and migrate
    one read-only `useCatalog` fetch as a second pilot. Highest impact, low
    risk.
-2. **Migrate one mid-sized feature to feature folders** (e.g. `mod-tools`
-   or `campaign`). Mostly mechanical, validates the pattern at a real
-   scale.
-3. **Enable Zustand** and migrate the `let isCreatingRoom` /
+2. **Enable Zustand** and migrate the `let isCreatingRoom` /
    `createRoomTimeout` singleton in `NavigatorRoomCreatorView`. Trivial,
    makes the Compiler stop complaining about cross-component variable
    writes.
-4. **Add tests** (still the #1 thing missing — see "What I'd fix" notes).
+3. **Add tests** (still the #1 thing missing — see "What I'd fix" notes).
    Vitest + jsdom + a tiny mock layer for the renderer would unblock every
    refactor below.
-5. **Split `useCatalog`** — the biggest god-hook. Only do this *after*
-   #1 and #5 in this list (React Query removes 60% of the file's
-   responsibility, Zustand handles its UI state).
+4. **Split `useCatalog`** — the biggest god-hook, following the doorbell
+   pattern (`useCatalogData` / `useCatalogUiState` / `useCatalogActions`
+   as siblings under `src/hooks/catalog/`). Only do this *after* #1 and
+   #2 in this list (React Query removes 60% of the file's responsibility,
+   Zustand handles its UI state).
 
 Anything else (the per-tab `WiredCreatorTools` split, the
 `react-compiler/react-compiler` warnings, the `set-state-in-effect`
@@ -437,8 +419,8 @@ data-corrupting.
 
 - **Doorbell close button didn't close** while users were pending
   (`useEffect(() => setIsVisible(!!users.length))` overrode the close).
-  Fixed by `src/features/doorbell/views/DoorbellWidgetView.tsx` (separate
-  `dismissed` state, visibility computed in render).
+  Fixed by `src/components/room/widgets/doorbell/DoorbellWidgetView.tsx`
+  (separate `dismissed` state, visibility computed in render).
 - **Doorbell optimistic remove without rollback** — the original
   `answer()` removed the user from the local list before the server
   confirmed via `RSDE_ACCEPTED`/`RSDE_REJECTED`, leaving client and

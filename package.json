@@ -8,7 +8,8 @@
         "start": "vite --host",
         "build": "vite build && node scripts/minify-dist.mjs",
         "build:prod": "npx browserslist@latest --update-db && yarn build",
-        "eslint": "eslint ./src"
+        "eslint": "eslint ./src",
+        "typecheck": "tsgo --noEmit"
     },
     "dependencies": {
         "@babel/runtime": "^7.29.2",
@@ -36,6 +37,7 @@
         "@types/react-dom": "^19.2.3",
         "@typescript-eslint/eslint-plugin": "^8.59.1",
         "@typescript-eslint/parser": "^8.59.1",
+        "@typescript/native-preview": "^7.0.0-dev.20260509.2",
         "@vitejs/plugin-react": "^6.0.1",
         "babel-plugin-react-compiler": "^1.0.0",
         "eslint": "^10.2.1",

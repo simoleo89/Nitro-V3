@@ -2,7 +2,7 @@ import { GetRoomEngine, RoomEngineObjectEvent, RoomEngineRoomAdEvent, RoomEngine
 import { FC } from 'react';
 import { DispatchUiEvent, LocalizeText, NotificationAlertType, RoomWidgetUpdateRoomObjectEvent } from '../../../api';
 import { WidgetErrorBoundary } from '../../../common';
-import { useNitroEvent, useNotification, useRoom } from '../../../hooks';
+import { useNitroEvent, useNotification, usePollSubscriptions, useRoom } from '../../../hooks';
 import { AvatarInfoWidgetView } from './avatar-info/AvatarInfoWidgetView';
 import { ChatInputView } from './chat-input/ChatInputView';
 import { ChatWidgetView } from './chat/ChatWidgetView';
@@ -21,6 +21,11 @@ export const RoomWidgetsView: FC<{}> = props =>
 {
     const { roomSession = null } = useRoom();
     const { simpleAlert = null } = useNotification();
+
+    // Bridge RoomSessionPollEvent (OFFER/ERROR/CONTENT) onto the UI bus
+    // for the lifetime of the room session. Single mount point so the
+    // listeners are not re-registered per widget render.
+    usePollSubscriptions();
 
     useNitroEvent<RoomZoomEvent>(RoomZoomEvent.ROOM_ZOOM, event => GetRoomEngine().setRoomInstanceRenderingCanvasScale(event.roomId, 1, (((event.level)<1) ? 0.5 : (1 << (Math.floor(event.level) - 1))), null, null, event.isFlipForced));
 

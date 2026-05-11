@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ErrorBoundary } from 'react-error-boundary';
 import { App } from './App';
@@ -44,15 +44,17 @@ import './css/toolbar/ToolBar.css';
 import './css/widgets/FurnitureWidgets.css';
 
 createRoot(document.getElementById('root')).render(
-    <ErrorBoundary
-        fallbackRender={ ({ error }) => (
-            <LoadingView
-                isError={ true }
-                message={ `Something went wrong.\n${ (error as Error)?.message ?? 'Unknown error' }` }
-                homeUrl={ window.location.origin + '/' } />
-        ) }>
-        <Suspense fallback={ <LoadingView message="Loading…" /> }>
-            <App />
-        </Suspense>
-    </ErrorBoundary>
+    <StrictMode>
+        <ErrorBoundary
+            fallbackRender={ ({ error }) => (
+                <LoadingView
+                    isError={ true }
+                    message={ `Something went wrong.\n${ (error as Error)?.message ?? 'Unknown error' }` }
+                    homeUrl={ window.location.origin + '/' } />
+            ) }>
+            <Suspense fallback={ <LoadingView message="Loading…" /> }>
+                <App />
+            </Suspense>
+        </ErrorBoundary>
+    </StrictMode>
 );

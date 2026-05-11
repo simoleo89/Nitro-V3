@@ -74,6 +74,8 @@ export const App: FC<{}> = props =>
     const [ prepareTrigger, setPrepareTrigger ] = useState(0);
     const warmupPromiseRef = useRef<Promise<void>>(null);
     const rendererPromiseRef = useRef<Promise<any>>(null);
+    const gameInitPromiseRef = useRef<Promise<void> | null>(null);
+    const bootstrapDoneRef = useRef(false);
     const tickersStartedRef = useRef(false);
     const heartbeatIntervalRef = useRef<number>(null);
     const rememberRotateIntervalRef = useRef<number>(null);
@@ -385,14 +387,26 @@ export const App: FC<{}> = props =>
                 const renderer = await startRenderer(width, height);
 
                 await startWarmup(width, height);
-                await GetSessionDataManager().init();
-                await GetRoomSessionManager().init();
-                await GetRoomEngine().init();
-                await GetCommunication().init();
 
-                if(LegacyExternalInterface.available) LegacyExternalInterface.call('legacyTrack', 'authentication', 'authok', []);
+                if(!gameInitPromiseRef.current)
+                {
+                    gameInitPromiseRef.current = (async () =>
+                    {
+                        await GetSessionDataManager().init();
+                        await GetRoomSessionManager().init();
+                        await GetRoomEngine().init();
+                        await GetCommunication().init();
+                    })();
+                }
 
-                HabboWebTools.sendHeartBeat();
+                await gameInitPromiseRef.current;
+
+                if(!bootstrapDoneRef.current)
+                {
+                    bootstrapDoneRef.current = true;
+                    if(LegacyExternalInterface.available) LegacyExternalInterface.call('legacyTrack', 'authentication', 'authok', []);
+                    HabboWebTools.sendHeartBeat();
+                }
 
                 if(heartbeatIntervalRef.current !== null) window.clearInterval(heartbeatIntervalRef.current);
                 heartbeatIntervalRef.current = window.setInterval(() => HabboWebTools.sendHeartBeat(), 10000);

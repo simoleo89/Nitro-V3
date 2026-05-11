@@ -2,18 +2,18 @@ import { FC, useRef, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { LocalizeText, MessengerFriend } from '../../../../api';
 import { FriendBarItemView } from './FriendBarItemView';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 const MAX_DISPLAY_COUNT = 3;
 
 // Mirrored from Toolbar to keep physics identical
-const containerVariants = {
+const containerVariants: Variants = {
     hidden: {},
     visible: { transition: { staggerChildren: 0.05 } },
-    exit: { transition: { staggerChildren: 0.03, staggerDirection: -1 as const } },
+    exit: { transition: { staggerChildren: 0.03, staggerDirection: -1 } },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
     hidden: { opacity: 0, y: 10, scale: 0.8 },
     visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 400, damping: 22 } },
     exit: { opacity: 0, y: 6, scale: 0.85, transition: { duration: 0.1 } },

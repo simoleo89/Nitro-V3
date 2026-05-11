@@ -13,7 +13,7 @@ export class ProductImageUtility
                 imageUrl = GetRoomEngine().getFurnitureFloorIconUrl(furniClassId);
                 break;
             case FurnitureType.WALL:
-                const productCategory = this.getProductCategory(CatalogPageMessageProductData.I, furniClassId);
+                const productCategory = this.getProductCategory(productType, furniClassId);
 
                 if(productCategory === 1)
                 {

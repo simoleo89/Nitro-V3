@@ -134,7 +134,7 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
         const ticker = GetTicker();
         ticker.add(update);
 
-        return () => ticker.remove(update);
+        return () => { ticker.remove(update); };
     }, [objectId, category, updatePosition, onClose]);
 
     useEffect(() =>

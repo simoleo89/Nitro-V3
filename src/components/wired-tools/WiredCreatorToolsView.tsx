@@ -1975,7 +1975,7 @@ export const WiredCreatorToolsView: FC<{}> = () =>
 
         ticker.add(updateOverlays);
 
-        return () => ticker.remove(updateOverlays);
+        return () => { ticker.remove(updateOverlays); };
     }, [ isVariableHighlightActive, roomSession?.roomId, variableHighlightTargets ]);
     const variableManageTypeOptions = useMemo(() =>
     {

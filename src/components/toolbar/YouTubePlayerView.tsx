@@ -117,10 +117,10 @@ export const YouTubePlayerView: FC<{}> = () =>
             for (let i = 0; i < 500; i++)
             {
                 const userData = roomSession.userDataManager.getUserDataByIndex(i);
-                if (userData && userData.name && userData.type === 1 && !seen.has(userData.userId))
+                if (userData && userData.name && userData.type === 1 && !seen.has(userData.webID))
                 {
-                    seen.add(userData.userId);
-                    users.push({ id: userData.userId, name: userData.name, look: userData.figure });
+                    seen.add(userData.webID);
+                    users.push({ id: userData.webID, name: userData.name, look: userData.figure });
                 }
             }
             setSpectators(users);
@@ -663,7 +663,7 @@ export const YouTubePlayerView: FC<{}> = () =>
                             const ud = rs.userDataManager.getUserData(uid);
                             if (ud && ud.name)
                             {
-                                watchers.push({ id: ud.userId, name: ud.name, look: ud.figure });
+                                watchers.push({ id: ud.webID, name: ud.name, look: ud.figure });
                             }
                         }
                     }

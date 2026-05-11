@@ -1,7 +1,7 @@
 import { CreateLinkEvent, PetRespectComposer, PetType } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState, useCallback } from 'react';
 import { FaTimes } from 'react-icons/fa';
-import { AvatarInfoPet, ConvertSeconds, GetConfigurationValue, LocalizeText, SendMessageComposer } from '../../../../../api';
+import { ConvertSeconds, GetConfigurationValue, LocalizeText, SendMessageComposer } from '../../../../../api';
 import { Button, Column, Flex, LayoutCounterTimeView, LayoutPetImageView, LayoutRarityLevelView, Text, UserProfileIconView } from '../../../../../common';
 import { useRoom, useSessionInfo } from '../../../../../hooks';
 

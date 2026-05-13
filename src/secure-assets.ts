@@ -123,15 +123,19 @@ const REKEY_ENDPOINTS = new Set([
     '/api/auth/logout'
 ]);
 
+let clientModeCache: NitroClientMode | null = null;
+
 export const getClientMode = (): NitroClientMode =>
 {
+    if(clientModeCache) return clientModeCache;
+
     try
     {
         const configured = (window as any).__nitroClientMode;
 
         if(configured && typeof configured === 'object')
         {
-            return {
+            clientModeCache = {
                 distObfuscationEnabled: configured.distObfuscationEnabled !== false,
                 secureAssetsEnabled: configured.secureAssetsEnabled !== false,
                 secureApiEnabled: configured.secureApiEnabled !== false,
@@ -139,12 +143,14 @@ export const getClientMode = (): NitroClientMode =>
                 plainConfigBaseUrl: typeof configured.plainConfigBaseUrl === 'string' ? configured.plainConfigBaseUrl : '',
                 plainGamedataBaseUrl: typeof configured.plainGamedataBaseUrl === 'string' ? configured.plainGamedataBaseUrl : ''
             };
+
+            return clientModeCache;
         }
     }
     catch
     {}
 
-    return { ...CLIENT_MODE_DEFAULTS };
+    return CLIENT_MODE_DEFAULTS;
 };
 
 const bytesToBase64 = (bytes: ArrayBuffer): string =>
@@ -488,6 +494,14 @@ const scheduleSecureRekey = (): void =>
 export const installSecureFetch = (): void =>
 {
     if(installed) return;
+
+    const mode = getClientMode();
+
+    if(!mode.secureAssetsEnabled && !mode.secureApiEnabled)
+    {
+        installed = true;
+        return;
+    }
 
     installed = true;
     const nativeFetch = window.fetch.bind(window);

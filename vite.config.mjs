@@ -2,10 +2,55 @@ import react from '@vitejs/plugin-react';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import sirv from 'sirv';
 
 const legacyRendererRoot = resolve(__dirname, '..', 'renderer');
 const currentRendererRoot = resolve(__dirname, '..', 'Nitro_Render_V3');
 const rendererRoot = existsSync(currentRendererRoot) ? currentRendererRoot : legacyRendererRoot;
+
+// Game assets live outside the repo, in a sibling directory next to Nitro-V3.
+// They are NOT placed under public/ on purpose: with ~177k files a symlink
+// under public/ makes chokidar try to install a watcher on each one and the
+// dev server takes minutes to start on Windows. Serving them with a
+// dedicated sirv middleware (below) bypasses chokidar entirely.
+const nitroFilesRoot = resolve(__dirname, '..', 'Nitro-Files');
+const nitroAssetsRoot = resolve(nitroFilesRoot, 'nitro-assets');
+const swfRoot = resolve(nitroFilesRoot, 'swf');
+
+const nitroAssetsServer = () => ({
+    name: 'nitro-assets-serve',
+    configureServer(server)
+    {
+        if(existsSync(nitroAssetsRoot))
+        {
+            server.middlewares.use('/nitro-assets', sirv(nitroAssetsRoot, { dev: true, etag: true, maxAge: 0 }));
+        }
+        else
+        {
+            server.config.logger.warn(`[nitro-assets-serve] ${ nitroAssetsRoot } not found — /nitro-assets/* requests will 404.`);
+        }
+
+        if(existsSync(swfRoot))
+        {
+            server.middlewares.use('/swf', sirv(swfRoot, { dev: true, etag: true, maxAge: 0 }));
+        }
+        else
+        {
+            server.config.logger.warn(`[nitro-assets-serve] ${ swfRoot } not found — /swf/* requests will 404.`);
+        }
+    },
+    configurePreviewServer(server)
+    {
+        if(existsSync(nitroAssetsRoot))
+        {
+            server.middlewares.use('/nitro-assets', sirv(nitroAssetsRoot, { dev: false, etag: true }));
+        }
+        if(existsSync(swfRoot))
+        {
+            server.middlewares.use('/swf', sirv(swfRoot, { dev: false, etag: true }));
+        }
+    }
+});
 
 if(!existsSync(rendererRoot))
 {
@@ -36,7 +81,8 @@ export default defineConfig({
                     [ 'babel-plugin-react-compiler', ReactCompilerConfig ]
                 ]
             }
-        })
+        }),
+        nitroAssetsServer()
     ],
     server: {
         fs: {
@@ -47,7 +93,7 @@ export default defineConfig({
         },
         proxy: {
             '/api': {
-		    target: process.env.AUTH_PROXY_TARGET || 'http://192.168.0.181:2096',
+                target: process.env.AUTH_PROXY_TARGET || 'http://localhost:2096',
                 changeOrigin: true,
             }
         }

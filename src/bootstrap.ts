@@ -1,3 +1,4 @@
+import { GetConfiguration } from '@nitrots/configuration';
 import { configFileUrl, getClientMode, installSecureFetch } from './secure-assets';
 
 const ensureMobileViewport = () =>
@@ -15,7 +16,6 @@ const ensureMobileViewport = () =>
 };
 
 ensureMobileViewport();
-installSecureFetch();
 
 const setBootDebug = (message: string) =>
 {
@@ -29,8 +29,6 @@ const setBootDebug = (message: string) =>
     catch
     {}
 };
-
-setBootDebug('boot: secure fetch installed');
 
 const deployBaseUrl = (): string =>
 {
@@ -89,6 +87,9 @@ const loadClientMode = async () =>
 
 await loadClientMode();
 
+installSecureFetch();
+setBootDebug('boot: secure fetch installed');
+
 const search = new URLSearchParams(window.location.search);
 const clientMode = getClientMode();
 
@@ -106,6 +107,21 @@ const clientMode = getClientMode();
 };
 
 setBootDebug('boot: NitroConfig assigned');
+
+// Load renderer-config.json + ui-config.json BEFORE rendering React. Otherwise
+// the first paint triggers a flood of "Missing configuration key" warnings for
+// every key components read synchronously (asset.url, login.endpoint, …) until
+// prepare()'s deferred init() finally lands. Doing it here makes the config
+// already populated by the time index.tsx mounts <App/>.
+try
+{
+    await GetConfiguration().init();
+    setBootDebug('boot: configuration init done');
+}
+catch(error)
+{
+    setBootDebug(`boot: configuration init failed ${ error?.message || error }`);
+}
 
 import('./index')
     .then(() => setBootDebug('boot: app bundle imported'))

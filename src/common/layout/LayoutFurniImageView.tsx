@@ -17,6 +17,11 @@ export const LayoutFurniImageView: FC<LayoutFurniImageViewProps> = props =>
     const { productType = 's', productClassId = -1, direction = 2, extraData = '', scale = 1, style = {}, ...rest } = props;
     const [ imageElement, setImageElement ] = useState<HTMLImageElement>(null);
     const isMounted = useRef(true);
+    // Request id bumped by the effect on every prop change. The async
+    // generateImage / imageReady callbacks capture it and only write
+    // back if it still matches — prevents an older, slower fetch from
+    // overwriting a newer one when props change in quick succession.
+    const requestIdRef = useRef(0);
 
     useEffect(() =>
     {
@@ -28,13 +33,13 @@ export const LayoutFurniImageView: FC<LayoutFurniImageViewProps> = props =>
         };
     }, []);
 
-    const updateImage = useCallback(async (texture: any) =>
+    const updateImage = useCallback(async (texture: any, requestId: number) =>
     {
         if(!texture) return;
 
         const image = await TextureUtils.generateImage(texture);
 
-        if(image && isMounted.current) setImageElement(image);
+        if(image && isMounted.current && (requestIdRef.current === requestId)) setImageElement(image);
     }, []);
 
     const getStyle = useMemo(() =>
@@ -62,12 +67,14 @@ export const LayoutFurniImageView: FC<LayoutFurniImageViewProps> = props =>
 
     useEffect(() =>
     {
+        const requestId = ++requestIdRef.current;
+
         setImageElement(null);
 
         let imageResult: ImageResult = null;
 
         const listener: IGetImageListener = {
-            imageReady: (result) => updateImage(result?.data),
+            imageReady: (result) => updateImage(result?.data, requestId),
             imageFailed: null
         };
 
@@ -81,7 +88,7 @@ export const LayoutFurniImageView: FC<LayoutFurniImageViewProps> = props =>
                 break;
         }
 
-        if(imageResult?.data) updateImage(imageResult.data);
+        if(imageResult?.data) updateImage(imageResult.data, requestId);
     }, [ productType, productClassId, direction, extraData, updateImage ]);
 
     return <Base classNames={ [ 'furni-image' ] } style={ getStyle } { ...rest } />;

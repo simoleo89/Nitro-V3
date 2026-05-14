@@ -776,24 +776,22 @@ this repo.
 
 ### Open
 
-#### `LayoutFurniImageView` / `LayoutAvatarImageView` — async fetch race
-
-In both files an effect kicks off an async `processAsImageUrl` /
-`generateImage` and writes the result via `setImageElement`. If props
-change twice in quick succession, the first fetch can resolve **after**
-the second one and overwrite the newer image with the older one.
-
-**Fix shape**: capture a request-id ref at the start of the effect, only
-write the result if the ref hasn't been bumped meanwhile. Or — better —
-once React Query (#2) is enabled, model the image fetch as a query keyed
-on the props tuple; React Query handles cancellation and ordering for
-free.
-
-**Severity**: visible only on slow connections / rapid prop changes. Not
-data-corrupting.
+_(none — both previously-listed bugs have landed; see "Recently fixed"
+below.)_
 
 ### Recently fixed (in this branch)
 
+- **`LayoutFurniImageView` / `LayoutAvatarImageView` async fetch race
+  fixed.** Both effects kicked off async image work
+  (`TextureUtils.generateImage` / SDK `resetFigure` callback) and wrote
+  the result via `setImageElement` / `setAvatarUrl` guarded only by an
+  `isMounted` / `isDisposed` ref. If props changed twice in quick
+  succession the older fetch could resolve last and overwrite the
+  newer image. Both now capture a `requestIdRef` bumped at the start
+  of the effect; the async callback bails when its captured id no
+  longer matches the latest one. (React Query keyed on the props
+  tuple would also work, but neither call goes through a composer /
+  parser pair so the request-id ref is the lighter fix.)
 - **`MainView` CREATED/ENDED race fixed.** Two independent
   `useNitroEvent` listeners on `RoomSessionEvent.CREATED` /
   `RoomSessionEvent.ENDED` could land out of order under flaky

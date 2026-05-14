@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { FaEdit, FaPen, FaPlus, FaTrophy } from 'react-icons/fa';
 import { LocalizeText, ProductTypeEnum, SanitizeHtml } from '../../../../../api';
 import { Text } from '../../../../../common';
-import { useCatalog } from '../../../../../hooks';
+import { useCatalogData, useCatalogUiState } from '../../../../../hooks';
 import { useCatalogAdmin } from '../../../CatalogAdminContext';
 import { CatalogAddOnBadgeWidgetView } from '../widgets/CatalogAddOnBadgeWidgetView';
 import { CatalogItemGridWidgetView } from '../widgets/CatalogItemGridWidgetView';
@@ -15,7 +15,8 @@ export const CatalogLayoutTrophiesView: FC<CatalogLayoutProps> = props =>
 {
     const { page = null } = props;
     const [ trophyText, setTrophyText ] = useState<string>('');
-    const { currentOffer = null, setPurchaseOptions = null } = useCatalog();
+    const { currentOffer = null } = useCatalogData();
+    const { setPurchaseOptions = null } = useCatalogUiState();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
 

@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import { LocalizeText, SendMessageComposer } from '../../../../../api';
 import { useNitroQuery } from '../../../../../api/nitro-query';
 import { Button, Column, Text } from '../../../../../common';
-import { useCatalog, useNavigator, useRoomPromote } from '../../../../../hooks';
+import { useCatalogUiState, useNavigator, useRoomPromote } from '../../../../../hooks';
 import { NitroInput } from '../../../../../layout';
 import { CatalogLayoutProps } from './CatalogLayout.types';
 
@@ -18,7 +18,7 @@ export const CatalogLayoutRoomAdsView: FC<CatalogLayoutProps> = props =>
     const [ extended, setExtended ] = useState<boolean>(false);
     const [ categoryId, setCategoryId ] = useState<number>(1);
     const { categories = null } = useNavigator();
-    const { setIsVisible = null } = useCatalog();
+    const { setIsVisible = null } = useCatalogUiState();
     const { promoteInformation, isExtended, setIsExtended } = useRoomPromote();
 
     const { data: availableRooms = [] } = useNitroQuery<RoomAdPurchaseInfoEvent, RoomEntryData[]>({

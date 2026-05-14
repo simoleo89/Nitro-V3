@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { IPurchasableOffer } from '../../../../../api';
 import { AutoGrid, AutoGridProps } from '../../../../../common';
-import { useCatalog } from '../../../../../hooks';
+import { useCatalogActions, useCatalogData } from '../../../../../hooks';
 import { useCatalogAdmin } from '../../../CatalogAdminContext';
 import { CatalogGridOfferView } from '../common/CatalogGridOfferView';
 
@@ -13,7 +13,8 @@ interface CatalogItemGridWidgetViewProps extends AutoGridProps
 export const CatalogItemGridWidgetView: FC<CatalogItemGridWidgetViewProps> = props =>
 {
     const { columnCount = 5, children = null, ...rest } = props;
-    const { currentOffer = null, currentPage = null, selectCatalogOffer = null } = useCatalog();
+    const { currentOffer = null, currentPage = null } = useCatalogData();
+    const { selectCatalogOffer = null } = useCatalogActions();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
     const elementRef = useRef<HTMLDivElement>(null);

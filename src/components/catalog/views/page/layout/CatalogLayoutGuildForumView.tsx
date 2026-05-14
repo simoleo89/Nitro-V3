@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { SanitizeHtml } from '../../../../../api';
 import { Column, Grid, Text } from '../../../../../common';
-import { useCatalog, useUserGroups } from '../../../../../hooks';
+import { useCatalogData, useCatalogUiState, useUserGroups } from '../../../../../hooks';
 import { CatalogFirstProductSelectorWidgetView } from '../widgets/CatalogFirstProductSelectorWidgetView';
 import { CatalogGuildSelectorWidgetView } from '../widgets/CatalogGuildSelectorWidgetView';
 import { CatalogPurchaseWidgetView } from '../widgets/CatalogPurchaseWidgetView';
@@ -12,7 +12,8 @@ export const CatalogLayouGuildForumView: FC<CatalogLayoutProps> = props =>
 {
     const { page = null } = props;
     const [ selectedGroupIndex, setSelectedGroupIndex ] = useState<number>(0);
-    const { currentOffer = null, setCurrentOffer = null } = useCatalog();
+    const { currentOffer = null } = useCatalogData();
+    const { setCurrentOffer = null } = useCatalogUiState();
     const { data: groups = null } = useUserGroups();
 
     return (

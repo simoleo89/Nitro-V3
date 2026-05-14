@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CatalogPurchaseState, LocalizeText, SanitizeHtml, SendMessageComposer } from '../../../../../api';
 import { AutoGrid, Button, Column, Flex, Grid, LayoutCurrencyIcon, LayoutGridItem, LayoutLoadingSpinnerView, Text } from '../../../../../common';
 import { CatalogEvent, CatalogPurchaseFailureEvent, CatalogPurchasedEvent } from '../../../../../events';
-import { useCatalog, useClubOffers, usePurse, useUiEvent } from '../../../../../hooks';
+import { useCatalogData, useClubOffers, usePurse, useUiEvent } from '../../../../../hooks';
 import { CatalogLayoutProps } from './CatalogLayout.types';
 
 const VIP_WINDOW_ID = 1;
@@ -12,7 +12,7 @@ export const CatalogLayoutVipBuyView: FC<CatalogLayoutProps> = props =>
 {
     const [ pendingOffer, setPendingOffer ] = useState<ClubOfferData>(null);
     const [ purchaseState, setPurchaseState ] = useState(CatalogPurchaseState.NONE);
-    const { currentPage = null } = useCatalog();
+    const { currentPage = null } = useCatalogData();
     const { purse = null, getCurrencyAmount = null } = usePurse();
     const { data: offers = null } = useClubOffers(VIP_WINDOW_ID);
     const isPurchasingRef = useRef<boolean>(false);

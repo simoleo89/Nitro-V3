@@ -1060,11 +1060,3 @@ export const useCatalogActions = () =>
     };
 };
 
-/**
- * Deprecated. Kept so the 48 existing consumers compile unchanged —
- * incrementally migrate them to `useCatalogData` / `useCatalogUiState`
- * / `useCatalogActions` and remove this shim once the call sites are
- * gone. Mirrors the same `useBetween` singleton, so behavior is
- * identical.
- */
-export const useCatalog = () => useBetween(useCatalogStore);

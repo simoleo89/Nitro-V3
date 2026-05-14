@@ -3,7 +3,7 @@ import { FC, MouseEvent, useMemo, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { CatalogType, IPurchasableOffer, Offer, ProductTypeEnum } from '../../../../../api';
 import { LayoutAvatarImageView, LayoutGridItem, LayoutGridItemProps } from '../../../../../common';
-import { useCatalog, useCatalogFavorites, useInventoryFurni } from '../../../../../hooks';
+import { useCatalogActions, useCatalogFavorites, useCatalogUiState, useInventoryFurni } from '../../../../../hooks';
 
 interface CatalogGridOfferViewProps extends LayoutGridItemProps
 {
@@ -15,7 +15,8 @@ export const CatalogGridOfferView: FC<CatalogGridOfferViewProps> = props =>
 {
     const { offer = null, selectOffer = null, itemActive = false, ...rest } = props;
     const [ isMouseDown, setMouseDown ] = useState(false);
-    const { requestOfferToMover = null, currentType = CatalogType.NORMAL } = useCatalog();
+    const { requestOfferToMover = null } = useCatalogActions();
+    const { currentType = CatalogType.NORMAL } = useCatalogUiState();
     const { isVisible = false } = useInventoryFurni();
     const { isFavoriteOffer, toggleFavoriteOffer } = useCatalogFavorites();
     const isFav = offer ? isFavoriteOffer(offer.offerId) : false;

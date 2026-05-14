@@ -502,15 +502,11 @@ filters built on top of the same `useBetween` singleton:
   `getBuilderFurniPlaceableStatus`).
 
 The internal store is named `useCatalogStore` and is **not exported**;
-the four public entry points (`useCatalogData` / `useCatalogUiState`
-/ `useCatalogActions` / `useCatalog`) all funnel into the same
-`useBetween` instance, so listeners + state register once. The
-deprecated `useCatalog` shim continues to expose the full historical
-return shape so the 48 existing consumers compile unchanged; they
-should be incrementally migrated to the specific filters as PRs
-touch them. Three pilot migrations already landed in
-`CatalogBuildersClubStatusView`, `CatalogBreadcrumbView`, and
-`CatalogNavigationItemView`.
+the three public entry points (`useCatalogData` / `useCatalogUiState`
+/ `useCatalogActions`) all funnel into the same `useBetween`
+instance, so listeners + state register once. All 48 historical
+consumers have been migrated to the targeted filters; the deprecated
+`useCatalog` shim has been removed.
 
 Pure helpers in `useCatalog.helpers.ts`:
 
@@ -569,7 +565,7 @@ empty-map / partial-bucket branches of the offer lookup).
       the partial-visible fallback), `buildCatalogNodeTree` (tree
       depth + offerId index), and the full decision tree of
       `resolveBuilderFurniPlaceableStatus`.
-    - `useCatalog.filters.test.tsx` (5) — contract tests for the
+    - `useCatalog.filters.test.tsx` (4) — contract tests for the
       three-way singleton-filter split. Stubs `use-between` so the
       filters share one fake store, asserts each filter exposes
       exactly the keys it owns (no leak across slices), and pins

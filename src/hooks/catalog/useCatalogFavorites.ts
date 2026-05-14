@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
 import { CatalogType } from '../../api';
-import { useCatalog } from './useCatalog';
+import { useCatalogUiState } from './useCatalog';
 import { getOffersStorageKey, getPagesStorageKey, IFavoriteOffer, LEGACY_STORAGE_KEY_OFFERS, LEGACY_STORAGE_KEY_PAGES, normalizeCatalogType, parseOffers, parsePages } from './useCatalogFavorites.helpers';
 
 export type { IFavoriteOffer } from './useCatalogFavorites.helpers';
@@ -66,7 +66,7 @@ const writePages = (catalogType: string, ids: number[]) =>
 
 const useCatalogFavoritesState = () =>
 {
-    const { currentType = CatalogType.NORMAL } = useCatalog();
+    const { currentType = CatalogType.NORMAL } = useCatalogUiState();
     const catalogType = normalizeCatalogType(currentType);
     const [ favoriteOffersByType, setFavoriteOffersByType ] = useState<Record<string, IFavoriteOffer[]>>({
         [CatalogType.NORMAL]: [],

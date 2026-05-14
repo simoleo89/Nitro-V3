@@ -2,12 +2,12 @@ import { FC, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FaSave, FaSpinner, FaTimes, FaTrash } from 'react-icons/fa';
 import { LocalizeText } from '../../../../api';
-import { useCatalog } from '../../../../hooks';
+import { useCatalogData } from '../../../../hooks';
 import { IOfferEditData, useCatalogAdmin } from '../../CatalogAdminContext';
 
 export const CatalogAdminOfferEditView: FC<{}> = () =>
 {
-    const { currentPage = null } = useCatalog();
+    const { currentPage = null } = useCatalogData();
     const catalogAdmin = useCatalogAdmin();
     const editingOffer = catalogAdmin?.editingOffer ?? null;
     const setEditingOffer = catalogAdmin?.setEditingOffer;

@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { FaEdit, FaPlus } from 'react-icons/fa';
 import { GetConfigurationValue, LocalizeText, ProductTypeEnum, SanitizeHtml } from '../../../../../api';
 import { Text } from '../../../../../common';
-import { useCatalog } from '../../../../../hooks';
+import { useCatalogData } from '../../../../../hooks';
 import { useCatalogAdmin } from '../../../CatalogAdminContext';
 import { CatalogHeaderView } from '../../catalog-header/CatalogHeaderView';
 import { CatalogAddOnBadgeWidgetView } from '../widgets/CatalogAddOnBadgeWidgetView';
@@ -17,7 +17,7 @@ import { CatalogLayoutProps } from './CatalogLayout.types';
 export const CatalogLayoutDefaultView: FC<CatalogLayoutProps> = props =>
 {
     const { page = null } = props;
-    const { currentOffer = null, currentPage = null } = useCatalog();
+    const { currentOffer = null, currentPage = null } = useCatalogData();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
 

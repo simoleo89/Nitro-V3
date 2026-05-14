@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { FaHeart, FaStar, FaTimes } from 'react-icons/fa';
 import { ICatalogNode, LocalizeText } from '../../../../api';
-import { useCatalog, useCatalogFavorites } from '../../../../hooks';
+import { useCatalogActions, useCatalogData, useCatalogFavorites } from '../../../../hooks';
 import { CatalogIconView } from '../catalog-icon/CatalogIconView';
 
 interface CatalogFavoritesViewProps
@@ -13,7 +13,8 @@ export const CatalogFavoritesView: FC<CatalogFavoritesViewProps> = props =>
 {
     const { onClose } = props;
     const { favoriteOffers, favoritePageIds, toggleFavoritePage, toggleFavoriteOffer } = useCatalogFavorites();
-    const { offersToNodes, activateNode, openPageByOfferId, rootNode } = useCatalog();
+    const { offersToNodes, rootNode } = useCatalogData();
+    const { activateNode, openPageByOfferId } = useCatalogActions();
 
     const favoritePages = useMemo(() =>
     {

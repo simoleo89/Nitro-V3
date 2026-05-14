@@ -75,7 +75,7 @@ vi.mock('use-between', () => ({
 
 // Import AFTER the mock is set up. The hooks resolve `useBetween` at
 // import time via the module graph, so the order matters.
-import { useCatalog, useCatalogActions, useCatalogData, useCatalogUiState } from '../src/hooks/catalog/useCatalog';
+import { useCatalogActions, useCatalogData, useCatalogUiState } from '../src/hooks/catalog/useCatalog';
 
 describe('useCatalog filter contract', () =>
 {
@@ -160,47 +160,23 @@ describe('useCatalog filter contract', () =>
         expect(result.current.openCatalogByType).toBe(fakeStore.openCatalogByType);
     });
 
-    it('all four hooks observe the same singleton — refs are ===', () =>
+    it('all three filters observe the same singleton — refs are ===', () =>
     {
         const { result } = renderHook(() =>
             ({
                 data: useCatalogData(),
                 ui: useCatalogUiState(),
-                actions: useCatalogActions(),
-                full: useCatalog()
+                actions: useCatalogActions()
             }));
 
-        // The shim and the slices reach the same fakeStore. Any
-        // accidental copy would break this `===` check.
-        expect(result.current.full.activateNode).toBe(result.current.actions.activateNode);
-        expect(result.current.full.openCatalogByType).toBe(result.current.actions.openCatalogByType);
-        expect(result.current.full.setIsVisible).toBe(result.current.ui.setIsVisible);
-        expect(result.current.full.setCurrentPage).toBe(result.current.ui.setCurrentPage);
-        expect(result.current.full.rootNode).toBe(result.current.data.rootNode);
-        expect(result.current.full.furniCount).toBe(result.current.data.furniCount);
-        expect(result.current.full.roomPreviewer).toBe(result.current.data.roomPreviewer);
-    });
-
-    it('useCatalog (deprecated shim) preserves the full historical surface', () =>
-    {
-        const { result } = renderHook(() => useCatalog());
-
-        // Sample one field from each slice, including the setters
-        // that the 48 existing consumers still destructure straight
-        // out of `useCatalog()`. If a setter or callback ever stops
-        // being forwarded, the shim breaks and those consumers
-        // silently fail.
-        const required = [
-            'rootNode', 'offersToNodes', 'currentPage', 'currentOffer', 'frontPageItems',
-            'isVisible', 'setIsVisible', 'pageId', 'previousPageId', 'currentType',
-            'setCurrentPage', 'setCurrentOffer', 'setSearchResult',
-            'openCatalogByType', 'toggleCatalogByType', 'activateNode',
-            'openPageById', 'openPageByName', 'openPageByOfferId',
-            'requestOfferToMover', 'selectCatalogOffer',
-            'getNodeById', 'getNodeByName', 'getBuilderFurniPlaceableStatus',
-            'furniCount', 'furniLimit', 'secondsLeft', 'updateTime'
-        ];
-
-        for(const key of required) expect(result.current).toHaveProperty(key);
+        // Each slice reaches the same fakeStore via useBetween. Any
+        // accidental copy would break these `===` checks.
+        expect(result.current.actions.activateNode).toBe(fakeStore.activateNode);
+        expect(result.current.actions.openCatalogByType).toBe(fakeStore.openCatalogByType);
+        expect(result.current.ui.setIsVisible).toBe(fakeStore.setIsVisible);
+        expect(result.current.ui.setCurrentPage).toBe(fakeStore.setCurrentPage);
+        expect(result.current.data.rootNode).toBe(fakeStore.rootNode);
+        expect(result.current.data.furniCount).toBe(fakeStore.furniCount);
+        expect(result.current.data.roomPreviewer).toBe(fakeStore.roomPreviewer);
     });
 });

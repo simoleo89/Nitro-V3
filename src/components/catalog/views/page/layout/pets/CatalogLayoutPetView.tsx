@@ -4,7 +4,7 @@ import { FaCheck, FaEdit, FaFillDrip, FaPaw, FaPlus, FaTimes } from 'react-icons
 import { DispatchUiEvent, GetPetAvailableColors, GetPetIndexFromLocalization, LocalizeText, SanitizeHtml, SendMessageComposer } from '../../../../../../api';
 import { LayoutGridItem, LayoutPetImageView } from '../../../../../../common';
 import { CatalogPurchaseFailureEvent } from '../../../../../../events';
-import { useCatalog, useMessageEvent, useSellablePetPalette } from '../../../../../../hooks';
+import { useCatalogData, useCatalogUiState, useMessageEvent, useSellablePetPalette } from '../../../../../../hooks';
 import { useCatalogAdmin } from '../../../../CatalogAdminContext';
 import { CatalogAddOnBadgeWidgetView } from '../../widgets/CatalogAddOnBadgeWidgetView';
 import { CatalogTotalPriceWidget } from '../../widgets/CatalogTotalPriceWidget';
@@ -23,7 +23,8 @@ export const CatalogLayoutPetView: FC<CatalogLayoutProps> = props =>
     const [ petName, setPetName ] = useState('');
     const [ approvalPending, setApprovalPending ] = useState(true);
     const [ approvalResult, setApprovalResult ] = useState(-1);
-    const { currentOffer = null, setCurrentOffer = null, setPurchaseOptions = null, roomPreviewer = null } = useCatalog();
+    const { currentOffer = null, roomPreviewer = null } = useCatalogData();
+    const { setCurrentOffer = null, setPurchaseOptions = null } = useCatalogUiState();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
     const breed: string = (currentOffer?.product?.productData?.type as unknown as string) ?? '';

@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import { FaCog, FaEdit, FaEye, FaEyeSlash, FaHeart, FaPlus, FaStar, FaTrash } from 'react-icons/fa';
 import { CatalogType, LocalizeText } from '../../api';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../common';
-import { useCatalog, useCatalogFavorites } from '../../hooks';
+import { useCatalogActions, useCatalogData, useCatalogFavorites, useCatalogUiState } from '../../hooks';
 import { CatalogAdminProvider, useCatalogAdmin } from './CatalogAdminContext';
 import { CatalogAdminOfferEditView } from './views/admin/CatalogAdminOfferEditView';
 import { CatalogAdminPageEditView } from './views/admin/CatalogAdminPageEditView';
@@ -18,7 +18,9 @@ import { MarketplacePostOfferView } from './views/page/layout/marketplace/Market
 
 const CatalogModernViewInner: FC<{}> = () =>
 {
-    const { isVisible = false, setIsVisible = null, rootNode = null, currentPage = null, navigationHidden = false, setNavigationHidden = null, activeNodes = [], searchResult = null, setSearchResult = null, openPageByName = null, openPageByOfferId = null, activateNode = null, openCatalogByType = null, toggleCatalogByType = null, currentType = CatalogType.NORMAL } = useCatalog();
+    const { rootNode = null, currentPage = null, searchResult = null } = useCatalogData();
+    const { isVisible = false, setIsVisible = null, navigationHidden = false, setNavigationHidden = null, activeNodes = [], setSearchResult = null, currentType = CatalogType.NORMAL } = useCatalogUiState();
+    const { openPageByName = null, openPageByOfferId = null, activateNode = null, openCatalogByType = null, toggleCatalogByType = null } = useCatalogActions();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
     const setAdminMode = catalogAdmin?.setAdminMode ?? (() =>

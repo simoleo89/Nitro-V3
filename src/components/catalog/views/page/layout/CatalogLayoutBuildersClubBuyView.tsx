@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CatalogPurchaseState, LocalizeText, SanitizeHtml, SendMessageComposer } from '../../../../../api';
 import { Button, Column, Flex, Grid, LayoutCurrencyIcon, LayoutGridItem, LayoutLoadingSpinnerView, Text } from '../../../../../common';
 import { CatalogEvent, CatalogPurchaseFailureEvent, CatalogPurchasedEvent } from '../../../../../events';
-import { useCatalog, useClubOffers, usePurse, useUiEvent } from '../../../../../hooks';
+import { useCatalogData, useClubOffers, usePurse, useUiEvent } from '../../../../../hooks';
 import { CatalogHeaderView } from '../../catalog-header/CatalogHeaderView';
 import { CatalogLayoutProps } from './CatalogLayout.types';
 
@@ -14,7 +14,7 @@ export const CatalogLayoutBuildersClubBuyView: FC<CatalogLayoutProps> = () =>
 {
     const [ pendingOffer, setPendingOffer ] = useState<ClubOfferData>(null);
     const [ purchaseState, setPurchaseState ] = useState(CatalogPurchaseState.NONE);
-    const { currentPage = null } = useCatalog();
+    const { currentPage = null } = useCatalogData();
     const { getCurrencyAmount = null } = usePurse();
     const isPurchasingRef = useRef(false);
     const isAddonLayout = (currentPage?.layoutCode === 'builders_club_addons');

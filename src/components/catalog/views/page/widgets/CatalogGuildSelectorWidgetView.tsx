@@ -2,12 +2,13 @@ import { StringDataType } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { LocalizeText } from '../../../../../api';
 import { Button, Flex } from '../../../../../common';
-import { useCatalog, useUserGroups } from '../../../../../hooks';
+import { useCatalogData, useCatalogUiState, useUserGroups } from '../../../../../hooks';
 
 export const CatalogGuildSelectorWidgetView: FC<{}> = props =>
 {
     const [ selectedGroupIndex, setSelectedGroupIndex ] = useState<number>(0);
-    const { currentOffer = null, setPurchaseOptions = null } = useCatalog();
+    const { currentOffer = null } = useCatalogData();
+    const { setPurchaseOptions = null } = useCatalogUiState();
     const { data: groups = null } = useUserGroups();
 
     const previewStuffData = useMemo(() =>

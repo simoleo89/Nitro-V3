@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { BuilderFurniPlaceableStatus, CatalogPurchaseState, CatalogType, DispatchUiEvent, GetClubMemberLevel, LocalStorageKeys, LocalizeText, NotificationBubbleType, Offer, ProductTypeEnum, SendMessageComposer } from '../../../../../api';
 import { Button, LayoutLoadingSpinnerView, Text } from '../../../../../common';
 import { CatalogEvent, CatalogInitGiftEvent, CatalogPurchaseFailureEvent, CatalogPurchaseNotAllowedEvent, CatalogPurchaseSoldOutEvent, CatalogPurchasedEvent } from '../../../../../events';
-import { useCatalog, useLocalStorage, useNotification, usePurse, useUiEvent } from '../../../../../hooks';
+import { useCatalogActions, useCatalogData, useCatalogUiState, useLocalStorage, useNotification, usePurse, useUiEvent } from '../../../../../hooks';
 
 interface CatalogPurchaseWidgetViewProps
 {
@@ -20,7 +20,9 @@ export const CatalogPurchaseWidgetView: FC<CatalogPurchaseWidgetViewProps> = pro
     const [ purchaseWillBeGift, setPurchaseWillBeGift ] = useState(false);
     const [ purchaseState, setPurchaseState ] = useState(CatalogPurchaseState.NONE);
     const [ catalogSkipPurchaseConfirmation, setCatalogSkipPurchaseConfirmation ] = useLocalStorage(LocalStorageKeys.CATALOG_SKIP_PURCHASE_CONFIRMATION, false);
-    const { currentOffer = null, currentPage = null, currentType = CatalogType.NORMAL, purchaseOptions = null, setPurchaseOptions = null, requestOfferToMover = null, setCatalogPlaceMultipleObjects = null, getBuilderFurniPlaceableStatus = null } = useCatalog();
+    const { currentOffer = null, currentPage = null } = useCatalogData();
+    const { currentType = CatalogType.NORMAL, purchaseOptions = null, setPurchaseOptions = null, setCatalogPlaceMultipleObjects = null } = useCatalogUiState();
+    const { requestOfferToMover = null, getBuilderFurniPlaceableStatus = null } = useCatalogActions();
     const { getCurrencyAmount = null } = usePurse();
     const { showSingleBubble = null } = useNotification();
 

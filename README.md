@@ -8,14 +8,42 @@ For a guided one-command setup on **Windows or Linux**:
 node install.mjs
 ```
 
-This will check prerequisites, clone the sibling `Nitro_Render_V3` repo into `../Nitro_Render_V3`, install/link both projects, scaffold the three config files in `public/configuration/`, prompt for your URLs, and run `yarn build`.
+Or use the platform wrappers:
 
-Flags:
-- `--non-interactive` (or `--skip-prompts`) — keep default URLs from `.example` files
+- **Linux / macOS:** `./install.sh`
+- **Windows:** `install.bat` (double-click works too)
+
+This will check prerequisites, clone the sibling `Nitro_Render_V3` repo into `../Nitro_Render_V3`, install/link both projects, scaffold the three config files in `public/configuration/`, prompt for your URLs (with validation), and run `yarn build`.
+
+### Workflow flags
+
+- `--non-interactive` (or `--skip-prompts`) — keep default URLs unless overridden by `--<key>=<value>`
 - `--skip-build` — skip the final `yarn build`
 - `--skip-clone` — assume `../Nitro_Render_V3` is already present
 - `--skip-link` — skip `yarn link` calls (useful when re-running)
 - `--help`, `-h` — show usage and exit
+
+### URL override flags (for CI / fully automated runs)
+
+Each config key can be overridden from the command line. Combine with `--non-interactive` for unattended runs:
+
+```
+node install.mjs --non-interactive \
+  --socket-url=wss://my.server:2096 \
+  --api-url=https://my.server:2096 \
+  --asset-url=https://my.cdn/client/nitro/bundled \
+  --image-library-url=https://my.cdn/client/c_images/ \
+  --hof-furni-url=https://my.cdn/client/c_images/dcr/hof_furni \
+  --camera-url=https://my.server/camera/photo/ \
+  --thumbnails-url=https://my.server/camera/photo/temp/thumb/%thumbnail%.png \
+  --url-prefix= \
+  --habbopages-url=/gamedata/habbopages/ \
+  --api-base-url=https://my.server:2096 \
+  --plain-config-base-url=https://my.cdn/configuration/ \
+  --plain-gamedata-base-url=https://my.cdn/client/nitro/gamedata/
+```
+
+URL values are validated (scheme must match: `ws`/`wss` for sockets, `http`/`https` for the rest). Set `NO_COLOR=1` to disable ANSI colors.
 
 For manual setup, see the `Installation` section below.
 

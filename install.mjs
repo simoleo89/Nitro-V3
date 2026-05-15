@@ -15,6 +15,25 @@ const CONFIG_DIR = join(ROOT, 'public', 'configuration');
 const IS_WINDOWS = platform() === 'win32';
 const MIN_NODE_MAJOR = 18;
 
+const KEY_SPECS = {
+    'socket.url':           { type: 'url',       schemes: ['ws:', 'wss:'],     flag: 'socket-url' },
+    'api.url':              { type: 'url',       schemes: ['http:', 'https:'], flag: 'api-url' },
+    'asset.url':            { type: 'url',       schemes: ['http:', 'https:'], flag: 'asset-url' },
+    'image.library.url':    { type: 'url',       schemes: ['http:', 'https:'], flag: 'image-library-url' },
+    'hof.furni.url':        { type: 'url',       schemes: ['http:', 'https:'], flag: 'hof-furni-url' },
+    'camera.url':           { type: 'url',       schemes: ['http:', 'https:'], flag: 'camera-url' },
+    'thumbnails.url':       { type: 'url',       schemes: ['http:', 'https:'], flag: 'thumbnails-url' },
+    'url.prefix':           { type: 'pathOrUrl', schemes: ['http:', 'https:'], flag: 'url-prefix' },
+    'habbopages.url':       { type: 'pathOrUrl', schemes: ['http:', 'https:'], flag: 'habbopages-url' },
+    'apiBaseUrl':           { type: 'url',       schemes: ['http:', 'https:'], flag: 'api-base-url' },
+    'plainConfigBaseUrl':   { type: 'url',       schemes: ['http:', 'https:'], flag: 'plain-config-base-url' },
+    'plainGamedataBaseUrl': { type: 'url',       schemes: ['http:', 'https:'], flag: 'plain-gamedata-base-url' }
+};
+
+const FLAG_TO_KEY = Object.fromEntries(
+    Object.entries(KEY_SPECS).map(([key, spec]) => [spec.flag, key])
+);
+
 const CONFIG_FILES = [
     {
         example: 'renderer-config.example',
@@ -45,6 +64,7 @@ const STEPS = [
 ];
 
 let currentStep = 0;
+let activeReadline = null;
 const summary = {
     rendererCloned: false,
     rendererSkipped: false,
@@ -55,16 +75,29 @@ const summary = {
     buildSkipped: false
 };
 
-function info(msg) { console.log('[i] ' + msg); }
-function ok(msg)   { console.log('[+] ' + msg); }
-function warn(msg) { console.log('[!] ' + msg); }
-function err(msg)  { console.error('[x] ' + msg); }
+const useColor = !process.env.NO_COLOR && process.stdout.isTTY;
+const c = {
+    reset:  useColor ? '\x1b[0m'  : '',
+    bold:   useColor ? '\x1b[1m'  : '',
+    dim:    useColor ? '\x1b[2m'  : '',
+    red:    useColor ? '\x1b[31m' : '',
+    green:  useColor ? '\x1b[32m' : '',
+    yellow: useColor ? '\x1b[33m' : '',
+    cyan:   useColor ? '\x1b[36m' : ''
+};
+
+function info(msg) { console.log(c.cyan   + '[i]' + c.reset + ' ' + msg); }
+function ok(msg)   { console.log(c.green  + '[+]' + c.reset + ' ' + msg); }
+function warn(msg) { console.log(c.yellow + '[!]' + c.reset + ' ' + msg); }
+function err(msg)  { console.error(c.red  + '[x]' + c.reset + ' ' + msg); }
 
 function step(label) {
     currentStep += 1;
-    console.log('\n----------------------------------------------------------------');
-    console.log('[' + currentStep + '/' + STEPS.length + '] ' + label);
-    console.log('----------------------------------------------------------------');
+    const sep = '----------------------------------------------------------------';
+    console.log('');
+    console.log(c.dim + sep + c.reset);
+    console.log(c.bold + '[' + currentStep + '/' + STEPS.length + '] ' + label + c.reset);
+    console.log(c.dim + sep + c.reset);
 }
 
 function runShell(cmdString, cwd) {
@@ -93,47 +126,87 @@ function runCapture(cmdString) {
     });
 }
 
+function validateValue(value, spec) {
+    if (value === '' || value === undefined || value === null) {
+        if (spec.type === 'pathOrUrl') return { valid: true };
+        return { valid: false, error: 'value cannot be empty' };
+    }
+    if (spec.type === 'pathOrUrl' && value.startsWith('/')) {
+        return { valid: true };
+    }
+    let parsed;
+    try {
+        parsed = new URL(value);
+    } catch {
+        return { valid: false, error: 'not a valid URL' };
+    }
+    if (spec.schemes.length > 0 && !spec.schemes.includes(parsed.protocol)) {
+        const allowed = spec.schemes.map(s => s.replace(':', '')).join(', ');
+        return { valid: false, error: 'scheme must be one of: ' + allowed };
+    }
+    return { valid: true };
+}
+
 function parseArgs() {
     const opts = {
         interactive: true,
         skipBuild: false,
         skipClone: false,
         skipLink: false,
-        help: false
+        help: false,
+        urlOverrides: {}
     };
-    const known = new Set([
+    const builtinFlags = new Set([
         '--non-interactive', '--skip-prompts',
         '--skip-build', '--skip-clone', '--skip-link',
         '--help', '-h'
     ]);
     for (const arg of process.argv.slice(2)) {
-        switch (arg) {
-            case '--non-interactive':
-            case '--skip-prompts': opts.interactive = false; break;
-            case '--skip-build':   opts.skipBuild = true; break;
-            case '--skip-clone':   opts.skipClone = true; break;
-            case '--skip-link':    opts.skipLink = true; break;
-            case '--help':
-            case '-h':             opts.help = true; break;
-            default:
-                if (!known.has(arg)) warn('Unknown flag: ' + arg + ' (ignored)');
+        if (builtinFlags.has(arg)) {
+            switch (arg) {
+                case '--non-interactive':
+                case '--skip-prompts': opts.interactive = false; break;
+                case '--skip-build':   opts.skipBuild = true; break;
+                case '--skip-clone':   opts.skipClone = true; break;
+                case '--skip-link':    opts.skipLink = true; break;
+                case '--help':
+                case '-h':             opts.help = true; break;
+            }
+            continue;
         }
+        const eq = arg.indexOf('=');
+        if (arg.startsWith('--') && eq > 2) {
+            const flagName = arg.slice(2, eq);
+            const value = arg.slice(eq + 1);
+            const key = FLAG_TO_KEY[flagName];
+            if (key) {
+                opts.urlOverrides[key] = value;
+                continue;
+            }
+        }
+        warn('Unknown flag: ' + arg + ' (ignored)');
     }
     return opts;
 }
 
 function printUsage() {
+    const flagList = Object.entries(KEY_SPECS)
+        .map(([key, spec]) => '  --' + spec.flag + '=<value>' + ' '.repeat(Math.max(1, 32 - spec.flag.length)) + 'Set ' + key)
+        .join('\n');
     console.log([
         'Nitro-V3 cross-platform installer',
         '',
         'Usage: node install.mjs [flags]',
         '',
-        'Flags:',
-        '  --non-interactive, --skip-prompts   Keep default URLs from .example files',
+        'Workflow flags:',
+        '  --non-interactive, --skip-prompts   Keep default URLs unless overridden by --<key>=<value>',
         '  --skip-build                        Skip the final yarn build',
         '  --skip-clone                        Skip cloning Nitro_Render_V3',
         '  --skip-link                         Skip yarn link calls (useful when re-running)',
         '  --help, -h                          Show this help and exit',
+        '',
+        'URL override flags (override interactive prompts; combine with --non-interactive for fully automated runs):',
+        flagList,
         '',
         'Steps performed:',
         '  1. Check Node >= ' + MIN_NODE_MAJOR + ', yarn, git',
@@ -215,7 +288,7 @@ async function copyConfigs() {
             throw new Error('Missing example file: ' + src);
         }
         if (existsSync(dst)) {
-            warn(entry.target + ' already exists - keeping existing file (URL prompts will still patch it).');
+            warn(entry.target + ' already exists - keeping existing file (URL overrides will still patch it).');
             summary.configsKept.push(entry.target);
         } else {
             await copyFile(src, dst);
@@ -225,13 +298,55 @@ async function copyConfigs() {
     }
 }
 
+async function applyOverridesNonInteractive(opts) {
+    for (const entry of CONFIG_FILES) {
+        const dst = join(CONFIG_DIR, entry.target);
+        const raw = await readFile(dst, 'utf8');
+        let obj;
+        try {
+            obj = JSON.parse(raw);
+        } catch (e) {
+            throw new Error('Could not parse ' + entry.target + ' as JSON: ' + e.message);
+        }
+        let changed = false;
+        for (const key of entry.keys) {
+            if (Object.prototype.hasOwnProperty.call(opts.urlOverrides, key)) {
+                const value = opts.urlOverrides[key];
+                const result = validateValue(value, KEY_SPECS[key]);
+                if (!result.valid) {
+                    throw new Error('Invalid value for --' + KEY_SPECS[key].flag + '=' + JSON.stringify(value) + ': ' + result.error);
+                }
+                if (obj[key] !== value) {
+                    obj[key] = value;
+                    changed = true;
+                }
+            }
+        }
+        if (changed) {
+            await writeFile(dst, JSON.stringify(obj, null, 4) + '\n');
+            ok('Updated ' + entry.target + ' (from CLI flags)');
+            summary.configsPatched.push(entry.target);
+        }
+    }
+}
+
 async function promptConfigs(opts) {
+    const overrideKeys = Object.keys(opts.urlOverrides);
     if (!opts.interactive) {
-        info('--non-interactive: keeping URL values from .example defaults');
+        if (overrideKeys.length > 0) {
+            info('--non-interactive with ' + overrideKeys.length + ' URL override(s); applying without prompts');
+            await applyOverridesNonInteractive(opts);
+        } else {
+            info('--non-interactive: keeping URL values from .example defaults');
+        }
         return;
     }
-    info('Press Enter to keep the current value shown in [brackets].');
+    info('Press Enter to keep the current value shown in [brackets]. URLs are validated.');
+    if (overrideKeys.length > 0) {
+        info('CLI overrides take precedence and skip prompts: ' + overrideKeys.map(k => '--' + KEY_SPECS[k].flag).join(', '));
+    }
     const rl = readline.createInterface({ input, output });
+    activeReadline = rl;
     try {
         for (const entry of CONFIG_FILES) {
             const dst = join(CONFIG_DIR, entry.target);
@@ -242,15 +357,34 @@ async function promptConfigs(opts) {
             } catch (e) {
                 throw new Error('Could not parse ' + entry.target + ' as JSON: ' + e.message);
             }
-            console.log('\n  ' + entry.target);
+            console.log('\n  ' + c.bold + entry.target + c.reset);
             let changed = false;
             for (const key of entry.keys) {
+                const spec = KEY_SPECS[key];
+                if (Object.prototype.hasOwnProperty.call(opts.urlOverrides, key)) {
+                    const value = opts.urlOverrides[key];
+                    const result = validateValue(value, spec);
+                    if (!result.valid) {
+                        throw new Error('Invalid value for --' + spec.flag + '=' + JSON.stringify(value) + ': ' + result.error);
+                    }
+                    if (obj[key] !== value) { obj[key] = value; changed = true; }
+                    console.log('    ' + c.dim + key + ' = ' + value + '  (from --' + spec.flag + ')' + c.reset);
+                    continue;
+                }
                 const current = obj[key] === undefined ? '' : String(obj[key]);
-                const answer = await rl.question('    ' + key + ' [' + current + ']: ');
-                const trimmed = answer.trim();
-                if (trimmed.length > 0 && trimmed !== current) {
+                while (true) {
+                    const answer = await rl.question('    ' + key + ' [' + current + ']: ');
+                    const trimmed = answer.trim();
+                    if (trimmed.length === 0) break;
+                    if (trimmed === current) break;
+                    const result = validateValue(trimmed, spec);
+                    if (!result.valid) {
+                        warn('Invalid: ' + result.error + '. Try again or press Enter to keep current.');
+                        continue;
+                    }
                     obj[key] = trimmed;
                     changed = true;
+                    break;
                 }
             }
             if (changed) {
@@ -262,6 +396,7 @@ async function promptConfigs(opts) {
             }
         }
     } finally {
+        activeReadline = null;
         rl.close();
     }
 }
@@ -275,14 +410,14 @@ async function runBuild(opts) {
 function printSummary() {
     const distPath = join(ROOT, 'dist');
     console.log('');
-    console.log('================================================================');
-    console.log(' Installation summary');
-    console.log('================================================================');
+    console.log(c.bold + '================================================================' + c.reset);
+    console.log(c.bold + ' Installation summary' + c.reset);
+    console.log(c.bold + '================================================================' + c.reset);
     console.log(' Renderer:   ' + RENDERER_DIR + (summary.rendererCloned ? '  (cloned)' : '  (already present)'));
     if (summary.configsCreated.length) console.log(' Created:    ' + summary.configsCreated.join(', '));
     if (summary.configsKept.length)    console.log(' Kept:       ' + summary.configsKept.join(', '));
     if (summary.configsPatched.length) console.log(' Patched:    ' + summary.configsPatched.join(', '));
-    if (summary.buildRan)              console.log(' Build:      OK -> ' + distPath);
+    if (summary.buildRan)              console.log(' Build:      ' + c.green + 'OK' + c.reset + ' -> ' + distPath);
     else if (summary.buildSkipped)     console.log(' Build:      skipped');
     console.log('');
     console.log(' Next steps:');
@@ -292,14 +427,14 @@ function printSummary() {
     } else {
         console.log('   - Production:   yarn build, then deploy ' + distPath);
     }
-    console.log('================================================================');
+    console.log(c.bold + '================================================================' + c.reset);
 }
 
 async function main() {
     const opts = parseArgs();
     if (opts.help) { printUsage(); process.exit(0); }
 
-    console.log('Nitro-V3 installer (' + (IS_WINDOWS ? 'Windows' : platform()) + ')');
+    console.log(c.bold + 'Nitro-V3 installer' + c.reset + ' (' + (IS_WINDOWS ? 'Windows' : platform()) + ')');
     console.log('Project root: ' + ROOT);
 
     step(STEPS[0]); await checkPrereqs();
@@ -312,9 +447,21 @@ async function main() {
     step(STEPS[7]); printSummary();
 }
 
+process.on('SIGINT', () => {
+    if (activeReadline) {
+        try { activeReadline.close(); } catch {}
+        activeReadline = null;
+    }
+    const label = STEPS[currentStep - 1] || 'startup';
+    console.error('');
+    warn('Aborted at step ' + currentStep + ' (' + label + ')');
+    process.exit(130);
+});
+
 main().catch(e => {
     const label = STEPS[currentStep - 1] || 'startup';
-    err('\nStep ' + currentStep + ' (' + label + ') failed:');
+    err('');
+    err('Step ' + currentStep + ' (' + label + ') failed:');
     err('    ' + e.message);
     process.exit(1);
 });

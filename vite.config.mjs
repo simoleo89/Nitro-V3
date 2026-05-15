@@ -8,6 +8,7 @@ const currentRendererRoot = resolve(__dirname, '..', 'Nitro_Render_V3');
 const rendererRoot = existsSync(currentRendererRoot) ? currentRendererRoot : legacyRendererRoot;
 
 export default defineConfig({
+	base: process.env.VITE_BASE || './',
     plugins: [ react() ],
     server: {
         fs: {

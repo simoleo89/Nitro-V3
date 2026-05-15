@@ -67,7 +67,7 @@ export const App: FC<{}> = props =>
     const [ isReady, setIsReady ] = useState(false);
     const [ errorMessage, setErrorMessage ] = useState('');
     const [ homeUrl, setHomeUrl ] = useState('');
-    const [ showLogin, setShowLogin ] = useState(() => !window.NitroConfig?.['sso.ticket'] && !hasRememberLogin());
+    const [ showLogin, setShowLogin ] = useState(false);
     const [ isEnteringHotel, setIsEnteringHotel ] = useState(() => !!window.NitroConfig?.['sso.ticket'] || hasRememberLogin());
     const [ prepareTrigger, setPrepareTrigger ] = useState(0);
     const warmupPromiseRef = useRef<Promise<void>>(null);

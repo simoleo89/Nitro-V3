@@ -1,0 +1,320 @@
+#!/usr/bin/env node
+import { spawn } from 'node:child_process';
+import { copyFile, readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { platform } from 'node:os';
+import * as readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
+
+const ROOT = dirname(fileURLToPath(import.meta.url));
+const RENDERER_REPO_URL = 'https://github.com/duckietm/Nitro_Render_V3.git';
+const RENDERER_DIR = resolve(ROOT, '..', 'Nitro_Render_V3');
+const CONFIG_DIR = join(ROOT, 'public', 'configuration');
+const IS_WINDOWS = platform() === 'win32';
+const MIN_NODE_MAJOR = 18;
+
+const CONFIG_FILES = [
+    {
+        example: 'renderer-config.example',
+        target: 'renderer-config.json',
+        keys: ['socket.url', 'api.url', 'asset.url', 'image.library.url', 'hof.furni.url']
+    },
+    {
+        example: 'ui-config.example',
+        target: 'ui-config.json',
+        keys: ['camera.url', 'thumbnails.url', 'url.prefix', 'habbopages.url']
+    },
+    {
+        example: 'client-mode.example',
+        target: 'client-mode.json',
+        keys: ['apiBaseUrl', 'plainConfigBaseUrl', 'plainGamedataBaseUrl']
+    }
+];
+
+const STEPS = [
+    'Check prerequisites',
+    'Clone Nitro_Render_V3',
+    'Setup renderer (yarn install + yarn link)',
+    'Setup client (yarn install + yarn link)',
+    'Copy config files',
+    'Configure URLs',
+    'Build (yarn build)',
+    'Summary'
+];
+
+let currentStep = 0;
+const summary = {
+    rendererCloned: false,
+    rendererSkipped: false,
+    configsCreated: [],
+    configsKept: [],
+    configsPatched: [],
+    buildRan: false,
+    buildSkipped: false
+};
+
+function info(msg) { console.log('[i] ' + msg); }
+function ok(msg)   { console.log('[+] ' + msg); }
+function warn(msg) { console.log('[!] ' + msg); }
+function err(msg)  { console.error('[x] ' + msg); }
+
+function step(label) {
+    currentStep += 1;
+    console.log('\n----------------------------------------------------------------');
+    console.log('[' + currentStep + '/' + STEPS.length + '] ' + label);
+    console.log('----------------------------------------------------------------');
+}
+
+function runShell(cmdString, cwd) {
+    return new Promise((resolveFn, rejectFn) => {
+        const child = spawn(cmdString, { shell: true, cwd, stdio: 'inherit' });
+        child.on('error', e => rejectFn(new Error("'" + cmdString + "' (cwd: " + cwd + ") failed to start: " + e.message)));
+        child.on('exit', code => {
+            if (code === 0) resolveFn();
+            else rejectFn(new Error("'" + cmdString + "' (cwd: " + cwd + ") exited with code " + code));
+        });
+    });
+}
+
+function runCapture(cmdString) {
+    return new Promise((resolveFn, rejectFn) => {
+        const child = spawn(cmdString, { shell: true, stdio: ['ignore', 'pipe', 'pipe'] });
+        let stdout = '';
+        let stderr = '';
+        child.stdout.on('data', d => { stdout += d.toString(); });
+        child.stderr.on('data', d => { stderr += d.toString(); });
+        child.on('error', e => rejectFn(new Error("'" + cmdString + "' failed to start: " + e.message)));
+        child.on('exit', code => {
+            if (code === 0) resolveFn(stdout.trim());
+            else rejectFn(new Error("'" + cmdString + "' exited with code " + code + (stderr ? ': ' + stderr.trim() : '')));
+        });
+    });
+}
+
+function parseArgs() {
+    const opts = {
+        interactive: true,
+        skipBuild: false,
+        skipClone: false,
+        skipLink: false,
+        help: false
+    };
+    const known = new Set([
+        '--non-interactive', '--skip-prompts',
+        '--skip-build', '--skip-clone', '--skip-link',
+        '--help', '-h'
+    ]);
+    for (const arg of process.argv.slice(2)) {
+        switch (arg) {
+            case '--non-interactive':
+            case '--skip-prompts': opts.interactive = false; break;
+            case '--skip-build':   opts.skipBuild = true; break;
+            case '--skip-clone':   opts.skipClone = true; break;
+            case '--skip-link':    opts.skipLink = true; break;
+            case '--help':
+            case '-h':             opts.help = true; break;
+            default:
+                if (!known.has(arg)) warn('Unknown flag: ' + arg + ' (ignored)');
+        }
+    }
+    return opts;
+}
+
+function printUsage() {
+    console.log([
+        'Nitro-V3 cross-platform installer',
+        '',
+        'Usage: node install.mjs [flags]',
+        '',
+        'Flags:',
+        '  --non-interactive, --skip-prompts   Keep default URLs from .example files',
+        '  --skip-build                        Skip the final yarn build',
+        '  --skip-clone                        Skip cloning Nitro_Render_V3',
+        '  --skip-link                         Skip yarn link calls (useful when re-running)',
+        '  --help, -h                          Show this help and exit',
+        '',
+        'Steps performed:',
+        '  1. Check Node >= ' + MIN_NODE_MAJOR + ', yarn, git',
+        '  2. Clone Nitro_Render_V3 to ../Nitro_Render_V3',
+        '  3. yarn install + yarn link in the renderer',
+        '  4. yarn install + yarn link "@nitrots/nitro-renderer" in this project',
+        '  5. Copy public/configuration/*.example -> *.json (keeps existing files)',
+        '  6. Prompt for URLs and patch the JSON config files',
+        '  7. yarn build',
+        ''
+    ].join('\n'));
+}
+
+async function checkPrereqs() {
+    const nodeVer = process.versions.node;
+    const major = parseInt(nodeVer.split('.')[0], 10);
+    if (Number.isNaN(major) || major < MIN_NODE_MAJOR) {
+        throw new Error('Node >= ' + MIN_NODE_MAJOR + ' required (you have v' + nodeVer + '). Install from https://nodejs.org/');
+    }
+    ok('Node v' + nodeVer);
+
+    try {
+        const v = await runCapture('yarn --version');
+        ok('yarn ' + v);
+    } catch {
+        const hint = IS_WINDOWS ? 'npm i -g yarn' : 'sudo npm i -g yarn';
+        throw new Error('yarn not found on PATH. Install with: ' + hint);
+    }
+
+    try {
+        const v = await runCapture('git --version');
+        ok(v);
+    } catch {
+        const hint = IS_WINDOWS ? 'winget install Git.Git' : 'sudo apt-get install git  (or your distro equivalent)';
+        throw new Error('git not found on PATH. Install with: ' + hint);
+    }
+}
+
+async function cloneRenderer(opts) {
+    if (opts.skipClone) { info('--skip-clone: not cloning Nitro_Render_V3'); summary.rendererSkipped = true; return; }
+    if (existsSync(RENDERER_DIR)) {
+        warn('Nitro_Render_V3 already exists at ' + RENDERER_DIR + ' - skipping clone (yarn install/link will still run).');
+        summary.rendererSkipped = true;
+        return;
+    }
+    await runShell('git clone ' + RENDERER_REPO_URL + ' "' + RENDERER_DIR + '"', dirname(RENDERER_DIR));
+    summary.rendererCloned = true;
+    ok('Cloned Nitro_Render_V3 to ' + RENDERER_DIR);
+}
+
+async function setupRenderer(opts) {
+    if (!existsSync(RENDERER_DIR)) {
+        throw new Error('Renderer directory not found: ' + RENDERER_DIR + '. Re-run without --skip-clone or clone it manually.');
+    }
+    await runShell('yarn install', RENDERER_DIR);
+    if (opts.skipLink) { info('--skip-link: skipping yarn link in renderer'); return; }
+    try {
+        await runShell('yarn link', RENDERER_DIR);
+    } catch (e) {
+        warn('yarn link in renderer failed (likely already linked): ' + e.message);
+    }
+}
+
+async function setupClient(opts) {
+    await runShell('yarn install', ROOT);
+    if (opts.skipLink) { info('--skip-link: skipping yarn link in client'); return; }
+    try {
+        await runShell('yarn link "@nitrots/nitro-renderer"', ROOT);
+    } catch (e) {
+        warn('yarn link "@nitrots/nitro-renderer" failed (likely already linked): ' + e.message);
+    }
+}
+
+async function copyConfigs() {
+    for (const entry of CONFIG_FILES) {
+        const src = join(CONFIG_DIR, entry.example);
+        const dst = join(CONFIG_DIR, entry.target);
+        if (!existsSync(src)) {
+            throw new Error('Missing example file: ' + src);
+        }
+        if (existsSync(dst)) {
+            warn(entry.target + ' already exists - keeping existing file (URL prompts will still patch it).');
+            summary.configsKept.push(entry.target);
+        } else {
+            await copyFile(src, dst);
+            ok('Created ' + entry.target);
+            summary.configsCreated.push(entry.target);
+        }
+    }
+}
+
+async function promptConfigs(opts) {
+    if (!opts.interactive) {
+        info('--non-interactive: keeping URL values from .example defaults');
+        return;
+    }
+    info('Press Enter to keep the current value shown in [brackets].');
+    const rl = readline.createInterface({ input, output });
+    try {
+        for (const entry of CONFIG_FILES) {
+            const dst = join(CONFIG_DIR, entry.target);
+            const raw = await readFile(dst, 'utf8');
+            let obj;
+            try {
+                obj = JSON.parse(raw);
+            } catch (e) {
+                throw new Error('Could not parse ' + entry.target + ' as JSON: ' + e.message);
+            }
+            console.log('\n  ' + entry.target);
+            let changed = false;
+            for (const key of entry.keys) {
+                const current = obj[key] === undefined ? '' : String(obj[key]);
+                const answer = await rl.question('    ' + key + ' [' + current + ']: ');
+                const trimmed = answer.trim();
+                if (trimmed.length > 0 && trimmed !== current) {
+                    obj[key] = trimmed;
+                    changed = true;
+                }
+            }
+            if (changed) {
+                await writeFile(dst, JSON.stringify(obj, null, 4) + '\n');
+                ok('Updated ' + entry.target);
+                summary.configsPatched.push(entry.target);
+            } else {
+                info('No changes to ' + entry.target);
+            }
+        }
+    } finally {
+        rl.close();
+    }
+}
+
+async function runBuild(opts) {
+    if (opts.skipBuild) { info('--skip-build: skipping yarn build'); summary.buildSkipped = true; return; }
+    await runShell('yarn build', ROOT);
+    summary.buildRan = true;
+}
+
+function printSummary() {
+    const distPath = join(ROOT, 'dist');
+    console.log('');
+    console.log('================================================================');
+    console.log(' Installation summary');
+    console.log('================================================================');
+    console.log(' Renderer:   ' + RENDERER_DIR + (summary.rendererCloned ? '  (cloned)' : '  (already present)'));
+    if (summary.configsCreated.length) console.log(' Created:    ' + summary.configsCreated.join(', '));
+    if (summary.configsKept.length)    console.log(' Kept:       ' + summary.configsKept.join(', '));
+    if (summary.configsPatched.length) console.log(' Patched:    ' + summary.configsPatched.join(', '));
+    if (summary.buildRan)              console.log(' Build:      OK -> ' + distPath);
+    else if (summary.buildSkipped)     console.log(' Build:      skipped');
+    console.log('');
+    console.log(' Next steps:');
+    console.log('   - Development:  yarn start');
+    if (summary.buildRan) {
+        console.log('   - Production:   deploy the contents of ' + distPath + ' to your webserver');
+    } else {
+        console.log('   - Production:   yarn build, then deploy ' + distPath);
+    }
+    console.log('================================================================');
+}
+
+async function main() {
+    const opts = parseArgs();
+    if (opts.help) { printUsage(); process.exit(0); }
+
+    console.log('Nitro-V3 installer (' + (IS_WINDOWS ? 'Windows' : platform()) + ')');
+    console.log('Project root: ' + ROOT);
+
+    step(STEPS[0]); await checkPrereqs();
+    step(STEPS[1]); await cloneRenderer(opts);
+    step(STEPS[2]); await setupRenderer(opts);
+    step(STEPS[3]); await setupClient(opts);
+    step(STEPS[4]); await copyConfigs();
+    step(STEPS[5]); await promptConfigs(opts);
+    step(STEPS[6]); await runBuild(opts);
+    step(STEPS[7]); printSummary();
+}
+
+main().catch(e => {
+    const label = STEPS[currentStep - 1] || 'startup';
+    err('\nStep ' + currentStep + ' (' + label + ') failed:');
+    err('    ' + e.message);
+    process.exit(1);
+});

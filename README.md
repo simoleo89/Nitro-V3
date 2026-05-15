@@ -1,5 +1,24 @@
 # v2.2.0 -Nitro V3 !! Use at Own Risk as it is still in Beta !!
 
+## Quick Install
+
+For a guided one-command setup on **Windows or Linux**:
+
+```
+node install.mjs
+```
+
+This will check prerequisites, clone the sibling `Nitro_Render_V3` repo into `../Nitro_Render_V3`, install/link both projects, scaffold the three config files in `public/configuration/`, prompt for your URLs, and run `yarn build`.
+
+Flags:
+- `--non-interactive` (or `--skip-prompts`) — keep default URLs from `.example` files
+- `--skip-build` — skip the final `yarn build`
+- `--skip-clone` — assume `../Nitro_Render_V3` is already present
+- `--skip-link` — skip `yarn link` calls (useful when re-running)
+- `--help`, `-h` — show usage and exit
+
+For manual setup, see the `Installation` section below.
+
 ## Prerequisites
 
 -   [Git](https://git-scm.com/)

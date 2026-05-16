@@ -1,12 +1,11 @@
 import { FC } from 'react';
 import { Button, Text } from '../../common';
 import { VARIABLES_ELEMENTS } from './WiredCreatorTools.constants';
-import { VariableDefinition, VariablesElementType, VariableTextValue } from './WiredCreatorTools.types';
+import { VariableDefinition, VariableTextValue } from './WiredCreatorTools.types';
+import { useWiredCreatorToolsUiStore } from './wiredCreatorToolsUiStore';
 
 export interface WiredVariablesTabViewProps
 {
-    variablesType: VariablesElementType;
-    onVariablesTypeChange: (next: VariablesElementType) => void;
     variablePickerDefinitions: VariableDefinition[];
     selectedVariableDefinition: VariableDefinition | null;
     onPickVariable: (key: string) => void;
@@ -27,8 +26,6 @@ export interface WiredVariablesTabViewProps
  * testable in isolation.
  */
 export const WiredVariablesTabView: FC<WiredVariablesTabViewProps> = ({
-    variablesType,
-    onVariablesTypeChange,
     variablePickerDefinitions,
     selectedVariableDefinition,
     onPickVariable,
@@ -40,7 +37,11 @@ export const WiredVariablesTabView: FC<WiredVariablesTabViewProps> = ({
     selectedVariableProperties,
     selectedVariableTextValues
 }) =>
-    (
+{
+    const variablesType = useWiredCreatorToolsUiStore(s => s.variablesType);
+    const setVariablesType = useWiredCreatorToolsUiStore(s => s.setVariablesType);
+
+    return (
         <div className="p-3 min-h-[360px] flex gap-4">
             <div className="w-[205px] shrink-0 flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
@@ -52,7 +53,7 @@ export const WiredVariablesTabView: FC<WiredVariablesTabViewProps> = ({
                                 type="button"
                                 className={ `w-[42px] h-[38px] rounded border flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,.7)] ${ element.disabled ? 'border-[#b7b7b7] bg-[#e7e3da] opacity-60 cursor-not-allowed' : ((variablesType === element.key) ? 'border-[#222] bg-[#d9d6cf]' : 'border-[#7f7f7f] bg-[#ece9e1]') }` }
                                 disabled={ element.disabled }
-                                onClick={ () => !element.disabled && onVariablesTypeChange(element.key) }
+                                onClick={ () => !element.disabled && setVariablesType(element.key) }
                                 title={ element.label }>
                                 <img alt={ element.label } className="w-auto h-auto max-w-[22px] max-h-[22px] object-contain" src={ element.icon } />
                             </button>
@@ -148,3 +149,4 @@ export const WiredVariablesTabView: FC<WiredVariablesTabViewProps> = ({
             </div>
         </div>
     );
+};

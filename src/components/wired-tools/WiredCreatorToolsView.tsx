@@ -9,6 +9,7 @@ import { useInventoryTrade, useMessageEvent, useNotification, useObjectSelectedE
 import { DIRECTION_NAMES, EDITABLE_FURNI_VARIABLES, EDITABLE_USER_VARIABLES, INSPECTION_ELEMENTS, MONITOR_ERROR_INFO, MONITOR_LOG_ORDER, MONTH_NAMES, TABS, TEAM_COLOR_NAMES, VARIABLES_ELEMENTS, VARIABLE_DEFINITIONS, WEEKDAY_NAMES, WIRED_CLOCK_REFRESH_MS, WIRED_FREEZE_EFFECT_IDS, WIRED_INSPECTION_REFRESH_MS, WIRED_MONITOR_ACTION_CLEAR_LOGS, WIRED_MONITOR_ACTION_FETCH, WIRED_MONITOR_POLL_MS, WIRED_VARIABLES_POLL_MS } from './WiredCreatorTools.constants';
 import { createEmptyMonitorSnapshot, formatMonitorHistoryOccurrence, formatMonitorLatestOccurrence, formatMonitorSource, formatVariableTimestamp, getHotelDateTimeParts, getHotelTimeFormatter, normalizeMonitorReason } from './WiredCreatorTools.helpers';
 import { HotelDateTimeParts, InspectionElementButton, InspectionElementType, InspectionFurniLiveState, InspectionFurniSelection, InspectionUserLiveState, InspectionUserSelection, InspectionUserTeamData, InspectionVariable, ManagedHolderVariableEntry, MonitorLog, MonitorLogDetails, MonitorSnapshot, MonitorStat, ParsedWallLocation, TeamEffectData, VariableDefinition, VariableHighlightOverlay, VariableHighlightTarget, VariableManageEntry, VariableTextValue, VariablesElementButton, VariablesElementType, WiredToolsTab } from './WiredCreatorTools.types';
+import { useWiredCreatorToolsUiStore } from './wiredCreatorToolsUiStore';
 import { WiredInspectionTabView } from './WiredInspectionTabView';
 import { WiredMonitorTabView } from './WiredMonitorTabView';
 import { WiredToolsSettingsTabView } from './WiredToolsSettingsTabView';
@@ -16,10 +17,13 @@ import { WiredVariablesTabView } from './WiredVariablesTabView';
 
 export const WiredCreatorToolsView: FC<{}> = () =>
 {
-    const [ isVisible, setIsVisible ] = useState(false);
-    const [ activeTab, setActiveTab ] = useState<WiredToolsTab>('monitor');
-    const [ inspectionType, setInspectionType ] = useState<InspectionElementType>('furni');
-    const [ variablesType, setVariablesType ] = useState<VariablesElementType>('furni');
+    const isVisible = useWiredCreatorToolsUiStore(s => s.isVisible);
+    const setIsVisible = useWiredCreatorToolsUiStore(s => s.setIsVisible);
+    const activeTab = useWiredCreatorToolsUiStore(s => s.activeTab);
+    const setActiveTab = useWiredCreatorToolsUiStore(s => s.setActiveTab);
+    const inspectionType = useWiredCreatorToolsUiStore(s => s.inspectionType);
+    const setInspectionType = useWiredCreatorToolsUiStore(s => s.setInspectionType);
+    const variablesType = useWiredCreatorToolsUiStore(s => s.variablesType);
     const [ keepSelected, setKeepSelected ] = useState(false);
     const [ selectedFurni, setSelectedFurni ] = useState<InspectionFurniSelection>(null);
     const [ selectedFurniLiveState, setSelectedFurniLiveState ] = useState<InspectionFurniLiveState>(null);
@@ -31,10 +35,14 @@ export const WiredCreatorToolsView: FC<{}> = () =>
     const [ monitorSnapshot, setMonitorSnapshot ] = useState<MonitorSnapshot>(() => createEmptyMonitorSnapshot());
     const [ selectedMonitorErrorType, setSelectedMonitorErrorType ] = useState<string>(null);
     const [ selectedMonitorLogDetails, setSelectedMonitorLogDetails ] = useState<MonitorLogDetails>(null);
-    const [ isMonitorHistoryOpen, setIsMonitorHistoryOpen ] = useState(false);
-    const [ isMonitorInfoOpen, setIsMonitorInfoOpen ] = useState(false);
-    const [ monitorHistorySeverityFilter, setMonitorHistorySeverityFilter ] = useState<'ALL' | 'ERROR' | 'WARNING'>('ALL');
-    const [ monitorHistoryTypeFilter, setMonitorHistoryTypeFilter ] = useState<string>('ALL');
+    const isMonitorHistoryOpen = useWiredCreatorToolsUiStore(s => s.isMonitorHistoryOpen);
+    const setIsMonitorHistoryOpen = useWiredCreatorToolsUiStore(s => s.setIsMonitorHistoryOpen);
+    const isMonitorInfoOpen = useWiredCreatorToolsUiStore(s => s.isMonitorInfoOpen);
+    const setIsMonitorInfoOpen = useWiredCreatorToolsUiStore(s => s.setIsMonitorInfoOpen);
+    const monitorHistorySeverityFilter = useWiredCreatorToolsUiStore(s => s.monitorHistorySeverityFilter);
+    const setMonitorHistorySeverityFilter = useWiredCreatorToolsUiStore(s => s.setMonitorHistorySeverityFilter);
+    const monitorHistoryTypeFilter = useWiredCreatorToolsUiStore(s => s.monitorHistoryTypeFilter);
+    const setMonitorHistoryTypeFilter = useWiredCreatorToolsUiStore(s => s.setMonitorHistoryTypeFilter);
     const [ editingVariable, setEditingVariable ] = useState<string>(null);
     const [ editingValue, setEditingValue ] = useState('');
     const [ selectedInspectionVariableKeys, setSelectedInspectionVariableKeys ] = useState<Record<InspectionElementType, string>>({
@@ -42,18 +50,24 @@ export const WiredCreatorToolsView: FC<{}> = () =>
         user: '',
         global: ''
     });
-    const [ isInspectionGiveOpen, setIsInspectionGiveOpen ] = useState(false);
+    const isInspectionGiveOpen = useWiredCreatorToolsUiStore(s => s.isInspectionGiveOpen);
+    const setIsInspectionGiveOpen = useWiredCreatorToolsUiStore(s => s.setIsInspectionGiveOpen);
     const [ inspectionGiveVariableItemId, setInspectionGiveVariableItemId ] = useState(0);
     const [ inspectionGiveValue, setInspectionGiveValue ] = useState('0');
-    const [ isVariableManageOpen, setIsVariableManageOpen ] = useState(false);
-    const [ variableManageTypeFilter, setVariableManageTypeFilter ] = useState<string>('ALL');
-    const [ variableManageSort, setVariableManageSort ] = useState<string>('highest_value');
-    const [ variableManagePage, setVariableManagePage ] = useState(1);
+    const isVariableManageOpen = useWiredCreatorToolsUiStore(s => s.isVariableManageOpen);
+    const setIsVariableManageOpen = useWiredCreatorToolsUiStore(s => s.setIsVariableManageOpen);
+    const variableManageTypeFilter = useWiredCreatorToolsUiStore(s => s.variableManageTypeFilter);
+    const setVariableManageTypeFilter = useWiredCreatorToolsUiStore(s => s.setVariableManageTypeFilter);
+    const variableManageSort = useWiredCreatorToolsUiStore(s => s.variableManageSort);
+    const setVariableManageSort = useWiredCreatorToolsUiStore(s => s.setVariableManageSort);
+    const variableManagePage = useWiredCreatorToolsUiStore(s => s.variableManagePage);
+    const setVariableManagePage = useWiredCreatorToolsUiStore(s => s.setVariableManagePage);
     const [ selectedManagedVariableEntry, setSelectedManagedVariableEntry ] = useState<VariableManageEntry>(null);
     const [ selectedManagedHolderVariableId, setSelectedManagedHolderVariableId ] = useState(0);
     const [ editingManagedHolderVariableId, setEditingManagedHolderVariableId ] = useState(0);
     const [ editingManagedHolderValue, setEditingManagedHolderValue ] = useState('');
-    const [ isManagedGiveOpen, setIsManagedGiveOpen ] = useState(false);
+    const isManagedGiveOpen = useWiredCreatorToolsUiStore(s => s.isManagedGiveOpen);
+    const setIsManagedGiveOpen = useWiredCreatorToolsUiStore(s => s.setIsManagedGiveOpen);
     const [ managedGiveVariableItemId, setManagedGiveVariableItemId ] = useState(0);
     const [ managedGiveValue, setManagedGiveValue ] = useState('0');
     const [ isVariableHighlightActive, setIsVariableHighlightActive ] = useState(false);
@@ -3085,8 +3099,6 @@ export const WiredCreatorToolsView: FC<{}> = () =>
                         /> }
                     { (activeTab === 'inspection') &&
                         <WiredInspectionTabView
-                            inspectionType={ inspectionType }
-                            onInspectionTypeChange={ setInspectionType }
                             selectedFurni={ selectedFurni }
                             selectedUser={ selectedUser }
                             roomId={ roomSession?.roomId ?? null }
@@ -3110,8 +3122,6 @@ export const WiredCreatorToolsView: FC<{}> = () =>
                                 setSelectedInspectionVariableKeys(prev => ({ ...prev, [inspectionType]: variable.key }));
                                 beginVariableEdit(variable);
                             } }
-                            isInspectionGiveOpen={ isInspectionGiveOpen }
-                            onToggleInspectionGive={ () => setIsInspectionGiveOpen(value => !value) }
                             selectedInspectionGiveDefinition={ selectedInspectionGiveDefinition }
                             onSelectGiveVariable={ setInspectionGiveVariableItemId }
                             availableInspectionDefinitions={ availableInspectionDefinitions }
@@ -3124,8 +3134,6 @@ export const WiredCreatorToolsView: FC<{}> = () =>
                         /> }
                     { (activeTab === 'variables') &&
                         <WiredVariablesTabView
-                            variablesType={ variablesType }
-                            onVariablesTypeChange={ setVariablesType }
                             variablePickerDefinitions={ variablePickerDefinitions }
                             selectedVariableDefinition={ selectedVariableDefinition }
                             onPickVariable={ key => setSelectedVariableKeys(prev => ({ ...prev, [variablesType]: key })) }

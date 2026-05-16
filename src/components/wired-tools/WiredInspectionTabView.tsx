@@ -2,7 +2,8 @@ import { KeyboardEvent } from 'react';
 import wiredGlobalPlaceholderImage from '../../assets/images/wiredtools/wired_global_placeholder.png';
 import { Button, LayoutAvatarImageView, LayoutPetImageView, LayoutRoomObjectImageView, Text } from '../../common';
 import { INSPECTION_ELEMENTS } from './WiredCreatorTools.constants';
-import { InspectionElementType, InspectionFurniSelection, InspectionUserSelection, InspectionVariable } from './WiredCreatorTools.types';
+import { InspectionFurniSelection, InspectionUserSelection, InspectionVariable } from './WiredCreatorTools.types';
+import { useWiredCreatorToolsUiStore } from './wiredCreatorToolsUiStore';
 
 /**
  * Structural shape we need from the renderer's variable-definition
@@ -18,9 +19,7 @@ export interface InspectionGiveDefinition
 
 export interface WiredInspectionTabViewProps
 {
-    // element type + preview
-    inspectionType: InspectionElementType;
-    onInspectionTypeChange: (next: InspectionElementType) => void;
+    // preview
     selectedFurni: InspectionFurniSelection | null;
     selectedUser: InspectionUserSelection | null;
     roomId: number | null;
@@ -44,8 +43,6 @@ export interface WiredInspectionTabViewProps
     onBeginVariableEdit: (variable: InspectionVariable) => void;
 
     // give-variable popover
-    isInspectionGiveOpen: boolean;
-    onToggleInspectionGive: () => void;
     selectedInspectionGiveDefinition: InspectionGiveDefinition | null;
     onSelectGiveVariable: (itemId: number) => void;
     availableInspectionDefinitions: InspectionGiveDefinition[];
@@ -67,8 +64,6 @@ export interface WiredInspectionTabViewProps
 export const WiredInspectionTabView = (props: WiredInspectionTabViewProps) =>
 {
     const {
-        inspectionType,
-        onInspectionTypeChange,
         selectedFurni,
         selectedUser,
         roomId,
@@ -84,8 +79,6 @@ export const WiredInspectionTabView = (props: WiredInspectionTabViewProps) =>
         onCancelVariableEdit,
         onVariableInputKeyDown,
         onBeginVariableEdit,
-        isInspectionGiveOpen,
-        onToggleInspectionGive,
         selectedInspectionGiveDefinition,
         onSelectGiveVariable,
         availableInspectionDefinitions,
@@ -96,6 +89,11 @@ export const WiredInspectionTabView = (props: WiredInspectionTabViewProps) =>
         canRemoveInspectionVariable,
         onRemoveInspectionVariable
     } = props;
+
+    const inspectionType = useWiredCreatorToolsUiStore(s => s.inspectionType);
+    const setInspectionType = useWiredCreatorToolsUiStore(s => s.setInspectionType);
+    const isInspectionGiveOpen = useWiredCreatorToolsUiStore(s => s.isInspectionGiveOpen);
+    const setIsInspectionGiveOpen = useWiredCreatorToolsUiStore(s => s.setIsInspectionGiveOpen);
 
     return (
         <div className="p-3 min-h-[360px] flex gap-4">
@@ -108,7 +106,7 @@ export const WiredInspectionTabView = (props: WiredInspectionTabViewProps) =>
                                 key={ element.key }
                                 type="button"
                                 className={ `w-[42px] h-[38px] rounded border flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,.7)] ${ (inspectionType === element.key) ? 'border-[#222] bg-[#d9d6cf]' : 'border-[#7f7f7f] bg-[#ece9e1]' }` }
-                                onClick={ () => onInspectionTypeChange(element.key) }
+                                onClick={ () => setInspectionType(element.key) }
                                 title={ element.label }>
                                 <img alt={ element.label } className="w-auto h-auto max-w-[22px] max-h-[22px] object-contain" src={ element.icon } />
                             </button>
@@ -225,7 +223,7 @@ export const WiredInspectionTabView = (props: WiredInspectionTabViewProps) =>
                     <Button
                         disabled={ !canGiveInspectionVariable }
                         variant="secondary"
-                        onClick={ onToggleInspectionGive }>
+                        onClick={ () => setIsInspectionGiveOpen(value => !value) }>
                         Give variable
                     </Button>
                 </div>

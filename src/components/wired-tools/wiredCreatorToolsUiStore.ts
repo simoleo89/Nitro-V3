@@ -1,6 +1,6 @@
 import { createNitroStore } from '../../state/createNitroStore';
 import { createEmptyMonitorSnapshot } from './WiredCreatorTools.helpers';
-import { InspectionElementType, InspectionFurniLiveState, InspectionFurniSelection, InspectionUserLiveState, InspectionUserSelection, MonitorSnapshot, VariableHighlightOverlay, VariablesElementType, WiredToolsTab } from './WiredCreatorTools.types';
+import { InspectionElementType, InspectionFurniLiveState, InspectionFurniSelection, InspectionUserLiveState, InspectionUserSelection, MonitorSnapshot, VariableHighlightOverlay, VariableManageEntry, VariablesElementType, WiredToolsTab } from './WiredCreatorTools.types';
 
 type MonitorSeverityFilter = 'ALL' | 'ERROR' | 'WARNING';
 type Updater<T> = T | ((prev: T) => T);
@@ -100,6 +100,19 @@ interface WiredCreatorToolsUiState
     inspectionGiveVariableItemId: number;
     inspectionGiveValue: string;
 
+    /**
+     * Variable-Manage panel — "managed holder" picker chain. Selecting
+     * an entry seeds the holder row, which seeds the give-variable
+     * picker. Sentinels: `null` entry / `0` holder-id / `0` give-id /
+     * `'0'` give-value. The cascade reset effects at
+     * WiredCreatorToolsView.tsx:2265-2307 keep these in sync as the
+     * upstream selection or available definitions change.
+     */
+    selectedManagedVariableEntry: VariableManageEntry | null;
+    selectedManagedHolderVariableId: number;
+    managedGiveVariableItemId: number;
+    managedGiveValue: string;
+
     setIsVisible: (next: Updater<boolean>) => void;
     setActiveTab: (next: WiredToolsTab) => void;
     setInspectionType: (next: InspectionElementType) => void;
@@ -140,6 +153,11 @@ interface WiredCreatorToolsUiState
 
     setInspectionGiveVariableItemId: (next: number) => void;
     setInspectionGiveValue: (next: string) => void;
+
+    setSelectedManagedVariableEntry: (next: VariableManageEntry | null) => void;
+    setSelectedManagedHolderVariableId: (next: number) => void;
+    setManagedGiveVariableItemId: (next: number) => void;
+    setManagedGiveValue: (next: string) => void;
 }
 
 export const useWiredCreatorToolsUiStore = createNitroStore<WiredCreatorToolsUiState>()((set) => ({
@@ -183,6 +201,11 @@ export const useWiredCreatorToolsUiStore = createNitroStore<WiredCreatorToolsUiS
     inspectionGiveVariableItemId: 0,
     inspectionGiveValue: '0',
 
+    selectedManagedVariableEntry: null,
+    selectedManagedHolderVariableId: 0,
+    managedGiveVariableItemId: 0,
+    managedGiveValue: '0',
+
     setIsVisible: (next) => set(state => ({ isVisible: apply(state.isVisible, next) })),
     setActiveTab: (next) => set({ activeTab: next }),
     setInspectionType: (next) => set({ inspectionType: next }),
@@ -222,5 +245,10 @@ export const useWiredCreatorToolsUiStore = createNitroStore<WiredCreatorToolsUiS
     setSelectedVariableKeys: (next) => set(state => ({ selectedVariableKeys: apply(state.selectedVariableKeys, next) })),
 
     setInspectionGiveVariableItemId: (next) => set({ inspectionGiveVariableItemId: next }),
-    setInspectionGiveValue: (next) => set({ inspectionGiveValue: next })
+    setInspectionGiveValue: (next) => set({ inspectionGiveValue: next }),
+
+    setSelectedManagedVariableEntry: (next) => set({ selectedManagedVariableEntry: next }),
+    setSelectedManagedHolderVariableId: (next) => set({ selectedManagedHolderVariableId: next }),
+    setManagedGiveVariableItemId: (next) => set({ managedGiveVariableItemId: next }),
+    setManagedGiveValue: (next) => set({ managedGiveValue: next })
 }));

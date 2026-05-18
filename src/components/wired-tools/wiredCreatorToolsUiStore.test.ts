@@ -32,7 +32,11 @@ const INITIAL = {
     selectedInspectionVariableKeys: { furni: '', user: '', global: '' },
     selectedVariableKeys: { furni: '', user: '', global: '', context: '' },
     inspectionGiveVariableItemId: 0,
-    inspectionGiveValue: '0'
+    inspectionGiveValue: '0',
+    selectedManagedVariableEntry: null,
+    selectedManagedHolderVariableId: 0,
+    managedGiveVariableItemId: 0,
+    managedGiveValue: '0'
 };
 
 describe('useWiredCreatorToolsUiStore', () =>
@@ -76,6 +80,10 @@ describe('useWiredCreatorToolsUiStore', () =>
         expect(state.selectedVariableKeys).toEqual({ furni: '', user: '', global: '', context: '' });
         expect(state.inspectionGiveVariableItemId).toBe(0);
         expect(state.inspectionGiveValue).toBe('0');
+        expect(state.selectedManagedVariableEntry).toBeNull();
+        expect(state.selectedManagedHolderVariableId).toBe(0);
+        expect(state.managedGiveVariableItemId).toBe(0);
+        expect(state.managedGiveValue).toBe('0');
     });
 
     describe('setIsVisible', () =>
@@ -484,6 +492,63 @@ describe('useWiredCreatorToolsUiStore', () =>
 
             expect(useWiredCreatorToolsUiStore.getState().inspectionGiveVariableItemId).toBe(0);
             expect(useWiredCreatorToolsUiStore.getState().inspectionGiveValue).toBe('0');
+        });
+    });
+
+    describe('managed holder give pickers', () =>
+    {
+        const entry = { entityId: 7, entityName: 'fountain', categoryLabel: 'Furni', value: '12' } as never;
+
+        it('setSelectedManagedVariableEntry writes the picked entry; null clears (reset path)', () =>
+        {
+            useWiredCreatorToolsUiStore.getState().setSelectedManagedVariableEntry(entry);
+            expect(useWiredCreatorToolsUiStore.getState().selectedManagedVariableEntry).toEqual(entry);
+
+            useWiredCreatorToolsUiStore.getState().setSelectedManagedVariableEntry(null);
+            expect(useWiredCreatorToolsUiStore.getState().selectedManagedVariableEntry).toBeNull();
+        });
+
+        it('the holder + give picker chain writes through cleanly', () =>
+        {
+            useWiredCreatorToolsUiStore.getState().setSelectedManagedHolderVariableId(11);
+            useWiredCreatorToolsUiStore.getState().setManagedGiveVariableItemId(33);
+            useWiredCreatorToolsUiStore.getState().setManagedGiveValue('75');
+
+            const state = useWiredCreatorToolsUiStore.getState();
+            expect(state.selectedManagedHolderVariableId).toBe(11);
+            expect(state.managedGiveVariableItemId).toBe(33);
+            expect(state.managedGiveValue).toBe('75');
+        });
+
+        it('post-give-action reset returns the give-side back to its 0 / "0" sentinels', () =>
+        {
+            useWiredCreatorToolsUiStore.getState().setSelectedManagedHolderVariableId(11);
+            useWiredCreatorToolsUiStore.getState().setManagedGiveVariableItemId(33);
+            useWiredCreatorToolsUiStore.getState().setManagedGiveValue('75');
+
+            // Matches the post-action path at WiredCreatorToolsView.tsx:2400-2402:
+            //   setSelectedManagedHolderVariableId(newId);
+            //   setManagedGiveValue('0');
+            useWiredCreatorToolsUiStore.getState().setSelectedManagedHolderVariableId(99);
+            useWiredCreatorToolsUiStore.getState().setManagedGiveValue('0');
+
+            expect(useWiredCreatorToolsUiStore.getState().selectedManagedHolderVariableId).toBe(99);
+            expect(useWiredCreatorToolsUiStore.getState().managedGiveValue).toBe('0');
+        });
+
+        it('the managed picker chain persists across the panel close/reopen lifecycle', () =>
+        {
+            useWiredCreatorToolsUiStore.getState().setSelectedManagedVariableEntry(entry);
+            useWiredCreatorToolsUiStore.getState().setSelectedManagedHolderVariableId(11);
+            useWiredCreatorToolsUiStore.getState().setManagedGiveVariableItemId(33);
+
+            useWiredCreatorToolsUiStore.getState().setIsVisible(false);
+            useWiredCreatorToolsUiStore.getState().setIsVisible(true);
+
+            const state = useWiredCreatorToolsUiStore.getState();
+            expect(state.selectedManagedVariableEntry).toEqual(entry);
+            expect(state.selectedManagedHolderVariableId).toBe(11);
+            expect(state.managedGiveVariableItemId).toBe(33);
         });
     });
 });

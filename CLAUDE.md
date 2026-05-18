@@ -127,6 +127,31 @@ canonical pattern.
 
 ## Patterns to use
 
+### `useSessionSnapshots` (renderer snapshot pattern, React-side)
+
+For state that lives on a renderer Manager and is invalidated through
+`NitroEventType.*_UPDATED`, prefer the snapshot consumer hooks in
+`src/hooks/session/useSessionSnapshots.ts` over `useState +
+useMessageEvent` mirrors:
+
+```ts
+const userData = useUserDataSnapshot();           // SessionData
+const room    = useActiveRoomSessionSnapshot();   // RoomSession
+const ignored = useIgnoredUsersSnapshot();        // ReadonlyArray<string>
+const isIgn   = useIsUserIgnored(name);           // boolean, memoized
+const badges  = useGroupBadgesSnapshot();         // ReadonlyMap<number,string>
+const badge   = useGroupBadge(groupId);           // string, memoized
+const vols    = useVolumesSnapshot();             // sound volumes
+const users   = useRoomUserListSnapshot();        // ReadonlyArray<IRoomUserData>
+```
+
+Each is a thin `useSyncExternalStore` wrapper around the renderer's
+matching `getXxxSnapshot()` + subscription to the matching event.
+Snapshot references are renderer-guaranteed stable until invalidation
+— React bails out cleanly when nothing changed. Pilot adopters:
+`useSessionInfo` (userFigure / respects), `AvatarInfoWidgetAvatarView`
+(reactive Ignore/Unignore menu entry).
+
 ### `useNitroEventState` / `useMessageEventState`
 
 For "derived state from a single event" replace the two-step
@@ -260,34 +285,34 @@ into `configurePreviewServer` so `yarn preview` keeps working.
 
 | Adopted | Pilot sites |
 |---|---|
+| Renderer snapshot consumer hooks (`useSessionSnapshots`) | `useSessionInfo` (userFigure / respectsLeft / respectsPetLeft via `useUserDataSnapshot`), `AvatarInfoWidgetAvatarView` (reactive Ignore/Unignore via `useIsUserIgnored`). 8 hooks total available; consumers can read userData / activeRoomSession / ignoredUsers / groupBadges / soundVolumes / roomUserList reactively |
 | `useNitroEventState` + companions (Reducer, ExternalSnapshot) | `OfferView`, `useAvatarInfoWidget` (figure/badges/group reducer), `useInventoryFurni` (pure reducers + fragments useRef) |
 | `useNitroQuery` + `useNitroEventInvalidator` | `OfferView`, `CatalogLayoutRoomAdsView`, `ModToolsChatlogView`, `CfhChatlogView`, `useGiftConfiguration`, `useUserGroups`, `useClubOffers(windowId)`, `useSellablePetPalette(breed)`, `useMarketplaceConfiguration`, `useClubGifts` (with invalidator) |
-| Zustand | `NavigatorRoomCreatorView` (`useRoomCreatorStore`), `WiredCreatorToolsView` (`useWiredCreatorToolsUiStore` — 14 UI-only flags: tab nav, modal/popover open, monitor + variable-manage filters) |
+| Zustand | `NavigatorRoomCreatorView` (`useRoomCreatorStore`), `WiredCreatorToolsView` (`useWiredCreatorToolsUiStore` — every panel-lifecycle-relevant flag, snapshot, selection, highlight, inline editor, picker chain hoisted; what's left in the component as `useState` is genuinely transient: keepSelected, globalClock, roomEnteredAt, selectedMonitorErrorType, selectedMonitorLogDetails) |
 | God-hook split (state + actions + shim) | `doorbell`, `poll`, `furni-chooser`, `user-chooser`, `friend-request`, `chat-input` |
 | God-hook split (`useBetween` singleton + state filter + actions filter + shim) | `wired-tools`, `translation`, `notification`, `friends`, `catalog` (three-way: `useCatalogData` / `useCatalogUiState` / `useCatalogActions` — all 48 consumers migrated, deprecated `useCatalog` shim removed) |
 | `WidgetErrorBoundary` | `RoomWidgetsView` umbrella + per-widget wrap on all 13 room widgets and all 20 furniture widgets (so a crash in one widget no longer takes down its siblings) |
-| Vitest | 193/193 cases — pure helpers + 2 Zustand store suites (`navigatorRoomCreatorStore`, `wiredCreatorToolsUiStore`) + 2 component-/hook-level pilots (WidgetErrorBoundary, useDoorbellState) on top of the renderer-SDK mock at `src/nitro-renderer.mock.ts`, 34 cases on the catalog pure helpers, 4 contract cases on the catalog filters. **Tests are co-located** under `src/`, alongside their subject. |
+| Vitest | 203/203 cases — pure helpers + 2 Zustand store suites (`navigatorRoomCreatorStore`, `wiredCreatorToolsUiStore` with 45 cases including the picker-chain hoists) + 2 component-/hook-level pilots (WidgetErrorBoundary, useDoorbellState) on top of the renderer-SDK mock at `src/nitro-renderer.mock.ts`, 34 cases on the catalog pure helpers, 4 contract cases on the catalog filters. **Tests are co-located** under `src/`, alongside their subject. |
 | Form Actions | Login / Register / Forgot (LoginView.tsx) |
 | Upstream `origin/Dev` absorbed (merge `779a98c`) | Through `b2318b9` (2026-05-18): JSON5, user-settings reset password/email/username, wear-badge popup fix, login screen fix, About, offer-selection refactor |
 
 | Not yet | Notes |
 |---|---|
-| Split `useChatWidget` / `useAvatarInfoWidget` | Both state-driven via events with no clean imperative actions to extract — skip-motivated. Already touched today for the InfoStand listener move. |
+| Split `useChatWidget` / `useAvatarInfoWidget` | Both state-driven via events with no clean imperative actions to extract — skip-motivated. Already touched for the InfoStand listener move. |
 | Split `usePetPackageWidget` / `useWordQuizWidget` / `useChatCommandSelector` | Their "actions" mutate internal state or are tightly interdependent — skip-motivated. |
-| Hoist Wired Creator Tools **derived** state to the Zustand slice | UI-only flags are already hoisted (`useWiredCreatorToolsUiStore`). What's left is the event-driven derived state — `selectedFurni` / `selectedUser` / `monitorSnapshot` / `variableHighlightOverlays` — which can only move alongside their listener effects (multi-session refactor). |
-| Widen the component / hook test coverage | Mock layer is in place (`src/nitro-renderer.mock.ts`) and the first 2 pilots pass. Good follow-up targets: other `*State` hooks built on event reducers, `LoginView` Form Actions happy/error paths, OfferView with `useNitroQuery`. |
+| Migrate remaining `useSessionInfo`-style mirrors to renderer snapshots | Pilot done on `useSessionInfo` + `AvatarInfoWidgetAvatarView`. Other candidates: any place that reads `GetSessionDataManager().userId/figure/clubLevel/isModerator` etc. directly in render and never re-renders on session changes. Each is a small migration; no need to bundle. |
+| Widen the component / hook test coverage | Mock layer is in place (`src/nitro-renderer.mock.ts`) and the first 2 pilots pass. Good follow-up targets: `LoginView` Form Actions happy/error paths, `OfferView` with `useNitroQuery`. (Acceptable only as a side-effect of a real change — coverage growth on its own is deprioritized per session feedback.) |
 
 ## Known open logic bugs
 
-Read `docs/ARCHITECTURE.md` "Known logic bugs" section. The two still-open
-ones:
+None on this branch. The two previously-open races are closed:
 
-- `MainView.tsx:47-48` — race between `RoomSessionEvent.CREATED` and `ENDED`
-  (no session token guard).
-- `LayoutFurniImageView` / `LayoutAvatarImageView` — async fetch race when
-  props change twice in quick succession.
+- `MainView` CREATED/ENDED race → fixed in `9d10e52` via a session-aware
+  reducer pattern.
+- `LayoutFurniImageView` / `LayoutAvatarImageView` async fetch race →
+  fixed in `97c9717` via `requestIdRef` guard on the async callback.
 
-Fix shapes documented; both are reasonable PRs on their own.
+See `docs/ARCHITECTURE.md` "Recently fixed" for fix shapes.
 
 ## House rules
 

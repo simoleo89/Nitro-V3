@@ -1,9 +1,9 @@
 import { AddLinkEventTracker, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useEffect } from 'react';
 import { FaCog, FaEdit, FaEye, FaEyeSlash, FaPlus, FaTrash } from 'react-icons/fa';
-import { CatalogType, GetConfigurationValue, LocalizeText } from '../../api';
+import { CatalogType, GetConfigurationValue, LocalizeText, STAFF_LEVELS } from '../../api';
 import { Column, Grid, NitroCardContentView, NitroCardHeaderView, NitroCardTabsItemView, NitroCardTabsView, NitroCardView } from '../../common';
-import { useCatalogActions, useCatalogData, useCatalogUiState, useIsModerator } from '../../hooks';
+import { useCatalogActions, useCatalogData, useCatalogUiState, useHasRankLevel } from '../../hooks';
 import { CatalogAdminProvider, useCatalogAdmin } from './CatalogAdminContext';
 import { CatalogAdminOfferEditView } from './views/admin/CatalogAdminOfferEditView';
 import { CatalogAdminPageEditView } from './views/admin/CatalogAdminPageEditView';
@@ -28,7 +28,7 @@ const CatalogClassicViewInner: FC<{}> = () =>
     {});
     const loading = catalogAdmin?.loading ?? false;
 
-    const isMod = useIsModerator();
+    const isMod = useHasRankLevel(STAFF_LEVELS.MOD);
     const buildersClubHeaderStyle = (currentType === CatalogType.BUILDER)
         ? { borderColor: '#d79d2e', borderBottomColor: '#000', background: 'linear-gradient(180deg, #d89f2d 0%, #c68515 100%)' }
         : undefined;

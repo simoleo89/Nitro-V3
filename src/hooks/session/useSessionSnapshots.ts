@@ -1,4 +1,4 @@
-import { GetEventDispatcher, GetRoomSessionManager, GetSessionDataManager, GetSoundManager, IRoomSessionSnapshot, IRoomUserData, ISoundVolumesSnapshot, IUserDataSnapshot, NitroEventType, SecurityLevel } from '@nitrots/nitro-renderer';
+import { GetEventDispatcher, GetRoomSessionManager, GetSessionDataManager, GetSoundManager, IRoomSessionSnapshot, IRoomUserData, ISoundVolumesSnapshot, IUserDataSnapshot, NitroEventType } from '@nitrots/nitro-renderer';
 import { useMemo } from 'react';
 import { useExternalSnapshot } from '../events/useExternalSnapshot';
 
@@ -48,7 +48,12 @@ const DEFAULT_USER_DATA: Readonly<IUserDataSnapshot> = Object.freeze({
     isSystemOpen: false,
     isSystemShutdown: false,
     uiFlags: 0,
-    tags: Object.freeze<string[]>([]) as ReadonlyArray<string>
+    tags: Object.freeze<string[]>([]) as ReadonlyArray<string>,
+    rankId: 0,
+    rankName: '',
+    rankBadge: '',
+    rankPrefix: '',
+    rankPrefixColor: ''
 }) as Readonly<IUserDataSnapshot>;
 
 const EMPTY_IGNORED_LIST: ReadonlyArray<string> = Object.freeze<string[]>([]) as ReadonlyArray<string>;
@@ -124,36 +129,63 @@ export const useIsUserIgnored = (name: string): boolean =>
 };
 
 /**
- * Reactive raw security level from the user snapshot. Use this when
- * you need the numeric level (e.g. to compare against a threshold not
- * covered by the named wrappers below); for the common case of "is
- * the user at least <X>?", prefer the matching `useIsXxx` predicate.
+ * Reactive view of the current user's rank, mirrored from the
+ * `permission_ranks` table via the extended `UserPermissionsComposer`
+ * wire (Arcturus-Morningstar-Extended ≥ 4.2.10). Use this in UI code
+ * that needs to display rank metadata (badge, prefix, prefix color)
+ * or to gate behaviour on the actual deployment rank rather than the
+ * generic SecurityLevel constants the renderer exposes — those don't
+ * line up with the rank names operators actually use ("Moderator",
+ * "Super Mod", "Administrator", …).
  */
-export const useUserSecurityLevel = (): number => useUserDataSnapshot().securityLevel;
+export interface IUserRank
+{
+    readonly id: number;
+    readonly name: string;
+    readonly level: number;
+    readonly badge: string;
+    readonly prefix: string;
+    readonly prefixColor: string;
+}
+
+export const useUserRank = (): IUserRank =>
+{
+    const userData = useUserDataSnapshot();
+
+    return useMemo<IUserRank>(() => ({
+        id: userData.rankId,
+        name: userData.rankName,
+        level: userData.securityLevel,
+        badge: userData.rankBadge,
+        prefix: userData.rankPrefix,
+        prefixColor: userData.rankPrefixColor
+    }), [ userData.rankId, userData.rankName, userData.securityLevel, userData.rankBadge, userData.rankPrefix, userData.rankPrefixColor ]);
+};
 
 /**
- * Reactive predicate: does the current user's security level satisfy
- * `>= minLevel`? Mirrors the renderer-side comparison used by
- * `SessionDataManager.isModerator` (and its peers) and propagates the
- * SESSION_DATA_UPDATED invalidation, so a runtime promote/demote
- * re-renders the consumer.
- *
- * The named wrappers below (`useIsModerator`, `useIsAdmin`, …) are
- * one-line shims over this primitive — use them in widget bodies for
- * readability; reach for `useHasSecurityLevel(level)` directly only
- * when the threshold is dynamic or not covered by a named wrapper.
+ * Reactive predicate: does the current user's rank level satisfy
+ * `>= minLevel`? Use this when you want "at least <rank>" semantics
+ * and have the rank id from your deployment's `permission_ranks`
+ * table (e.g. 5 for Moderator in the default seed). Replaces the
+ * older `useHasSecurityLevel` (same wire data, renamed to match the
+ * DB table semantics).
  */
-export const useHasSecurityLevel = (minLevel: number): boolean =>
-    useUserSecurityLevel() >= minLevel;
-
-export const useIsModerator = (): boolean => useHasSecurityLevel(SecurityLevel.MODERATOR);
-export const useIsPlayerSupport = (): boolean => useHasSecurityLevel(SecurityLevel.PLAYER_SUPPORT);
-export const useIsCommunity = (): boolean => useHasSecurityLevel(SecurityLevel.COMMUNITY);
-export const useIsAdmin = (): boolean => useHasSecurityLevel(SecurityLevel.ADMINISTRATOR);
+export const useHasRankLevel = (minLevel: number): boolean =>
+    useUserDataSnapshot().securityLevel >= minLevel;
 
 /**
- * Reactive ambassador flag. Not derived from security level — it's a
- * separate boolean on the snapshot.
+ * Reactive exact-match predicate against the rank name from
+ * `permission_ranks.rank_name`. Prefer `useHasRankLevel(min)` when
+ * the gate is "this rank or higher"; reach for `useIsRank('Foo')`
+ * only when an action must be specific to one rank.
+ */
+export const useIsRank = (name: string): boolean => useUserDataSnapshot().rankName === name;
+
+/**
+ * Reactive ambassador flag. Not derived from rank level — it's a
+ * separate boolean on the snapshot (the emulator computes it server-
+ * side from the `acc_ambassador` permission, which a deployment can
+ * grant independently of the rank hierarchy).
  */
 export const useIsAmbassador = (): boolean => useUserDataSnapshot().isAmbassador;
 

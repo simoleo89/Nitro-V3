@@ -1,9 +1,9 @@
 import { ControlYoutubeDisplayPlaybackMessageComposer, YouTubeRoomBroadcastEvent, YouTubeRoomPlayComposer, YouTubeRoomSettingsEvent, YouTubeRoomWatchersEvent, YouTubeRoomWatchingComposer } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { GetRoomSession, getYoutubeRoomEnabled, LocalizeText, SendMessageComposer, YoutubeVideoPlaybackStateEnum } from '../../api';
+import { GetRoomSession, getYoutubeRoomEnabled, LocalizeText, SendMessageComposer, STAFF_LEVELS, YoutubeVideoPlaybackStateEnum } from '../../api';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView, LayoutAvatarImageView } from '../../common';
-import { useFurnitureYoutubeWidget, useIsModerator, useMessageEvent } from '../../hooks';
+import { useFurnitureYoutubeWidget, useHasRankLevel, useMessageEvent } from '../../hooks';
 
 const CONTROL_COMMAND_PREVIOUS_VIDEO = 0;
 const CONTROL_COMMAND_NEXT_VIDEO = 1;
@@ -48,7 +48,7 @@ export const YouTubePlayerView: FC<{}> = () =>
     const [youtubeEnabled, setYoutubeEnabled] = useState(getYoutubeRoomEnabled());
     // Reactive — must sit above the `if (!isOpen) return null` below
     // so the hook order stays stable across renders.
-    const isModerator = useIsModerator();
+    const isModerator = useHasRankLevel(STAFF_LEVELS.MOD);
 
     useMessageEvent<YouTubeRoomSettingsEvent>(YouTubeRoomSettingsEvent, event =>
     {

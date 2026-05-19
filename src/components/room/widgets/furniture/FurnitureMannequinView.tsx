@@ -1,8 +1,8 @@
 import { GetAvatarRenderManager, GetSessionDataManager, HabboClubLevelEnum, RoomControllerLevel } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
-import { GetClubMemberLevel, GetRoomSession, LocalizeText, MannequinUtilities } from '../../../../api';
+import { GetClubMemberLevel, GetRoomSession, LocalizeText, MannequinUtilities, STAFF_LEVELS } from '../../../../api';
 import { Button, Column, LayoutAvatarImageView, LayoutCurrencyIcon, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../../common';
-import { useFurnitureMannequinWidget, useIsModerator } from '../../../../hooks';
+import { useFurnitureMannequinWidget, useHasRankLevel } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
 
 const MODE_NONE: number = -1;
@@ -17,7 +17,7 @@ export const FurnitureMannequinView: FC<{}> = props =>
     const [ renderedFigure, setRenderedFigure ] = useState<string>(null);
     const [ mode, setMode ] = useState(MODE_NONE);
     const { objectId = -1, figure = null, gender = null, clubLevel = HabboClubLevelEnum.NO_CLUB, name = null, setName = null, saveFigure = null, wearFigure = null, saveName = null, onClose = null } = useFurnitureMannequinWidget();
-    const isModerator = useIsModerator();
+    const isModerator = useHasRankLevel(STAFF_LEVELS.MOD);
 
     useEffect(() =>
     {

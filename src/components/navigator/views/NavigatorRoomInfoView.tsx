@@ -1,10 +1,10 @@
 import { CreateLinkEvent, GetCustomRoomFilterMessageComposer, GetGuestRoomMessageComposer, GetSessionDataManager, NavigatorSearchComposer, RemoveOwnRoomRightsRoomMessageComposer, RoomControllerLevel, RoomMuteComposer, RoomSettingsComposer, ToggleStaffPickMessageComposer, UpdateHomeRoomMessageComposer } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { FaLink, FaSignOutAlt } from 'react-icons/fa';
-import { DispatchUiEvent, GetGroupInformation, LocalizeText, ReportType, SendMessageComposer, ToggleFavoriteRoom } from '../../../api';
+import { DispatchUiEvent, GetGroupInformation, LocalizeText, ReportType, SendMessageComposer, STAFF_LEVELS, ToggleFavoriteRoom } from '../../../api';
 import { Button, Column, Flex, LayoutBadgeImageView, LayoutRoomThumbnailView, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text, UserProfileIconView } from '../../../common';
 import { RoomWidgetThumbnailEvent } from '../../../events';
-import { useHelp, useIsCommunity, useIsModerator, useNavigator, useRoom } from '../../../hooks';
+import { useHasRankLevel, useHelp, useNavigator, useRoom } from '../../../hooks';
 import { classNames } from '../../../layout';
 
 export interface NavigatorRoomInfoViewProps {
@@ -19,8 +19,8 @@ export const NavigatorRoomInfoView: FC<NavigatorRoomInfoViewProps> = props =>
     const { report = null } = useHelp();
     const { navigatorData = null, favouriteRoomIds = [] } = useNavigator();
     const { roomSession = null } = useRoom();
-    const isModerator = useIsModerator();
-    const isCommunity = useIsCommunity();
+    const isModerator = useHasRankLevel(STAFF_LEVELS.MOD);
+    const isAdmin = useHasRankLevel(STAFF_LEVELS.ADMIN);
 
     const enteredRoomId = navigatorData?.enteredGuestRoom?.roomId ?? 0;
 
@@ -55,7 +55,7 @@ export const NavigatorRoomInfoView: FC<NavigatorRoomInfoViewProps> = props =>
             case 'settings':
                 return (GetSessionDataManager().userId === navigatorData.enteredGuestRoom.ownerId || isModerator);
             case 'staff_pick':
-                return isCommunity;
+                return isAdmin;
             case 'floor':
                 return roomSession?.controllerLevel >= RoomControllerLevel.GUEST;
             case 'guest':

@@ -1,7 +1,7 @@
 import { PetRespectComposer, PetType, RoomControllerLevel, RoomObjectCategory, RoomObjectType, RoomObjectVariable, RoomUnitGiveHandItemPetComposer } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
-import { AvatarInfoPet, GetOwnRoomObject, LocalizeText, SendMessageComposer } from '../../../../../api';
-import { useIsModerator, useRoom, useSessionInfo } from '../../../../../hooks';
+import { AvatarInfoPet, GetOwnRoomObject, LocalizeText, SendMessageComposer, STAFF_LEVELS } from '../../../../../api';
+import { useHasRankLevel, useRoom, useSessionInfo } from '../../../../../hooks';
 import { ContextMenuHeaderView } from '../../context-menu/ContextMenuHeaderView';
 import { ContextMenuListItemView } from '../../context-menu/ContextMenuListItemView';
 import { ContextMenuView } from '../../context-menu/ContextMenuView';
@@ -23,7 +23,7 @@ export const AvatarInfoWidgetPetView: FC<AvatarInfoWidgetPetViewProps> = props =
     const [ mode, setMode ] = useState(MODE_NORMAL);
     const { roomSession = null, isHandItemBlocked = false } = useRoom();
     const { petRespectRemaining = 0, respectPet = null } = useSessionInfo();
-    const isModerator = useIsModerator();
+    const isModerator = useHasRankLevel(STAFF_LEVELS.MOD);
 
     const canPickUp = useMemo(() =>
     {

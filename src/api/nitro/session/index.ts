@@ -16,5 +16,6 @@ export * from './HasHabboVip';
 export * from './IsOwnerOfFloorFurniture';
 export * from './IsOwnerOfFurniture';
 export * from './IsRidingHorse';
+export * from './RankLevels';
 export * from './StartRoomSession';
 export * from './VisitDesktop';

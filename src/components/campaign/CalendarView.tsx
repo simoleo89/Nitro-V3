@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
-import { CalendarItemState, ICalendarItem, LocalizeText } from '../../api';
+import { CalendarItemState, ICalendarItem, LocalizeText, STAFF_LEVELS } from '../../api';
 import { Button, Column, Grid, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../common';
-import { useIsModerator } from '../../hooks';
+import { useHasRankLevel } from '../../hooks';
 import { CalendarItemView } from './CalendarItemView';
 
 interface CalendarViewProps
@@ -23,7 +23,7 @@ export const CalendarView: FC<CalendarViewProps> = props =>
     const { onClose = null, campaignName = null, currentDay = null, numDays = null, missedDays = null, openedDays = null, openPackage = null, receivedProducts = null } = props;
     const [ selectedDay, setSelectedDay ] = useState(currentDay);
     const [ index, setIndex ] = useState(Math.max(0, (selectedDay - 1)));
-    const isModerator = useIsModerator();
+    const isModerator = useHasRankLevel(STAFF_LEVELS.MOD);
 
     const getDayState = (day: number) =>
     {

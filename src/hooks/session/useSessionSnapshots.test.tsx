@@ -5,7 +5,7 @@ import { Component, ReactNode, useSyncExternalStore } from 'react';
 import { useBetween } from 'use-between';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { GetEventDispatcher, GetSessionDataManager } from '../../nitro-renderer.mock';
-import { useHasSecurityLevel, useIsAdmin, useIsCommunity, useIsModerator, useUserSecurityLevel } from './useSessionSnapshots';
+import { useHasRankLevel, useIsRank, useUserRank } from './useSessionSnapshots';
 
 // Regression guard for the rolled-back snapshot-consumer migration.
 //
@@ -110,15 +110,11 @@ describe('use-between + useSyncExternalStore incompatibility', () =>
 });
 
 // ============================================================================
-// useHasSecurityLevel + named wrappers — reactive flip on snapshot invalidation
+// useHasRankLevel / useIsRank / useUserRank — reactive flip on snapshot
+// invalidation, tied to the permission_ranks DB table (rankId / rankName /
+// rankBadge / rankPrefix / rankPrefixColor are mirrored on the wire by
+// the extended UserPermissionsComposer in Arcturus ≥ 4.2.10).
 // ============================================================================
-//
-// The family hangs off useUserDataSnapshot() which is a useSyncExternalStore
-// wrapper. The renderer's real SessionDataManager pushes a frozen snapshot
-// out of getUserDataSnapshot() and dispatches a SESSION_DATA_UPDATED event
-// whenever a mutator invalidates the cache. These tests fake both sides:
-// a mock dispatcher with a real .subscribe(), and a mock SessionDataManager
-// whose snapshot can be mutated between dispatches.
 
 const makeFakeDispatcher = () =>
 {
@@ -143,20 +139,37 @@ const makeFakeDispatcher = () =>
     };
 };
 
-describe('useHasSecurityLevel + named wrappers', () =>
+interface FakeSnapshot
 {
-    let snapshot: { securityLevel: number };
+    securityLevel: number;
+    rankId: number;
+    rankName: string;
+    rankBadge: string;
+    rankPrefix: string;
+    rankPrefixColor: string;
+}
+
+const makeSnapshot = (overrides: Partial<FakeSnapshot> = {}): FakeSnapshot => ({
+    securityLevel: 0,
+    rankId: 0,
+    rankName: '',
+    rankBadge: '',
+    rankPrefix: '',
+    rankPrefixColor: '',
+    ...overrides
+});
+
+describe('useHasRankLevel + useIsRank + useUserRank', () =>
+{
+    let snapshot: FakeSnapshot;
     let fakeDispatcher: ReturnType<typeof makeFakeDispatcher>;
 
     beforeEach(() =>
     {
-        snapshot = { securityLevel: 0 };
+        snapshot = makeSnapshot();
         fakeDispatcher = makeFakeDispatcher();
 
         vi.mocked(GetSessionDataManager).mockReturnValue({
-            // useSessionSnapshots reads getUserDataSnapshot() and guards on
-            // `typeof manager.getUserDataSnapshot !== 'function'`, so we
-            // expose it as a real function returning the mutable test snapshot.
             getUserDataSnapshot: () => snapshot
         } as any);
 
@@ -170,48 +183,58 @@ describe('useHasSecurityLevel + named wrappers', () =>
         vi.mocked(GetEventDispatcher).mockReset();
     });
 
-    it('useUserSecurityLevel reads the raw level', () =>
+    it('useUserRank surfaces the full rank metadata from the snapshot', () =>
     {
-        snapshot = { securityLevel: 7 };
-        const { result } = renderHook(() => useUserSecurityLevel());
-        expect(result.current).toBe(7);
+        snapshot = makeSnapshot({
+            securityLevel: 5,
+            rankId: 5,
+            rankName: 'Moderator',
+            rankBadge: 'ADM',
+            rankPrefix: '[MOD]',
+            rankPrefixColor: '#327fa8'
+        });
+
+        const { result } = renderHook(() => useUserRank());
+
+        expect(result.current).toEqual({
+            id: 5,
+            name: 'Moderator',
+            level: 5,
+            badge: 'ADM',
+            prefix: '[MOD]',
+            prefixColor: '#327fa8'
+        });
     });
 
-    it('useHasSecurityLevel compares >= the threshold', () =>
+    it('useHasRankLevel compares >= the threshold (5=Mod, 7=Admin in default seed)', () =>
     {
-        snapshot = { securityLevel: 5 };
-        const { result } = renderHook(() => useHasSecurityLevel(5));
-        expect(result.current).toBe(true);
-
-        const { result: lowResult } = renderHook(() => useHasSecurityLevel(8));
-        expect(lowResult.current).toBe(false);
+        snapshot = makeSnapshot({ securityLevel: 5 });
+        expect(renderHook(() => useHasRankLevel(5)).result.current).toBe(true);
+        expect(renderHook(() => useHasRankLevel(6)).result.current).toBe(false);
+        expect(renderHook(() => useHasRankLevel(7)).result.current).toBe(false);
     });
 
-    it('named wrappers map to the right thresholds (MODERATOR=5, COMMUNITY=7, ADMINISTRATOR=8)', () =>
+    it('useIsRank matches the exact rank_name from permission_ranks', () =>
     {
-        snapshot = { securityLevel: 7 }; // COMMUNITY
-
-        expect(renderHook(() => useIsModerator()).result.current).toBe(true);   // 7 >= 5
-        expect(renderHook(() => useIsCommunity()).result.current).toBe(true);   // 7 >= 7
-        expect(renderHook(() => useIsAdmin()).result.current).toBe(false);      // 7 < 8
+        snapshot = makeSnapshot({ rankName: 'Moderator' });
+        expect(renderHook(() => useIsRank('Moderator')).result.current).toBe(true);
+        expect(renderHook(() => useIsRank('Super Mod')).result.current).toBe(false);
+        expect(renderHook(() => useIsRank('Administrator')).result.current).toBe(false);
     });
 
-    it('re-renders when SESSION_DATA_UPDATED fires after the snapshot mutates', () =>
+    it('re-renders when SESSION_DATA_UPDATED fires after a runtime promote', () =>
     {
-        snapshot = { securityLevel: 0 };
-        const { result } = renderHook(() => useIsModerator());
+        snapshot = makeSnapshot({ securityLevel: 1, rankName: 'Member' });
+        const { result } = renderHook(() => useHasRankLevel(5));
         expect(result.current).toBe(false);
 
-        // Mutate the snapshot reference (renderer invariant: every
-        // invalidation produces a NEW frozen object) and dispatch the
-        // event. The hook's getSnapshot closure reads `snapshot`, so a
-        // fresh object reference flips React's bailout.
         act(() =>
         {
-            snapshot = { securityLevel: 5 };
-            // The mock's NitroEventType proxy resolves any property to
-            // `mock:NitroEventType:<PROP>`, so that's the wire string
-            // useSessionSnapshots subscribes against.
+            // Renderer invariant: every invalidation produces a NEW
+            // frozen snapshot object. The mock's NitroEventType proxy
+            // resolves any property to `mock:NitroEventType:<PROP>`, so
+            // that's the wire string useSessionSnapshots subscribes against.
+            snapshot = makeSnapshot({ securityLevel: 5, rankName: 'Moderator' });
             fakeDispatcher.dispatch('mock:NitroEventType:SESSION_DATA_UPDATED');
         });
 

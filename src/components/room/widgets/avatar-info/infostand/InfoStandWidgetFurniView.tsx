@@ -2,9 +2,9 @@ import { CrackableDataType, CreateLinkEvent, FurnitureFloorUpdateEvent, GetRoomE
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { FaCrosshairs, FaTimes } from 'react-icons/fa';
 import { GrFormNextLink, GrRotateLeft, GrRotateRight } from 'react-icons/gr';
-import { AvatarInfoFurni, GetGroupInformation, LocalizeText, SendMessageComposer } from '../../../../../api';
+import { AvatarInfoFurni, GetGroupInformation, LocalizeText, SendMessageComposer, STAFF_LEVELS } from '../../../../../api';
 import { Button, Column, Flex, LayoutBadgeImageView, LayoutLimitedEditionCompactPlateView, LayoutRarityLevelView, LayoutRoomObjectImageView, Text, UserProfileIconView } from '../../../../../common';
-import { useIsModerator, useMessageEvent, useNitroEvent, useRoom, useWiredTools } from '../../../../../hooks';
+import { useHasRankLevel, useMessageEvent, useNitroEvent, useRoom, useWiredTools } from '../../../../../hooks';
 import { NitroInput } from '../../../../../layout';
 
 interface InfoStandWidgetFurniViewProps
@@ -22,7 +22,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = props
     const { avatarInfo = null, onClose = null } = props;
     const { roomSession = null } = useRoom();
     const { openInspectionForFurni, showInspectButton } = useWiredTools();
-    const isModerator = useIsModerator();
+    const isModerator = useHasRankLevel(STAFF_LEVELS.MOD);
 
     const [ pickupMode, setPickupMode ] = useState(0);
     const [ canMove, setCanMove ] = useState(false);

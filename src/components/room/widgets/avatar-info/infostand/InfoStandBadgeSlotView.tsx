@@ -205,7 +205,7 @@ export const InfoStandBadgeSlotView: FC<InfoStandBadgeSlotProps> = ({ slotIndex,
                 onClick={ handleSlotClick }
                 onDoubleClick={ handleDoubleClick }>
                 { badgeCode
-                    ? <LayoutBadgeImageView badgeCode={ badgeCode } showInfo={ true } />
+                    ? <LayoutBadgeImageView badgeCode={ badgeCode } showInfo={ true } showRarityInfo={ true } highlightRarity={ true } />
                     : isOwnUser && <FaPlus className="text-white/30 text-[10px]" /> }
             </div>
             { showPicker && (

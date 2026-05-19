@@ -5,6 +5,7 @@ import { useNitroEvent } from '../hooks';
 import { AchievementsView } from './achievements/AchievementsView';
 import { AvatarEditorView } from './avatar-editor';
 import { BadgeCreatorView } from './badge-creator';
+import { BadgeLeaderboardView } from './badge-leaderboard/BadgeLeaderboardView';
 import { AvatarEffectsView } from './avatar-effects';
 import { CameraWidgetView } from './camera/CameraWidgetView';
 import { CampaignView } from './campaign/CampaignView';
@@ -125,6 +126,7 @@ export const MainView: FC<{}> = props =>
             <WiredView />
             <AvatarEditorView />
             <BadgeCreatorView />
+            <BadgeLeaderboardView />
             <AvatarEffectsView />
             <AchievementsView />
             <NavigatorView />

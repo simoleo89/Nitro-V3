@@ -192,24 +192,39 @@ export const useUserPermissions = (): ReadonlyMap<string, number> =>
 
 /**
  * Reactive predicate: does the current user have the named
- * permission (ALLOWED or ROOM_OWNER)? `key` must match a row in
- * `permission_definitions.permission_key` (e.g. `'acc_supporttool'`,
- * `'acc_anyroomowner'`, `'acc_catalogfurni'`). Prefer this over any
- * rank-based gate — it survives rank renumbering and adding new
- * ranks without touching the React code.
+ * permission **unconditionally** (ALLOWED only)? `key` must match a
+ * row in `permission_definitions.permission_key` (e.g.
+ * `'acc_supporttool'`, `'acc_anyroomowner'`, `'acc_catalogfurni'`).
+ *
+ * Mirrors the server-side semantics of `Habbo.hasPermission(key)`
+ * (PermissionsManager → `Rank.hasPermission(key, isRoomOwner=false)`
+ * which returns `setting == ALLOWED` — `setting == ROOM_OWNER`
+ * requires the call site to pass `isRoomOwner=true`, which the
+ * client doesn't have ambiently). So this hook returns `true`
+ * only for ALLOWED (value 1) and `false` for ROOM_OWNER (value 2)
+ * — the latter has to be re-checked against the active room
+ * ownership via `usePermissionValue(key) === 2 && roomSession.isRoomOwner`.
+ *
+ * Prefer this over any rank-based gate — it survives rank
+ * renumbering and adding new ranks without touching the React code.
  */
 export const useHasPermission = (key: string): boolean =>
 {
     const permissions = useUserPermissions();
 
-    return useMemo(() => (permissions.get(key) ?? 0) > 0, [ permissions, key ]);
+    return useMemo(() => permissions.get(key) === 1, [ permissions, key ]);
 };
 
 /**
- * Reactive raw permission value (1 = ALLOWED, 2 = ROOM_OWNER, 0 if
- * absent). Useful for the handful of permissions whose
- * `permission_definitions.max_value > 1` (e.g.
- * `acc_closedice_room`) where the precise value matters.
+ * Reactive raw permission value:
+ *   0 = DISALLOWED (also returned for absent keys)
+ *   1 = ALLOWED
+ *   2 = ROOM_OWNER (granted only when the caller is the active
+ *       room owner — combine with `roomSession.isRoomOwner`)
+ *
+ * Use this when the gate needs to distinguish ROOM_OWNER from
+ * plain ALLOWED, or for the handful of permissions whose
+ * `permission_definitions.max_value > 1`.
  */
 export const usePermissionValue = (key: string): number =>
 {

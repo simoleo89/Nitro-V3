@@ -214,16 +214,25 @@ describe('useHasPermission + usePermissionValue + useUserPermissions', () =>
         });
     });
 
-    it('useHasPermission returns true for any non-zero value, false for absent/zero', () =>
+    it('useHasPermission returns true only for ALLOWED (value 1), false for ROOM_OWNER/absent/zero', () =>
     {
         permissionsSnapshot = new Map([
-            [ 'acc_supporttool', 1 ],
-            [ 'acc_anyroomowner', 2 ],
-            [ 'acc_closedice_room', 0 ]
+            [ 'acc_supporttool', 1 ],     // ALLOWED
+            [ 'acc_anyroomowner', 2 ],    // ROOM_OWNER — requires room ownership at call time
+            [ 'acc_closedice_room', 0 ]   // DISALLOWED (shouldn't reach the client, but defensive)
         ]);
 
+        // ALLOWED → true. Matches Habbo.hasPermission(key) which calls
+        // Rank.hasPermission(key, false) → only ALLOWED short-circuits.
         expect(renderHook(() => useHasPermission('acc_supporttool')).result.current).toBe(true);
-        expect(renderHook(() => useHasPermission('acc_anyroomowner')).result.current).toBe(true);
+
+        // ROOM_OWNER → false. The server-side check requires the
+        // caller to pass isRoomOwner=true, which the client doesn't
+        // have ambiently. Code that needs to combine this with the
+        // active room session should call usePermissionValue(key) and
+        // check === 2 alongside roomSession.isRoomOwner.
+        expect(renderHook(() => useHasPermission('acc_anyroomowner')).result.current).toBe(false);
+
         expect(renderHook(() => useHasPermission('acc_closedice_room')).result.current).toBe(false);
         expect(renderHook(() => useHasPermission('acc_unknown_key')).result.current).toBe(false);
     });

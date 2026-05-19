@@ -1,9 +1,9 @@
-import { CreateLinkEvent, GetSessionDataManager, RoomControllerLevel, RoomObjectCategory, RoomObjectVariable, RoomUnitGiveHandItemComposer, SetRelationshipStatusComposer, TradingOpenComposer } from '@nitrots/nitro-renderer';
+import { CreateLinkEvent, FlatControllerAddedEvent, FlatControllerRemovedEvent, GetSessionDataManager, RoomControllerLevel, RoomObjectCategory, RoomObjectVariable, RoomUnitGiveHandItemComposer, SetRelationshipStatusComposer, TradingOpenComposer } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AvatarInfoUser, DispatchUiEvent, GetOwnRoomObject, GetUserProfile, LocalizeText, MessengerFriend, ReportType, RoomWidgetUpdateChatInputContentEvent, SendMessageComposer } from '../../../../../api';
 import { Flex } from '../../../../../common';
-import { useFriends, useHelp, useIsUserIgnored, useRoom, useSessionInfo, useWiredTools } from '../../../../../hooks';
+import { useFriends, useHelp, useIsUserIgnored, useMessageEvent, useRoom, useSessionInfo, useWiredTools } from '../../../../../hooks';
 import { ContextMenuHeaderView } from '../../context-menu/ContextMenuHeaderView';
 import { ContextMenuListItemView } from '../../context-menu/ContextMenuListItemView';
 import { ContextMenuView } from '../../context-menu/ContextMenuView';
@@ -36,16 +36,39 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
     // scope here) so useSyncExternalStore installs against the real
     // React dispatcher.
     const isIgnored = useIsUserIgnored(avatarInfo.name);
+    // Reactive controller level: starts from the cached value at popup
+    // open time, then updates from FlatControllerAdded/Removed events
+    // and from optimistic clicks so the Give/Remove Rights buttons flip
+    // instantly without waiting for a server roundtrip.
+    const [ controllerLevel, setControllerLevel ] = useState(avatarInfo.targetRoomControllerLevel);
+
+    useMessageEvent<FlatControllerAddedEvent>(FlatControllerAddedEvent, event =>
+    {
+        const parser = event.getParser();
+
+        if(!parser || (parser.data.userId !== avatarInfo.webID)) return;
+
+        setControllerLevel(RoomControllerLevel.GUEST);
+    });
+
+    useMessageEvent<FlatControllerRemovedEvent>(FlatControllerRemovedEvent, event =>
+    {
+        const parser = event.getParser();
+
+        if(!parser || (parser.userId !== avatarInfo.webID)) return;
+
+        setControllerLevel(RoomControllerLevel.NONE);
+    });
 
     const isShowGiveRights = useMemo(() =>
     {
-        return (avatarInfo.amIOwner && (avatarInfo.targetRoomControllerLevel < RoomControllerLevel.GUEST) && !avatarInfo.isGuildRoom);
-    }, [ avatarInfo ]);
+        return (avatarInfo.amIOwner && (controllerLevel < RoomControllerLevel.GUEST) && !avatarInfo.isGuildRoom);
+    }, [ avatarInfo, controllerLevel ]);
 
     const isShowRemoveRights = useMemo(() =>
     {
-        return (avatarInfo.amIOwner && (avatarInfo.targetRoomControllerLevel === RoomControllerLevel.GUEST) && !avatarInfo.isGuildRoom);
-    }, [ avatarInfo ]);
+        return (avatarInfo.amIOwner && (controllerLevel === RoomControllerLevel.GUEST) && !avatarInfo.isGuildRoom);
+    }, [ avatarInfo, controllerLevel ]);
 
     const moderateMenuHasContent = useMemo(() =>
     {
@@ -155,9 +178,15 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
                     break;
                 case 'give_rights':
                     roomSession.sendGiveRightsMessage(avatarInfo.webID);
+                    setControllerLevel(RoomControllerLevel.GUEST);
+                    hideMenu = false;
+                    setMode(MODE_MODERATE);
                     break;
                 case 'remove_rights':
                     roomSession.sendTakeRightsMessage(avatarInfo.webID);
+                    setControllerLevel(RoomControllerLevel.NONE);
+                    hideMenu = false;
+                    setMode(MODE_MODERATE);
                     break;
                 case 'trade':
                     SendMessageComposer(new TradingOpenComposer(avatarInfo.roomIndex));
@@ -210,6 +239,7 @@ export const AvatarInfoWidgetAvatarView: FC<AvatarInfoWidgetAvatarViewProps> = p
     useEffect(() =>
     {
         setMode(MODE_NORMAL);
+        setControllerLevel(avatarInfo.targetRoomControllerLevel);
     }, [ avatarInfo ]);
 
     return (

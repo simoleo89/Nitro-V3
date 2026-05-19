@@ -229,7 +229,7 @@ export const AvatarInfoWidgetView: FC<{}> = props =>
                     }
                 }
 
-                return <InfoStandWidgetUserView avatarInfo={ (avatarInfo as AvatarInfoUser) } onClose={ () => setAvatarInfo(null) } />;
+                return <InfoStandWidgetUserView avatarInfo={ (avatarInfo as AvatarInfoUser) } setAvatarInfo={ setAvatarInfo } onClose={ () => setAvatarInfo(null) } />;
             case AvatarInfoUser.BOT:
                 return <InfoStandWidgetBotView avatarInfo={ (avatarInfo as AvatarInfoUser) } onClose={ () => setAvatarInfo(null) } />;
             case AvatarInfoRentableBot.RENTABLE_BOT:

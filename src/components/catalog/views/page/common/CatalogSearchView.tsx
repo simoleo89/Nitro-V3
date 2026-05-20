@@ -2,12 +2,13 @@ import { GetSessionDataManager, IFurnitureData } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
 import { FaSearch, FaTimes } from 'react-icons/fa';
 import { CatalogPage, CatalogType, FilterCatalogNode, FurnitureOffer, ICatalogNode, ICatalogPage, IPurchasableOffer, LocalizeText, PageLocalization, SearchResult } from '../../../../../api';
-import { useCatalog } from '../../../../../hooks';
+import { useCatalogData, useCatalogUiState } from '../../../../../hooks';
 
 export const CatalogSearchView: FC<{}> = () =>
 {
     const [ searchValue, setSearchValue ] = useState('');
-    const { currentType = null, rootNode = null, searchResult = null, setSearchResult = null, setCurrentPage = null } = useCatalog();
+    const { rootNode = null, searchResult = null } = useCatalogData();
+    const { currentType = null, setSearchResult = null, setCurrentPage = null } = useCatalogUiState();
 
     const normalizeSearchText = (value: string) => (value || '')
         .toLocaleLowerCase()
@@ -81,7 +82,7 @@ export const CatalogSearchView: FC<{}> = () =>
             FilterCatalogNode(search, foundFurniLines, rootNode, nodes);
 
             setSearchResult(new SearchResult(search, offers, nodes.filter(node => (node.isVisible))));
-            setCurrentPage((new CatalogPage(-1, 'default_3x3', new PageLocalization([], []), offers, false, 1) as ICatalogPage));
+            setCurrentPage((new CatalogPage(-1, 'default_3x3', new PageLocalization([], []), offers, false, 1)));
         }, 300);
 
         return () => clearTimeout(timeout);

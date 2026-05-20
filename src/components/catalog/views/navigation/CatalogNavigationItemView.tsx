@@ -1,7 +1,7 @@
 import { FC, useCallback, useRef, useState } from 'react';
 import { FaArrowsAlt, FaCaretDown, FaCaretUp, FaPlus, FaStar, FaTrash } from 'react-icons/fa';
 import { CatalogType, ICatalogNode, LocalizeText } from '../../../../api';
-import { useCatalog, useCatalogFavorites } from '../../../../hooks';
+import { useCatalogActions, useCatalogFavorites, useCatalogUiState } from '../../../../hooks';
 import { useCatalogAdmin } from '../../CatalogAdminContext';
 import { CatalogIconView } from '../catalog-icon/CatalogIconView';
 import { CatalogNavigationSetView } from './CatalogNavigationSetView';
@@ -15,7 +15,8 @@ export interface CatalogNavigationItemViewProps
 export const CatalogNavigationItemView: FC<CatalogNavigationItemViewProps> = props =>
 {
     const { node = null, child = false } = props;
-    const { activateNode = null, currentType = CatalogType.NORMAL } = useCatalog();
+    const { activateNode = null } = useCatalogActions();
+    const { currentType = CatalogType.NORMAL } = useCatalogUiState();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
     const { isFavoritePage, toggleFavoritePage } = useCatalogFavorites();
@@ -126,7 +127,10 @@ export const CatalogNavigationItemView: FC<CatalogNavigationItemViewProps> = pro
                 { !adminMode && node.pageId > 0 &&
                     <FaStar
                         className={ `text-[8px] transition-all duration-100 cursor-pointer shrink-0 ${ isFav ? 'text-warning opacity-100' : 'text-muted opacity-0 group-hover/nav:opacity-100 hover:text-warning' }` }
-                        onClick={ e => { e.stopPropagation(); toggleFavoritePage(node.pageId); } }
+                        onClick={ e =>
+                        {
+                            e.stopPropagation(); toggleFavoritePage(node.pageId);
+                        } }
                     /> }
                 { node.isBranch &&
                     <span className="text-[9px] text-muted shrink-0">

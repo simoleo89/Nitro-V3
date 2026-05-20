@@ -36,8 +36,8 @@ export const AvatarEffectsView: FC<{}> = () =>
 
                 switch(parts[1])
                 {
-                    case 'show':   setIsVisible(true); return;
-                    case 'hide':   setIsVisible(false); return;
+                    case 'show': setIsVisible(true); return;
+                    case 'hide': setIsVisible(false); return;
                     case 'toggle': setIsVisible(prev => !prev); return;
                 }
             },
@@ -83,7 +83,10 @@ export const AvatarEffectsView: FC<{}> = () =>
             }
         })();
 
-        return () => { cancelled = true; };
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ isVisible, effects.length, loadError ]);
 
     const session = GetSessionDataManager();

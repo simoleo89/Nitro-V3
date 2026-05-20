@@ -8,7 +8,8 @@ interface LoadingViewProps {
     homeUrl?: string;
 }
 
-export const LoadingView: FC<LoadingViewProps> = props => {
+export const LoadingView: FC<LoadingViewProps> = props =>
+{
     const { isError = false, message = '', homeUrl = '' } = props;
 
     return (

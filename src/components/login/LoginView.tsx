@@ -1,5 +1,6 @@
 import { AvatarScaleType, AvatarSetType, GetAvatarRenderManager, GetConfiguration, IAvatarImage } from '@nitrots/nitro-renderer';
-import { FC, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useActionState, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { ClearRememberLogin, GetConfigurationValue, GetRememberLogin, StoreRememberLoginFromPayload, persistAccessTokenFromPayload } from '../../api';
 import { configFileUrl } from '../../secure-assets';
 import flagBr from '../../assets/images/flag_icon/flag_icon_br.png';
@@ -26,8 +27,12 @@ const interpolate = (value: string | null | undefined): string =>
 
     let output = value;
 
-    try { output = GetConfiguration().interpolate(value) || value; }
-    catch {}
+    try
+    {
+        output = GetConfiguration().interpolate(value) || value;
+    }
+    catch
+    {}
 
     return output.replace(/\$\{([^}]+)\}/g, (_, key: string) =>
     {
@@ -44,7 +49,8 @@ const interpolate = (value: string | null | undefined): string =>
 
             if(configValue) return configValue;
         }
-        catch {}
+        catch
+        {}
 
         try
         {
@@ -52,7 +58,8 @@ const interpolate = (value: string | null | undefined): string =>
 
             if(configValue) return configValue;
         }
-        catch {}
+        catch
+        {}
 
         return '';
     });
@@ -99,13 +106,20 @@ const readLock = (): AttemptState =>
         if(!raw) return { attempts: 0, firstAt: 0, lockedUntil: 0 };
         return JSON.parse(raw);
     }
-    catch { return { attempts: 0, firstAt: 0, lockedUntil: 0 }; }
+    catch
+    {
+        return { attempts: 0, firstAt: 0, lockedUntil: 0 };
+    }
 };
 
 const writeLock = (state: AttemptState) =>
 {
-    try { sessionStorage.setItem(LOCK_KEY, JSON.stringify(state)); }
-    catch { }
+    try
+    {
+        sessionStorage.setItem(LOCK_KEY, JSON.stringify(state));
+    }
+    catch
+    { }
 };
 
 const normalizeLanguageCode = (value: string): string =>
@@ -149,7 +163,8 @@ const readCachedLocale = (): LoginLocale =>
 
         if(typeof settings.uiTextLanguage === 'string' && settings.uiTextLanguage.length) return resolveLoginLocale(settings.uiTextLanguage);
     }
-    catch {}
+    catch
+    {}
 
     return getBrowserLocale();
 };
@@ -169,7 +184,22 @@ const applyLocaleSelection = (locale: LoginLocale): void =>
 
         localStorage.setItem(CHAT_TRANSLATION_SETTINGS_KEY, JSON.stringify(nextSettings));
     }
-    catch {}
+    catch
+    {}
+};
+
+const LoginSubmitButton: FC<{ isEntering: boolean; isLocked: boolean; loginPingingServer: boolean }> = ({ isEntering, isLocked, loginPingingServer }) =>
+{
+    const { pending } = useFormStatus();
+
+    return (
+        <button
+            type="submit"
+            className="ok-button"
+            disabled={ pending || isEntering || isLocked }>
+            { isEntering ? t('nitro.login.entering', 'Entering…') : (pending || loginPingingServer) ? t('nitro.login.server.checking', 'Checking…') : t('login.title', 'Log in') }
+        </button>
+    );
 };
 
 export interface LoginViewProps
@@ -205,7 +235,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
 
     const configuredLoginWidgets = useMemo<Record<string, unknown>>(() =>
         (loginViewConfig?.['widgets'] as Record<string, unknown>) ?? {}, [ loginViewConfig ]);
-  
+
     const loginWidgetSlots = useMemo(() =>
     {
         return Object.entries(configuredLoginWidgets)
@@ -357,7 +387,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
         return () => window.clearTimeout(timeout);
     }, [ info ]);
 
-    const lockState = useMemo(() => readLock(), [ submitting ]);
+    const lockState = readLock();
     const now = Date.now();
     const isLocked = lockState.lockedUntil > now;
 
@@ -396,8 +426,12 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
         });
 
         let payload: Record<string, unknown> = {};
-        try { payload = await response.json(); }
-        catch { }
+        try
+        {
+            payload = await response.json();
+        }
+        catch
+        { }
 
         return { ok: response.ok, status: response.status, payload };
     }, []);
@@ -445,45 +479,46 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
         }
     }, [ checkServerReachable ]);
 
-    const handleLoginSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) =>
+    const loginAction = useCallback(async (_prev: null, formData: FormData): Promise<null> =>
     {
-        event.preventDefault();
-
-        if(submitting || isEntering) return;
+        if(isEntering) return null;
 
         const nowTs = Date.now();
-        if(nowTs - submitTimeRef.current < 1000) return;
+        if(nowTs - submitTimeRef.current < 1000) return null;
         submitTimeRef.current = nowTs;
 
-        const state = readLock();
-        if(state.lockedUntil > nowTs)
+        const usernameInput = String(formData.get('username') || '').trim();
+        const passwordInput = String(formData.get('password') || '');
+        const rememberFlag = formData.get('remember') === 'on';
+
+        const lockSnapshot = readLock();
+        if(lockSnapshot.lockedUntil > nowTs)
         {
-            const remaining = Math.ceil((state.lockedUntil - nowTs) / 1000);
+            const remaining = Math.ceil((lockSnapshot.lockedUntil - nowTs) / 1000);
             setError(t('nitro.login.error.too_many_attempts', 'Too many attempts. Try again in %seconds%s.', [ 'seconds' ], [ String(remaining) ]));
-            return;
+            return null;
         }
 
-        if(!username.trim() || !password)
+        if(!usernameInput || !passwordInput)
         {
             setError(t('nitro.login.error.missing_credentials', 'Please enter both your Habbo name and password.'));
-            return;
+            return null;
         }
 
         if(turnstileEnabled && !loginTurnstileToken)
         {
             setError(t('nitro.login.error.turnstile', 'Please complete the security check.'));
-            return;
+            return null;
         }
 
         setError(null);
-        setSubmitting(true);
 
         try
         {
             const { ok, payload } = await postJson(loginUrl, {
-                username: username.trim(),
-                password,
-                remember: rememberMe,
+                username: usernameInput,
+                password: passwordInput,
+                remember: rememberFlag,
                 turnstileToken: turnstileEnabled ? loginTurnstileToken : undefined
             });
 
@@ -493,10 +528,10 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
             {
                 clearLock();
                 persistAccessTokenFromPayload(payload);
-                if(rememberMe) StoreRememberLoginFromPayload(payload, typeof payload.username === 'string' ? payload.username : username.trim(), ssoTicket);
+                if(rememberFlag) StoreRememberLoginFromPayload(payload, typeof payload.username === 'string' ? payload.username : usernameInput, ssoTicket);
                 else ClearRememberLogin();
                 onAuthenticated(ssoTicket);
-                return;
+                return null;
             }
 
             recordFailure();
@@ -504,17 +539,17 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
             setError(message);
             resetLoginTurnstile();
         }
-        catch(err)
+        catch
         {
             recordFailure();
             setError(t('nitro.login.error.login_unreachable', 'Unable to reach the login service. Please try again.'));
             resetLoginTurnstile();
         }
-        finally
-        {
-            setSubmitting(false);
-        }
-    }, [ submitting, isEntering, username, password, rememberMe, turnstileEnabled, loginTurnstileToken, loginUrl, postJson, clearLock, recordFailure, onAuthenticated, resetLoginTurnstile, pingLoginServer ]);
+
+        return null;
+    }, [ isEntering, turnstileEnabled, loginTurnstileToken, loginUrl, postJson, clearLock, recordFailure, onAuthenticated, resetLoginTurnstile ]);
+
+    const [ , submitLoginAction, isLoginPending ] = useActionState<null, FormData>(loginAction, null);
 
     const checkEmailUrl = GetConfigurationValue<string>('login.check-email.endpoint', '/api/auth/check-email');
     const checkUsernameUrl = GetConfigurationValue<string>('login.check-username.endpoint', '/api/auth/check-username');
@@ -690,7 +725,10 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
                                         <button
                                             type="button"
                                             className="login-widget-button"
-                                            onClick={ () => { if(btnLink) window.location.href = btnLink; } }
+                                            onClick={ () =>
+                                            {
+                                                if(btnLink) window.location.href = btnLink;
+                                            } }
                                         >
                                             { btnText }
                                         </button> }
@@ -736,7 +774,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
 
                 <div className="nitro-login-card">
                     <div className="card-title">{ t('nitro.login.card.title', 'What\'s your Habbo called?') }</div>
-                    <form className="card-body" onSubmit={ handleLoginSubmit } autoComplete="on">
+                    <form className="card-body" action={ submitLoginAction } autoComplete="on">
                         <div className="field">
                             <label htmlFor="login-username">{ t('login.username', 'Name of your Habbo') }</label>
                             <input
@@ -764,6 +802,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
                         <label className="remember-row">
                             <input
                                 type="checkbox"
+                                name="remember"
                                 checked={ rememberMe }
                                 onChange={ e => setRememberMe(e.target.checked) }
                             />
@@ -789,11 +828,7 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
                         { error && <div className="error-line">{ error }</div> }
                         { info && <div className="info-line">{ info }</div> }
                         <div className="submit-row">
-                            <button
-                                type="submit"
-                                className="ok-button"
-                                disabled={ submitting || isEntering || isLocked }
-                            >{ isEntering ? t('nitro.login.entering', 'Entering…') : loginPingingServer ? t('nitro.login.server.checking', 'Checking…') : t('login.title', 'Log in') }</button>
+                            <LoginSubmitButton isEntering={ isEntering } isLocked={ isLocked } loginPingingServer={ loginPingingServer } />
                         </div>
                         <a className="forgot" onClick={ () => setMode('forgot') }>{ t('login.forgot_password', 'Forgotten your password?') }</a>
                     </form>
@@ -841,7 +876,7 @@ interface DialogSharedProps
 
 interface RegisterDialogProps extends DialogSharedProps
 {
-    onSubmit: (body: { username: string; email: string; password: string; figure: string; gender: string; turnstileToken: string; }, onDialogReset: () => void) => void;
+    onSubmit: (body: { username: string; email: string; password: string; figure: string; gender: string; turnstileToken: string; }, onDialogReset: () => void) => Promise<void> | void;
     onCheckEmail: (email: string) => Promise<{ available: boolean; error?: string }>;
     onCheckUsername: (username: string) => Promise<{ available: boolean; error?: string }>;
     onCheckServer: () => Promise<boolean>;
@@ -945,7 +980,12 @@ const renderAvatarPreview = (figure: string, gender: GenderKey, setType: string)
             if(resolved) return;
             resolved = true;
             if(timer !== null) window.clearTimeout(timer);
-            try { avatarImage?.dispose(); } catch {}
+            try
+            {
+                avatarImage?.dispose();
+            }
+            catch
+            {}
             avatarImage = null;
             if(url)
             {
@@ -964,17 +1004,26 @@ const renderAvatarPreview = (figure: string, gender: GenderKey, setType: string)
         const attempt = () =>
         {
             if(resolved) return;
-            if(attempts >= AVATAR_PREVIEW_MAX_ATTEMPTS) { finish(''); return; }
+            if(attempts >= AVATAR_PREVIEW_MAX_ATTEMPTS)
+            {
+                finish(''); return;
+            }
             attempts++;
 
-            try { avatarImage?.dispose(); } catch {}
+            try
+            {
+                avatarImage?.dispose();
+            }
+            catch
+            {}
             avatarImage = null;
 
             try
             {
                 avatarImage = GetAvatarRenderManager().createAvatarImage(figure, AvatarScaleType.LARGE, gender, {
                     resetFigure: () => attempt(),
-                    dispose: () => {},
+                    dispose: () =>
+                    {},
                     disposed: false
                 });
             }
@@ -984,7 +1033,10 @@ const renderAvatarPreview = (figure: string, gender: GenderKey, setType: string)
                 return;
             }
 
-            if(!avatarImage) { finish(''); return; }
+            if(!avatarImage)
+            {
+                finish(''); return;
+            }
 
             if(avatarImage.isPlaceholder()) return;
 
@@ -1024,7 +1076,10 @@ const useAvatarPreview = (figure: string, gender: GenderKey, setType: string): s
         {
             if(!cancelled) setUrl(result);
         });
-        return () => { cancelled = true; };
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ figure, gender, setType ]);
 
     return url;
@@ -1049,7 +1104,10 @@ const AvatarPartRow: FC<AvatarPartRowProps> = ({ setType, selection, gender, onP
         <div className="avatar-part-row">
             <button type="button" className="arrow-btn" aria-label={ `Previous ${ setType }` } onClick={ onPrev }>&lsaquo;</button>
             <div className={ `part-preview part-preview-${ setType }` }>
-                { url && <img src={ url } alt={ `${ setType } preview` } onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } /> }
+                { url && <img src={ url } alt={ `${ setType } preview` } onError={ e =>
+                {
+                    (e.currentTarget).style.visibility = 'hidden';
+                } } /> }
             </div>
             <button type="button" className="arrow-btn" aria-label={ `Next ${ setType }` } onClick={ onNext }>&rsaquo;</button>
         </div>
@@ -1068,9 +1126,15 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
     const [ gender, setGender ] = useState<GenderKey>('F');
     const [ selection, setSelection ] = useState<FigureSelection>(() => ({ ...FALLBACK_DEFAULTS.F }));
     const [ localError, setLocalError ] = useState<string | null>(null);
-    const [ checking, setChecking ] = useState(false);
+    const [ prevStep, setPrevStep ] = useState<RegisterStep>(step);
     const [ turnstileToken, setTurnstileToken ] = useState('');
     const [ resetSignal, setResetSignal ] = useState(0);
+
+    if(prevStep !== step)
+    {
+        setPrevStep(step);
+        setLocalError(null);
+    }
     const [ serverReachable, setServerReachable ] = useState<boolean | null>(null);
     const [ pingingServer, setPingingServer ] = useState(false);
 
@@ -1097,7 +1161,10 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
             const ok = await onCheckServer();
             if(!cancelled) setServerReachable(ok);
         })();
-        return () => { cancelled = true; };
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ onCheckServer ]);
 
     const resetWidget = useCallback(() =>
@@ -1106,15 +1173,19 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
         setResetSignal(prev => prev + 1);
     }, []);
 
-    useEffect(() => { setLocalError(null); }, [ step ]);
-
     const [ figureData, setFigureData ] = useState<FigureData | null>(null);
     const figureDataUrlRaw = GetConfigurationValue<string>('avatar.figuredata.url', '');
     const figureDataUrl = useMemo(() =>
     {
         if(!figureDataUrlRaw) return '';
-        try { return GetConfiguration().interpolate(figureDataUrlRaw); }
-        catch { return figureDataUrlRaw; }
+        try
+        {
+            return GetConfiguration().interpolate(figureDataUrlRaw);
+        }
+        catch
+        {
+            return figureDataUrlRaw;
+        }
     }, [ figureDataUrlRaw ]);
 
     useEffect(() =>
@@ -1123,9 +1194,16 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
         let cancelled = false;
         fetch(figureDataUrl, { credentials: 'omit' })
             .then(r => r.ok ? r.json() : null)
-            .then(json => { if(!cancelled && json) setFigureData(json as FigureData); })
-            .catch(() => { });
-        return () => { cancelled = true; };
+            .then(json =>
+            {
+                if(!cancelled && json) setFigureData(json as FigureData);
+            })
+            .catch(() =>
+            { });
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ step, figureData, figureDataUrl ]);
 
     const partOptions = useMemo(() =>
@@ -1151,7 +1229,10 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
         {
             if(!PART_ROWS.includes(st.type)) continue;
             const palette = figureData.palettes.find(p => p.id === st.paletteId);
-            if(!palette) { result[st.type] = []; continue; }
+            if(!palette)
+            {
+                result[st.type] = []; continue;
+            }
             result[st.type] = palette.colors
                 .filter(c => c.selectable && c.club === 0)
                 .map(c => ({ id: c.id, hex: '#' + c.hexCode.toUpperCase() }));
@@ -1188,12 +1269,16 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                     const rawGender = typeof entry._gender === 'string' ? entry._gender.toUpperCase() : '';
                     const figure = typeof entry._figure === 'string' ? entry._figure : '';
                     if((rawGender !== 'M' && rawGender !== 'F') || !figure) continue;
-                    parsed.push({ gender: rawGender as GenderKey, figure });
+                    parsed.push({ gender: rawGender, figure });
                 }
                 if(parsed.length) setHotLooks(parsed);
             })
-            .catch(() => { });
-        return () => { cancelled = true; };
+            .catch(() =>
+            { });
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ step, hotLooks.length ]);
 
     const applyLook = useCallback((figure: string, lookGender: GenderKey) =>
@@ -1237,54 +1322,50 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
         password.length >= 8 &&
         password === confirm;
 
-    const handleCredentialsNext = async (event: FormEvent<HTMLFormElement>) =>
+    const credentialsAction = useCallback(async (_prev: null, _formData: FormData): Promise<null> =>
     {
-        event.preventDefault();
         setLocalError(null);
 
         if(!email.trim() || !password || !confirm)
         {
             setLocalError(t('nitro.login.register.error.missing_fields', 'Please fill in every field.'));
-            return;
+            return null;
         }
         if(!EMAIL_REGEX.test(email.trim()))
         {
             setLocalError(t('nitro.login.register.error.invalid_email', 'Please enter a valid email address.'));
-            return;
+            return null;
         }
         if(password.length < 8)
         {
             setLocalError(t('nitro.login.register.error.password_too_short', 'Your password must be at least 8 characters.'));
-            return;
+            return null;
         }
         if(password !== confirm)
         {
             setLocalError(t('nitro.login.register.error.password_mismatch', 'Passwords do not match.'));
-            return;
+            return null;
         }
 
-        setChecking(true);
-        try
+        const serverOk = await pingServer();
+        if(!serverOk)
         {
-            const serverOk = await pingServer();
-            if(!serverOk)
-            {
-                setLocalError(t('nitro.login.error.server_offline', 'The gameserver is not running. Please try again later.'));
-                return;
-            }
-            const result = await onCheckEmail(email.trim());
-            if(!result.available)
-            {
-                setLocalError(result.error || t('nitro.login.error.email_taken', 'This email is already in use.'));
-                return;
-            }
-            setStep('avatar');
+            setLocalError(t('nitro.login.error.server_offline', 'The gameserver is not running. Please try again later.'));
+            return null;
         }
-        finally
+
+        const result = await onCheckEmail(email.trim());
+        if(!result.available)
         {
-            setChecking(false);
+            setLocalError(result.error || t('nitro.login.error.email_taken', 'This email is already in use.'));
+            return null;
         }
-    };
+
+        setStep('avatar');
+        return null;
+    }, [ email, password, confirm, pingServer, onCheckEmail ]);
+
+    const [ , submitCredentialsAction, isCredentialsPending ] = useActionState<null, FormData>(credentialsAction, null);
 
     const applyGender = (newGender: GenderKey) =>
     {
@@ -1346,61 +1427,57 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
     const figure = buildFigureString(selection);
     const previewSrc = useAvatarPreview(figure, gender, AvatarSetType.FULL);
 
-    const handleAvatarSubmit = async (event: FormEvent<HTMLFormElement>) =>
+    const avatarAction = useCallback(async (_prev: null, _formData: FormData): Promise<null> =>
     {
-        event.preventDefault();
         setLocalError(null);
 
         const trimmed = username.trim();
         if(!trimmed)
         {
             setLocalError(t('nitro.login.register.error.username_required', 'Please choose a Habbo name.'));
-            return;
+            return null;
         }
         if(trimmed.length < 3 || trimmed.length > 16)
         {
             setLocalError(t('nitro.login.register.error.username_length', 'Habbo name must be 3–16 characters.'));
-            return;
+            return null;
         }
 
         if(turnstileEnabled && !turnstileToken)
         {
             setLocalError(t('nitro.login.error.turnstile', 'Please complete the security check.'));
-            return;
+            return null;
         }
 
-        setChecking(true);
-        try
+        const serverOk = await pingServer();
+        if(!serverOk)
         {
-            const serverOk = await pingServer();
-            if(!serverOk)
-            {
-                setLocalError(t('nitro.login.error.server_offline', 'The gameserver is not running. Please try again later.'));
-                return;
-            }
-            const result = await onCheckUsername(trimmed);
-            if(!result.available)
-            {
-                setLocalError(result.error || t('nitro.login.error.username_taken', 'This Habbo name is already taken.'));
-                return;
-            }
-        }
-        finally
-        {
-            setChecking(false);
+            setLocalError(t('nitro.login.error.server_offline', 'The gameserver is not running. Please try again later.'));
+            return null;
         }
 
-        onSubmit({
+        const result = await onCheckUsername(trimmed);
+        if(!result.available)
+        {
+            setLocalError(result.error || t('nitro.login.error.username_taken', 'This Habbo name is already taken.'));
+            return null;
+        }
+
+        await onSubmit({
             username: trimmed,
             email: email.trim(),
             password,
-            figure,
+            figure: buildFigureString(selection),
             gender,
             turnstileToken
         }, resetWidget);
-    };
 
-    const busy = submitting || checking || pingingServer;
+        return null;
+    }, [ username, turnstileEnabled, turnstileToken, pingServer, onCheckUsername, onSubmit, email, password, selection, gender, resetWidget ]);
+
+    const [ , submitAvatarAction, isAvatarPending ] = useActionState<null, FormData>(avatarAction, null);
+
+    const busy = submitting || isCredentialsPending || isAvatarPending || pingingServer;
     const serverOffline = serverReachable === false;
 
     return (
@@ -1413,7 +1490,7 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                     </div>
 
                     { step === 'credentials' &&
-                        <form className="card-body" onSubmit={ handleCredentialsNext } autoComplete="on">
+                        <form className="card-body" action={ submitCredentialsAction } autoComplete="on">
                             <div className="register-intro">
                                 { t('nitro.login.register.intro.credentials', 'Let\'s create your account. Enter your email and pick a password — we\'ll check that email isn\'t already in use.') }
                             </div>
@@ -1427,17 +1504,17 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                             }
                             <div className="field">
                                 <label htmlFor="register-email">{ t('nitro.login.register.email', 'Email') }</label>
-                                <input id="register-email" type="email" maxLength={ 120 } autoComplete="email"
+                                <input id="register-email" name="email" type="email" maxLength={ 120 } autoComplete="email"
                                     value={ email } onChange={ e => setEmail(e.target.value) } />
                             </div>
                             <div className="field">
                                 <label htmlFor="register-password">{ t('generic.password', 'Password') }</label>
-                                <input id="register-password" type="password" maxLength={ 128 } autoComplete="new-password"
+                                <input id="register-password" name="password" type="password" maxLength={ 128 } autoComplete="new-password"
                                     value={ password } onChange={ e => setPassword(e.target.value) } />
                             </div>
                             <div className="field">
                                 <label htmlFor="register-confirm">{ t('nitro.login.register.confirm_password', 'Confirm password') }</label>
-                                <input id="register-confirm" type="password" maxLength={ 128 } autoComplete="new-password"
+                                <input id="register-confirm" name="confirm" type="password" maxLength={ 128 } autoComplete="new-password"
                                     value={ confirm } onChange={ e => setConfirm(e.target.value) } />
                             </div>
                             { (localError || error) && <div className="error-line">{ localError || error }</div> }
@@ -1445,14 +1522,14 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                             <div className="step-footer">
                                 <span className="step-indicator">1/2</span>
                                 <button type="submit" className="ok-button" disabled={ !credentialsValid || busy || serverOffline }>
-                                    { checking || pingingServer ? t('nitro.login.server.checking', 'Checking…') : t('nitro.login.register.next', 'Next') }
+                                    { isCredentialsPending || pingingServer ? t('nitro.login.server.checking', 'Checking…') : t('nitro.login.register.next', 'Next') }
                                 </button>
                             </div>
                         </form>
                     }
 
                     { step === 'avatar' &&
-                        <form className="card-body" onSubmit={ handleAvatarSubmit } autoComplete="on">
+                        <form className="card-body" action={ submitAvatarAction } autoComplete="on">
                             <div className="register-intro">
                                 { t('nitro.login.register.intro.avatar', 'Now it\'s time to make your own Habbo character! To make your own Habbo, please start by choosing your Habbo Name.') }
                             </div>
@@ -1495,11 +1572,15 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                                 </div>
 
                                 <div className="avatar-preview">
-                                    { previewSrc && <img src={ previewSrc } alt="Habbo preview" onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } /> }
+                                    { previewSrc && <img src={ previewSrc } alt="Habbo preview" onError={ e =>
+                                    {
+                                        (e.currentTarget).style.visibility = 'hidden';
+                                    } } /> }
                                 </div>
 
                                 <div className="avatar-color-col">
-                                    { PART_ROWS.map(setType => {
+                                    { PART_ROWS.map(setType =>
+                                    {
                                         const fallbackColor = FALLBACK_DEFAULTS[gender][setType]?.colors?.[0] ?? 0;
                                         const currentColor = selection[setType]?.colors?.[0] ?? fallbackColor;
                                         const swatchHex = hexFor(setType, currentColor);
@@ -1543,7 +1624,7 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                                 <button type="button" className="ok-button back-button" onClick={ () => setStep('credentials') } disabled={ busy }>{ t('nitro.login.register.back', 'Back') }</button>
                                 <span className="step-indicator">2/2</span>
                                 <button type="submit" className="ok-button" disabled={ !username.trim() || busy || serverOffline }>
-                                    { submitting ? t('nitro.login.register.creating', 'Creating…') : (checking || pingingServer) ? t('nitro.login.server.checking', 'Checking…') : t('nitro.login.register.next', 'Next') }
+                                    { (submitting || isAvatarPending) ? t('nitro.login.register.creating', 'Creating…') : pingingServer ? t('nitro.login.server.checking', 'Checking…') : t('nitro.login.register.next', 'Next') }
                                 </button>
                             </div>
                         </form>
@@ -1557,12 +1638,19 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
 
 interface ForgotDialogProps extends DialogSharedProps
 {
-    onSubmit: (body: { email: string; turnstileToken: string; }, onDialogReset: () => void) => void;
+    onSubmit: (body: { email: string; turnstileToken: string; }, onDialogReset: () => void) => Promise<void> | void;
 }
+
+const ForgotSubmitButton: FC = () =>
+{
+    const { pending } = useFormStatus();
+
+    return <button type="submit" className="ok-button" disabled={ pending }>{ t('nitro.login.forgot.send_email', 'Send email') }</button>;
+};
 
 const ForgotDialog: FC<ForgotDialogProps> = props =>
 {
-    const { onCancel, onSubmit, submitting, error, info, turnstileEnabled, turnstileSiteKey } = props;
+    const { onCancel, onSubmit, error, info, turnstileEnabled, turnstileSiteKey } = props;
     const [ email, setEmail ] = useState('');
     const [ localError, setLocalError ] = useState<string | null>(null);
     const [ turnstileToken, setTurnstileToken ] = useState('');
@@ -1574,19 +1662,23 @@ const ForgotDialog: FC<ForgotDialogProps> = props =>
         setResetSignal(prev => prev + 1);
     }, []);
 
-    const handle = (event: FormEvent<HTMLFormElement>) =>
+    const forgotAction = useCallback(async (_prev: null, formData: FormData): Promise<null> =>
     {
-        event.preventDefault();
         setLocalError(null);
 
-        if(!email.trim())
+        const emailInput = String(formData.get('email') || '').trim();
+
+        if(!emailInput)
         {
             setLocalError(t('nitro.login.forgot.error.email_required', 'Please enter your email address.'));
-            return;
+            return null;
         }
 
-        onSubmit({ email: email.trim(), turnstileToken }, resetWidget);
-    };
+        await onSubmit({ email: emailInput, turnstileToken }, resetWidget);
+        return null;
+    }, [ onSubmit, turnstileToken, resetWidget ]);
+
+    const [ , submitForgotAction ] = useActionState<null, FormData>(forgotAction, null);
 
     return (
         <div className="nitro-login-modal">
@@ -1596,10 +1688,10 @@ const ForgotDialog: FC<ForgotDialogProps> = props =>
                         <span>{ t('nitro.login.forgot.title', 'Reset password') }</span>
                         <span className="nitro-card-close-button" role="button" aria-label={ t('generic.close', 'Close') } onClick={ onCancel } />
                     </div>
-                    <form className="card-body" onSubmit={ handle } autoComplete="on">
+                    <form className="card-body" action={ submitForgotAction } autoComplete="on">
                         <div className="field">
                             <label htmlFor="forgot-email">{ t('nitro.login.forgot.email_label', 'Email address') }</label>
-                            <input id="forgot-email" type="email" maxLength={ 120 } autoComplete="email"
+                            <input id="forgot-email" name="email" type="email" maxLength={ 120 } autoComplete="email"
                                 value={ email } onChange={ e => setEmail(e.target.value) } />
                         </div>
                         { turnstileEnabled &&
@@ -1614,7 +1706,7 @@ const ForgotDialog: FC<ForgotDialogProps> = props =>
                         { (localError || error) && <div className="error-line">{ localError || error }</div> }
                         { info && <div className="info-line">{ info }</div> }
                         <div className="submit-row">
-                            <button type="submit" className="ok-button" disabled={ submitting }>{ t('nitro.login.forgot.send_email', 'Send email') }</button>
+                            <ForgotSubmitButton />
                         </div>
                     </form>
                 </div>

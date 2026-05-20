@@ -83,7 +83,7 @@ export const UserContainerView: FC<{
                             __html: LocalizeText(
                                 'extendedprofile.friends.count',
                                 ['count'],
-                                [userProfile.friendsCount]
+                                [userProfile.friendsCount.toString()]
                             )
                         }}
                     />

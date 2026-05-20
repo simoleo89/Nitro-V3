@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { FaSave, FaSpinner, FaTimes, FaTrash } from 'react-icons/fa';
 import { CatalogType, LocalizeText } from '../../../../api';
-import { useCatalog } from '../../../../hooks';
+import { useCatalogData, useCatalogUiState } from '../../../../hooks';
 import { IPageEditData, useCatalogAdmin } from '../../CatalogAdminContext';
 
 const LAYOUT_OPTIONS = [
@@ -21,7 +21,8 @@ const MODE_OPTIONS = [
 
 export const CatalogAdminPageEditView: FC<{}> = () =>
 {
-    const { currentPage = null, activeNodes = [], rootNode = null, currentType = CatalogType.NORMAL } = useCatalog();
+    const { currentPage = null, rootNode = null } = useCatalogData();
+    const { activeNodes = [], currentType = CatalogType.NORMAL } = useCatalogUiState();
     const catalogAdmin = useCatalogAdmin();
     const editingPageData = catalogAdmin?.editingPageData ?? false;
     const editingRootPage = catalogAdmin?.editingRootPage ?? false;
@@ -91,9 +92,9 @@ export const CatalogAdminPageEditView: FC<{}> = () =>
             parentId: parentNode ? parentNode.pageId : -1,
         };
 
-        const success = await catalogAdmin.savePage(data);
+        catalogAdmin.savePage(data);
 
-        if(success) closeForm();
+        closeForm();
     };
 
     const handleDelete = async () =>
@@ -101,9 +102,9 @@ export const CatalogAdminPageEditView: FC<{}> = () =>
         if(!catalogAdmin?.deletePage || isRoot) return;
         if(!confirm(LocalizeText('catalog.admin.delete.page.confirm', [ 'name' ], [ targetNode.localization ]))) return;
 
-        const success = await catalogAdmin.deletePage(targetPageId);
+        catalogAdmin.deletePage(targetPageId);
 
-        if(success) closeForm();
+        closeForm();
     };
 
     return (

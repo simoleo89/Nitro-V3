@@ -16,7 +16,19 @@ const getTimeZeroPadded = (time: number) =>
 let modDisclaimerTimeout: ReturnType<typeof setTimeout> = null;
 const recentBadgeNotifications = new Set<string>();
 
-const useNotificationState = () =>
+/**
+ * Internal singleton state + actions for the notification subsystem.
+ * Public consumers should reach for useNotificationState (read-only —
+ * the queue arrays for the renderer) or useNotificationActions (the
+ * imperative simpleAlert / showConfirm / showSingleBubble / etc.).
+ * useNotification is the legacy shim that composes both.
+ *
+ * Wrapped in useBetween at each public-hook layer so all consumers see
+ * the same instance, matching the previous useBetween(useNotificationState)
+ * behavior — required because ~30 useMessageEvent listeners live inside
+ * this hook and need to register exactly once across the tree.
+ */
+const useNotificationStore = () =>
 {
     const [ alerts, setAlerts ] = useState<NotificationAlertItem[]>([]);
     const [ bubbleAlerts, setBubbleAlerts ] = useState<NotificationBubbleItem[]>([]);
@@ -500,4 +512,58 @@ const useNotificationState = () =>
     return { alerts, bubbleAlerts, confirms, simpleAlert, showNitroAlert, showTradeAlert, showConfirm, showSingleBubble, closeAlert, closeBubbleAlert, closeConfirm };
 };
 
-export const useNotification = () => useBetween(useNotificationState);
+/**
+ * Read-only slice of the notification store: the three queue arrays
+ * (alerts, bubbleAlerts, confirms) that the renderer view layer drains.
+ *
+ * Consumers that only need to *show* a notification should use
+ * useNotificationActions instead — the queues are an implementation
+ * detail of the global NotificationView component.
+ */
+export const useNotificationState = () =>
+{
+    const { alerts, bubbleAlerts, confirms } = useBetween(useNotificationStore);
+
+    return { alerts, bubbleAlerts, confirms };
+};
+
+/**
+ * Imperative slice of the notification store: 8 entry points covering
+ * the alert / bubble / confirm / trade-alert flows plus the matching
+ * close handlers. ~40 consumers across the codebase only use one or
+ * two of these — splitting the slice off keeps their dependency
+ * surface honest and makes it greppable which call sites
+ * dismiss-vs-show.
+ */
+export const useNotificationActions = () =>
+{
+    const {
+        simpleAlert,
+        showNitroAlert,
+        showTradeAlert,
+        showConfirm,
+        showSingleBubble,
+        closeAlert,
+        closeBubbleAlert,
+        closeConfirm
+    } = useBetween(useNotificationStore);
+
+    return {
+        simpleAlert,
+        showNitroAlert,
+        showTradeAlert,
+        showConfirm,
+        showSingleBubble,
+        closeAlert,
+        closeBubbleAlert,
+        closeConfirm
+    };
+};
+
+/**
+ * @deprecated Prefer `useNotificationState` (queue arrays) and
+ * `useNotificationActions` (imperative show/close helpers) directly.
+ * This shim composes both into the historical `useNotification()`
+ * shape so the existing 40+ consumers keep working unchanged.
+ */
+export const useNotification = () => useBetween(useNotificationStore);

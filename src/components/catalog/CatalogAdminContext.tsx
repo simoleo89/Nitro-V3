@@ -1,7 +1,7 @@
 import { CatalogAdminCreateOfferComposer, CatalogAdminCreatePageComposer, CatalogAdminDeleteOfferComposer, CatalogAdminDeletePageComposer, CatalogAdminMoveOfferComposer, CatalogAdminMovePageComposer, CatalogAdminPublishComposer, CatalogAdminResultEvent, CatalogAdminSaveOfferComposer, CatalogAdminSavePageComposer } from '@nitrots/nitro-renderer';
 import { createContext, FC, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { ICatalogNode, IPurchasableOffer, NotificationAlertType, SendMessageComposer } from '../../api';
-import { useCatalog, useMessageEvent, useNotification } from '../../hooks';
+import { useCatalogUiState, useMessageEvent, useNotification } from '../../hooks';
 
 export interface IPageEditData
 {
@@ -76,7 +76,7 @@ export const useCatalogAdmin = () => useContext(CatalogAdminContext);
 
 export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) =>
 {
-    const { currentType } = useCatalog();
+    const { currentType } = useCatalogUiState();
     const [ adminMode, setAdminMode ] = useState(false);
     const [ editingOffer, setEditingOffer ] = useState<IPurchasableOffer | null>(null);
     const [ editingPageData, setEditingPageData ] = useState(false);
@@ -97,7 +97,10 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
         {
             if(e.key === 'Escape')
             {
-                if(editingOffer) { setEditingOffer(null); e.preventDefault(); return; }
+                if(editingOffer)
+                {
+                    setEditingOffer(null); e.preventDefault(); return;
+                }
                 if(editingPageData || editingRootPage || editingPageNode)
                 {
                     setEditingPageData(false);
@@ -280,7 +283,7 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
     }, []);
 
     return (
-        <CatalogAdminContext.Provider value={ {
+        <CatalogAdminContext value={ {
             adminMode, setAdminMode,
             editingOffer, setEditingOffer,
             editingPageData, setEditingPageData,
@@ -293,6 +296,6 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
             publishCatalog
         } }>
             { children }
-        </CatalogAdminContext.Provider>
+        </CatalogAdminContext>
     );
 };

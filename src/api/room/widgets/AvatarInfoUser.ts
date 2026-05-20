@@ -20,7 +20,7 @@ export class AvatarInfoUser implements IAvatarInfo
     public prefixFont: string = '';
     public displayOrder: string = 'icon-prefix-name';
     public achievementScore: number = 0;
-	public backgroundId: number = 0;
+    public backgroundId: number = 0;
     public standId: number = 0;
     public overlayId: number = 0;
     public cardBackgroundId: number = 0;

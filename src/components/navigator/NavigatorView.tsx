@@ -31,7 +31,7 @@ export const NavigatorView: FC<{}> = props =>
     const [ needsSearch, setNeedsSearch ] = useState(false);
     const { searchResult = null, topLevelContext = null, topLevelContexts = null, navigatorData = null, navigatorSearches = null } = useNavigator();
     const pendingSearch = useRef<{ value: string, code: string }>(null);
-    const elementRef = useRef<HTMLDivElement>();
+    const elementRef = useRef<HTMLDivElement>(null);
 
     useNitroEvent<RoomSessionEvent>(RoomSessionEvent.CREATED, event =>
     {

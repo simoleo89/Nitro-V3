@@ -1,8 +1,7 @@
 import { CfhChatlogData, CfhChatlogEvent, GetCfhChatlogMessageComposer } from '@nitrots/nitro-renderer';
-import { FC, useEffect, useState } from 'react';
-import { SendMessageComposer } from '../../../../api';
+import { FC } from 'react';
+import { useNitroQuery } from '../../../../api/nitro-query';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
-import { useMessageEvent } from '../../../../hooks';
 import { ChatlogView } from '../chatlog/ChatlogView';
 
 interface CfhChatlogViewProps
@@ -14,21 +13,15 @@ interface CfhChatlogViewProps
 export const CfhChatlogView: FC<CfhChatlogViewProps> = props =>
 {
     const { onCloseClick = null, issueId = null } = props;
-    const [ chatlogData, setChatlogData ] = useState<CfhChatlogData>(null);
 
-    useMessageEvent<CfhChatlogEvent>(CfhChatlogEvent, event =>
-    {
-        const parser = event.getParser();
-
-        if(!parser || parser.data.issueId !== issueId) return;
-
-        setChatlogData(parser.data);
+    const { data: chatlogData } = useNitroQuery<CfhChatlogEvent, CfhChatlogData>({
+        key: [ 'nitro', 'mod-tools', 'cfh-chatlog', issueId ],
+        request: () => new GetCfhChatlogMessageComposer(issueId),
+        parser: CfhChatlogEvent,
+        accept: e => e.getParser()?.data.issueId === issueId,
+        select: e => e.getParser().data,
+        enabled: issueId !== null
     });
-
-    useEffect(() =>
-    {
-        SendMessageComposer(new GetCfhChatlogMessageComposer(issueId));
-    }, [ issueId ]);
 
     return (
         <NitroCardView className="nitro-mod-tools-chatlog" theme="primary-slim">

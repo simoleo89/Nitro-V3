@@ -1,9 +1,9 @@
 import { CreateLinkEvent, Dispose, DropBounce, EaseOut, JumpBy, Motions, NitroToolbarAnimateIconEvent, PerkAllowancesMessageEvent, PerkEnum, Queue, Wait, YouTubeRoomSettingsEvent } from '@nitrots/nitro-renderer';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { GetConfigurationValue, MessengerIconState, OpenMessengerChat, setYoutubeRoomEnabled, VisitDesktop } from '../../api';
 import { Flex, LayoutAvatarImageView, LayoutItemCountView } from '../../common';
-import { useAchievements, useFriends, useHasPermission, useInventoryUnseenTracker, useMessageEvent, useMessenger, useNitroEvent, useSessionInfo, useWiredTools } from '../../hooks';
+import { useAchievements, useFriends, useHasPermission, useInventoryUnseenTracker, useMessageEvent, useMessenger, useModTools, useNitroEvent, useSessionInfo, useWiredTools } from '../../hooks';
 import { ToolbarItemView } from './ToolbarItemView';
 import { ToolbarMeView } from './ToolbarMeView';
 import { YouTubePlayerView } from './YouTubePlayerView';
@@ -50,6 +50,14 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
     const { iconState = MessengerIconState.HIDDEN } = useMessenger();
     const { openMonitor, showToolbarButton } = useWiredTools();
     const isMod = useHasPermission('acc_supporttool');
+    // Surface the open-ticket count on the toolbar ModTools button so a
+    // new CFH pings the mod even when the launcher itself is closed.
+    // useBetween-shared state — no extra subscription cost.
+    const { tickets = [] } = useModTools();
+    const openTicketsCount = useMemo(
+        () => isMod ? tickets.filter(ticket => ticket && (ticket.state === 1)).length : 0,
+        [ isMod, tickets ]
+    );
     const isVisible = (isToolbarOpen || !isInRoom);
     const visibilityVariant = isVisible ? 'visible' : 'hidden';
 
@@ -260,8 +268,10 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                             <ToolbarItemView icon="youtube" onClick={ openYouTubePlayer } className="tb-icon" />
                         </motion.div> }
                     { isMod &&
-                        <motion.div variants={ itemVariants }>
+                        <motion.div variants={ itemVariants } className="relative">
                             <ToolbarItemView icon="modtools" onClick={ () => CreateLinkEvent('mod-tools/toggle') } className="tb-icon" />
+                            { (openTicketsCount > 0) &&
+                                <LayoutItemCountView count={ openTicketsCount } className="pointer-events-none absolute -right-1 -top-1 z-10" /> }
                         </motion.div> }
                     { isMod &&
                         <motion.div variants={ itemVariants }>
@@ -370,8 +380,10 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                             <ToolbarItemView icon="youtube" onClick={ openYouTubePlayer } className="tb-icon" />
                         </motion.div> }
                     { isMod &&
-                        <motion.div variants={ itemVariants }>
+                        <motion.div variants={ itemVariants } className="relative">
                             <ToolbarItemView icon="modtools" onClick={ () => CreateLinkEvent('mod-tools/toggle') } className="tb-icon" />
+                            { (openTicketsCount > 0) &&
+                                <LayoutItemCountView count={ openTicketsCount } className="pointer-events-none absolute -right-1 -top-1 z-10" /> }
                         </motion.div> }
                     { isMod &&
                         <motion.div variants={ itemVariants }>

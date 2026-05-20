@@ -1,4 +1,4 @@
-# v2.2.0 -Nitro V3 !! Use at Own Risk as it is still in Beta !!
+# Nitro V3
 
 ## Prerequisites
 

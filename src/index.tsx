@@ -4,6 +4,7 @@ import { App } from './App';
 import './css/index.css';
 
 import './css/backgrounds/BackgroundsView.css';
+import './css/badges/BadgeLeaderboardView.css';
 
 import './css/chat/Chats.css';
 

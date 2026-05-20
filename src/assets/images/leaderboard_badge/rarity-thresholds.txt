@@ -1,0 +1,4 @@
+raro > 10
+epico > 6
+leggendario > 3
+unico > 0

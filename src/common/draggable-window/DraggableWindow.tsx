@@ -30,7 +30,6 @@ export const DraggableWindow: FC<DraggableWindowProps> = props => {
     const [isPositioned, setIsPositioned] = useState(false);
     const [dragHandler, setDragHandler] = useState<HTMLElement>(null);
     const elementRef = useRef<HTMLDivElement>();
-
     const bringToTop = useCallback(() => {
         let zIndex = 400;
         for (const existingWindow of CURRENT_WINDOWS) {

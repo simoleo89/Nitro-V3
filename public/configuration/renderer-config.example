@@ -11,8 +11,8 @@
     "gamedata.url": "https://nitro.example.com:2096/nitro-sec/file?kind=gamedata&file=",
     "sounds.url": "${asset.url}/sounds/%sample%.mp3",
     "external.texts.url": [
-        "${gamedata.url}/ExternalTexts.json",
-        "${gamedata.url}/UITexts.json"
+        "${gamedata.url}/ExternalTexts.json?t=%timestamp%",
+        "${gamedata.url}/UITexts.json?t=%timestamp%"
     ],
     "external.texts.translation.url": "${gamedata.url}/text_translate/ExternalTexts_%locale%.json?t=%timestamp%",
     "external.samples.url": "${hof.furni.url}/mp3/sound_machine_sample_%sample%.mp3",
@@ -68,6 +68,7 @@
 	"badges.custom.update.endpoint": "${api.url}/api/badges/custom/%badgeId%",
 	"badges.custom.delete.endpoint": "${api.url}/api/badges/custom/%badgeId%",
 	"badges.custom.texts.endpoint": "${api.url}/api/badges/custom/texts",
+	"badges.leaderboard.endpoint": "${api.url}/api/badges/leaderboard",
 	"login.turnstile.enabled": true,
     "login.turnstile.sitekey": "1x00000000000000000000AA",
 	"avatar.mandatory.libraries": [

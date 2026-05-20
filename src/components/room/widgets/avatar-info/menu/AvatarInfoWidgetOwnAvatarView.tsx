@@ -61,6 +61,9 @@ export const AvatarInfoWidgetOwnAvatarView: FC<AvatarInfoWidgetOwnAvatarViewProp
                     case 'customize_nick':
                         CreateLinkEvent('customize/show');
                         break;
+                    case 'badge_leaderboard':
+                        CreateLinkEvent('badge-leaderboard/show');
+                        break;
                     case 'expressions':
                         hideMenu = false;
                         setMode(MODE_EXPRESSIONS);
@@ -148,6 +151,9 @@ export const AvatarInfoWidgetOwnAvatarView: FC<AvatarInfoWidgetOwnAvatarViewProp
                     </ContextMenuListItemView>
                     <ContextMenuListItemView onClick={ event => processAction('customize_nick') }>
                         Nick Custom
+                    </ContextMenuListItemView>
+                    <ContextMenuListItemView onClick={ event => processAction('badge_leaderboard') }>
+                        { LocalizeText('badge_leaderboard.title.total_badges') }
                     </ContextMenuListItemView>
                     { (HasHabboClub() && !isRidingHorse) &&
                         <ContextMenuListItemView onClick={ event => processAction('dance_menu') }>

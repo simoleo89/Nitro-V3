@@ -1,6 +1,6 @@
 import { GetAssetManager, GetAvatarRenderManager, GetCommunication, GetConfiguration, GetLocalizationManager, GetRoomEngine, GetRoomSessionManager, GetSessionDataManager, GetSoundManager, GetStage, GetTexturePool, GetTicker, HabboWebTools, LegacyExternalInterface, LoadGameUrlEvent, NitroEventType, NitroLogger, NitroVersion, PrepareRenderer } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
-import { ClearRememberLogin, GetRememberLogin, GetUIVersion, StoreRememberLoginFromPayload, persistAccessTokenFromPayload } from './api';
+import { ClearRememberLogin, GetRememberLogin, GetUIVersion, SetRememberLogin, StoreRememberLoginFromPayload, persistAccessTokenFromPayload } from './api';
 import { Base } from './common';
 import { LoadingView } from './components/loading/LoadingView';
 import { LoginView } from './components/login/LoginView';
@@ -495,6 +495,31 @@ export const App: FC<{}> = props =>
 
                 let ssoTicket = window.NitroConfig['sso.ticket'];
                 if(ssoTicket) GetConfiguration().setValue('sso.ticket', ssoTicket);
+
+                // Cattura il remember-token passato via URL (?token=&token_exp=)
+                // dal CMS Inertia /client e salvalo in localStorage. Serve a
+                // tryRememberLogin() in reconnect: chiama POST /api/auth/remember
+                // col token UUID, riceve un nuovo SSO ticket fresco invece di
+                // riusare quello cleared da Arcturus dopo il primo consume.
+                try
+                {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const tokenParam = urlParams.get('token');
+                    const tokenExpParam = urlParams.get('token_exp');
+                    if(tokenParam && !GetRememberLogin())
+                    {
+                        const parsedExpiry = Number(tokenExpParam || 0);
+                        const expiresAt = (Number.isFinite(parsedExpiry) && parsedExpiry > 0)
+                            ? parsedExpiry
+                            : Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60);
+                        SetRememberLogin({ token: tokenParam, expiresAt });
+                    }
+                }
+                catch(e)
+                {
+                    console.warn('[App] failed to persist remember token from URL', e);
+                }
+
                 bumpProgress(10, taskLabel('loading.task.session', 'Verifica sessione'));
 
                 if(!ssoTicket || ssoTicket === '')

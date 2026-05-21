@@ -74,21 +74,30 @@ export const App: FC<{}> = props =>
     const [ prepareTrigger, setPrepareTrigger ] = useState(0);
     const [ loadingProgress, setLoadingProgress ] = useState(0);
     const [ loadingTask, setLoadingTask ] = useState('');
-    // Look up a loader-stage label from renderer-config so the strings the user
-    // sees during the boot ("Sto caricando il guardaroba", "Connessione…") can
-    // be translated by editing the JSON/JSON5 config — fallback keeps the
-    // Italian baseline shipped with the client.
     const taskLabel = useCallback((key: string, fallback: string): string =>
     {
         try
         {
-            const raw = GetConfiguration().getValue<string>(key, '');
-            return (typeof raw === 'string' && raw.length) ? raw : fallback;
+            const locManager = GetLocalizationManager();
+            if(locManager && typeof locManager.getValue === 'function')
+            {
+                const fromLoc = locManager.getValue(key, false);
+
+                if(typeof fromLoc === 'string' && fromLoc.length && fromLoc !== key) return fromLoc;
+            }
         }
         catch
+        { }
+
+        try
         {
-            return fallback;
+            const fromConfig = GetConfiguration().getValue<string>(key, '');
+            if(typeof fromConfig === 'string' && fromConfig.length) return fromConfig;
         }
+        catch
+        { }
+
+        return fallback;
     }, []);
     const bumpProgress = useCallback((value: number, task?: string) =>
     {
@@ -111,9 +120,6 @@ export const App: FC<{}> = props =>
         ClearRememberLogin();
         try { delete (window as any).NitroConfig?.['sso.ticket']; } catch {}
         try { GetConfiguration().setValue('sso.ticket', ''); } catch {}
-        // Drop `?sso=` from the URL too — otherwise the next reload re-applies
-        // the same already-consumed ticket via bootstrap.ts and we loop right
-        // back into "Session expired" without ever showing the login form.
         try
         {
             const url = new URL(window.location.href);
@@ -142,11 +148,6 @@ export const App: FC<{}> = props =>
 
     const fallbackToLogin = useCallback(() =>
     {
-        // When login.screen.enabled is false this hotel uses SSO-only auth
-        // (CMS issues the ticket and redirects here). Surfacing a login form
-        // on init failure would just dump an empty/broken placeholder, since
-        // the form's backgrounds and Turnstile aren't even configured. Send
-        // the user back to the hotel home page instead.
         const rawLoginEnabled = GetConfiguration().getValue<unknown>('login.screen.enabled', false);
         const loginScreenEnabled = rawLoginEnabled === true || rawLoginEnabled === 'true' || rawLoginEnabled === 1;
 
@@ -156,14 +157,7 @@ export const App: FC<{}> = props =>
             showSessionExpired();
             return;
         }
-
-        // Using console.warn (not NitroLogger.log) on purpose: NitroLogger
-        // is gated on LOG_DEBUG, which only flips to true once startWarmup's
-        // GetConfiguration().init() completes. Auth-failure paths fire before
-        // that, so NitroLogger swallows their messages silently.
         console.warn('[App] fallbackToLogin — surfacing login form, credentials cleared');
-        // Wipe whatever credential the server just rejected so the form is
-        // pristine and the next attempt isn't sabotaged by the same stale data.
         clearStoredCredentials();
         setHomeUrl('');
         setErrorMessage('');
@@ -200,8 +194,6 @@ export const App: FC<{}> = props =>
 
         if(!remembered?.token?.length)
         {
-            // No remember token means we'd be reusing a one-shot ssoTicket that
-            // the server already consumed. Force the login screen instead.
             if(remembered) ClearRememberLogin();
             console.warn('[App] tryRememberLogin → no token, returning empty');
             return '';
@@ -250,9 +242,6 @@ export const App: FC<{}> = props =>
             console.warn('[App] tryRememberLogin → fetch threw', error);
         }
 
-        // Any failure (rejected token, bad payload, network error) — drop the
-        // stored credentials. Never fall back to the cached ssoTicket: it's
-        // one-shot and reusing it leads straight to "Session expired".
         ClearRememberLogin();
         console.warn('[App] tryRememberLogin → cleared remember, returning empty');
 
@@ -303,35 +292,12 @@ export const App: FC<{}> = props =>
         }
     }, []);
 
-    // Mirror isReady into a ref so the socket handlers below can read the
-    // freshest value without needing to re-subscribe on every state change.
     useEffect(() => { isReadyRef.current = isReady; }, [ isReady ]);
-
-    // Track whether a reconnect cycle is active. The renderer dispatches
-    // SOCKET_RECONNECTING when it starts retrying after an abnormal close
-    // (code != 1000/1001). On exhausted retries it fires SOCKET_RECONNECT_FAILED
-    // *and* a final SOCKET_CLOSED — we keep the flag set through that pair
-    // so ReconnectView's own overlay owns the UX and we don't double-render.
     useNitroEvent(NitroEventType.SOCKET_RECONNECTING, () => { reconnectInProgressRef.current = true; });
     useNitroEvent(NitroEventType.SOCKET_REAUTHENTICATED, () => { reconnectInProgressRef.current = false; });
 
     useNitroEvent(NitroEventType.SOCKET_CLOSED, () =>
     {
-        // Three distinct close scenarios converge here:
-        //
-        //   1. !isReady — initial handshake just failed (server replied
-        //      with "Bye" / code 1000 to a bad SSO ticket). The user never
-        //      had a session. Surface the login form instead of the
-        //      misleading "Session expired" diagnostic.
-        //
-        //   2. isReady && reconnect in progress — ReconnectView already
-        //      owns the UX (its overlay shows attempts and the "Session
-        //      expired" message on RECONNECT_FAILED). Stay out of its way.
-        //
-        //   3. isReady && no reconnect — instant server kick mid-game
-        //      (code 1000 from the server side). No reconnect path will
-        //      run. Show the legacy session-expired diagnostic so the
-        //      user knows to reload.
         console.warn('[App] SOCKET_CLOSED fired', {
             isReady: isReadyRef.current,
             reconnectInProgress: reconnectInProgressRef.current
@@ -390,7 +356,7 @@ export const App: FC<{}> = props =>
         warmupPromiseRef.current = (async () =>
         {
             await GetConfiguration().init();
-            bumpProgress(25, taskLabel('loading.task.warmup', 'Caricamento contenuti...'));
+            bumpProgress(25, taskLabel('loader.waiting', 'Loading content...'));
 
             GetTicker().maxFPS = GetConfiguration().getValue<number>('system.fps.max', 24);
             NitroLogger.LOG_DEBUG = GetConfiguration().getValue<boolean>('system.log.debug', true);
@@ -427,15 +393,11 @@ export const App: FC<{}> = props =>
             loginImageUrls.forEach(preloadImage);
             gamedataUrls.forEach(url => preloadUrl(url));
 
-            // Wire each warmup task to a progress bump so the bar reflects
-            // real subsystem-init completion, not a fake timer. Range 25→70.
-            // Each task carries a friendly label so the user sees what is
-            // currently being prepared instead of raw file names.
             const warmupTasks: { promise: Promise<any>; label: string }[] = [
-                { promise: GetAssetManager().downloadAssets(assetUrls), label: taskLabel('loading.task.assets', 'Sto caricando gli asset di gioco') },
-                { promise: GetLocalizationManager().init(), label: taskLabel('loading.task.localization', 'Sto caricando le traduzioni') },
-                { promise: GetAvatarRenderManager().init(), label: taskLabel('loading.task.avatar', 'Sto caricando il guardaroba') },
-                { promise: GetSoundManager().init(), label: taskLabel('loading.task.sounds', 'Sto caricando i suoni') }
+                { promise: GetAssetManager().downloadAssets(assetUrls), label: taskLabel('loading.task.assets', 'Loading game assets...') },
+                { promise: GetLocalizationManager().init(), label: taskLabel('loading.task.localization', 'Loading translations...') },
+                { promise: GetAvatarRenderManager().init(), label: taskLabel('loading.task.avatar', 'Loading wardrobe...') },
+                { promise: GetSoundManager().init(), label: taskLabel('loading.task.sounds', 'Loading sounds...') }
             ];
             let warmupDone = 0;
             const warmupStart = 25;
@@ -477,11 +439,6 @@ export const App: FC<{}> = props =>
     {
         const prepare = async (width: number, height: number) =>
         {
-            // Don't dump the actual SSO ticket — it's a one-shot bearer
-            // credential that grants access to the user's session, so
-            // logging it in console.warn would leak it via copied logs
-            // / screen shares / browser extension hooks. Boolean flag is
-            // enough for the diagnostic.
             console.warn('[App] prepare() start', {
                 hasNitroConfig: !!window.NitroConfig,
                 ssoTicketInConfig: !!window.NitroConfig?.['sso.ticket'],
@@ -489,7 +446,7 @@ export const App: FC<{}> = props =>
                 hasUrlSso: !!new URLSearchParams(window.location.search).get('sso')
             });
 
-            const bootLabel = taskLabel('loading.task.boot', 'Avvio in corso...');
+            const bootLabel = taskLabel('loader', 'Booting...');
             setLoadingProgress(0);
             setLoadingTask(bootLabel);
             bumpProgress(5, bootLabel);
@@ -501,11 +458,6 @@ export const App: FC<{}> = props =>
                 let ssoTicket = window.NitroConfig['sso.ticket'];
                 if(ssoTicket) GetConfiguration().setValue('sso.ticket', ssoTicket);
 
-                // Cattura il remember-token passato via URL (?token=&token_exp=)
-                // dal CMS Inertia /client e salvalo in localStorage. Serve a
-                // tryRememberLogin() in reconnect: chiama POST /api/auth/remember
-                // col token UUID, riceve un nuovo SSO ticket fresco invece di
-                // riusare quello cleared da Arcturus dopo il primo consume.
                 try
                 {
                     const urlParams = new URLSearchParams(window.location.search);
@@ -525,12 +477,10 @@ export const App: FC<{}> = props =>
                     console.warn('[App] failed to persist remember token from URL', e);
                 }
 
-                bumpProgress(10, taskLabel('loading.task.session', 'Verifica sessione'));
+                bumpProgress(10, taskLabel('loading.task.session', 'Verifying session...'));
 
                 if(!ssoTicket || ssoTicket === '')
                 {
-                    // Configuration is loaded lazily — fetch it up-front so the login
-                    // screen toggle and Turnstile keys are available before we decide.
                     let configInitError: unknown = null;
                     try
                     {
@@ -592,23 +542,23 @@ export const App: FC<{}> = props =>
                 }
 
                 const renderer = await startRenderer(width, height);
-                bumpProgress(20, taskLabel('loading.task.renderer', 'Inizializzazione renderer'));
+                bumpProgress(20, taskLabel('loading.task.renderer', 'Initializing renderer...'));
 
                 await startWarmup(width, height);
-                bumpProgress(70, taskLabel('loading.task.startsession', 'Avvio sessione'));
+                bumpProgress(70, taskLabel('loading.task.startsession', 'Starting session...'));
 
                 if(!gameInitPromiseRef.current)
                 {
                     gameInitPromiseRef.current = (async () =>
                     {
                         await GetSessionDataManager().init();
-                        bumpProgress(78, taskLabel('loading.task.userdata', 'Caricamento dati utente'));
+                        bumpProgress(78, taskLabel('loading.task.userdata', 'Loading user data...'));
                         await GetRoomSessionManager().init();
-                        bumpProgress(85, taskLabel('loading.task.rooms', 'Caricamento stanze'));
+                        bumpProgress(85, taskLabel('loading.task.rooms', 'Loading rooms...'));
                         await GetRoomEngine().init();
-                        bumpProgress(92, taskLabel('loading.task.engine', 'Caricamento engine grafico'));
+                        bumpProgress(92, taskLabel('loading.task.engine', 'Loading graphics engine...'));
                         await GetCommunication().init();
-                        bumpProgress(98, taskLabel('loading.task.connect', 'Connessione al server'));
+                        bumpProgress(98, taskLabel('generic.reconnecting', 'Connecting to server...'));
                     })();
                 }
 
@@ -637,7 +587,7 @@ export const App: FC<{}> = props =>
                     GetTicker().add(ticker => GetTexturePool().run());
                 }
 
-                bumpProgress(100, taskLabel('loading.task.ready', 'Pronto!'));
+                bumpProgress(100, taskLabel('onboarding.button.ready', 'Ready!'));
                 setIsReady(true);
                 setShowLogin(false);
                 setIsEnteringHotel(false);
@@ -645,23 +595,10 @@ export const App: FC<{}> = props =>
             catch(err)
             {
                 NitroLogger.error('[App] Initialization failed — falling back to login', err);
-                // Anything thrown out of the post-auth chain (renderer init,
-                // asset download, GetCommunication().init()) is an init/connect
-                // failure, not session expiration. The credential we used is
-                // suspect — drop it and present the login form so the user
-                // can retry instead of getting stuck on a stale "Session expired".
                 onInitFailure();
             }
         };
 
-        // React Strict Mode in dev runs every effect twice (mount → cleanup → mount).
-        // `prepare()` is full of one-shot side effects (renderer init, websocket
-        // connect, NitroConfig mutation) — calling it twice with the same trigger
-        // value causes the second pass to race with the first and clobber state
-        // (e.g. the second pass falls through to onSessionExpired while the first
-        // had just set showLogin=true). Guard by trigger value: skip duplicate
-        // runs at the same trigger, but still re-run when handleAuthenticated
-        // bumps prepareTrigger after a successful login.
         if(lastPrepareTriggerRef.current === prepareTrigger) return;
         lastPrepareTriggerRef.current = prepareTrigger;
 
@@ -682,12 +619,6 @@ export const App: FC<{}> = props =>
                 <LoadingView isError={ errorMessage.length > 0 } message={ errorMessage } homeUrl={ homeUrl } progress={ loadingProgress } currentTask={ loadingTask } /> }
             { !isReady && showLogin && <LoginView onAuthenticated={ handleAuthenticated } isEntering={ isEnteringHotel } /> }
             { isReady && <MainView /> }
-            { /* Reconnect overlay must NOT render before we've actually entered
-                 the hotel — otherwise the renderer's auto-retry on an initial
-                 handshake failure (e.g. emulator unreachable) would cover the
-                 login form with "Reconnecting..." → "Session expired" and the
-                 user wouldn't be able to interact with the form we just put up
-                 via fallbackToLogin. */ }
             { isReady && <ReconnectView /> }
             <Base id="draggable-windows-container" />
         </Base>

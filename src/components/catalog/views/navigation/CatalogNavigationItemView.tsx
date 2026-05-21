@@ -101,8 +101,10 @@ export const CatalogNavigationItemView: FC<CatalogNavigationItemViewProps> = pro
                                 e.stopPropagation();
                                 catalogAdmin.createPage({
                                     caption: 'New Page',
+                                    captionSave: 'New Page',
                                     catalogMode: currentType,
                                     pageLayout: 'default_3x3',
+                                    iconImage: 0,
                                     minRank: 1,
                                     visible: '1',
                                     enabled: '1',

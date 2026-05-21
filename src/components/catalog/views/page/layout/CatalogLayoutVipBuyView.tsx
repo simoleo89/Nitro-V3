@@ -25,6 +25,7 @@ export const CatalogLayoutVipBuyView: FC<CatalogLayoutProps> = props =>
     const giftSuccessTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const isSelfGift = giftMode && !!ownUserName && giftRecipient.trim().toLowerCase() === ownUserName.toLowerCase();
+
     const onCatalogEvent = useCallback((event: CatalogEvent) =>
     {
         switch(event.type)
@@ -148,7 +149,6 @@ export const CatalogLayoutVipBuyView: FC<CatalogLayoutProps> = props =>
         setPendingOffer(offer);
         setGiftError(null);
         setGiftSuccess(false);
-
         if(!offer?.giftable) setGiftMode(false);
     }, []);
 

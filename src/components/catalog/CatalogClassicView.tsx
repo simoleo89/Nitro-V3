@@ -183,7 +183,7 @@ const CatalogClassicViewInner: FC<{}> = () =>
                             <div className="flex items-center gap-2 mb-1">
                                 <button
                                     className="flex items-center gap-1 text-[9px] text-success hover:text-green-800 cursor-pointer transition-colors"
-                                    onClick={ () => catalogAdmin.createPage({ caption: 'New Category', catalogMode: currentType, pageLayout: 'default_3x3', minRank: 1, visible: '1', enabled: '1', orderNum: 99, parentId: rootNode.pageId }) }
+                                    onClick={ () => catalogAdmin.createPage({ caption: 'New Category', captionSave: 'New Category', catalogMode: currentType, pageLayout: 'default_3x3', iconImage: 0, minRank: 1, visible: '1', enabled: '1', orderNum: 99, parentId: rootNode.pageId }) }
                                 >
                                     <FaPlus className="text-[8px]" />
                                     <span>{ LocalizeText('catalog.admin.new') }</span>

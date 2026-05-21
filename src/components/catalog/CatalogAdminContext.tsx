@@ -7,9 +7,11 @@ export interface IPageEditData
 {
     pageId?: number;
     caption: string;
+    captionSave: string;
     parentId: number;
     catalogMode: string;
     pageLayout: string;
+    iconImage: number;
     enabled: string;
     visible: string;
     minRank: number;
@@ -177,7 +179,7 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
         setLastError(null);
         pendingActionRef.current = 'savePage';
         SendMessageComposer(new CatalogAdminSavePageComposer(
-            data.pageId || 0, data.caption, data.caption, data.pageLayout, 0,
+            data.pageId || 0, data.caption, data.captionSave, data.pageLayout, data.iconImage,
             data.minRank, data.visible === '1', data.enabled === '1',
             data.orderNum, data.parentId,
             data.pageHeadline || '', data.pageTeaser || '', data.pageTextDetails || '', currentType, data.catalogMode
@@ -190,7 +192,7 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
         setLastError(null);
         pendingActionRef.current = 'createPage';
         SendMessageComposer(new CatalogAdminCreatePageComposer(
-            data.caption, data.caption, data.pageLayout, 0,
+            data.caption, data.captionSave, data.pageLayout, data.iconImage,
             data.minRank, data.visible === '1', data.enabled === '1',
             data.orderNum, data.parentId, currentType, data.catalogMode
         ));

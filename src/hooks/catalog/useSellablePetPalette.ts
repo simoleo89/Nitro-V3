@@ -1,32 +1,44 @@
 import { GetSellablePetPalettesComposer, SellablePetPalettesMessageEvent } from '@nitrots/nitro-renderer';
-import { UseQueryResult } from '@tanstack/react-query';
-import { CatalogPetPalette } from '../../api';
-import { useNitroQuery } from '../../api/nitro-query';
+import { useCallback, useEffect, useState } from 'react';
+import { CatalogPetPalette, SendMessageComposer } from '../../api';
+import { useMessageEvent } from '../events';
 
-/**
- * Sellable palettes for a given pet breed, as returned by
- * GetSellablePetPalettesComposer(breed) → SellablePetPalettesMessageEvent.
- * The renderer multiplexes one event type for every breed; accept()
- * keeps each query slot listening only for the matching productCode.
- *
- * Replaces the per-breed accumulator that previously lived in
- * useCatalog (writing to catalogOptions.petPalettes). The catalog pet
- * page now reads via `useSellablePetPalette(productData.type)`.
- *
- * The breed identifier is the localization product code string
- * (e.g. 'pet_egg', 'pet_dog', ...). Disabled while breed is empty so
- * we don't spam composers at mount before the offer is known.
- */
+const palettesCache = new Map<string, CatalogPetPalette>();
+
 export const useSellablePetPalette = (
     breed: string,
     options: { enabled?: boolean } = {}
-): UseQueryResult<CatalogPetPalette> =>
-    useNitroQuery<SellablePetPalettesMessageEvent, CatalogPetPalette>({
-        key: [ 'nitro', 'catalog', 'petPalette', breed ],
-        request: () => new GetSellablePetPalettesComposer(breed),
-        parser: SellablePetPalettesMessageEvent,
-        accept: event => (event.getParser().productCode === breed),
-        select: event => new CatalogPetPalette(event.getParser().productCode, event.getParser().palettes.slice()),
-        enabled: (options.enabled ?? true) && !!breed,
-        staleTime: Infinity
-    });
+): { data: CatalogPetPalette | null } =>
+{
+    const enabled = (options.enabled ?? true) && !!breed;
+    const [ data, setData ] = useState<CatalogPetPalette | null>(() => breed ? (palettesCache.get(breed) ?? null) : null);
+    const [ trackedBreed, setTrackedBreed ] = useState(breed);
+
+    if(trackedBreed !== breed)
+    {
+        setTrackedBreed(breed);
+        setData(breed ? (palettesCache.get(breed) ?? null) : null);
+    }
+
+    const handler = useCallback((event: SellablePetPalettesMessageEvent) =>
+    {
+        const parser = event.getParser();
+        if(!parser || parser.productCode !== breed) return;
+
+        const palette = new CatalogPetPalette(parser.productCode, parser.palettes.slice());
+        palettesCache.set(breed, palette);
+        setData(palette);
+    }, [ breed ]);
+
+    useMessageEvent<SellablePetPalettesMessageEvent>(SellablePetPalettesMessageEvent, handler);
+
+    useEffect(() =>
+    {
+        if(!enabled) return;
+        if(palettesCache.has(breed)) return;
+
+        SendMessageComposer(new GetSellablePetPalettesComposer(breed));
+    }, [ enabled, breed ]);
+
+    return { data };
+};

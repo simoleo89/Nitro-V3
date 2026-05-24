@@ -7,30 +7,38 @@ type Props = {
     onSelect: (h: number) => void;
 };
 
-const TRACK_W = 14;
+const TRACK_W = 18;
 const TRACK_H = 260;
-const THUMB_DIAM = 24;
+const THUMB_DIAM = 28;
+const RAIL_GUTTER = 4;
 
 /**
- * Vertical brush-height slider. The track is a top-down gradient
- * built from the real tile-fill colours, so the user still sees
- * which colour maps to which height — the swatch column it
- * replaces communicated the same mapping a swatch at a time.
- * The thumb shows the currently picked height as a number and is
- * fully drag-aware (click anywhere on the track to jump, then
- * drag without releasing).
+ * Vertical brush-height slider.
+ *
+ * Track   - discrete-step gradient built from the real tile-fill
+ *           colours, top = HEIGHT_BRUSH_MAX, bottom = HEIGHT_BRUSH_MIN.
+ *           Each height owns a clear band so colour <-> height stays
+ *           legible at a glance, exactly like the swatch column it
+ *           replaces.
+ * Min/max - small chip labels float above and below the rail so the
+ *           user knows what the endpoints mean without trial and
+ *           error.
+ * Thumb   - amber radial gradient on a soft drop shadow, white ring
+ *           when hovered, darker ring while dragging. Renders the
+ *           current value in the middle so the user reads the
+ *           number directly off the handle.
+ * Gesture - click the rail to jump, click-and-drag the thumb (or
+ *           rail) to scrub. Window-level pointer listeners keep
+ *           the drag alive even when the cursor leaves the narrow
+ *           strip. Vertical scroll on touch is suppressed.
  */
 export const FloorplanHeightPicker: FC<Props> = ({ selectedH, onSelect }) =>
 {
     const count = HEIGHT_BRUSH_MAX - HEIGHT_BRUSH_MIN + 1;
     const trackRef = useRef<HTMLDivElement>(null);
     const [ isDragging, setIsDragging ] = useState(false);
+    const [ isHovering, setIsHovering ] = useState(false);
 
-    // Top of the gradient is HEIGHT_BRUSH_MAX (matches the legacy
-    // swatch column layout). Each step is `100 / (count - 1)` % of
-    // the track height. Building hard stops gives a discrete-step
-    // gradient (clear band per height) rather than a smooth blend
-    // — closer to the original swatches, easier for users to read.
     const gradient = useMemo(() =>
     {
         const stops: string[] = [];
@@ -75,8 +83,6 @@ export const FloorplanHeightPicker: FC<Props> = ({ selectedH, onSelect }) =>
         setIsDragging(true);
     }, [ heightFromClientY, onSelect, selectedH ]);
 
-    // While dragging, listen on window so the slider keeps tracking
-    // even when the pointer leaves the narrow track strip.
     useEffect(() =>
     {
         if(!isDragging) return;
@@ -100,44 +106,52 @@ export const FloorplanHeightPicker: FC<Props> = ({ selectedH, onSelect }) =>
         };
     }, [ isDragging, heightFromClientY, onSelect, selectedH ]);
 
-    // Thumb centre as a % of the track height. At selectedH ==
-    // HEIGHT_BRUSH_MAX the thumb sits at 0 % (top), at the min it
-    // sits at 100 % (bottom). Translating Y by -50 % then re-
-    // centres the circle on that point.
     const thumbPct = ((HEIGHT_BRUSH_MAX - selectedH) / (count - 1)) * 100;
 
     return (
         <div
-            className="relative shrink-0 select-none touch-none"
-            style={ { width: THUMB_DIAM + 4, height: TRACK_H } }
+            className="relative shrink-0 select-none touch-none flex flex-col items-center"
+            style={ { width: THUMB_DIAM + RAIL_GUTTER * 2, height: TRACK_H + 32 } }
             role="slider"
             aria-label="Altezza pennello"
             aria-valuemin={ HEIGHT_BRUSH_MIN }
             aria-valuemax={ HEIGHT_BRUSH_MAX }
             aria-valuenow={ selectedH }
         >
-            <div
-                ref={ trackRef }
-                data-testid="height-track"
-                className="absolute left-1/2 -translate-x-1/2 rounded-full border border-zinc-400 shadow-inner cursor-pointer overflow-hidden"
-                style={ {
-                    width: TRACK_W,
-                    height: TRACK_H,
-                    background: gradient
-                } }
-                onPointerDown={ onPointerDown }
-            />
-            <div
-                data-testid="height-thumb"
-                className={ `absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-yellow-300 border-2 ${ isDragging ? 'border-zinc-800' : 'border-zinc-700' } shadow-md flex items-center justify-center text-[10px] font-bold text-zinc-900 tabular-nums pointer-events-none` }
-                style={ {
-                    width: THUMB_DIAM,
-                    height: THUMB_DIAM,
-                    top: `${ thumbPct }%`
-                } }
-            >
-                { selectedH }
+            <span className="text-[9px] font-bold tabular-nums text-zinc-500 leading-none mb-1">
+                { HEIGHT_BRUSH_MAX }
+            </span>
+            <div className="relative flex-1" style={ { width: THUMB_DIAM } }>
+                <div
+                    ref={ trackRef }
+                    data-testid="height-track"
+                    className={ `absolute left-1/2 -translate-x-1/2 top-0 bottom-0 rounded-full border border-zinc-400 cursor-pointer overflow-hidden transition-shadow ${ isHovering || isDragging ? 'shadow-[inset_0_0_0_1px_rgba(255,255,255,0.4),0_0_0_2px_rgba(250,204,21,0.35)]' : 'shadow-inner' }` }
+                    style={ {
+                        width: TRACK_W,
+                        background: gradient
+                    } }
+                    onPointerDown={ onPointerDown }
+                    onPointerEnter={ () => setIsHovering(true) }
+                    onPointerLeave={ () => setIsHovering(false) }
+                />
+                <div
+                    data-testid="height-thumb"
+                    className={ `absolute left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full flex items-center justify-center text-[11px] font-bold text-zinc-900 tabular-nums pointer-events-none transition-shadow ${ isDragging ? 'ring-2 ring-zinc-900' : isHovering ? 'ring-2 ring-white/80' : '' }` }
+                    style={ {
+                        width: THUMB_DIAM,
+                        height: THUMB_DIAM,
+                        top: `${ thumbPct }%`,
+                        background: 'radial-gradient(circle at 35% 30%, #fff7c4 0%, #facc15 55%, #ca8a04 100%)',
+                        border: '2px solid #78350f',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.25), inset 0 -2px 3px rgba(0, 0, 0, 0.18)'
+                    } }
+                >
+                    { selectedH }
+                </div>
             </div>
+            <span className="text-[9px] font-bold tabular-nums text-zinc-500 leading-none mt-1">
+                { HEIGHT_BRUSH_MIN }
+            </span>
         </div>
     );
 };

@@ -28,6 +28,7 @@ export const FloorplanEditorView: FC = () =>
     const [ isVisible, setIsVisible ] = useState(false);
     const [ importExportVisible, setImportExportVisible ] = useState(false);
     const [ liveSync, setLiveSync ] = useState(true);
+    const [ panMode, setPanMode ] = useState(false);
     const { state, dispatch, loadFromServer, undo, redo, canUndo, canRedo } = useFloorplanReducer();
     const originalRef = useRef<{
         tilemap: string;
@@ -232,11 +233,13 @@ export const FloorplanEditorView: FC = () =>
                             canRedo={ canRedo }
                             onUndo={ undo }
                             onRedo={ redo }
+                            panMode={ panMode }
+                            onTogglePanMode={ () => setPanMode(v => !v) }
                         />
                         <FloorplanOptionsPanel state={ state } dispatch={ dispatch } />
                         <Flex gap={ 2 } className="flex-1 min-h-0">
                             <FloorplanHeightPicker selectedH={ state.brush.h } onSelect={ h => dispatch({ type: 'BRUSH_SET', h }) } />
-                            <FloorplanCanvasSVG state={ state } dispatch={ dispatch } />
+                            <FloorplanCanvasSVG state={ state } dispatch={ dispatch } panMode={ panMode } />
                         </Flex>
                         <Flex gap={ 3 } alignItems="center" className="px-1">
                             <Flex gap={ 1 } alignItems="center">

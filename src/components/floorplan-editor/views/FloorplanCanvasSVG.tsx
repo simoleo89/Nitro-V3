@@ -9,6 +9,13 @@ import { TILE_SIZE, MAX_NUM_TILE_PER_AXIS } from '../state/constants';
 type Props = {
     state: FloorplanState;
     dispatch: Dispatch<FloorplanAction>;
+    /**
+     * When true, left-click + drag pans the canvas instead of
+     * brushing. Driven by the hand-tool toggle in the toolbar.
+     * Shift+drag and middle-mouse drag always pan regardless of
+     * this flag.
+     */
+    panMode?: boolean;
 };
 
 const VIEWBOX_W = 2048;
@@ -76,7 +83,7 @@ const computeRoomBounds = (state: FloorplanState): { x: number; y: number; w: nu
     };
 };
 
-export const FloorplanCanvasSVG: FC<Props> = ({ state, dispatch }) =>
+export const FloorplanCanvasSVG: FC<Props> = ({ state, dispatch, panMode }) =>
 {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const [ zoom, setZoom ] = useState(1);
@@ -204,14 +211,24 @@ export const FloorplanCanvasSVG: FC<Props> = ({ state, dispatch }) =>
         };
     }, [ visW ]);
 
-    const isPanGesture = (e: ReactPointerEvent): boolean => e.button === 1 || (e.button === 0 && e.shiftKey);
+    // Pan gestures: middle-mouse, Shift+left-click, and (when the
+    // hand-tool is active) plain left-click. The hand-tool toggle
+    // is the toolbar affordance — Shift / middle still work even
+    // when the hand isn't on, so power users keep their muscle
+    // memory.
+    const isPanGesture = (e: ReactPointerEvent): boolean =>
+        e.button === 1
+        || (e.button === 0 && e.shiftKey)
+        || (e.button === 0 && Boolean(panMode));
+
+    const cursorClass = isPanning ? 'cursor-grabbing' : panMode ? 'cursor-grab' : '';
 
     return (
         <div className="relative w-full h-full">
             <svg
                 ref={ svgRef }
                 viewBox={ viewBox }
-                className={ `w-full h-full select-none rounded-md border border-zinc-300 bg-[url('@/assets/images/floorplaneditor/canvas_floor_pattern.png')] bg-repeat [image-rendering:pixelated] ${ isPanning ? 'cursor-grabbing' : '' }` }
+                className={ `w-full h-full select-none rounded-md border border-zinc-300 bg-[url('@/assets/images/floorplaneditor/canvas_floor_pattern.png')] bg-repeat [image-rendering:pixelated] ${ cursorClass }` }
                 onWheel={ onWheel }
                 onPointerDown={ e =>
                 {

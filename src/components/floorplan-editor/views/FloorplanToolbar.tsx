@@ -1,5 +1,5 @@
 import { Dispatch, FC } from 'react';
-import { FaRedo, FaUndo } from 'react-icons/fa';
+import { FaHandPaper, FaRedo, FaUndo } from 'react-icons/fa';
 import { LocalizeText } from '../../../api';
 import { Base, Flex, Text } from '../../../common';
 import { FloorplanAction, FloorActionMode, FloorplanState } from '../state/types';
@@ -11,6 +11,8 @@ type Props = {
     canRedo?: boolean;
     onUndo?: () => void;
     onRedo?: () => void;
+    panMode?: boolean;
+    onTogglePanMode?: () => void;
 };
 
 const BRUSH_BUTTONS: { id: string; mode: FloorActionMode; iconClass: string }[] = [
@@ -21,7 +23,7 @@ const BRUSH_BUTTONS: { id: string; mode: FloorActionMode; iconClass: string }[] 
     { id: 'tool-door',  mode: 'DOOR',  iconClass: 'icon-set-door' }
 ];
 
-export const FloorplanToolbar: FC<Props> = ({ state, dispatch, canUndo, canRedo, onUndo, onRedo }) =>
+export const FloorplanToolbar: FC<Props> = ({ state, dispatch, canUndo, canRedo, onUndo, onRedo, panMode, onTogglePanMode }) =>
 {
     return (
         <Flex gap={ 1 } alignItems="center">
@@ -48,6 +50,18 @@ export const FloorplanToolbar: FC<Props> = ({ state, dispatch, canUndo, canRedo,
                 className={ `nitro-icon icon-set-squaresselect ${ state.squareSelect ? 'border border-primary' : '' }` }
                 onClick={ () => dispatch({ type: 'SQUARE_SELECT_TOGGLE' }) }
             />
+            { onTogglePanMode && (
+                <Base
+                    pointer
+                    data-testid="tool-pan"
+                    data-active={ panMode ? 'true' : 'false' }
+                    title={ panMode ? 'Modalità mano attiva — trascina per spostare la vista (Spazio per uscire)' : 'Modalità mano — trascina per spostare la vista' }
+                    className={ `ml-1 w-7 h-7 flex items-center justify-center rounded border ${ panMode ? 'bg-emerald-500 border-emerald-700 text-white shadow-inner' : 'border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-700' }` }
+                    onClick={ onTogglePanMode }
+                >
+                    <FaHandPaper size={ 12 } />
+                </Base>
+            ) }
             { (onUndo || onRedo) && (
                 <Flex gap={ 1 } alignItems="center" className="ml-2 pl-2 border-l border-zinc-300">
                     <Base

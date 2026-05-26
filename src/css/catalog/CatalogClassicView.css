@@ -1,10 +1,10 @@
 .nitro-catalog-classic-window {
-    width: 606px !important;
-    height: 565px !important;
-    max-width: 606px !important;
-    min-width: 606px !important;
-    min-height: 565px !important;
-    max-height: 565px !important;
+    width: 640px !important;
+    height: 600px !important;
+    max-width: 640px !important;
+    min-width: 640px !important;
+    min-height: 600px !important;
+    max-height: 600px !important;
 }
 
 .nitro-catalog-classic-window .nitro-card-title {
@@ -301,7 +301,6 @@
     inset: 4px;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: contain;
     pointer-events: none;
 }
 

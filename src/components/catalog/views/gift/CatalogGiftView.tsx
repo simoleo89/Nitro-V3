@@ -1,10 +1,10 @@
-import { GetSessionDataManager, GiftReceiverNotFoundEvent, PurchaseFromCatalogAsGiftComposer } from '@nitrots/nitro-renderer';
+import { GetGiftWrappingConfigurationComposer, GetSessionDataManager, GiftReceiverNotFoundEvent, GiftWrappingConfigurationEvent, PurchaseFromCatalogAsGiftComposer } from '@nitrots/nitro-renderer';
 import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { ColorUtils, LocalizeText, MessengerFriend, ProductTypeEnum, SendMessageComposer } from '../../../../api';
+import { ColorUtils, GiftWrappingConfiguration, LocalizeText, MessengerFriend, ProductTypeEnum, SendMessageComposer } from '../../../../api';
 import { Button, Column, Flex, FormGroup, LayoutCurrencyIcon, LayoutFurniImageView, LayoutGiftTagView, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../../common';
 import { CatalogEvent, CatalogInitGiftEvent, CatalogPurchasedEvent } from '../../../../events';
-import { useFriends, useGiftConfiguration, useMessageEvent, useUiEvent } from '../../../../hooks';
+import { useFriends, useMessageEvent, useMessageEventState, useUiEvent } from '../../../../hooks';
 import { classNames } from '../../../../layout';
 
 let isBuyingGift = false;
@@ -18,18 +18,62 @@ export const CatalogGiftView: FC<{}> = props =>
     const [ receiverName, setReceiverName ] = useState<string>('');
     const [ showMyFace, setShowMyFace ] = useState<boolean>(true);
     const [ message, setMessage ] = useState<string>('');
-    const [ colors, setColors ] = useState<{ id: number, color: string }[]>([]);
     const [ selectedBoxIndex, setSelectedBoxIndex ] = useState<number>(0);
     const [ selectedRibbonIndex, setSelectedRibbonIndex ] = useState<number>(0);
     const [ selectedColorId, setSelectedColorId ] = useState<number>(0);
-    const [ maxBoxIndex, setMaxBoxIndex ] = useState<number>(0);
-    const [ maxRibbonIndex, setMaxRibbonIndex ] = useState<number>(0);
     const [ receiverNotFound, setReceiverNotFound ] = useState<boolean>(false);
     const { friends } = useFriends();
-    const { data: giftConfiguration = null } = useGiftConfiguration();
-    const [ boxTypes, setBoxTypes ] = useState<number[]>([]);
+    const giftConfiguration = useMessageEventState<GiftWrappingConfigurationEvent, GiftWrappingConfiguration | null>(
+        GiftWrappingConfigurationEvent,
+        event => new GiftWrappingConfiguration(event.getParser()),
+        null
+    );
     const [ suggestions, setSuggestions ] = useState([]);
     const [ isAutocompleteVisible, setIsAutocompleteVisible ] = useState(true);
+
+    const boxTypes = useMemo<number[]>(() =>
+    {
+        if(!giftConfiguration) return [];
+
+        const list = [ ...giftConfiguration.boxTypes ];
+        const defaults = giftConfiguration.defaultStuffTypes;
+
+        if(defaults && defaults.length)
+        {
+            const pickIndex = Math.floor(Math.random() * Math.max(defaults.length - 1, 1));
+            list.push(defaults[pickIndex]);
+        }
+
+        return list;
+    }, [ giftConfiguration ]);
+
+    const colors = useMemo<{ id: number, color: string }[]>(() =>
+    {
+        if(!giftConfiguration) return [];
+
+        const result: { id: number, color: string }[] = [];
+
+        for(const colorId of giftConfiguration.stuffTypes)
+        {
+            const giftData = GetSessionDataManager().getFloorItemData(colorId);
+
+            if(!giftData) continue;
+
+            if(giftData.colors && giftData.colors.length > 0) result.push({ id: colorId, color: ColorUtils.makeColorNumberHex(giftData.colors[0]) });
+        }
+
+        return result;
+    }, [ giftConfiguration ]);
+
+    const maxBoxIndex = Math.max(boxTypes.length - 1, 0);
+    const maxRibbonIndex = Math.max(boxTypes.length - 1, 0);
+
+    useEffect(() =>
+    {
+        if(!colors.length) return;
+
+        setSelectedColorId(prev => (prev || colors[0].id));
+    }, [ colors ]);
 
     const onClose = useCallback(() =>
     {
@@ -144,35 +188,6 @@ export const CatalogGiftView: FC<{}> = props =>
 
     useMessageEvent<GiftReceiverNotFoundEvent>(GiftReceiverNotFoundEvent, event => setReceiverNotFound(true));
 
-    const initializeGiftData = useCallback(() =>
-    {
-        if(!giftConfiguration) return;
-
-        const newBoxTypes = [ ...giftConfiguration.boxTypes ];
-        newBoxTypes.push(giftConfiguration.defaultStuffTypes[Math.floor((Math.random() * (giftConfiguration.defaultStuffTypes.length - 1)))]);
-
-        setBoxTypes(newBoxTypes);
-        setMaxBoxIndex(newBoxTypes.length - 1);
-        setMaxRibbonIndex(newBoxTypes.length - 1);
-        setSelectedBoxIndex(0);
-        setSelectedRibbonIndex(0);
-
-        const newColors: { id: number, color: string }[] = [];
-
-        for(const colorId of giftConfiguration.stuffTypes)
-        {
-            const giftData = GetSessionDataManager().getFloorItemData(colorId);
-
-            if(!giftData) continue;
-
-            if(giftData.colors && giftData.colors.length > 0) newColors.push({ id: colorId, color: ColorUtils.makeColorNumberHex(giftData.colors[0]) });
-        }
-
-        setColors(newColors);
-
-        if(newColors.length) setSelectedColorId(newColors[0].id);
-    }, [ giftConfiguration ]);
-
     useUiEvent([
         CatalogPurchasedEvent.PURCHASE_SUCCESS,
         CatalogEvent.INIT_GIFT ], event =>
@@ -191,8 +206,12 @@ export const CatalogGiftView: FC<{}> = props =>
                 setPageId(castedEvent.pageId);
                 setOfferId(castedEvent.offerId);
                 setExtraData(castedEvent.extraData);
-                initializeGiftData();
+                setSelectedBoxIndex(0);
+                setSelectedRibbonIndex(0);
                 setIsVisible(true);
+
+                if(!giftConfiguration) SendMessageComposer(new GetGiftWrappingConfigurationComposer());
+
                 return;
         }
     });
@@ -202,14 +221,7 @@ export const CatalogGiftView: FC<{}> = props =>
         setReceiverNotFound(false);
     }, [ receiverName ]);
 
-    useEffect(() =>
-    {
-        if(!isVisible || !giftConfiguration) return;
-
-        initializeGiftData();
-    }, [ giftConfiguration, isVisible, initializeGiftData ]);
-
-    if(!giftConfiguration || !giftConfiguration.isEnabled || !isVisible || !boxTypes.length) return null;
+    if(!isVisible || !giftConfiguration || !giftConfiguration.isEnabled || !boxTypes.length) return null;
 
     const boxName = 'catalog.gift_wrapping_new.box.' + (isBoxDefault ? 'default' : boxTypes[selectedBoxIndex]);
     const ribbonName = `catalog.gift_wrapping_new.ribbon.${ selectedRibbonIndex }`;

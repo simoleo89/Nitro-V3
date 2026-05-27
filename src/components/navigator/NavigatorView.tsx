@@ -8,7 +8,7 @@ import randomRoomImg from '../../assets/images/navigator/random_room.png';
 import promoteRoomImg from '../../assets/images/navigator/promote_room.png';
 import { CreateLinkEvent, LocalizeText, SendMessageComposer, TryVisitRoom } from '../../api';
 import { Flex, Text } from '../../common';
-import { useNavigatorActions, useNavigatorData, useNavigatorUiState, useNavigatorUiStore, useNitroEvent } from '../../hooks';
+import { useNavigatorData, useNavigatorSearch, useNavigatorUiState, useNavigatorUiStore, useNitroEvent } from '../../hooks';
 import { NavigatorDoorStateView } from './views/NavigatorDoorStateView';
 import { NavigatorRoomCreatorView } from './views/NavigatorRoomCreatorView';
 import { NavigatorRoomInfoView } from './views/NavigatorRoomInfoView';
@@ -20,10 +20,9 @@ import { NavigatorSearchView } from './views/search/NavigatorSearchView';
 
 export const NavigatorView: FC<{}> = props =>
 {
-    const { searchResult, topLevelContext, topLevelContexts, navigatorData, navigatorSearches } = useNavigatorData();
-    const { isVisible, isReady, isCreatorOpen, isRoomInfoOpen, isRoomLinkOpen, isOpenSavesSearches, isLoading, needsInit, needsSearch } = useNavigatorUiState();
-    const { sendSearch, reloadCurrentSearch } = useNavigatorActions();
-    const pendingSearch = useRef<{ value: string, code: string }>(null);
+    const { topLevelContext, topLevelContexts, navigatorData, navigatorSearches } = useNavigatorData();
+    const { searchResult, isFetching } = useNavigatorSearch();
+    const { isVisible, isCreatorOpen, isRoomInfoOpen, isRoomLinkOpen, isOpenSavesSearches, needsInit } = useNavigatorUiState();
     const elementRef = useRef<HTMLDivElement>(null);
 
     useNitroEvent<RoomSessionEvent>(RoomSessionEvent.CREATED, event =>
@@ -72,7 +71,10 @@ export const NavigatorView: FC<{}> = props =>
                         return;
                     case 'search':
                         if(parts.length <= 2) return;
-                        pendingSearch.current = { value: parts.length > 3 ? parts[3] : '', code: parts[2] };
+                        const code = parts[2];
+                        const value = parts.length > 3 ? parts[3] : '';
+                        store.setTab(code);
+                        if(value) store.setFilter(value);
                         store.show();
                         return;
                 }
@@ -88,27 +90,6 @@ export const NavigatorView: FC<{}> = props =>
         if(!searchResult) return;
         if(elementRef.current) elementRef.current.scrollTop = 0;
     }, [ searchResult ]);
-
-    useEffect(() =>
-    {
-        if(!isVisible || !isReady || !needsSearch) return;
-        if(pendingSearch.current)
-        {
-            sendSearch(pendingSearch.current.value, pendingSearch.current.code);
-            pendingSearch.current = null;
-        }
-        else
-        {
-            reloadCurrentSearch();
-        }
-        useNavigatorUiStore.getState().consumeSearchRequest();
-    }, [ isVisible, isReady, needsSearch, sendSearch, reloadCurrentSearch ]);
-
-    useEffect(() =>
-    {
-        if(isReady || !topLevelContext) return;
-        useNavigatorUiStore.getState().markReady();
-    }, [ isReady, topLevelContext ]);
 
     useEffect(() =>
     {
@@ -142,7 +123,7 @@ export const NavigatorView: FC<{}> = props =>
                             <NitroCard.TabItem
                                 key={ index }
                                 isActive={ topLevelContext === context && !isCreatorOpen }
-                                onClick={ () => sendSearch('', context.code) }>
+                                onClick={ () => useNavigatorUiStore.getState().setTab(context.code) }>
                                 { LocalizeText('navigator.toplevelview.' + context.code) }
                             </NitroCard.TabItem>) }
                         <NitroCard.TabItem
@@ -151,7 +132,7 @@ export const NavigatorView: FC<{}> = props =>
                             <FaPlus className="fa-icon" />
                         </NitroCard.TabItem>
                     </NitroCard.Tabs>
-                    <NitroCard.Content isLoading={ isLoading }>
+                    <NitroCard.Content isLoading={ isFetching }>
                         { !isCreatorOpen &&
                             <div className="flex h-full overflow-hidden gap-2">
                                 { isOpenSavesSearches &&

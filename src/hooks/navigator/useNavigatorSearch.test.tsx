@@ -1,6 +1,6 @@
 /* @vitest-environment jsdom */
 
-import { FlatCreatedEvent, NavigatorSearchComposer, NavigatorSearchEvent,
+import { FlatCreatedEvent, NavigatorSearchEvent,
     NavigatorSearchResultSet } from '@nitrots/nitro-renderer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
@@ -32,14 +32,16 @@ const makeWrapper = (client: QueryClient) =>
 /** Build a fake NavigatorSearchEvent that getParser() returns a result with `code`. */
 const makeSearchEvent = (code: string) =>
 {
-    const result = new NavigatorSearchResultSet() as any;
+    // Cast constructors as `any` so tsgo doesn't check required args against
+    // the real renderer SDK types (the mock stubs have no required args).
+    const result = new (NavigatorSearchResultSet as any)() as any;
     result.code = code;
     result.data = '';
     result.results = [];
 
-    const ev = new NavigatorSearchEvent() as any;
+    const ev = new (NavigatorSearchEvent as any)() as any;
     ev.getParser = () => ({ result });
-    return ev as NavigatorSearchEvent;
+    return ev;
 };
 
 const INITIAL_UI = {
@@ -82,7 +84,7 @@ describe('useNavigatorSearch', () =>
         // Dispatch a search event — should be ignored (query disabled)
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
 
         // Data must stay null
@@ -107,7 +109,7 @@ describe('useNavigatorSearch', () =>
         // Simulate server response
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
 
         // Query should resolve with the matching result
@@ -130,7 +132,7 @@ describe('useNavigatorSearch', () =>
         await waitFor(() => expect(result.current.isFetching).toBe(true));
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
         await waitFor(() => expect(result.current.isFetching).toBe(false));
 
@@ -145,7 +147,7 @@ describe('useNavigatorSearch', () =>
         // Resolve with matching event
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -171,7 +173,7 @@ describe('useNavigatorSearch', () =>
         await waitFor(() => expect(result.current.isFetching).toBe(true));
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
         await waitFor(() => expect(result.current.isFetching).toBe(false));
 
@@ -191,7 +193,7 @@ describe('useNavigatorSearch', () =>
         // Resolve with events result
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('events'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('events') as any);
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -212,7 +214,7 @@ describe('useNavigatorSearch', () =>
 
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
 
         await waitFor(() =>
@@ -237,7 +239,7 @@ describe('useNavigatorSearch', () =>
         // Dispatch an event for a DIFFERENT tab — should be rejected by accept filter
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('wrong_tab'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('wrong_tab') as any);
         });
 
         // Still fetching — the wrong-tab event was ignored
@@ -248,7 +250,7 @@ describe('useNavigatorSearch', () =>
         // Now dispatch the correct one to unblock the test
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
 
         await waitFor(() => expect(result.current.searchResult).not.toBeNull());
@@ -273,16 +275,16 @@ describe('useNavigatorSearch', () =>
         await waitFor(() => expect(result.current.isFetching).toBe(true));
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
         });
         await waitFor(() => expect(result.current.isFetching).toBe(false));
 
         // Dispatch FlatCreatedEvent — should trigger invalidateQueries
-        const flatCreatedEv = new FlatCreatedEvent() as any;
+        const flatCreatedEv = new (FlatCreatedEvent as any)() as any;
         flatCreatedEv.getParser = () => ({ roomId: 999 });
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(flatCreatedEv);
+            mockEventDispatcher.dispatchEvent(flatCreatedEv as any);
         });
 
         await waitFor(() => expect(invalidateSpy).toHaveBeenCalled());

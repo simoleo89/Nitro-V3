@@ -68,7 +68,7 @@ export const InventoryBotView: FC<{
         <div className="grid h-full grid-cols-12 gap-2">
             <div className="flex flex-col col-span-7 gap-1 overflow-hidden">
                 <InfiniteGrid<IBotItem>
-                    columnCount={ 6 }
+                    columnCount={ 4 }
                     itemRender={ item => <InventoryBotItemView botItem={ item } /> }
                     items={ botItems } />
             </div>

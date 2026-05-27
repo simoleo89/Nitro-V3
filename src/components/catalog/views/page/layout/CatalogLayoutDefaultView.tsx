@@ -88,7 +88,6 @@ export const CatalogLayoutDefaultView: FC<CatalogLayoutProps> = props =>
                     </div>
                 </div> }
 
-            { /* Welcome/description card */ }
             { !currentOffer &&
                 <div className="nitro-catalog-classic-welcome flex items-center gap-3">
                     { !!page.localization.getImage(1) &&
@@ -96,11 +95,10 @@ export const CatalogLayoutDefaultView: FC<CatalogLayoutProps> = props =>
                     <Text className="text-[11px]! text-muted" dangerouslySetInnerHTML={ { __html: SanitizeHtml(page.localization.getText(0)) } } />
                 </div> }
 
-            { /* Item grid */ }
             <div className="nitro-catalog-classic-grid-shell flex-1 overflow-auto min-h-0">
                 { GetConfigurationValue('catalog.headers') &&
                     <CatalogHeaderView imageUrl={ currentPage.localization.getImage(0) } /> }
-                <CatalogItemGridWidgetView className="nitro-catalog-classic-grid" columnCount={ 7 } columnMinHeight={ 50 } columnMinWidth={ 50 } />
+                <CatalogItemGridWidgetView className="nitro-catalog-classic-grid" columnCount={ 7 } columnMinHeight={ currentPage.layoutCode === 'bots' ? 65 : 50 } columnMinWidth={ currentPage.layoutCode === 'bots' ? 65 : 50 } />
             </div>
         </div>
     );

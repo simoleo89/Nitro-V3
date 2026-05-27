@@ -121,9 +121,8 @@ export const useFloorplanLiveSync = (opts: UseFloorplanLiveSyncOptions): UseFloo
 
     const baselineRef = useRef<LivePreviewPayload | null>(null);
     const lastAppliedRef = useRef<LivePreviewPayload | null>(null);
+    const wasEnabledRef = useRef(false);
 
-    // Destructure first so the memo deps stay precise without
-    // triggering exhaustive-deps on `state` as a whole.
     const { tiles, door, thickness, wallHeight } = state;
     const currentPayload = useMemo<LivePreviewPayload>(() => ({
         tilemap: serializeTilemap(tiles),
@@ -150,18 +149,22 @@ export const useFloorplanLiveSync = (opts: UseFloorplanLiveSyncOptions): UseFloo
         if(applyToRenderer(baseline, roomId)) lastAppliedRef.current = baseline;
     }, [ roomId ]);
 
-    // Apply the current payload to the renderer whenever it
-    // diverges from what's already in the room. Synchronous + no
-    // debounce — the renderer pipeline is fast enough that every
-    // brush stroke can land a paint.
     useEffect(() =>
     {
-        if(!enabled) return;
+        if(!enabled)
+        {
+            wasEnabledRef.current = false;
+            return;
+        }
+
+        if(!baselineRef.current) return;
+
+        const isFirstEnable = !wasEnabledRef.current;
+        wasEnabledRef.current = true;
 
         const previous = lastAppliedRef.current;
 
-        if(previous && livePreviewPayloadsEqual(currentPayload, previous)) return;
-        if(!previous && !baselineRef.current) return;
+        if(!isFirstEnable && previous && livePreviewPayloadsEqual(currentPayload, previous)) return;
 
         if(applyToRenderer(currentPayload, roomId)) lastAppliedRef.current = currentPayload;
     }, [ enabled, currentPayload, roomId ]);

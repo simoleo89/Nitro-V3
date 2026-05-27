@@ -17,14 +17,8 @@ import { CreateRoomSession, GetConfigurationValue, INavigatorData,
     LocalizeText, NotificationAlertType, SendMessageComposer,
     TryVisitRoom, VisitDesktop } from '../../api';
 import { useMessageEvent, useNitroEvent } from '../events';
+import { useNotification } from '../notification';
 import { useNavigatorUiStore } from './navigatorUiStore';
-
-// Module-level reference to simpleAlert, injected by useNavigatorActions
-// (which runs in a real React dispatcher context, outside useBetween).
-// Avoids nested useBetween calls that corrupt use-between's module-level state.
-type SimpleAlertFn = (message: string, type?: string, clickUrl?: string, clickUrlText?: string, title?: string, imageUrl?: string) => void;
-let _simpleAlert: SimpleAlertFn | null = null;
-export const _injectSimpleAlert = (fn: SimpleAlertFn | null) => { _simpleAlert = fn; };
 
 export const useNavigatorStore = () =>
 {
@@ -58,7 +52,7 @@ export const useNavigatorStore = () =>
     const searchResultRef = useRef(searchResult);
     searchResultRef.current = searchResult;
 
-    const simpleAlert = _simpleAlert;
+    const { simpleAlert = null } = useNotification();
 
     const sendSearch = useCallback((searchValue: string, contextCode: string) =>
     {

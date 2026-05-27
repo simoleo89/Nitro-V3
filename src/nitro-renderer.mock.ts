@@ -274,6 +274,48 @@ export class UserFlatCatsEvent extends MessageEvent {}
 export class UserInfoEvent extends MessageEvent {}
 export class UserPermissionsEvent extends MessageEvent {}
 
+// ---------------------------------------------------------------------------
+// Notification event classes — MessageEvent subclasses needed by
+// useNotificationStore (called via useNotification() inside useNavigatorStore).
+// The real renderer classes take a `callBack` constructor arg; the pattern
+// here is the same as the Navigator event stubs above.
+// ---------------------------------------------------------------------------
+
+export class AchievementNotificationMessageEvent extends MessageEvent {}
+export class ActivityPointNotificationMessageEvent extends MessageEvent {}
+export class BadgeReceivedEvent extends MessageEvent {}
+export class ClubGiftNotificationEvent extends MessageEvent {}
+export class ClubGiftSelectedEvent extends MessageEvent {}
+export class ConnectionErrorEvent extends MessageEvent {}
+export class HabboBroadcastMessageEvent extends MessageEvent {}
+export class HotelClosedAndOpensEvent extends MessageEvent {}
+export class HotelClosesAndWillOpenAtEvent extends MessageEvent {}
+export class HotelWillCloseInMinutesEvent extends MessageEvent {}
+export class InfoFeedEnableMessageEvent extends MessageEvent {}
+export class MaintenanceStatusMessageEvent extends MessageEvent {}
+export class ModeratorCautionEvent extends MessageEvent {}
+export class ModeratorMessageEvent extends MessageEvent {}
+export class MOTDNotificationEvent extends MessageEvent {}
+export class NotificationDialogMessageEvent extends MessageEvent {}
+export class PetLevelNotificationEvent extends MessageEvent {}
+export class PetReceivedMessageEvent extends MessageEvent {}
+export class RespectReceivedEvent extends MessageEvent {}
+export class RoomEnterEvent extends MessageEvent {}
+export class SimpleAlertMessageEvent extends MessageEvent {}
+export class UserBannedMessageEvent extends MessageEvent {}
+export class WiredRewardResultMessageEvent extends MessageEvent
+{
+    static readonly PRODUCT_DONATED_CODE = 7;
+    static readonly BADGE_DONATED_CODE = 8;
+}
+
+// RoomEnterEffect — used by useNotificationStore to check if the room-enter
+// animation is still running before showing the mod disclaimer bubble.
+export const RoomEnterEffect = {
+    isRunning: () => false,
+    totalRunningTime: 0
+};
+
 export class RoomEngineObjectEvent extends StubClass {}
 export class CreateLinkEvent extends StubClass {}
 export class EventDispatcher extends StubClass {}

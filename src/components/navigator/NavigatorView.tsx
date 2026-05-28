@@ -7,8 +7,8 @@ import createRoomImg from '../../assets/images/navigator/create_room.png';
 import randomRoomImg from '../../assets/images/navigator/random_room.png';
 import promoteRoomImg from '../../assets/images/navigator/promote_room.png';
 import { CreateLinkEvent, LocalizeText, SendMessageComposer, TryVisitRoom } from '../../api';
-import { Flex, Text } from '../../common';
-import { useNavigatorData, useNavigatorSearch, useNavigatorUiState, useNavigatorUiStore, useNitroEvent } from '../../hooks';
+import { Flex, Text, WidgetErrorBoundary } from '../../common';
+import { useNavigatorActions, useNavigatorData, useNavigatorUiState, useNavigatorUiStore, useNitroEvent } from '../../hooks';
 import { NavigatorDoorStateView } from './views/NavigatorDoorStateView';
 import { NavigatorRoomCreatorView } from './views/NavigatorRoomCreatorView';
 import { NavigatorRoomInfoView } from './views/NavigatorRoomInfoView';
@@ -178,13 +178,26 @@ export const NavigatorView: FC<{}> = props =>
                                     </Flex>
                                 </div>
                             </div> }
-                        { isCreatorOpen && <NavigatorRoomCreatorView /> }
+                        { isCreatorOpen &&
+                            <WidgetErrorBoundary name="NavigatorRoomCreator">
+                                <NavigatorRoomCreatorView />
+                            </WidgetErrorBoundary> }
                     </NitroCard.Content>
                 </NitroCard> }
-            <NavigatorDoorStateView />
-            { isRoomInfoOpen && <NavigatorRoomInfoView onCloseClick={ () => useNavigatorUiStore.getState().setRoomInfoOpen(false) } /> }
-            { isRoomLinkOpen && <NavigatorRoomLinkView onCloseClick={ () => useNavigatorUiStore.getState().setRoomLinkOpen(false) } /> }
-            <NavigatorRoomSettingsView />
+            <WidgetErrorBoundary name="NavigatorDoorState">
+                <NavigatorDoorStateView />
+            </WidgetErrorBoundary>
+            { isRoomInfoOpen &&
+                <WidgetErrorBoundary name="NavigatorRoomInfo">
+                    <NavigatorRoomInfoView onCloseClick={ () => useNavigatorUiStore.getState().setRoomInfoOpen(false) } />
+                </WidgetErrorBoundary> }
+            { isRoomLinkOpen &&
+                <WidgetErrorBoundary name="NavigatorRoomLink">
+                    <NavigatorRoomLinkView onCloseClick={ () => useNavigatorUiStore.getState().setRoomLinkOpen(false) } />
+                </WidgetErrorBoundary> }
+            <WidgetErrorBoundary name="NavigatorRoomSettings">
+                <NavigatorRoomSettingsView />
+            </WidgetErrorBoundary>
         </>
     );
 };

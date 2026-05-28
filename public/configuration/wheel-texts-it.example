@@ -9,5 +9,9 @@
     "soundboard.title": "Soundboard",
     "soundboard.empty": "Nessun suono disponibile",
     "soundboard.lastplayed": "Suonato da %user%",
-    "soundboard.room.setting.desc": "Permetti ai presenti di suonare effetti audio in questa stanza"
+    "soundboard.room.setting.desc": "Permetti ai presenti di suonare effetti audio in questa stanza",
+    "radio.title": "Radio",
+    "radio.empty": "Nessuna stazione",
+    "radio.error": "Impossibile caricare le stazioni",
+    "radio.stop": "Stop"
 }

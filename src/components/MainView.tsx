@@ -27,6 +27,7 @@ import { HousekeepingView } from './housekeeping/HousekeepingView';
 import { RareValuesView } from './rare-values/RareValuesView';
 import { FortuneWheelView } from './fortune-wheel/FortuneWheelView';
 import { SoundboardView } from './soundboard/SoundboardView';
+import { RadioView } from './radio/RadioView';
 import { InventoryView } from './inventory/InventoryView';
 import { ModToolsView } from './mod-tools/ModToolsView';
 import { NavigatorView } from './navigator/NavigatorView';
@@ -182,6 +183,7 @@ export const MainView: FC<{}> = props =>
             <RareValuesView />
             <FortuneWheelView />
             <SoundboardView />
+            <RadioView />
             <ExternalPluginLoader />
         </>
     );

@@ -9,5 +9,9 @@
     "soundboard.title": "Soundboard",
     "soundboard.empty": "No sounds available",
     "soundboard.lastplayed": "Played by %user%",
-    "soundboard.room.setting.desc": "Let people in this room play sound effects"
+    "soundboard.room.setting.desc": "Let people in this room play sound effects",
+    "radio.title": "Radio",
+    "radio.empty": "No stations",
+    "radio.error": "Couldn't load stations",
+    "radio.stop": "Stop"
 }

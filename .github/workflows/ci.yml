@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - Dev
       - 'feat/**'
   pull_request:
   workflow_dispatch:
@@ -92,6 +93,13 @@ jobs:
               main)
                 AUTO_REPO="duckietm/Nitro_Render_V3"
                 AUTO_REF="main"
+                ;;
+              Dev)
+                # The client `Dev` branch carries the custom features
+                # (rare values, fortune wheel, soundboard); they live on
+                # the matching renderer fork branch, not upstream.
+                AUTO_REPO="medievalshell/Nitro_Render_V3"
+                AUTO_REF="dev"
                 ;;
               feat/housekeeping-panel)
                 AUTO_REPO="simoleo89/Nitro_Render_V3"

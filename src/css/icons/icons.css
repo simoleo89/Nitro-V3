@@ -216,6 +216,13 @@
     height: 36px;
 }
 
+.nitro-icon.icon-soundboard {
+    background-image: url("@/assets/images/toolbar/icons/game.png");
+    width: 44px;
+    height: 25px;
+    filter: hue-rotate(90deg) saturate(1.5);
+}
+
 .nitro-icon.icon-message {
     background-image: url("@/assets/images/toolbar/icons/message.png");
     width: 36px;

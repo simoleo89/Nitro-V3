@@ -5,5 +5,9 @@
     "wheel.spin": "SPIN",
     "wheel.buy": "Buy spin",
     "wheel.winners": "Latest winners",
-    "wheel.winners.empty": "No winners yet"
+    "wheel.winners.empty": "No winners yet",
+    "soundboard.title": "Soundboard",
+    "soundboard.empty": "No sounds available",
+    "soundboard.lastplayed": "Played by %user%",
+    "soundboard.room.setting.desc": "Let people in this room play sound effects"
 }

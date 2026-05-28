@@ -22,6 +22,7 @@ export * from './rooms/promotes';
 export * from './rooms/widgets';
 export * from './rooms/widgets/furniture';
 export * from './session';
+export * from './soundboard/useSoundboard';
 export * from './translation';
 export * from './useLocalStorage';
 export * from './useSharedVisibility';

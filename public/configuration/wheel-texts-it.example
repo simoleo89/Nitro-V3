@@ -5,5 +5,9 @@
     "wheel.spin": "GIRA",
     "wheel.buy": "Compra giro",
     "wheel.winners": "Ultimi vincitori",
-    "wheel.winners.empty": "Ancora nessun vincitore"
+    "wheel.winners.empty": "Ancora nessun vincitore",
+    "soundboard.title": "Soundboard",
+    "soundboard.empty": "Nessun suono disponibile",
+    "soundboard.lastplayed": "Suonato da %user%",
+    "soundboard.room.setting.desc": "Permetti ai presenti di suonare effetti audio in questa stanza"
 }

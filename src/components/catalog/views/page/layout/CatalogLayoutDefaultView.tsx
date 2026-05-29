@@ -43,9 +43,11 @@ export const CatalogLayoutDefaultView: FC<CatalogLayoutProps> = props =>
                     </button>
                 </div> }
 
-            { /* Product detail card */ }
+            { /* Product detail card. shrink-0 + visible overflow so the Buy
+                 button never gets squeezed off-screen when the grid below
+                 holds a lot of items. */ }
             { currentOffer &&
-                <div className="nitro-catalog-classic-offer-panel flex gap-0 overflow-hidden">
+                <div className="nitro-catalog-classic-offer-panel flex gap-0 shrink-0">
                     { /* Preview area */ }
                     <div className="nitro-catalog-classic-offer-preview relative flex items-center justify-center">
                         { (currentOffer.product.productType !== ProductTypeEnum.BADGE) &&
@@ -81,15 +83,16 @@ export const CatalogLayoutDefaultView: FC<CatalogLayoutProps> = props =>
                         <CatalogTotalPriceWidget />
                         { /* Spinner */ }
                         <CatalogSpinnerWidgetView />
-                        { /* Actions */ }
-                        <div className="flex gap-1.5 mt-auto">
+                        { /* Actions - natural flow, no mt-auto so they can't
+                             be pushed past the panel's bottom edge. */ }
+                        <div className="flex gap-1.5">
                             <CatalogPurchaseWidgetView />
                         </div>
                     </div>
                 </div> }
 
             { !currentOffer &&
-                <div className="nitro-catalog-classic-welcome flex items-center gap-3">
+                <div className="nitro-catalog-classic-welcome flex items-center gap-3 shrink-0">
                     { !!page.localization.getImage(1) &&
                         <img className="w-[70px] h-[70px] object-contain rounded shrink-0" src={ page.localization.getImage(1) } /> }
                     <Text className="text-[11px]! text-muted" dangerouslySetInnerHTML={ { __html: SanitizeHtml(page.localization.getText(0)) } } />

@@ -147,11 +147,11 @@ export const InventoryFurnitureView: FC<{
                             <span className="text-xs truncate">{ selectedItem.description }</span> }
                         <div className="flex flex-col gap-1">
                             { !!roomSession &&
-                                <NitroButton onClick={ event => attemptItemPlacement(selectedItem) }>
+                                <NitroButton className="nitro-inventory-btn-place" onClick={ event => attemptItemPlacement(selectedItem) }>
                                     { LocalizeText('inventory.furni.placetoroom') }
                                 </NitroButton> }
                             { selectedItem.isSellable &&
-                                <NitroButton onClick={ event => attemptPlaceMarketplaceOffer(selectedItem) }>
+                                <NitroButton className="nitro-inventory-btn-sell" onClick={ event => attemptPlaceMarketplaceOffer(selectedItem) }>
                                     { LocalizeText('inventory.marketplace.sell') }
                                 </NitroButton> }
                         </div>

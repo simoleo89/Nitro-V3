@@ -1,0 +1,241 @@
+/* ---------------------------------------------------------------------------
+ * Inventory window — Habbo mobile inventory skin.
+ *
+ * Matches the mobile inventory mockup and stays consistent with the catalog
+ * redesign: blue header, beige body, folder tabs, framed preview canvas,
+ * teal-accented item slots, and chunky green "place" / red "sell" buttons.
+ *
+ * Palette (from the mockup):
+ *   --inv-blue        #4a7d8c   header
+ *   --inv-beige       #e2e0d6   window / body / slot fill
+ *   --inv-tab         #c7c5ba   inactive tab fill
+ *   --inv-line        #919088   slot / preview outline
+ *   --inv-accent      #4a7d8c   selected slot glow + count text
+ *   --inv-place*      green place button
+ *   --inv-sell*       red sell button
+ * ------------------------------------------------------------------------- */
+
+.nitro-inventory-window {
+    --inv-blue: #4a7d8c;
+    --inv-beige: #e2e0d6;
+    --inv-tab: #c7c5ba;
+    --inv-line: #919088;
+    --inv-accent: #4a7d8c;
+    --inv-place: #5ca843;
+    --inv-place-dark: #397025;
+    --inv-place-light: #8ee374;
+    --inv-sell: #d13e31;
+    --inv-sell-dark: #881e15;
+    --inv-sell-light: #f07e74;
+    --inv-border: #6b6f73;
+
+    background: var(--inv-beige) !important;
+}
+
+/* Blue Habbo header. */
+.nitro-inventory-window .nitro-card-header {
+    background: var(--inv-blue);
+    border-color: var(--inv-blue);
+    border-bottom-color: var(--inv-border);
+    box-shadow: inset 0 2px 0 #709da9, inset 0 -2px 0 #315863;
+}
+
+/* Tab strip — beige shelf with folder tabs. Light, low-contrast outlines. */
+.nitro-inventory-window .nitro-inventory-tabs-shell {
+    background: var(--inv-beige);
+    gap: 4px;
+    padding: 6px 8px 0;
+    border-bottom: 1px solid #b9c4ca;
+}
+
+.nitro-inventory-window .nitro-inventory-tabs-shell .nitro-card-tab-item {
+    background: var(--inv-tab);
+    border: 1px solid #aeb9bf;
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    color: #8a9aa2;
+    font-weight: 600;
+    box-shadow: inset 1px 1px 0 #fff;
+}
+
+.nitro-inventory-window .nitro-inventory-tabs-shell .nitro-card-tab-item:hover {
+    background: #d2d0c6;
+    color: #6b7d86;
+}
+
+.nitro-inventory-window .nitro-inventory-tabs-shell .nitro-card-tab-item-active {
+    background: #fff;
+    color: #566a74;
+    border-color: #93a1a8;
+    position: relative;
+    top: 1px;
+}
+
+/* Tabs show the icon first, then the text label (desktop). */
+.nitro-inventory-window .nitro-inventory-tab-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Body — grey-beige backdrop. */
+.nitro-inventory-window .nitro-inventory-body {
+    background: var(--inv-beige);
+}
+
+/* Filter bar — white search box + beige select, hard outlines. */
+.nitro-inventory-window .nitro-inventory-filter-bar {
+    background: #fff;
+    border: 2px solid var(--inv-border);
+    border-radius: 4px;
+}
+
+.nitro-inventory-window .nitro-inventory-filter-bar select {
+    background: var(--inv-beige);
+    border: 2px solid var(--inv-border) !important;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+/* Item slots — beige tiles, grey outline, teal glow when selected. */
+.nitro-inventory-window .bg-card-grid-item {
+    background-color: var(--inv-beige) !important;
+}
+
+.nitro-inventory-window .border-card-grid-item-border {
+    border-color: var(--inv-line) !important;
+}
+
+.nitro-inventory-window .bg-card-grid-item-active {
+    background-color: #fff !important;
+}
+
+.nitro-inventory-window .border-card-grid-item-active {
+    border-color: var(--inv-border) !important;
+    box-shadow: 0 0 0 2px var(--inv-accent);
+}
+
+/* Count badge — white pill with a teal number (mockup). */
+.nitro-inventory-window .bg-red-700 {
+    background-color: #fff !important;
+    color: var(--inv-accent) !important;
+    border-color: #75746e !important;
+}
+
+/* Preview canvas — white framed box around the room previewer. */
+.nitro-inventory-window .shadow-room-previewer {
+    background-color: #fff;
+    border: 2px solid var(--inv-line);
+}
+
+/* Action buttons — chunky beveled Habbo buttons. */
+.nitro-inventory-window .nitro-inventory-btn-place,
+.nitro-inventory-window .nitro-inventory-btn-sell {
+    border: 2px solid var(--inv-border) !important;
+    border-radius: 4px;
+    color: #fff !important;
+    font-weight: 700;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.nitro-inventory-window .nitro-inventory-btn-place {
+    background: var(--inv-place) !important;
+    box-shadow: inset -2px -2px 0 var(--inv-place-dark), inset 2px 2px 0 var(--inv-place-light);
+}
+
+.nitro-inventory-window .nitro-inventory-btn-place:hover {
+    background: #67b94e !important;
+}
+
+.nitro-inventory-window .nitro-inventory-btn-sell {
+    background: var(--inv-sell) !important;
+    box-shadow: inset -2px -2px 0 var(--inv-sell-dark), inset 2px 2px 0 var(--inv-sell-light);
+}
+
+.nitro-inventory-window .nitro-inventory-btn-sell:hover {
+    background: #db4d40 !important;
+}
+
+/* ---------------------------------------------------------------------------
+ * Responsive layout
+ *
+ * The window ships a fixed 528x420 size (Tailwind utilities on the card).
+ * Mirror the catalog's three tiers so it stays usable down to phones:
+ *   > 1024px        desktop, fixed size (utilities)
+ *   641px - 1024px  tablet, fluid card
+ *   <= 640px        phone, full-screen + stacked grid / preview
+ * ------------------------------------------------------------------------- */
+
+/* Tablet. */
+@media (max-width: 1024px) and (min-width: 641px) {
+    .nitro-inventory-window {
+        width: min(calc(100vw - 24px), 640px) !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 24px) !important;
+        height: min(calc(100vh - 24px), 560px) !important;
+        min-height: 0 !important;
+        max-height: calc(100vh - 24px) !important;
+    }
+}
+
+/* Phone — full-screen, single-column stack (grid on top, preview below). */
+@media (max-width: 640px) {
+    .nitro-inventory-window {
+        width: 100vw !important;
+        min-width: 0 !important;
+        max-width: 100vw !important;
+        height: 100vh !important;
+        min-height: 0 !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+    }
+
+    .nitro-inventory-window .nitro-card-header-shell,
+    .nitro-inventory-window .nitro-card-content-shell {
+        border-radius: 0 !important;
+    }
+
+    /* Icon-only tabs spread evenly across the width — text labels don't
+     * fit on a phone, so swap them for the per-tab glyph. */
+    .nitro-inventory-window .nitro-inventory-tabs-shell {
+        flex-wrap: nowrap;
+        overflow: hidden;
+    }
+
+    .nitro-inventory-window .nitro-inventory-tabs-shell .nitro-card-tab-item {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 8px 0;
+        justify-content: center;
+    }
+
+    .nitro-inventory-window .nitro-inventory-tab-label {
+        display: none;
+    }
+
+    .nitro-inventory-window .nitro-inventory-tab-icon {
+        margin-right: 0;
+        font-size: 17px;
+    }
+
+    /* Stack the item grid above the preview / action panel. */
+    .nitro-inventory-window .grid.grid-cols-12 {
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-rows: minmax(0, 1fr) auto !important;
+    }
+
+    .nitro-inventory-window .grid.grid-cols-12 > .col-span-7,
+    .nitro-inventory-window .grid.grid-cols-12 > .col-span-5 {
+        grid-column: 1 / -1 !important;
+    }
+
+    /* Roomier touch targets for the action buttons. */
+    .nitro-inventory-window .nitro-inventory-btn-place,
+    .nitro-inventory-window .nitro-inventory-btn-sell {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+}

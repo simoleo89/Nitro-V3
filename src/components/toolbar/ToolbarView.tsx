@@ -362,9 +362,6 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         { (getTotalUnseen > 0) &&
                             <LayoutItemCountView count={ getTotalUnseen } className="pointer-events-none absolute -right-1 -top-1 z-10" /> }
                     </motion.div>
-                    <motion.div variants={ itemVariants }>
-                        <ToolbarItemView icon="buildersclub" onClick={ () => CreateLinkEvent('catalog/toggle/builder') } className="tb-icon" />
-                    </motion.div>
                     <motion.div variants={ itemVariants } className="relative">
                         <ToolbarItemView icon="inventory" onClick={ () => CreateLinkEvent('inventory/toggle') } className="tb-icon" />
                         { (getFullCount > 0) &&
@@ -384,10 +381,6 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="wired-tools" onClick={ openMonitor } className="tb-icon" />
                         </motion.div> }
-                    { isInRoom &&
-                        <motion.div variants={ itemVariants }>
-                            <ToolbarItemView icon="camera" onClick={ () => CreateLinkEvent('camera/toggle') } className="tb-icon" />
-                        </motion.div> }
                     { (isInRoom && youtubeEnabled) &&
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="youtube" onClick={ openYouTubePlayer } className="tb-icon" />
@@ -396,26 +389,44 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="soundboard" onClick={ () => CreateLinkEvent('soundboard/toggle') } className="tb-icon" />
                         </motion.div> }
-                    { isMod &&
-                        <motion.div variants={ itemVariants } className="relative">
-                            <ToolbarItemView icon="modtools" onClick={ () => CreateLinkEvent('mod-tools/toggle') } className="tb-icon" />
-                            { (openTicketsCount > 0) &&
-                                <LayoutItemCountView count={ openTicketsCount } className="pointer-events-none absolute -right-1 -top-1 z-10" /> }
-                        </motion.div> }
-                    { (isHk && hkEnabled) &&
-                        <motion.div variants={ itemVariants }>
-                            <ToolbarItemView icon="housekeeping" onClick={ () => CreateLinkEvent('housekeeping/toggle') } className="tb-icon" />
-                        </motion.div> }
-                    { isMod &&
-                        <motion.div variants={ itemVariants }>
-                            <ToolbarItemView icon="furnieditor" onClick={ () => CreateLinkEvent('furni-editor/toggle') } className="tb-icon" />
-                        </motion.div> }
                     <motion.div variants={ itemVariants } className="relative">
                         <ToolbarItemView icon="friendall" onClick={ () => CreateLinkEvent('friends/toggle') } className="tb-icon" />
                         { (requests.length > 0) &&
                             <LayoutItemCountView count={ requests.length } className="absolute -right-2 -top-1" /> }
                     </motion.div>
                 </motion.div>
+            </motion.div>
+            { /* Mobile side tools — moved out of the bottom bar into a
+                 vertical pill stack on the left edge so the bottom bar has
+                 room. Always present (Builders Club), plus camera in-room
+                 and the staff-only tools when permitted. */ }
+            <motion.div
+                initial="hidden"
+                animate={ visibilityVariant }
+                variants={ mobileNavVariants }
+                transition={ NAV_TRANSITION }
+                className={ `fixed left-1 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-2 rounded-[12px] border border-white/8 bg-[rgba(10,10,12,0.58)] px-[4px] py-[6px] shadow-[0_6px_18px_rgba(0,0,0,0.18)] ${ mobileOnlyClasses }` }>
+                <motion.div variants={ itemVariants }>
+                    <ToolbarItemView icon="buildersclub" onClick={ () => CreateLinkEvent('catalog/toggle/builder') } className="tb-icon" />
+                </motion.div>
+                { isInRoom &&
+                    <motion.div variants={ itemVariants }>
+                        <ToolbarItemView icon="camera" onClick={ () => CreateLinkEvent('camera/toggle') } className="tb-icon" />
+                    </motion.div> }
+                { isMod &&
+                    <motion.div variants={ itemVariants } className="relative">
+                        <ToolbarItemView icon="modtools" onClick={ () => CreateLinkEvent('mod-tools/toggle') } className="tb-icon" />
+                        { (openTicketsCount > 0) &&
+                            <LayoutItemCountView count={ openTicketsCount } className="pointer-events-none absolute -right-1 -top-1 z-10" /> }
+                    </motion.div> }
+                { (isHk && hkEnabled) &&
+                    <motion.div variants={ itemVariants }>
+                        <ToolbarItemView icon="housekeeping" onClick={ () => CreateLinkEvent('housekeeping/toggle') } className="tb-icon" />
+                    </motion.div> }
+                { isMod &&
+                    <motion.div variants={ itemVariants }>
+                        <ToolbarItemView icon="furnieditor" onClick={ () => CreateLinkEvent('furni-editor/toggle') } className="tb-icon" />
+                    </motion.div> }
             </motion.div>
         </>
     );
@@ -492,6 +503,14 @@ const TOOLBAR_STYLES = `
     scrollbar-width: none;
     -ms-overflow-style: none;
     flex-wrap: nowrap;
+  }
+
+  /* Keep each icon at its natural size so the mobile bar scrolls
+     horizontally instead of squashing the items into each other.
+     (Default flex-shrink:1 let the fixed-size icon backgrounds overlap
+     once enough icons were present to exceed the bar width.) */
+  .tb-bar-scroll > * {
+    flex-shrink: 0;
   }
 
   .tb-bar-scroll::-webkit-scrollbar {

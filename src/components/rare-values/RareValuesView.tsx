@@ -84,12 +84,16 @@ export const RareValuesView: FC<{}> = () =>
         return rows.filter(row => row.name.toLocaleLowerCase().includes(query));
     }, [ rows, searchValue ]);
 
+    // Reset paging when the underlying list changes (typed in search, data loaded).
     useEffect(() =>
     {
         setVisibleCount(PAGE_SIZE);
         if(scrollRef.current) scrollRef.current.scrollTop = 0;
     }, [ filtered ]);
 
+    // Infinite scroll: grow visibleCount by PAGE_SIZE whenever the sentinel
+    // enters the viewport. The root is the scroll container so the trigger
+    // fires reliably inside an in-app modal (no document scroll).
     useEffect(() =>
     {
         if(!isVisible) return;

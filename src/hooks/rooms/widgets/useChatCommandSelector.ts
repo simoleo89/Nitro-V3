@@ -4,6 +4,9 @@ import { CommandDefinition, LocalizeText } from '../../../api';
 import { createNitroStore } from '../../../state/createNitroStore';
 import { useMessageEvent } from '../../events';
 
+// Client-only commands are static; safe to keep at module scope. The
+// `descriptionKey` is a LocalizeText slot resolved at merge time so
+// hotels in different locales see the right language.
 const CLIENT_COMMANDS: { key: string; descriptionKey: string }[] = [
     // Room effects
     { key: 'shake',       descriptionKey: 'chatcmd.client.shake' },
@@ -32,6 +35,18 @@ const CLIENT_COMMANDS: { key: string; descriptionKey: string }[] = [
     { key: 'nitro',       descriptionKey: 'chatcmd.client.info' },
 ];
 
+/**
+ * Server-pushed command cache. Lives in a Zustand store (instead of
+ * module-level `let` variables) so the React Compiler can analyze the
+ * surrounding hook cleanly, and so a future test can `setState({…})`
+ * a deterministic fixture without monkey-patching the module.
+ *
+ * The `isListenerRegistered` flag prevents the renderer from getting
+ * two AvailableCommandsEvent listeners — one from the module-level
+ * pre-mount registration (which captures the server's reply that lands
+ * during login, BEFORE any React widget mounts) and one from the
+ * in-hook `useMessageEvent` (which covers later rank-change refreshes).
+ */
 interface ChatCommandStore
 {
     serverCommands: CommandDefinition[];
@@ -62,9 +77,15 @@ const ensureGlobalListener = (): void =>
         GetCommunication().registerMessageEvent(event);
         useChatCommandStore.getState().markListenerRegistered();
     }
-    catch {}
+    catch
+    {
+        // Communication not ready yet — the in-hook useMessageEvent
+        // below covers later mounts.
+    }
 };
 
+// Try once at module load so the server's response landing before any
+// React mount still hits the cache.
 ensureGlobalListener();
 
 export const useChatCommandSelector = (chatValue: string) =>
@@ -76,9 +97,13 @@ export const useChatCommandSelector = (chatValue: string) =>
 
     useEffect(() =>
     {
+        // Cover the case where the module-level registration failed
+        // because GetCommunication() wasn't ready at import time.
         ensureGlobalListener();
     }, []);
 
+    // Late updates (rank change, etc.) — go through the store so all
+    // consumers see the same data.
     useMessageEvent<AvailableCommandsEvent>(AvailableCommandsEvent, event =>
     {
         const parser = event.getParser();
@@ -142,11 +167,13 @@ export const useChatCommandSelector = (chatValue: string) =>
         setDismissed(true);
     }, []);
 
+    // Reset dismissed when chatValue changes to a new command start
     useEffect(() =>
     {
         if(chatValue === ':' || chatValue === '') setDismissed(false);
     }, [ chatValue ]);
 
+    // Reset selectedIndex when filtered list changes
     useEffect(() =>
     {
         setSelectedIndex(0);

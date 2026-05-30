@@ -23,7 +23,7 @@ export const CatalogLayoutBcInfoView: FC<CatalogLayoutProps> = props =>
         <div className="flex flex-col h-full gap-2">
             <div className="flex-1 min-h-0 bg-white rounded border border-card-grid-item-border overflow-hidden flex items-center justify-center">
                 { logo
-                    ? <img alt="" className="max-w-full max-h-full object-contain" src={ logo } />
+                    ? <img alt="" className="w-full h-full object-cover" src={ logo } />
                     : <span className="text-muted text-[11px]">Logo — imposta l'immagine headline da Gestione</span> }
             </div>
             <div className="shrink-0 max-h-[32%] bg-white rounded border border-card-grid-item-border p-3 overflow-auto">

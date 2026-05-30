@@ -34,6 +34,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
     const [ isMeExpanded, setMeExpanded ] = useState(false);
     const [ isToolbarOpen, setIsToolbarOpen ] = useState(false);
     const [ isTouchLayout, setIsTouchLayout ] = useState(false);
+    const [ staffStackBottom, setStaffStackBottom ] = useState<number | null>(null);
     const [ useGuideTool, setUseGuideTool ] = useState(false);
     const [ youtubeEnabled, setYoutubeEnabled ] = useState(false);
     const { userFigure = null } = useSessionInfo();
@@ -114,6 +115,33 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
 
         return () => query.removeEventListener('change', updateTouchLayout);
     }, []);
+
+    // Keep the left staff-tools stack pinned 15px above the room tools rail
+    // (its height is dynamic, so measure it). Falls back to null (CSS
+    // default) when the room tools aren't present, e.g. outside a room.
+    useEffect(() =>
+    {
+        const measure = () =>
+        {
+            const roomTools = document.querySelector('.nitro-room-tools-container') as HTMLElement | null;
+            const next = roomTools
+                ? Math.max(8, Math.round(window.innerHeight - roomTools.getBoundingClientRect().top + 15))
+                : null;
+
+            setStaffStackBottom(prevValue => (prevValue === next ? prevValue : next));
+        };
+
+        measure();
+
+        const interval = window.setInterval(measure, 400);
+        window.addEventListener('resize', measure);
+
+        return () =>
+        {
+            window.clearInterval(interval);
+            window.removeEventListener('resize', measure);
+        };
+    }, [ isInRoom ]);
 
     const openYouTubePlayer = () => window.dispatchEvent(new CustomEvent('youtube:toggle'));
 
@@ -405,7 +433,8 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 animate={ visibilityVariant }
                 variants={ mobileNavVariants }
                 transition={ NAV_TRANSITION }
-                className={ `fixed left-1 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-2 rounded-[12px] border border-white/8 bg-[rgba(10,10,12,0.58)] px-[4px] py-[6px] shadow-[0_6px_18px_rgba(0,0,0,0.18)] ${ mobileOnlyClasses }` }>
+                style={ staffStackBottom != null ? { top: 'auto', bottom: `${ staffStackBottom }px` } : undefined }
+                className={ `fixed left-1 z-40 flex flex-col items-center gap-2 rounded-[12px] border border-white/8 bg-[rgba(10,10,12,0.58)] px-[4px] py-[6px] shadow-[0_6px_18px_rgba(0,0,0,0.18)] ${ staffStackBottom == null ? 'top-1/2 -translate-y-1/2' : '' } ${ mobileOnlyClasses }` }>
                 <motion.div variants={ itemVariants }>
                     <ToolbarItemView icon="buildersclub" onClick={ () => CreateLinkEvent('catalog/toggle/builder') } className="tb-icon" />
                 </motion.div>

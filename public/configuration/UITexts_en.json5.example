@@ -642,6 +642,9 @@
     'wheel.buy':            'Buy spin',
     'wheel.winners':        'Latest winners',
     'wheel.winners.empty':  'No winners yet',
+    'wheel.win.title':      'You won!',
+    'wheel.win.jackpot':    '★ Jackpot ★',
+    'wheel.win.nothing':    'Better luck next time!',
 
     // ------------------------------------------------------------------------
     // Soundboard
@@ -674,6 +677,8 @@
     'rarevalues.editor.weight':       'Chance',
     'rarevalues.editor.label':        'Label',
     'rarevalues.editor.save':         'Save',
+    'rarevalues.editor.add':          '+ Add prize',
+    'rarevalues.editor.remove':       'Remove prize',
     'rarevalues.editor.cat.item':     'Furni (ID)',
     'rarevalues.editor.cat.spin':     'Extra spins',
     'rarevalues.editor.cat.nothing':  'Nothing',

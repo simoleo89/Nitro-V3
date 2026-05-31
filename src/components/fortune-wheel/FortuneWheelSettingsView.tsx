@@ -46,7 +46,9 @@ const prizeToNum = (prize: IWheelAdminPrize): number =>
 
 const rowToEdit = (row: EditRow): IWheelAdminPrizeEdit =>
 {
-    const base = { id: row.id, weight: row.weight, label: row.label };
+    // Locally-added rows carry a negative temp id; the server treats id <= 0
+    // as "insert a new prize", so collapse them to 0 on the wire.
+    const base = { id: row.id > 0 ? row.id : 0, weight: row.weight, label: row.label };
 
     switch(row.category)
     {
@@ -88,6 +90,19 @@ export const FortuneWheelSettingsView: FC<FortuneWheelSettingsViewProps> = ({ on
     const updateRow = (id: number, patch: Partial<EditRow>) =>
         setEditRows(prev => prev.map(row => (row.id === id) ? { ...row, ...patch } : row));
 
+    const removeRow = (id: number) =>
+        setEditRows(prev => prev.filter(row => row.id !== id));
+
+    const addRow = () =>
+        setEditRows(prev =>
+        {
+            // New rows get a decreasing negative temp id so React keys stay
+            // stable and updateRow/removeRow keep matching before the save
+            // round-trips real ids back from the server.
+            const tempId = Math.min(0, ...prev.map(row => row.id)) - 1;
+            return [ ...prev, { id: tempId, category: 'item', num: 0, weight: 1, label: '' } ];
+        });
+
     return (
         <NitroCard className="w-[480px] h-[520px]" uniqueKey="fortune-wheel-settings">
             <NitroCard.Header
@@ -100,6 +115,7 @@ export const FortuneWheelSettingsView: FC<FortuneWheelSettingsViewProps> = ({ on
                         <span className="w-16">{ LocalizeText('rarevalues.editor.value') }</span>
                         <span className="w-12">{ LocalizeText('rarevalues.editor.weight') }</span>
                         <span className="grow">{ LocalizeText('rarevalues.editor.label') }</span>
+                        <span className="w-6" />
                     </Flex>
                     <Column gap={ 1 } overflow="auto" className="grow">
                         { editRows.map(row => (
@@ -128,11 +144,23 @@ export const FortuneWheelSettingsView: FC<FortuneWheelSettingsViewProps> = ({ on
                                     value={ row.label }
                                     onChange={ event => updateRow(row.id, { label: event.target.value }) }
                                     className="min-w-0 grow rounded border border-black/20 bg-white px-1 py-0.5 text-sm text-[#1f2d34]" />
+                                <button
+                                    type="button"
+                                    title={ LocalizeText('rarevalues.editor.remove') }
+                                    onClick={ () => removeRow(row.id) }
+                                    className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded bg-[#d9534f] font-bold leading-none text-white hover:bg-[#c44440]">×</button>
                             </Flex>
                         )) }
                         { !editRows.length &&
                             <Text small className="text-black/50">{ LocalizeText('wheel.settings.empty') }</Text> }
                     </Column>
+                    <button
+                        type="button"
+                        disabled={ editRows.length >= 64 }
+                        onClick={ addRow }
+                        className="cursor-pointer rounded border border-dashed border-[#3a7bb5] px-4 py-1.5 text-sm font-bold text-[#3a7bb5] hover:bg-[#3a7bb5]/10 disabled:cursor-default disabled:opacity-40">
+                        { LocalizeText('rarevalues.editor.add') }
+                    </button>
                     <button
                         type="button"
                         disabled={ !editRows.length }

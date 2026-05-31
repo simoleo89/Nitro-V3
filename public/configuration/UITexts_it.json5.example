@@ -642,6 +642,9 @@
     'wheel.buy':            'Acquista giro',
     'wheel.winners':        'Ultimi vincitori',
     'wheel.winners.empty':  'Ancora nessun vincitore',
+    'wheel.win.title':      'Hai vinto!',
+    'wheel.win.jackpot':    '★ Jackpot ★',
+    'wheel.win.nothing':    'Sarà per la prossima!',
 
     // ------------------------------------------------------------------------
     // Soundboard
@@ -674,6 +677,8 @@
     'rarevalues.editor.weight':       'Probabilità',
     'rarevalues.editor.label':        'Etichetta',
     'rarevalues.editor.save':         'Salva',
+    'rarevalues.editor.add':          '+ Aggiungi premio',
+    'rarevalues.editor.remove':       'Rimuovi premio',
     'rarevalues.editor.cat.item':     'Arredo (ID)',
     'rarevalues.editor.cat.spin':     'Giri extra',
     'rarevalues.editor.cat.nothing':  'Niente',

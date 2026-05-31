@@ -644,6 +644,9 @@
     'wheel.buy':            'Draaibeurt kopen',
     'wheel.winners':        'Laatste winnaars',
     'wheel.winners.empty':  'Nog geen winnaars',
+    'wheel.win.title':      'Gewonnen!',
+    'wheel.win.jackpot':    '★ Jackpot ★',
+    'wheel.win.nothing':    'Volgende keer beter!',
 
     // ------------------------------------------------------------------------
     // Soundboard
@@ -676,6 +679,8 @@
     'rarevalues.editor.weight':       'Kans',
     'rarevalues.editor.label':        'Label',
     'rarevalues.editor.save':         'Opslaan',
+    'rarevalues.editor.add':          '+ Prijs toevoegen',
+    'rarevalues.editor.remove':       'Prijs verwijderen',
     'rarevalues.editor.cat.item':     'Meubel (ID)',
     'rarevalues.editor.cat.spin':     'Extra draaien',
     'rarevalues.editor.cat.nothing':  'Niets',

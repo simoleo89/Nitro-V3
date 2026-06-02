@@ -292,6 +292,7 @@
   border-right: 1px solid #afafaf;
   color: #111;
   font-size: 11px;
+  cursor: pointer;
 }
 
 .nitro-extended-profile__summary-button:first-child {

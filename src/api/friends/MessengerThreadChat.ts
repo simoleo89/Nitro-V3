@@ -4,10 +4,13 @@ export class MessengerThreadChat
     public static ROOM_INVITE: number = 1;
     public static STATUS_NOTIFICATION: number = 2;
     public static SECURITY_NOTIFICATION: number = 3;
+    public static SENT: number = 0;
+    public static READ: number = 1;
     private static CHAT_ID: number = 0;
 
     private _id: number;
     private _type: number;
+    private _status: number = MessengerThreadChat.SENT;
     private _senderId: number;
     private _message: string;
     private _secondsSinceSent: number;
@@ -77,6 +80,16 @@ export class MessengerThreadChat
     public get offlineDelivered(): boolean
     {
         return (this._type === MessengerThreadChat.CHAT) && (this._extraData === 'offline');
+    }
+
+    public get status(): number
+    {
+        return this._status;
+    }
+
+    public setStatus(status: number): void
+    {
+        this._status = status;
     }
 
     public get date(): Date

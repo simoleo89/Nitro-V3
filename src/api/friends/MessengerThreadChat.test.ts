@@ -27,3 +27,19 @@ describe('MessengerThreadChat.offlineDelivered', () =>
         expect(chat.offlineDelivered).toBe(false);
     });
 });
+
+describe('MessengerThreadChat status', () =>
+{
+    it('defaults to SENT', () =>
+    {
+        const chat = new MessengerThreadChat(5, 'hi', 0, null, MessengerThreadChat.CHAT);
+        expect(chat.status).toBe(MessengerThreadChat.SENT);
+    });
+
+    it('can be set to READ', () =>
+    {
+        const chat = new MessengerThreadChat(5, 'hi', 0, null, MessengerThreadChat.CHAT);
+        chat.setStatus(MessengerThreadChat.READ);
+        expect(chat.status).toBe(MessengerThreadChat.READ);
+    });
+});

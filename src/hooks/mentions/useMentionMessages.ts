@@ -1,9 +1,12 @@
 import { MentionReceivedEvent, MentionsListEvent, RequestMentionsComposer } from '@nitrots/nitro-renderer';
 import { useCallback, useEffect } from 'react';
-import { GetConfigurationValue, IMentionEntry, LocalizeText, NotificationBubbleType, PlaySound, SendMessageComposer, SoundNames } from '../../api';
+import { GetConfigurationValue, IMentionEntry, LocalizeText, NotificationBubbleType, PlaySound, SendMessageComposer } from '../../api';
 import { useMessageEvent } from '../events';
 import { useNotificationActions } from '../notification';
 import { addMention, setMentions } from './mentionsStore';
+
+// Dedicated mention chime served from nitro-assets/sounds/<sample>.mp3.
+const MENTION_SOUND_SAMPLE = 'mentions_notification';
 
 export const useMentionMessages = (): void =>
 {
@@ -46,7 +49,7 @@ export const useMentionMessages = (): void =>
 
         addMention(entry);
 
-        if(GetConfigurationValue<boolean>('mentions_ui.sound', true)) PlaySound(SoundNames.MESSENGER_MESSAGE_RECEIVED);
+        if(GetConfigurationValue<boolean>('mentions_ui.sound', true)) PlaySound(MENTION_SOUND_SAMPLE);
 
         showSingleBubble(
             LocalizeText('mentions.notification', [ 'sender', 'room' ], [ entry.senderUsername, entry.roomName ]),

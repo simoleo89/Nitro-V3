@@ -46,11 +46,6 @@
   gap: 10px;
 }
 
-/* Mirror the room infostand exactly: a 68x135 flex column (= profile-background)
-   that centres the avatar horizontally and clips it; the stand/overlay sit on
-   top as absolute layers. The avatar keeps its component default classes
-   (relative w-[90px] h-[130px] left-[-2px]) so it lines up with bg + stand and
-   isn't crooked. Do NOT absolutely position or force width/height on it. */
 .nitro-extended-profile__avatar-shell {
   width: 68px;
   height: 135px;
@@ -255,20 +250,15 @@
   transform: translateY(-50%);
   overflow: hidden;
 }
-
-/* Same proven recipe as the messenger head: clip a small box and centre a
-   54x54 avatar in it. `inset: auto` cancels the component's `inset-0` so the
-   width/position take effect (otherwise the head overflows huge). */
 .nitro-extended-profile__relationship-head .avatar-image {
   position: absolute !important;
-  inset: auto !important;
-  left: 50% !important;
-  top: 54% !important;
-  width: 50px !important;
-  height: 50px !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   margin: 0 !important;
-  background-position: center center !important;
-  transform: translate(-50%, -50%) scale(.95) !important;
+  background-size: 60px auto !important;
+  background-position: -14px -21px !important;
+  transform: none !important;
 }
 
 .nitro-extended-profile__relationship-subcopy {

@@ -74,6 +74,11 @@ export class MessengerThreadChat
         return this._extraData;
     }
 
+    public get offlineDelivered(): boolean
+    {
+        return (this._type === MessengerThreadChat.CHAT) && (this._extraData === 'offline');
+    }
+
     public get date(): Date
     {
         return this._date;

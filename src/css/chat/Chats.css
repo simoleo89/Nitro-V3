@@ -2396,3 +2396,12 @@
     }
 
 }
+
+/* Mention highlight inside chat bubbles (cosmetic) */
+.mention-highlight {
+    font-weight: 700;
+    color: #1e7295;
+    background-color: rgba(30, 114, 149, 0.16);
+    border-radius: 3px;
+    padding: 0 2px;
+}

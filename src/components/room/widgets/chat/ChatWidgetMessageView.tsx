@@ -1,8 +1,10 @@
 import { GetRoomEngine, RoomChatSettings, RoomObjectCategory } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { ChatBubbleMessage } from '../../../../api';
+import { ChatBubbleMessage, GetConfigurationValue } from '../../../../api';
 import { UserIdentityView } from '../../../../common';
 import { useOnClickChat } from '../../../../hooks';
+import { useUserDataSnapshot } from '../../../../hooks/session/useSessionSnapshots';
+import { highlightMentions } from './highlightMentions';
 
 interface ChatWidgetMessageViewProps
 {
@@ -21,6 +23,15 @@ export const ChatWidgetMessageView: FC<ChatWidgetMessageViewProps> = ({
     const [ isReady, setIsReady ] = useState(false);
     const elementRef = useRef<HTMLDivElement>(null);
     const { onClickChat } = useOnClickChat();
+    const { userName: ownUsername = '' } = useUserDataSnapshot();
+
+    const mentionsHighlightOn = GetConfigurationValue<boolean>('mentions_ui.enabled', true);
+
+    const highlight = (html: string): string => (mentionsHighlightOn ? highlightMentions(html, ownUsername) : html);
+
+    const formattedText = useMemo(() => highlight(`${ chat.formattedText }`), [ chat.formattedText, ownUsername, mentionsHighlightOn ]);
+    const originalFormattedText = useMemo(() => highlight(`${ chat.originalFormattedText || chat.formattedText }`), [ chat.originalFormattedText, chat.formattedText, ownUsername, mentionsHighlightOn ]);
+    const translatedFormattedText = useMemo(() => highlight(`${ chat.translatedFormattedText || chat.formattedText }`), [ chat.translatedFormattedText, chat.formattedText, ownUsername, mentionsHighlightOn ]);
 
     const getBubbleWidth = useMemo(() =>
     {
@@ -112,16 +123,16 @@ export const ChatWidgetMessageView: FC<ChatWidgetMessageViewProps> = ({
                         showColon={ true }
                         username={ chat.username } />
                     { !chat.showTranslation &&
-                        <span className={ `${ messageClassName } align-middle` } dangerouslySetInnerHTML={ { __html: `${ chat.formattedText }` } } onClick={ onClickChat } /> }
+                        <span className={ `${ messageClassName } align-middle` } dangerouslySetInnerHTML={ { __html: formattedText } } onClick={ onClickChat } /> }
                     { chat.showTranslation &&
                         <div className="mt-[2px] flex flex-col gap-[2px]" onClick={ onClickChat }>
                             <div className="flex items-start gap-1 leading-[1.1]">
                                 <span className="inline-block min-w-[52px] font-bold" style={ { opacity: 0.75 } }>original:</span>
-                                <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: `${ chat.originalFormattedText || chat.formattedText }` } } />
+                                <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: originalFormattedText } } />
                             </div>
                             <div className="flex items-start gap-1 leading-[1.1]">
                                 <span className="inline-block min-w-[52px] font-bold" style={ { opacity: 0.75 } }>translate:</span>
-                                <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: `${ chat.translatedFormattedText || chat.formattedText }` } } />
+                                <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: translatedFormattedText } } />
                             </div>
                         </div> }
                 </div>

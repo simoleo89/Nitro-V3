@@ -707,6 +707,24 @@
     'chatcmd.client.info':        'Info client',
 
     // ------------------------------------------------------------------------
+    // Mentions
+    // ------------------------------------------------------------------------
+    'mentions.window.title':    'Menzioni',
+    'mentions.window.empty':    'Nessuna menzione',
+    'mentions.window.markall':  'Segna tutte come lette',
+    'mentions.tab.title':       'Menzioni',
+    'mentions.notification':    '%sender% ti ha menzionato in %room%',
+    'mentions.filter.all':      'Tutte',
+    'mentions.filter.unread':   'Non lette',
+    'mentions.filter.direct':   'Dirette',
+    'mentions.filter.room':     'Stanza',
+    'mentions.group.today':     'Oggi',
+    'mentions.group.yesterday': 'Ieri',
+    'mentions.group.older':     'Precedenti',
+    'mentions.type.direct':     'Menzione diretta',
+    'mentions.type.room':       'Menzione di stanza',
+    'mentions.action.goto':     'Vai alla stanza',
+    'mentions.action.remove':   'Rimuovi',
     // Me-menu settings + User account settings window
     // ------------------------------------------------------------------------
     'usersettings.tab.general':                         "Generale",

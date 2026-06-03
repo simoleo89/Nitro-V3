@@ -707,6 +707,24 @@
     'chatcmd.client.info':        'Client info',
 
     // ------------------------------------------------------------------------
+    // Mentions
+    // ------------------------------------------------------------------------
+    'mentions.window.title':    'Mentions',
+    'mentions.window.empty':    'No mentions',
+    'mentions.window.markall':  'Mark all as read',
+    'mentions.tab.title':       'Mentions',
+    'mentions.notification':    '%sender% mentioned you in %room%',
+    'mentions.filter.all':      'All',
+    'mentions.filter.unread':   'Unread',
+    'mentions.filter.direct':   'Direct',
+    'mentions.filter.room':     'Room',
+    'mentions.group.today':     'Today',
+    'mentions.group.yesterday': 'Yesterday',
+    'mentions.group.older':     'Earlier',
+    'mentions.type.direct':     'Direct mention',
+    'mentions.type.room':       'Room mention',
+    'mentions.action.goto':     'Go to room',
+    'mentions.action.remove':   'Remove',
     // Me-menu settings + User account settings window
     // ------------------------------------------------------------------------
     'usersettings.tab.general':                         "General",

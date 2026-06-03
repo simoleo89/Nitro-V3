@@ -709,6 +709,24 @@
     'chatcmd.client.info':        'Client info',
 
     // ------------------------------------------------------------------------
+    // Mentions
+    // ------------------------------------------------------------------------
+    'mentions.window.title':    'Vermeldingen',
+    'mentions.window.empty':    'Geen vermeldingen',
+    'mentions.window.markall':  'Alles als gelezen markeren',
+    'mentions.tab.title':       'Vermeldingen',
+    'mentions.notification':    '%sender% heeft je genoemd in %room%',
+    'mentions.filter.all':      'Alle',
+    'mentions.filter.unread':   'Ongelezen',
+    'mentions.filter.direct':   'Direct',
+    'mentions.filter.room':     'Kamer',
+    'mentions.group.today':     'Vandaag',
+    'mentions.group.yesterday': 'Gisteren',
+    'mentions.group.older':     'Eerder',
+    'mentions.type.direct':     'Directe vermelding',
+    'mentions.type.room':       'Kamervermelding',
+    'mentions.action.goto':     'Ga naar kamer',
+    'mentions.action.remove':   'Verwijderen',
     // Me-menu settings + User account settings window
     // ------------------------------------------------------------------------
     'usersettings.tab.general':                         "Algemeen",

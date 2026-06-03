@@ -58,8 +58,8 @@ export const GroupForumNewThreadView: FC<GroupForumNewThreadViewProps> = props =
     return (
         <Column className="h-full p-3" gap={ 2 }>
             <Flex gap={ 2 } alignItems="center">
-                <Text pointer underline onClick={ onBack }>
-                    &laquo; { LocalizeText('groupforum.view.back') }
+                <Text pointer bold onClick={ onBack }>
+                    <span className="inline-block w-[7px] h-[7px] border-l-2 border-b-2 border-current rotate-45 mr-1 align-middle" /> { LocalizeText('groupforum.view.back') }
                 </Text>
             </Flex>
             <Column gap={ 1 }>

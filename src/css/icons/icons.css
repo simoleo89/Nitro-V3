@@ -229,6 +229,13 @@
     height: 32px;
 }
 
+.nitro-icon.icon-mentions {
+    background-image: url("@/assets/images/toolbar/icons/mentions.png");
+    background-size: contain;
+    width: 36px;
+    height: 32px;
+}
+
 .nitro-icon.icon-wired-tools {
     background-image: url("@/assets/images/wiredtools/wired_menu.png");
     background-size: contain;

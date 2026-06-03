@@ -64,6 +64,6 @@ export const useNavigatorUiStore = createNitroStore<NavigatorUiState & Navigator
     markInitDone: () => set({ needsInit: false }),
     requestSearch: () => set({ needsSearch: true }),
     consumeSearchRequest: () => set({ needsSearch: false }),
-    setTab: (code) => set({ currentTabCode: code, currentFilter: '' }),
+    setTab: (code) => set({ currentTabCode: code, currentFilter: '', isCreatorOpen: false }),
     setFilter: (value) => set({ currentFilter: value })
 }));

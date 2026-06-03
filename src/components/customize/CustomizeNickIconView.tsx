@@ -1,4 +1,4 @@
-import { AddLinkEventTracker, ILinkEventTracker, PurchaseCatalogPrefixComposer, PurchaseNickIconComposer, PurchasePrefixComposer, RemoveLinkEventTracker, RequestNickIconsComposer, SetActiveNickIconComposer, SetActivePrefixComposer, SetDisplayOrderComposer, UserNickIconsEvent } from '@nitrots/nitro-renderer';
+import { AddLinkEventTracker, CustomPrefixPurchaseFailedEvent, ILinkEventTracker, PurchaseCatalogPrefixComposer, PurchaseNickIconComposer, PurchasePrefixComposer, RemoveLinkEventTracker, RequestNickIconsComposer, SetActiveNickIconComposer, SetActivePrefixComposer, SetDisplayOrderComposer, UserNickIconsEvent } from '@nitrots/nitro-renderer';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { FC, useEffect, useMemo, useState } from 'react';
@@ -65,6 +65,12 @@ export const CustomizeNickIconView: FC<{}> = () =>
     const [ customPrefixEffect, setCustomPrefixEffect ] = useState('');
     const [ customPrefixFont, setCustomPrefixFont ] = useState('');
     const [ showEmojiPicker, setShowEmojiPicker ] = useState(false);
+
+    useMessageEvent<CustomPrefixPurchaseFailedEvent>(CustomPrefixPurchaseFailedEvent, () =>
+    {
+        setIsLoading(false);
+        setIsVisible(false);
+    });
 
     useMessageEvent<UserNickIconsEvent>(UserNickIconsEvent, event =>
     {
@@ -298,7 +304,7 @@ export const CustomizeNickIconView: FC<{}> = () =>
             <NitroCardContentView className="flex max-h-[78vh] flex-col gap-3 overflow-y-auto text-black">
                 <div className="rounded border border-black/10 bg-black/5 p-3">
                     <Text bold>Live preview</Text>
-                    <div className="mt-2 flex min-h-[54px] items-center justify-center rounded border border-black/10 bg-[#1f2937] px-3 py-2 text-white">
+                    <div className="mt-2 flex min-h-[54px] items-center justify-center rounded border border-black/10 bg-[#cfe8fb] px-3 py-2 text-[#1f2937]">
                         <UserIdentityView
                             displayOrder={ displayOrder }
                             nickIcon={ activeIcon?.iconKey || '' }
@@ -509,7 +515,7 @@ export const CustomizeNickIconView: FC<{}> = () =>
                                             Premium fonts add an extra price on top of the custom prefix.
                                         </div> }
                                 </div>
-                                <div className="rounded border border-black/10 bg-[#1f2937] px-3 py-2 text-white" style={ customPrefixPreviewStyle }>
+                                <div className="rounded border border-black/10 bg-[#cfe8fb] px-3 py-2 text-[#1f2937]" style={ customPrefixPreviewStyle }>
                                     <UserIdentityView
                                         displayOrder={ displayOrder }
                                         nickIcon={ activeIcon?.iconKey || '' }

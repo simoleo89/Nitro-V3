@@ -92,8 +92,8 @@ export const GroupForumThreadListView: FC<GroupForumThreadListViewProps> = props
         <Column className="h-full" gap={ 0 }>
             <Flex className="bg-muted p-2 border-b" gap={ 2 } alignItems="center" justifyContent="between">
                 <Flex gap={ 2 } alignItems="center">
-                    <Text pointer underline onClick={ onBack }>
-                        &laquo; { LocalizeText('groupforum.view.back') }
+                    <Text pointer bold onClick={ onBack }>
+                        <span className="inline-block w-[7px] h-[7px] border-l-2 border-b-2 border-current rotate-45 mr-1 align-middle" /> { LocalizeText('groupforum.view.back') }
                     </Text>
                 </Flex>
                 <Flex gap={ 1 } alignItems="center">

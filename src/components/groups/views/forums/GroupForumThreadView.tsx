@@ -203,19 +203,19 @@ export const GroupForumThreadView: FC<GroupForumThreadViewProps> = props =>
         <Column className="h-full" gap={ 0 }>
             <Flex className="bg-muted p-2 border-b" gap={ 2 } alignItems="center" justifyContent="between">
                 <Flex gap={ 2 } alignItems="center">
-                    <Text pointer underline onClick={ onBack }>
-                        &laquo; { LocalizeText('groupforum.view.back') }
+                    <Text pointer bold onClick={ onBack }>
+                        <span className="inline-block w-[7px] h-[7px] border-l-2 border-b-2 border-current rotate-45 mr-1 align-middle" /> { LocalizeText('groupforum.view.back') }
                     </Text>
                 </Flex>
                 { canModerate &&
                     <Flex gap={ 1 }>
-                        <Button variant={ threadInfo?.isPinned ? 'warning' : 'outline-secondary' } className="btn-sm" onClick={ togglePinThread }>
+                        <Button variant="outline-secondary" className="btn-sm rounded-md text-white bg-[#5cb85c] border-[#5cb85c] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-[#4cae4c] hover:border-[#47a447]" onClick={ togglePinThread }>
                             { threadInfo?.isPinned ? LocalizeText('groupforum.thread.unpin') : LocalizeText('groupforum.thread.pin') }
                         </Button>
-                        <Button variant={ isLocked ? 'danger' : 'outline-secondary' } className="btn-sm" onClick={ toggleLockThread }>
+                        <Button variant="outline-secondary" className="btn-sm rounded-md text-white bg-[#5cb85c] border-[#5cb85c] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-[#4cae4c] hover:border-[#47a447]" onClick={ toggleLockThread }>
                             { isLocked ? LocalizeText('groupforum.thread.unlock') : LocalizeText('groupforum.thread.lock') }
                         </Button>
-                        <Button variant="outline-danger" className="btn-sm" onClick={ hideThread }>
+                        <Button variant="outline-secondary" className="btn-sm rounded-md text-white bg-[#5cb85c] border-[#5cb85c] [box-shadow:inset_0_2px_#ffffff26,inset_0_-2px_#0000001a,0_1px_#0000001a] hover:text-white hover:bg-[#4cae4c] hover:border-[#47a447]" onClick={ hideThread }>
                             { LocalizeText('groupforum.thread.hide') }
                         </Button>
                         <Button variant="danger" className="btn-sm" onClick={ deleteThread }>
@@ -242,10 +242,8 @@ export const GroupForumThreadView: FC<GroupForumThreadViewProps> = props =>
                             className={ `p-3 border-b ${ (message.state !== STATE_NORMAL) ? 'bg-danger bg-opacity-10' : '' }` }
                             gap={ 3 }>
                             <Column className="flex-shrink-0 items-center w-[50px]" gap={ 1 }>
-                                <div className="w-[40px] h-[40px] rounded-full mx-auto overflow-hidden bg-[rgba(255,255,255,0.1)] flex justify-center">
-                                    <div className="mt-[-25px]">
-                                        <LayoutAvatarImageView figure={ message.authorFigure } headOnly={ true } direction={ 2 } />
-                                    </div>
+                                <div className="relative w-[40px] h-[40px] rounded-full mx-auto overflow-hidden bg-[rgba(255,255,255,0.1)]">
+                                    <LayoutAvatarImageView figure={ message.authorFigure } headOnly={ true } direction={ 2 } style={ { backgroundSize: '80px auto', backgroundPosition: '-19px -28px' } } />
                                 </div>
                                 <Text small bold pointer underline onClick={ () => GetUserProfile(message.authorId) }>
                                     { message.authorName }

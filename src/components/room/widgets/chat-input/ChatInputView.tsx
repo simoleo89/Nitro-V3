@@ -4,11 +4,25 @@ import { createPortal } from 'react-dom';
 import { ChatMessageTypeEnum, GetClubMemberLevel, GetConfigurationValue, LocalizeText, RoomWidgetUpdateChatInputContentEvent } from '../../../../api';
 import { Text } from '../../../../common';
 import { useChatCommandSelector, useChatInputWidget, useRoom, useSessionInfo, useUiEvent } from '../../../../hooks';
+import { useRoomUserListSnapshot } from '../../../../hooks/session/useSessionSnapshots';
 import { ChatInputCommandSelectorView } from './ChatInputCommandSelectorView';
 import { ChatInputEmojiSelectorView } from './ChatInputEmojiSelectorView';
+import { ChatInputMentionSelectorView, MentionSuggestion } from './ChatInputMentionSelectorView';
 import { ChatInputStyleSelectorView } from './ChatInputStyleSelectorView';
 
-export const ChatInputView: FC = () =>
+const USER_TYPE_REAL_USER = 1;
+const MAX_MENTION_SUGGESTIONS = 8;
+const MENTION_ALIASES: ReadonlyArray<{ key: string; label: string; description?: string }> = [
+    { key: 'all', label: 'all', description: 'Everyone in the hotel' },
+    { key: 'everyone', label: 'everyone', description: 'Everyone in the hotel' },
+    { key: 'tutti', label: 'tutti', description: 'Everyone in the hotel' },
+    { key: 'friends', label: 'friends', description: 'Your online friends' },
+    { key: 'amici', label: 'amici', description: 'Your online friends' },
+    { key: 'room', label: 'room', description: 'Everyone in this room' },
+    { key: 'stanza', label: 'stanza', description: 'Everyone in this room' }
+];
+
+export const ChatInputView: FC<{}> = props =>
 {
     const [ chatValue, setChatValue ] = useState<string>('');
     const { chatStyleId = 0, updateChatStyleId = null } = useSessionInfo();
@@ -16,6 +30,98 @@ export const ChatInputView: FC = () =>
     const { roomSession = null } = useRoom();
     const inputRef = useRef<HTMLInputElement>(null);
     const { isVisible: commandSelectorVisible, filteredCommands, selectedIndex, setSelectedIndex, moveUp, moveDown, selectCurrent, close: closeCommandSelector } = useChatCommandSelector(chatValue);
+    const roomUserList = useRoomUserListSnapshot();
+    const [ mentionSelectedIndex, setMentionSelectedIndex ] = useState<number>(0);
+
+    const mentionContext = useMemo(() =>
+    {
+        if(!chatValue) return null;
+        if(commandSelectorVisible) return null;
+
+        const caret = inputRef.current?.selectionStart ?? chatValue.length;
+        const upToCaret = chatValue.slice(0, caret);
+        const at = upToCaret.lastIndexOf('@');
+        if(at < 0) return null;
+
+        if(at > 0 && !/\s/.test(upToCaret.charAt(at - 1))) return null;
+
+        const query = upToCaret.slice(at + 1);
+
+        if(/\s/.test(query)) return null;
+
+        return { atIndex: at, replaceFrom: at, replaceTo: caret, query };
+    }, [ chatValue, commandSelectorVisible ]);
+
+    const mentionSuggestions = useMemo<MentionSuggestion[]>(() =>
+    {
+        if(!mentionContext) return [];
+
+        const query = mentionContext.query.toLowerCase();
+        const out: MentionSuggestion[] = [];
+
+        for(const user of roomUserList)
+        {
+            if(!user || user.type !== USER_TYPE_REAL_USER) continue;
+            if(!user.name) continue;
+            if(query.length > 0 && !user.name.toLowerCase().startsWith(query)) continue;
+
+            out.push({
+                key: `user:${ user.webID }`,
+                kind: 'user',
+                name: user.name,
+                insertToken: user.name,
+                figure: user.figure || ''
+            });
+
+            if(out.length >= MAX_MENTION_SUGGESTIONS) break;
+        }
+
+        for(const alias of MENTION_ALIASES)
+        {
+            if(query.length > 0 && !alias.key.toLowerCase().startsWith(query)) continue;
+
+            out.push({
+                key: `alias:${ alias.key }`,
+                kind: 'alias',
+                name: alias.label,
+                insertToken: alias.key,
+                description: alias.description
+            });
+
+            if(out.length >= MAX_MENTION_SUGGESTIONS) break;
+        }
+
+        return out;
+    }, [ mentionContext, roomUserList ]);
+
+    const mentionSelectorVisible = mentionSuggestions.length > 0;
+
+    useEffect(() =>
+    {
+        if(mentionSelectedIndex >= mentionSuggestions.length) setMentionSelectedIndex(0);
+    }, [ mentionSuggestions.length, mentionSelectedIndex ]);
+
+    const applyMentionSuggestion = useCallback((suggestion: MentionSuggestion) =>
+    {
+        if(!suggestion || !mentionContext) return;
+
+        const before = chatValue.slice(0, mentionContext.replaceFrom);
+        const after = chatValue.slice(mentionContext.replaceTo);
+        const inserted = `@${ suggestion.insertToken } `;
+        const next = `${ before }${ inserted }${ after }`;
+
+        setChatValue(next);
+
+        requestAnimationFrame(() =>
+        {
+            if(!inputRef.current) return;
+            const caret = before.length + inserted.length;
+            inputRef.current.focus();
+            inputRef.current.setSelectionRange(caret, caret);
+        });
+
+        setMentionSelectedIndex(0);
+    }, [ chatValue, mentionContext ]);
 
     const chatModeIdWhisper = useMemo(() => LocalizeText('widgets.chatinput.mode.whisper'), []);
     const chatModeIdShout = useMemo(() => LocalizeText('widgets.chatinput.mode.shout'), []);
@@ -166,7 +272,6 @@ export const ChatInputView: FC = () =>
                     return;
                 case 'Tab':
                     event.preventDefault();
-                    // fall through
                 case 'NumpadEnter':
                 case 'Enter': {
                     const selected = selectCurrent();
@@ -182,6 +287,45 @@ export const ChatInputView: FC = () =>
                 case 'Escape':
                     event.preventDefault();
                     closeCommandSelector();
+                    return;
+            }
+        }
+
+        if(mentionSelectorVisible)
+        {
+            switch(event.key)
+            {
+                case 'ArrowUp':
+                    event.preventDefault();
+                    setMentionSelectedIndex(prev => (prev <= 0) ? (mentionSuggestions.length - 1) : (prev - 1));
+                    return;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    setMentionSelectedIndex(prev => (prev >= mentionSuggestions.length - 1) ? 0 : (prev + 1));
+                    return;
+                case 'Tab':
+                case 'NumpadEnter':
+                case 'Enter': {
+                    const picked = mentionSuggestions[mentionSelectedIndex] ?? mentionSuggestions[0];
+
+                    if(picked)
+                    {
+                        event.preventDefault();
+                        applyMentionSuggestion(picked);
+                        return;
+                    }
+                    break;
+                }
+                case 'Escape':
+                    event.preventDefault();
+                    setMentionSelectedIndex(0);
+
+                    if(mentionContext)
+                    {
+                        const before = chatValue.slice(0, mentionContext.replaceFrom);
+                        const after = chatValue.slice(mentionContext.replaceTo);
+                        setChatValue(before + after);
+                    }
                     return;
             }
         }
@@ -211,7 +355,7 @@ export const ChatInputView: FC = () =>
                 return;
         }
 
-    }, [ floodBlocked, inputRef, chatModeIdWhisper, anotherInputHasFocus, setInputFocus, checkSpecialKeywordForInput, sendChatValue, commandSelectorVisible, moveUp, moveDown, selectCurrent, setChatInputValue, closeCommandSelector ]);
+    }, [ floodBlocked, inputRef, chatModeIdWhisper, anotherInputHasFocus, setInputFocus, checkSpecialKeywordForInput, sendChatValue, commandSelectorVisible, moveUp, moveDown, selectCurrent, closeCommandSelector, mentionSelectorVisible, mentionSuggestions, mentionSelectedIndex, applyMentionSuggestion, mentionContext, chatValue ]);
 
     useUiEvent<RoomWidgetUpdateChatInputContentEvent>(RoomWidgetUpdateChatInputContentEvent.CHAT_INPUT_CONTENT, event =>
     {
@@ -309,6 +453,13 @@ export const ChatInputView: FC = () =>
                             setChatInputValue(':' + cmd.key + ' ');
                         } }
                         onHover={ setSelectedIndex }
+                    /> }
+                { mentionSelectorVisible && !commandSelectorVisible &&
+                    <ChatInputMentionSelectorView
+                        suggestions={ mentionSuggestions }
+                        selectedIndex={ mentionSelectedIndex }
+                        onSelect={ applyMentionSuggestion }
+                        onHover={ setMentionSelectedIndex }
                     /> }
                 <div className="flex-1 items-center input-sizer">
                     { !floodBlocked &&

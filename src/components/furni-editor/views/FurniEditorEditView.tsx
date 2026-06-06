@@ -216,7 +216,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
 
     const inputClass = (field?: string) =>
         `w-full px-2 py-1 text-sm leading-normal rounded-sm border border-[#bbb] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 min-h-[calc(1.5em+0.5rem+2px)]${ field && validation[field] ? ' border-red-500 bg-red-50' : '' }`;
-    const labelClass = 'text-[10px] font-bold text-secondary uppercase tracking-wider mb-0.5 flex items-center gap-0.5';
+    const labelClass = 'text-[11px] font-bold text-[#374151] mb-0.5 flex items-center gap-0.5';
     const readonlyClass = 'w-full px-2 py-1 text-sm font-mono rounded-sm border border-[#ddd] bg-[#f2f2eb] text-[#555] select-all';
 
     return (
@@ -238,6 +238,31 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                 { isDirty && <span className="text-[10px] text-orange-500 font-bold ml-auto">Unsaved changes</span> }
             </Flex>
 
+            { /* Primary edit surface: furnidata display name + description (server-authoritative, live) */ }
+            <div className="bg-white rounded border border-primary/40 shadow-sm">
+                <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#eee]">
+                    <Text small bold variant="primary">Display Name &amp; Description</Text>
+                    { (furniName !== String(furniDataEntry?.name ?? '') || furniDescription !== String(furniDataEntry?.description ?? '')) &&
+                        <span className="text-[10px] text-orange-500 font-bold">Unsaved</span> }
+                </div>
+                <div className="px-2 pt-1 pb-2">
+                    <Column gap={ 1 }>
+                        <div>
+                            <label className={ labelClass }>Display Name (furnidata)</label>
+                            <input className={ inputClass() } value={ furniName } onChange={ e => setFurniName(e.target.value) } maxLength={ 256 } />
+                        </div>
+                        <div>
+                            <label className={ labelClass }>Description</label>
+                            <textarea className={ inputClass() } rows={ 2 } value={ furniDescription } onChange={ e => setFurniDescription(e.target.value) } maxLength={ 256 } />
+                        </div>
+                        <Flex gap={ 1 }>
+                            <Button variant="success" disabled={ loading } onClick={ () => setConfirmFurnidata(true) }>Save name/desc</Button>
+                            <Button variant="secondary" disabled={ loading } onClick={ () => onRevertFurnidata(item.id) }>Revert</Button>
+                        </Flex>
+                    </Column>
+                </div>
+            </div>
+
             <Section title="Basic Info">
                 <div className="grid grid-cols-2 gap-2">
                     <div>
@@ -254,7 +279,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                     </div>
                     <div>
                         <label className={ labelClass }>Type</label>
-                        <select className="w-full px-2 py-1 text-xs leading-normal rounded-sm border border-[#ccc] pr-8" value={ form.type } onChange={ e => setField('type', e.target.value) }>
+                        <select className="w-full px-2 py-1 text-sm leading-normal rounded-sm border border-[#bbb] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 pr-8" value={ form.type } onChange={ e => setField('type', e.target.value) }>
                             <option value="s">Floor (s)</option>
                             <option value="i">Wall (i)</option>
                         </select>
@@ -286,7 +311,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                 <div className="flex flex-col gap-2">
                     { PERM_GROUPS.map(group => (
                         <div key={ group.label }>
-                            <Text className="text-[10px] font-bold text-[#666] uppercase tracking-wider mb-0.5 block">{ group.label }</Text>
+                            <Text className="text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1 block">{ group.label }</Text>
                             <div className="grid grid-cols-4 gap-x-3 gap-y-1">
                                 { group.keys.map(key => (
                                     <label key={ key } className="flex items-center gap-1 text-[11px] cursor-pointer">
@@ -309,7 +334,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                 <div className="grid grid-cols-3 gap-2">
                     <div className="col-span-2">
                         <label className={ labelClass }>Type<Tip field="interactionType" /></label>
-                        <select className="w-full px-2 py-1 text-xs leading-normal rounded-sm border border-[#ccc] pr-8" value={ form.interactionType } onChange={ e => setField('interactionType', e.target.value) }>
+                        <select className="w-full px-2 py-1 text-sm leading-normal rounded-sm border border-[#bbb] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 pr-8" value={ form.interactionType } onChange={ e => setField('interactionType', e.target.value) }>
                             <option value="">none</option>
                             { interactions.map(i => (
                                 <option key={ i } value={ i }>{ i }</option>
@@ -325,25 +350,6 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                     <label className={ labelClass }>Custom Params<Tip field="customparams" /></label>
                     <input className={ inputClass() } value={ form.customparams } onChange={ e => setField('customparams', e.target.value) } />
                 </div>
-            </Section>
-
-            <Section title="Furnidata (display name)" defaultOpen={ true }>
-                <Column gap={ 1 }>
-                    <div>
-                        <label className={ labelClass }>Display Name</label>
-                        <input className={ inputClass() } value={ furniName } onChange={ e => setFurniName(e.target.value) } maxLength={ 256 } />
-                    </div>
-                    <div>
-                        <label className={ labelClass }>Description</label>
-                        <textarea className={ inputClass() } rows={ 3 } value={ furniDescription } onChange={ e => setFurniDescription(e.target.value) } maxLength={ 256 } />
-                    </div>
-                    { (furniName !== String(furniDataEntry?.name ?? '') || furniDescription !== String(furniDataEntry?.description ?? '')) &&
-                        <span className="text-[10px] text-orange-500 font-bold">Unsaved furnidata changes</span> }
-                    <Flex gap={ 1 }>
-                        <Button variant="success" disabled={ loading } onClick={ () => setConfirmFurnidata(true) }>Save name/desc</Button>
-                        <Button variant="secondary" disabled={ loading } onClick={ () => onRevertFurnidata(item.id) }>Revert</Button>
-                    </Flex>
-                </Column>
             </Section>
 
             { /* Actions */ }

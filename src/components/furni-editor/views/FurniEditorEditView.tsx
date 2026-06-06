@@ -417,6 +417,13 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                 </div>
             </Section>
 
+            { furniDataEntry &&
+                <Section title="FurniData.json" defaultOpen={ false }>
+                    <Text className="text-[10px] text-slate-400 mb-1 block">Read-only — how this furni resolves from the furnidata JSON (source of truth for the display name).</Text>
+                    <pre className="text-[10px] leading-snug text-slate-600 bg-slate-50 border border-slate-200 rounded-lg p-2 overflow-auto max-h-52 whitespace-pre-wrap break-all font-mono">{ JSON.stringify(furniDataEntry, null, 2) }</pre>
+                </Section>
+            }
+
             <Section title="Dimensions">
                 <div className="grid grid-cols-3 gap-2">
                     <div>

@@ -199,6 +199,19 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
 
     const isValid = useMemo(() => Object.keys(validation).length === 0, [ validation ]);
 
+    // Furnidata name editing only works when the furni has a matching furnidata
+    // entry: the server writer is edit-only and refuses classnames absent from
+    // furnidata (pets, custom items, …). furniDataEntry is the entry resolved by
+    // the server (by id); guard on it + a classname match so we never trigger the
+    // cryptic "Classname not found in furnidata" error on save.
+    const furnidataEditable = useMemo(() =>
+    {
+        if(!furniDataEntry) return false;
+        const cn = String((furniDataEntry as { classname?: unknown }).classname ?? '').trim().toLowerCase();
+        const itemCn = String(item?.itemName ?? '').trim().toLowerCase();
+        return cn ? (cn === itemCn) : true;
+    }, [ furniDataEntry, item ]);
+
     const handleSave = useCallback(() =>
     {
         if(!isValid) return;
@@ -267,24 +280,35 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
             <div className="bg-[#ffffff] rounded-xl border border-slate-200 shadow-sm p-2.5">
                 <div className="flex items-center gap-2 mb-1.5">
                     <Text className="text-[12px] font-semibold text-slate-700">Display name &amp; description</Text>
-                    <span className="text-[9px] font-semibold text-primary bg-primary/10 rounded-md px-1.5 py-0.5">LIVE</span>
-                    { (furniName !== String(furniDataEntry?.name ?? '') || furniDescription !== String(furniDataEntry?.description ?? '')) &&
+                    { furnidataEditable
+                        ? <span className="text-[9px] font-semibold text-primary bg-primary/10 rounded-md px-1.5 py-0.5">LIVE</span>
+                        : <span className="text-[9px] font-semibold text-amber-700 bg-amber-100 rounded-md px-1.5 py-0.5">NO FURNIDATA</span> }
+                    { furnidataEditable && (furniName !== String(furniDataEntry?.name ?? '') || furniDescription !== String(furniDataEntry?.description ?? '')) &&
                         <span className="ml-auto text-[10px] text-amber-600 font-medium">Unsaved</span> }
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                    <div>
-                        <label className={ labelClass }>Display Name (furnidata)</label>
-                        <input className={ inputClass() } value={ furniName } onChange={ e => setFurniName(e.target.value) } maxLength={ 256 } />
+                { furnidataEditable ? (
+                    <>
+                        <div className="grid grid-cols-2 gap-2">
+                            <div>
+                                <label className={ labelClass }>Display Name (furnidata)</label>
+                                <input className={ inputClass() } value={ furniName } onChange={ e => setFurniName(e.target.value) } maxLength={ 256 } />
+                            </div>
+                            <div>
+                                <label className={ labelClass }>Description</label>
+                                <input className={ inputClass() } value={ furniDescription } onChange={ e => setFurniDescription(e.target.value) } maxLength={ 256 } />
+                            </div>
+                        </div>
+                        <Flex gap={ 1 } className="mt-1.5">
+                            <Button variant="success" disabled={ loading } onClick={ () => setConfirmFurnidata(true) }>Save name/desc</Button>
+                            <Button variant="secondary" disabled={ loading } onClick={ () => onRevertFurnidata(item.id) }>Revert</Button>
+                        </Flex>
+                    </>
+                ) : (
+                    <div className="flex items-start gap-2 text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 leading-snug">
+                        <span className="text-[#f59e0b] text-sm leading-none mt-px">⚠</span>
+                        <span>This furni has no matching <b>furnidata</b> entry (e.g. a pet or custom item), so its display name can&apos;t be edited here. Clients fall back to the DB <b>Public Name</b> below.</span>
                     </div>
-                    <div>
-                        <label className={ labelClass }>Description</label>
-                        <input className={ inputClass() } value={ furniDescription } onChange={ e => setFurniDescription(e.target.value) } maxLength={ 256 } />
-                    </div>
-                </div>
-                <Flex gap={ 1 } className="mt-1.5">
-                    <Button variant="success" disabled={ loading } onClick={ () => setConfirmFurnidata(true) }>Save name/desc</Button>
-                    <Button variant="secondary" disabled={ loading } onClick={ () => onRevertFurnidata(item.id) }>Revert</Button>
-                </Flex>
+                ) }
             </div>
 
             <Section title="Basic Info">

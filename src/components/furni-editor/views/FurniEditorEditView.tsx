@@ -35,16 +35,16 @@ const Section: FC<SectionProps> = ({ title, children, defaultOpen = true }) =>
     const [ open, setOpen ] = useState(defaultOpen);
 
     return (
-        <div className="bg-white rounded border border-[#ccc]">
+        <div className="bg-white rounded-lg border border-[#d9ddd5] shadow-sm overflow-hidden">
             <button
                 type="button"
-                className="w-full flex items-center justify-between px-2 py-1.5 cursor-pointer hover:bg-[#f5f5f5] transition-colors"
+                className="w-full flex items-center justify-between px-2.5 py-2 cursor-pointer hover:bg-[#f5f7f3] transition-colors"
                 onClick={ () => setOpen(p => !p) }
             >
-                <Text small bold variant="primary">{ title }</Text>
-                <span className="text-[10px] text-[#999]">{ open ? '▼' : '▶' }</span>
+                <Text small bold variant="primary" className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-primary" />{ title }</Text>
+                <span className="text-[10px] text-[#aab2a3] transition-transform duration-200" style={ { transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' } }>▼</span>
             </button>
-            { open && <div className="px-2 pb-2">{ children }</div> }
+            { open && <div className="px-2.5 pb-2.5 pt-0.5">{ children }</div> }
         </div>
     );
 };
@@ -220,28 +220,31 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
     const readonlyClass = 'w-full px-2 py-1 text-sm font-mono rounded-sm border border-[#ddd] bg-[#f2f2eb] text-[#555] select-all';
 
     return (
-        <Column gap={ 1 } className="h-full overflow-auto">
-            { /* Header */ }
-            <Flex gap={ 2 } alignItems="center" className="mb-1">
-                <Button variant="secondary" onClick={ handleBack }>Back</Button>
-                <div className="bg-[#e9ecef] rounded border border-[#ccc] flex items-center justify-center w-[48px] h-[48px]">
-                    <LayoutFurniIconImageView productType={ item.type } productClassId={ item.spriteId } className="scale-150" />
-                </div>
-                <Flex column gap={ 0 }>
-                    <Flex alignItems="center" gap={ 1 }>
-                        <Text bold className="text-[12px] font-mono text-[#555]">ID: { item.id }</Text>
-                        <span className="text-[#999]">|</span>
-                        <Text bold className="text-[12px] font-mono text-[#555]">Sprite: { item.spriteId }</Text>
+        <Column gap={ 2 } className="h-full overflow-auto bg-gradient-to-b from-[#eef1ec] to-[#e2e6df] p-2">
+            { /* Hero header */ }
+            <div className="relative overflow-hidden rounded-lg border border-[#15506b] shadow-md bg-gradient-to-br from-primary to-[#0f4a63]">
+                <Flex alignItems="center" gap={ 2 } className="p-2.5">
+                    <div className="shrink-0 w-[68px] h-[68px] rounded-md bg-[#eef1ec] border border-white/40 shadow-inner flex items-center justify-center overflow-hidden">
+                        <LayoutFurniIconImageView productType={ item.type } productClassId={ item.spriteId } className="scale-[2]" />
+                    </div>
+                    <Flex column gap={ 0 } className="min-w-0 flex-1">
+                        <Text bold className="truncate text-white text-[15px] leading-tight drop-shadow-sm">{ furniName || form.publicName || form.itemName }</Text>
+                        <Text className="truncate text-white/70 text-[10px] font-mono">{ form.itemName }</Text>
+                        <Flex alignItems="center" gap={ 1 } className="mt-1 flex-wrap">
+                            <span className="text-[9px] font-bold text-white/90 bg-white/15 rounded px-1.5 py-0.5">ID { item.id }</span>
+                            <span className="text-[9px] font-bold text-white/90 bg-white/15 rounded px-1.5 py-0.5">SPRITE { item.spriteId }</span>
+                            <span className="text-[9px] font-bold text-white/90 bg-white/15 rounded px-1.5 py-0.5">{ item.usageCount } IN USE</span>
+                            { isDirty && <span className="text-[9px] font-bold text-[#15506b] bg-amber-300 rounded px-1.5 py-0.5">UNSAVED</span> }
+                        </Flex>
                     </Flex>
-                    <Text small variant="gray">({ item.usageCount } in use)</Text>
+                    <Button variant="secondary" onClick={ handleBack } className="self-start shrink-0">Back</Button>
                 </Flex>
-                { isDirty && <span className="text-[10px] text-orange-500 font-bold ml-auto">Unsaved changes</span> }
-            </Flex>
+            </div>
 
             { /* Primary edit surface: furnidata display name + description (server-authoritative, live) */ }
-            <div className="bg-white rounded border border-primary/40 shadow-sm">
-                <div className="flex items-center justify-between px-2 py-1.5 border-b border-[#eee]">
-                    <Text small bold variant="primary">Display Name &amp; Description</Text>
+            <div className="bg-white rounded-lg border-2 border-primary/50 shadow-md overflow-hidden">
+                <div className="flex items-center justify-between px-2.5 py-2 bg-gradient-to-r from-primary/10 to-transparent border-b border-primary/20">
+                    <Text small bold variant="primary" className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />Display Name &amp; Description<span className="text-[8px] font-bold text-white bg-primary rounded px-1 py-0.5 ml-1">LIVE</span></Text>
                     { (furniName !== String(furniDataEntry?.name ?? '') || furniDescription !== String(furniDataEntry?.description ?? '')) &&
                         <span className="text-[10px] text-orange-500 font-bold">Unsaved</span> }
                 </div>

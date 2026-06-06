@@ -92,10 +92,19 @@ const CopyValue: FC<{ value: string | number }> = ({ value }) =>
     const copy = useCallback(() =>
     {
         const text = String(value);
-        const done = () => { setCopied(true); window.setTimeout(() => setCopied(false), 1000); };
-        if(navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(done).catch(() => done());
-        else done();
+        if(navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => setCopied(true)).catch(() => setCopied(true));
+        else setCopied(true);
     }, [ value ]);
+
+    // Reset the "copied!" flag after 1s, with cleanup so the timer never fires after unmount.
+    useEffect(() =>
+    {
+        if(!copied) return;
+
+        const handle = window.setTimeout(() => setCopied(false), 1000);
+
+        return () => window.clearTimeout(handle);
+    }, [ copied ]);
 
     return (
         <div

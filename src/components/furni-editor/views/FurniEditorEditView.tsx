@@ -35,16 +35,16 @@ const Section: FC<SectionProps> = ({ title, children, defaultOpen = true }) =>
     const [ open, setOpen ] = useState(defaultOpen);
 
     return (
-        <div className="bg-white rounded-lg border border-[#d9ddd5] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <button
                 type="button"
-                className="w-full flex items-center justify-between px-2.5 py-2 cursor-pointer hover:bg-[#f5f7f3] transition-colors"
+                className="w-full flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-slate-50 transition-colors"
                 onClick={ () => setOpen(p => !p) }
             >
-                <Text small bold variant="primary" className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-primary" />{ title }</Text>
-                <span className="text-[10px] text-[#aab2a3] transition-transform duration-200" style={ { transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' } }>▼</span>
+                <Text className="text-[12px] font-semibold text-slate-700">{ title }</Text>
+                <span className="text-[11px] text-slate-400 transition-transform duration-200" style={ { transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' } }>▾</span>
             </button>
-            { open && <div className="px-2.5 pb-2.5 pt-0.5">{ children }</div> }
+            { open && <div className="px-3 pb-3 pt-0.5">{ children }</div> }
         </div>
     );
 };
@@ -215,40 +215,39 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
     }, []);
 
     const inputClass = (field?: string) =>
-        `w-full px-2 py-1 text-sm leading-normal rounded-sm border border-[#bbb] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/40 min-h-[calc(1.5em+0.5rem+2px)]${ field && validation[field] ? ' border-red-500 bg-red-50' : '' }`;
-    const labelClass = 'text-[11px] font-bold text-[#374151] mb-0.5 flex items-center gap-0.5';
-    const readonlyClass = 'w-full px-2 py-1 text-sm font-mono rounded-sm border border-[#ddd] bg-[#f2f2eb] text-[#555] select-all';
+        `w-full px-3 py-1.5 text-sm leading-normal rounded-lg border border-slate-300 bg-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 transition${ field && validation[field] ? ' border-red-400 bg-red-50' : '' }`;
+    const labelClass = 'text-[11px] font-medium text-slate-500 mb-1 flex items-center gap-0.5';
+    const readonlyClass = 'w-full px-3 py-1.5 text-sm font-mono rounded-lg border border-slate-200 bg-slate-50 text-slate-500 select-all';
 
     return (
-        <Column gap={ 2 } className="h-full overflow-auto bg-gradient-to-b from-[#eef1ec] to-[#e2e6df] p-2">
-            { /* Hero header */ }
-            <div className="relative overflow-hidden rounded-lg border border-[#15506b] shadow-md bg-gradient-to-br from-primary to-[#0f4a63]">
-                <Flex alignItems="center" gap={ 2 } className="p-2.5">
-                    <div className="shrink-0 w-[68px] h-[68px] rounded-md bg-[#eef1ec] border border-white/40 shadow-inner flex items-center justify-center overflow-hidden">
-                        <LayoutFurniIconImageView productType={ item.type } productClassId={ item.spriteId } className="scale-[2]" />
-                    </div>
-                    <Flex column gap={ 0 } className="min-w-0 flex-1">
-                        <Text bold className="truncate text-white text-[15px] leading-tight drop-shadow-sm">{ furniName || form.publicName || form.itemName }</Text>
-                        <Text className="truncate text-white/70 text-[10px] font-mono">{ form.itemName }</Text>
-                        <Flex alignItems="center" gap={ 1 } className="mt-1 flex-wrap">
-                            <span className="text-[9px] font-bold text-white/90 bg-white/15 rounded px-1.5 py-0.5">ID { item.id }</span>
-                            <span className="text-[9px] font-bold text-white/90 bg-white/15 rounded px-1.5 py-0.5">SPRITE { item.spriteId }</span>
-                            <span className="text-[9px] font-bold text-white/90 bg-white/15 rounded px-1.5 py-0.5">{ item.usageCount } IN USE</span>
-                            { isDirty && <span className="text-[9px] font-bold text-[#15506b] bg-amber-300 rounded px-1.5 py-0.5">UNSAVED</span> }
-                        </Flex>
+        <Column gap={ 2 } className="h-full overflow-auto bg-[#f6f7f9] p-3">
+            { /* Header */ }
+            <Flex alignItems="center" gap={ 3 } className="px-1">
+                <div className="shrink-0 w-16 h-16 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center overflow-hidden">
+                    <LayoutFurniIconImageView productType={ item.type } productClassId={ item.spriteId } className="scale-[1.8]" />
+                </div>
+                <Flex column gap={ 0 } className="min-w-0 flex-1">
+                    <Text bold className="truncate text-slate-800 text-[16px] leading-tight">{ furniName || form.publicName || form.itemName }</Text>
+                    <Text className="truncate text-slate-400 text-[11px] font-mono">{ form.itemName }</Text>
+                    <Flex alignItems="center" gap={ 1 } className="mt-1.5 flex-wrap">
+                        <span className="text-[10px] text-slate-500 bg-slate-100 rounded-md px-1.5 py-0.5">ID { item.id }</span>
+                        <span className="text-[10px] text-slate-500 bg-slate-100 rounded-md px-1.5 py-0.5">Sprite { item.spriteId }</span>
+                        <span className="text-[10px] text-slate-500 bg-slate-100 rounded-md px-1.5 py-0.5">{ item.usageCount } in use</span>
+                        { isDirty && <span className="text-[10px] font-medium text-amber-700 bg-amber-100 rounded-md px-1.5 py-0.5">Unsaved</span> }
                     </Flex>
-                    <Button variant="secondary" onClick={ handleBack } className="self-start shrink-0">Back</Button>
                 </Flex>
-            </div>
+                <Button variant="secondary" onClick={ handleBack } className="shrink-0">Back</Button>
+            </Flex>
 
             { /* Primary edit surface: furnidata display name + description (server-authoritative, live) */ }
-            <div className="bg-white rounded-lg border-2 border-primary/50 shadow-md overflow-hidden">
-                <div className="flex items-center justify-between px-2.5 py-2 bg-gradient-to-r from-primary/10 to-transparent border-b border-primary/20">
-                    <Text small bold variant="primary" className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />Display Name &amp; Description<span className="text-[8px] font-bold text-white bg-primary rounded px-1 py-0.5 ml-1">LIVE</span></Text>
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
+                <div className="flex items-center gap-2 mb-2">
+                    <Text className="text-[12px] font-semibold text-slate-700">Display name &amp; description</Text>
+                    <span className="text-[9px] font-semibold text-primary bg-primary/10 rounded-md px-1.5 py-0.5">LIVE</span>
                     { (furniName !== String(furniDataEntry?.name ?? '') || furniDescription !== String(furniDataEntry?.description ?? '')) &&
-                        <span className="text-[10px] text-orange-500 font-bold">Unsaved</span> }
+                        <span className="ml-auto text-[10px] text-amber-600 font-medium">Unsaved</span> }
                 </div>
-                <div className="px-2 pt-1 pb-2">
+                <div>
                     <Column gap={ 1 }>
                         <div>
                             <label className={ labelClass }>Display Name (furnidata)</label>
@@ -311,19 +310,21 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                 <div className="flex flex-col gap-2">
                     { PERM_GROUPS.map(group => (
                         <div key={ group.label }>
-                            <Text className="text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1 block">{ group.label }</Text>
-                            <div className="grid grid-cols-4 gap-x-3 gap-y-1">
-                                { group.keys.map(key => (
-                                    <label key={ key } className="flex items-center gap-1 text-[11px] cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            className="mt-1"
-                                            checked={ (form as any)[key] }
-                                            onChange={ e => setField(key, e.target.checked) }
-                                        />
-                                        { key.replace('allow', '') }
-                                    </label>
-                                )) }
+                            <Text className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5 block">{ group.label }</Text>
+                            <div className="flex flex-wrap gap-1.5">
+                                { group.keys.map(key => {
+                                    const on = (form as any)[key];
+                                    return (
+                                        <button
+                                            key={ key }
+                                            type="button"
+                                            onClick={ () => setField(key, !on) }
+                                            className={ `text-[11px] px-2.5 py-1 rounded-lg border transition ${ on ? 'bg-primary/10 border-primary/40 text-primary font-medium' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300' }` }
+                                        >
+                                            { key.replace('allow', '') }
+                                        </button>
+                                    );
+                                }) }
                             </div>
                         </div>
                     )) }

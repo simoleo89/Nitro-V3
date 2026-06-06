@@ -1,4 +1,4 @@
-import { FurniEditorBySpriteComposer, FurniEditorDeleteComposer, FurniEditorDetailComposer, FurniEditorDetailResultEvent, FurniEditorInteractionsComposer, FurniEditorInteractionsResultEvent, FurniEditorResultEvent, FurniEditorRevertFurnidataComposer, FurniEditorSearchComposer, FurniEditorSearchResultEvent, FurniEditorUpdateComposer, FurniEditorUpdateFurnidataComposer } from '@nitrots/nitro-renderer';
+import { FurniEditorBySpriteComposer, FurniEditorDeleteComposer, FurniEditorDetailComposer, FurniEditorDetailResultEvent, FurniEditorInteractionsComposer, FurniEditorInteractionsResultEvent, FurniEditorResultEvent, FurniEditorRevertFurnidataComposer, FurniEditorSearchComposer, FurniEditorSearchResultEvent, FurniEditorUpdateComposer, FurniEditorUpdateFurnidataComposer, FurniEditorImportTextComposer, FurniEditorImportTextResultEvent } from '@nitrots/nitro-renderer';
 import { useCallback, useRef, useState } from 'react';
 import { NotificationAlertType, SendMessageComposer } from '../../api';
 import { useMessageEvent, useNotification } from '../../hooks';
@@ -61,6 +61,8 @@ export const useFurniEditor = () =>
     const [ interactions, setInteractions ] = useState<string[]>([]);
     const [ furniDataEntry, setFurniDataEntry ] = useState<Record<string, unknown> | null>(null);
     const pendingActionRef = useRef<{ action: string; itemId: number } | null>(null);
+    const [ importResult, setImportResult ] = useState<{ found: boolean; name: string; description: string; classname: string; nonce: number } | null>(null);
+    const importNonceRef = useRef(0);
     const { simpleAlert = null } = useNotification();
 
     const clearError = useCallback(() => setError(null), []);
@@ -264,6 +266,28 @@ export const useFurniEditor = () =>
         SendMessageComposer(new FurniEditorRevertFurnidataComposer(id));
     }, []);
 
+    const importText = useCallback((id: number) =>
+    {
+        setLoading(true);
+        setError(null);
+        SendMessageComposer(new FurniEditorImportTextComposer(id));
+    }, []);
+
+    useMessageEvent(FurniEditorImportTextResultEvent, (event: FurniEditorImportTextResultEvent) =>
+    {
+        const parser = event.getParser();
+
+        setLoading(false);
+        importNonceRef.current += 1;
+        setImportResult({
+            found: parser.found,
+            name: parser.name,
+            description: parser.description,
+            classname: parser.classname,
+            nonce: importNonceRef.current
+        });
+    });
+
     const loadInteractions = useCallback(() =>
     {
         SendMessageComposer(new FurniEditorInteractionsComposer());
@@ -274,6 +298,6 @@ export const useFurniEditor = () =>
         selectedItem, setSelectedItem, catalogItems, furniDataEntry,
         interactions,
         searchItems, loadDetail, loadBySpriteId, updateItem, deleteItem, loadInteractions,
-        updateFurnidata, revertFurnidata
+        updateFurnidata, revertFurnidata, importText, importResult
     };
 };

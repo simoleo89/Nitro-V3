@@ -14,6 +14,8 @@ interface FurniEditorEditViewProps
     onBack: () => void;
     onUpdateFurnidata: (id: number, name: string, description: string) => void;
     onRevertFurnidata: (id: number) => void;
+    onImportText: (id: number) => void;
+    importResult: { found: boolean; name: string; description: string; classname: string; nonce: number } | null;
 }
 
 const FIELD_TIPS: Record<string, string> = {
@@ -110,7 +112,7 @@ const CopyValue: FC<{ value: string | number }> = ({ value }) =>
 
 export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
 {
-    const { item, furniDataEntry, interactions, loading, onUpdate, onDelete, onBack, onUpdateFurnidata, onRevertFurnidata } = props;
+    const { item, furniDataEntry, interactions, loading, onUpdate, onDelete, onBack, onUpdateFurnidata, onRevertFurnidata, onImportText, importResult } = props;
     const saveRef = useRef<() => void>(null);
 
     const [ form, setForm ] = useState({
@@ -139,6 +141,8 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
     const [ furniName, setFurniName ] = useState('');
     const [ furniDescription, setFurniDescription ] = useState('');
     const [ confirmFurnidata, setConfirmFurnidata ] = useState(false);
+    const [ importNote, setImportNote ] = useState('');
+    const appliedImportNonce = useRef(0);
 
     useEffect(() =>
     {
@@ -170,6 +174,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
         setFurniName(String(furniDataEntry?.name ?? ''));
         setFurniDescription(String(furniDataEntry?.description ?? ''));
         setConfirmFurnidata(false);
+        setImportNote('');
     }, [ item, furniDataEntry ]);
 
     const setField = useCallback((key: string, value: unknown) =>
@@ -237,6 +242,27 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
     const furnidataDirty = useMemo(() =>
         furniName !== String(furniDataEntry?.name ?? '') || furniDescription !== String(furniDataEntry?.description ?? ''),
     [ furniName, furniDescription, furniDataEntry ]);
+
+    // Apply an "Import from Habbo" result into the editable fields (review then Save).
+    useEffect(() =>
+    {
+        if(!importResult || importResult.nonce === appliedImportNonce.current) return;
+        appliedImportNonce.current = importResult.nonce;
+
+        // Ignore a result that belongs to a different furni (user navigated away).
+        if(importResult.classname && importResult.classname.trim().toLowerCase() !== String(item?.itemName ?? '').trim().toLowerCase()) return;
+
+        if(importResult.found)
+        {
+            setFurniName(importResult.name);
+            setFurniDescription(importResult.description);
+            setImportNote('Imported from Habbo — review and Save');
+        }
+        else
+        {
+            setImportNote('Not found on Habbo for this classname');
+        }
+    }, [ importResult, item ]);
 
     const handleSave = useCallback(() =>
     {
@@ -336,10 +362,22 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                                 <input className={ inputClass() } value={ furniDescription } onChange={ e => setFurniDescription(e.target.value) } maxLength={ 256 } />
                             </div>
                         </div>
-                        <Flex gap={ 1 } className="mt-1.5">
+                        <Flex gap={ 1 } className="mt-1.5" alignItems="center">
                             <Button variant="success" disabled={ loading || !furnidataDirty } onClick={ () => setConfirmFurnidata(true) }>Save name/desc</Button>
                             <Button variant="secondary" disabled={ loading } onClick={ () => onRevertFurnidata(item.id) }>Revert</Button>
+                            <button
+                                type="button"
+                                disabled={ loading }
+                                onClick={ () => onImportText(item.id) }
+                                title="Fetch the official name &amp; description from Habbo"
+                                className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded-lg border border-slate-300 bg-[#ffffff] text-slate-600 hover:bg-slate-50 hover:border-slate-400 disabled:opacity-50 transition"
+                            >
+                                <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 3v9" /><path d="m6.5 8.5 3.5 3.5 3.5-3.5" /><path d="M4 16h12" /></svg>
+                                Import from Habbo
+                            </button>
                         </Flex>
+                        { importNote &&
+                            <Text className={ `mt-1 text-[10px] ${ importNote.startsWith('Not found') ? 'text-amber-600' : 'text-primary' }` }>{ importNote }</Text> }
                     </>
                 ) : (
                     <div className="flex items-start gap-2 text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 leading-snug">

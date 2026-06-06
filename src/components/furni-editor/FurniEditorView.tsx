@@ -19,7 +19,7 @@ export const FurniEditorView: FC<{}> = () =>
         selectedItem, setSelectedItem, furniDataEntry,
         interactions,
         searchItems, loadDetail, loadBySpriteId, updateItem, deleteItem, loadInteractions,
-        updateFurnidata, revertFurnidata
+        updateFurnidata, revertFurnidata, importText, importResult
     } = useFurniEditor();
 
     const isMod = useHasPermission('acc_catalogfurni');
@@ -158,6 +158,8 @@ export const FurniEditorView: FC<{}> = () =>
                         onBack={ handleBack }
                         onUpdateFurnidata={ updateFurnidata }
                         onRevertFurnidata={ revertFurnidata }
+                        onImportText={ importText }
+                        importResult={ importResult }
                     />
                 }
 

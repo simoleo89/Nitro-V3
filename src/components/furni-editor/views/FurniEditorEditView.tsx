@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Button, Column, Flex, LayoutFurniIconImageView, Text } from '../../../common';
 import { FurniDetail } from '../../../hooks/furni-editor';
 
@@ -51,15 +52,33 @@ const Section: FC<SectionProps> = ({ title, children, defaultOpen = true }) =>
 const Tip: FC<{ field: string }> = ({ field }) =>
 {
     const tip = FIELD_TIPS[field];
+    const ref = useRef<HTMLSpanElement>(null);
+    const [ pos, setPos ] = useState<{ left: number; top: number } | null>(null);
+
+    const show = useCallback(() =>
+    {
+        const r = ref.current?.getBoundingClientRect();
+        if(r) setPos({ left: r.left + (r.width / 2), top: r.top - 6 });
+    }, []);
+    const hide = useCallback(() => setPos(null), []);
 
     if(!tip) return null;
 
     return (
-        <span className="relative group ml-0.5 inline-flex">
-            <span className="w-3 h-3 rounded-full bg-[#1e7295] text-white text-[8px] flex items-center justify-center cursor-help font-bold">?</span>
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-[#333] text-white text-[10px] rounded w-44 whitespace-normal text-center leading-snug opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 shadow-lg">
-                { tip }
-            </span>
+        <span
+            ref={ ref }
+            onMouseEnter={ show }
+            onMouseLeave={ hide }
+            className="ml-0.5 inline-flex w-3 h-3 rounded-full bg-[#1e7295] text-white text-[8px] items-center justify-center cursor-help font-bold align-middle"
+        >
+            ?
+            { pos && createPortal(
+                <span
+                    style={ { position: 'fixed', left: pos.left, top: pos.top, transform: 'translate(-50%, -100%)', zIndex: 9999 } }
+                    className="px-2 py-1 bg-[#333] text-white text-[10px] rounded w-44 whitespace-normal text-center leading-snug shadow-lg pointer-events-none"
+                >
+                    { tip }
+                </span>, document.body) }
         </span>
     );
 };

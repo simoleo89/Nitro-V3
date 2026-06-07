@@ -54,9 +54,12 @@ jobs:
       #   2. repository variables (vars.RENDERER_REPO / vars.RENDERER_REF)
       #        → per-fork config set under Settings → Variables, applies
       #          to push and pull_request runs without editing this file.
-      #   3. upstream default
-      #        → UPSTREAM_RENDERER_REPO, ref `main` when the client build
-      #          context is `main`, otherwise `Dev`.
+      #   3. dynamic, owner-aware default (no hardcoded fork name)
+      #        → <github.repository_owner>/Nitro_Render_V3 when it carries
+      #          the resolved ref, else UPSTREAM_RENDERER_REPO. Ref is
+      #          `main` on a main build, otherwise `Dev`. So a fork's
+      #          client pairs with the fork's renderer when the companion
+      #          code lives there, and with upstream when it doesn't.
       #
       # The two repos must stay wire-aligned (composer/parser
       # signatures); pairing the client with a stale renderer is what
@@ -72,41 +75,52 @@ jobs:
           VAR_REPO: ${{ vars.RENDERER_REPO }}
           VAR_REF:  ${{ vars.RENDERER_REF }}
         run: |
-          # Branch-aware auto pairing — the default when neither a
-          # dispatch input nor a repo variable is supplied.
+          # Dynamic, owner-aware renderer pairing — nothing is hardcoded to a
+          # specific fork. The companion renderer is discovered from the
+          # client repo's OWNER first, then the upstream fallback: "if the
+          # companion code is on my fork, pair with my fork; otherwise pair
+          # with upstream". For PRs the context is the base ref.
           #
-          # Everything (including the custom features — rare values,
-          # fortune wheel, soundboard) now lives on duckietm's own
-          # `main` / `Dev` branches, so the renderer always pairs
-          # against UPSTREAM_RENDERER_REPO: `main` when the client build
-          # context is `main`, otherwise `Dev`. For PRs the context is
-          # the base ref.
+          # Precedence (most specific wins):
+          #   1. workflow_dispatch inputs (renderer_repo / renderer_ref)
+          #   2. repo variables (vars.RENDERER_REPO / vars.RENDERER_REF)
+          #   3. dynamic: <owner>/Nitro_Render_V3 when it carries the ref,
+          #      else ${UPSTREAM_RENDERER_REPO}.
           case "${GITHUB_EVENT_NAME}" in
-            pull_request)
-              CTX="${GITHUB_BASE_REF}"
-              ;;
-            *)
-              CTX="${GITHUB_REF_NAME}"
-              ;;
+            pull_request) CTX="${GITHUB_BASE_REF}" ;;
+            *)            CTX="${GITHUB_REF_NAME}" ;;
           esac
 
-          AUTO_REPO="${UPSTREAM_RENDERER_REPO}"
+          # Branch-aware desired ref: main on a main build, else Dev.
           case "$CTX" in
             main) AUTO_REF="main" ;;
             *)    AUTO_REF="Dev" ;;
           esac
 
-          # Precedence (most specific wins): dispatch input → repo
-          # variable → branch-aware auto default. The auto default is
-          # the final fallback so a Dev/feat build never silently pairs
-          # against a renderer that's missing its companion exports.
-          REPO="$IN_REPO"
-          [ -z "$REPO" ] && REPO="$VAR_REPO"
-          [ -z "$REPO" ] && REPO="$AUTO_REPO"
-
           REF="$IN_REF"
           [ -z "$REF" ] && REF="$VAR_REF"
           [ -z "$REF" ] && REF="$AUTO_REF"
+
+          # Probe whether <repo> has branch <ref> (remote-only, no checkout).
+          has_ref() { git ls-remote --exit-code --heads "https://github.com/$1.git" "$2" >/dev/null 2>&1; }
+
+          REPO="$IN_REPO"
+          [ -z "$REPO" ] && REPO="$VAR_REPO"
+          if [ -z "$REPO" ]; then
+            OWN_REPO="${GITHUB_REPOSITORY_OWNER}/Nitro_Render_V3"
+            if has_ref "$OWN_REPO" "$REF"; then
+              REPO="$OWN_REPO"               # companion lives on my own fork
+            else
+              REPO="$UPSTREAM_RENDERER_REPO"  # fall back to upstream
+            fi
+          fi
+
+          # Safety net: never pair against a repo/ref that doesn't exist.
+          if ! has_ref "$REPO" "$REF"; then
+            echo "::warning::renderer '$REPO' has no branch '$REF' — falling back to ${UPSTREAM_RENDERER_REPO}"
+            REPO="$UPSTREAM_RENDERER_REPO"
+            has_ref "$REPO" "$REF" || REF="Dev"
+          fi
 
           echo "repo=$REPO" >> "$GITHUB_OUTPUT"
           echo "ref=$REF"   >> "$GITHUB_OUTPUT"

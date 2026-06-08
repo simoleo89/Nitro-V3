@@ -799,4 +799,9 @@
     // ------------------------------------------------------------------------
     'messenger.offline.delivered':                      'Inviato mentre eri offline',
     'messenger.typing':                                 '%FRIEND_NAME% sta scrivendo...',
+	
+	// ------------------------------------------------------------------------
+    // Navigator
+    // ------------------------------------------------------------------------	
+	'navigator.roomsettings.allow_underpass':			'camminare sotto i mobili alti',
 }

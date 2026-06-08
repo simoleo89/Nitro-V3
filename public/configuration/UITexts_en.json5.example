@@ -799,4 +799,9 @@
     // ------------------------------------------------------------------------
     'messenger.offline.delivered':                      'Sent while you were offline',
     'messenger.typing':                                 '%FRIEND_NAME% is typing...',
+	
+	// ------------------------------------------------------------------------
+    // Navigator
+    // ------------------------------------------------------------------------	
+	'navigator.roomsettings.allow_underpass':			'walking under tall furniture',
 }

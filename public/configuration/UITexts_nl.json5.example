@@ -797,4 +797,9 @@
     'mentions.alias.description.everyone':              "Iedereen in het hotel",
     'mentions.alias.description.friends':               "Je vrienden online",
     'mentions.alias.description.room':                  "Iedereen in deze kamer",
+	
+	// ------------------------------------------------------------------------
+    // Navigator
+    // ------------------------------------------------------------------------	
+	'navigator.roomsettings.allow_underpass':			'Onder hoge meubels door lopen',
 }

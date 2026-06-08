@@ -233,7 +233,7 @@ export const CatalogPurchaseWidgetView: FC<CatalogPurchaseWidgetViewProps> = pro
         switch(purchaseState)
         {
             case CatalogPurchaseState.CONFIRM:
-                return <Button classNames={ swfButtonClassNames } variant="warning" onClick={ event => purchase() }>{ LocalizeText('catalog.marketplace.confirm_title') }</Button>;
+                return <Button classNames={ [ ...swfButtonClassNames, 'nitro-catalog-swf-confirm-button' ] } variant="success" onClick={ event => purchase() }>{ LocalizeText('catalog.marketplace.confirm_title') }</Button>;
             case CatalogPurchaseState.PURCHASE:
                 return <Button classNames={ swfButtonClassNames } disabled><LayoutLoadingSpinnerView /></Button>;
             case CatalogPurchaseState.FAILED:

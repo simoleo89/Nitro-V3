@@ -92,10 +92,12 @@
 }
 
 .nitro-icon.icon-fortune-wheel {
-    background-image: url("@/assets/images/toolbar/icons/game.png");
-    width: 44px;
-    height: 25px;
-    filter: hue-rotate(300deg) saturate(1.6);
+    background-image: url("@/assets/images/toolbar/icons/fortune-wheel.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 40px;
+    height: 40px;
 }
 
 .nitro-icon.icon-housekeeping {

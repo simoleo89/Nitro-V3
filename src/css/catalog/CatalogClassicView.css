@@ -1409,6 +1409,9 @@
 }
 
 .nitro-catalog-classic-window *::-webkit-scrollbar-thumb {
+    /* Grip: a single 2px #a0a0a0 stripe in an 8px-wide centered band,
+       repeated every 5px (2px stripe + 3px body gap).
+       Outline: 1px black border, then a 2px white inset frame inside it. */
     min-height: 24px !important;
     background:
         url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='5'><rect x='0' y='0' width='8' height='2' fill='%23a0a0a0'/></svg>") center top / 8px 5px repeat-y,
@@ -1430,6 +1433,9 @@
         #bcbcbc !important;
 }
 
+/* Arrow buttons: light grey cap with rounded OUTER corners (up button
+   rounded at the top, down button rounded at the bottom), 1px black
+   border, dark chevron via inline SVG. */
 .nitro-catalog-classic-window *::-webkit-scrollbar-button:single-button:vertical:decrement {
     display: block !important;
     width: 18px !important;
@@ -1546,6 +1552,13 @@
         display: none !important;
     }
 
+    /* Stack the navigation above the furni/preview layout and let the
+       whole content area scroll. The previous grid used
+       `grid-template-rows: auto minmax(0, 1fr)`, but on iOS Safari the
+       flex height chain is indefinite, so the 1fr layout-shell row
+       collapsed to 0 and only the sidebar (category list) was visible.
+       A flex column sized to content + a scrollable content-shell is
+       device-robust. */
     .nitro-catalog-classic-stage,
     .nitro-catalog-classic-stage.is-navigation-hidden {
         display: flex;
@@ -1561,6 +1574,9 @@
         max-height: 30vh;
     }
 
+    /* The default layout's children (preview, grid, buy bar) are
+       absolutely positioned against a fixed ~460px box, so give the
+       shell a definite height and never clip it on mobile. */
     .nitro-catalog-classic-layout-shell {
         flex: 0 0 auto;
         width: 100%;

@@ -1,15 +1,38 @@
-import { CreateLinkEvent, StringDataType } from '@nitrots/nitro-renderer';
+import { CreateLinkEvent, GetSessionDataManager, StringDataType } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { LocalizeText } from '../../../../../api';
 import { Button, Flex } from '../../../../../common';
 import { useCatalogData, useCatalogUiState, useUserGroups } from '../../../../../hooks';
 
-export const CatalogGuildSelectorWidgetView: FC<{}> = props =>
+interface CatalogGuildSelectorWidgetViewProps
 {
+    ownerOnly?: boolean;
+}
+
+export const CatalogGuildSelectorWidgetView: FC<CatalogGuildSelectorWidgetViewProps> = props =>
+{
+    const { ownerOnly = false } = props;
     const [ selectedGroupIndex, setSelectedGroupIndex ] = useState<number>(0);
     const { currentOffer = null } = useCatalogData();
     const { setPurchaseOptions = null } = useCatalogUiState();
-    const { data: groups = null } = useUserGroups();
+    const { data: allGroups = null } = useUserGroups();
+
+    const groups = useMemo(() =>
+    {
+        if(!allGroups || !ownerOnly) return allGroups;
+
+        const ownerId = GetSessionDataManager().userId;
+        const hasOwnerData = allGroups.some(group => typeof (group as { ownerId?: number }).ownerId === 'number');
+
+        if(!hasOwnerData) return allGroups;
+
+        return allGroups.filter(group => (group as { ownerId?: number }).ownerId === ownerId);
+    }, [ allGroups, ownerOnly ]);
+
+    useEffect(() =>
+    {
+        if(groups && (selectedGroupIndex >= groups.length)) setSelectedGroupIndex(0);
+    }, [ groups, selectedGroupIndex ]);
 
     const previewStuffData = useMemo(() =>
     {

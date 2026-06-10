@@ -1354,6 +1354,16 @@
     line-height: 17px !important;
 }
 
+.nitro-catalog-classic-window .nitro-catalog-preview-price .nitro-catalog-swf-price-text {
+    color: #ffffff !important;
+    text-shadow:
+        0 0 2px #000,
+        1px 1px 1px #000,
+        -1px 1px 1px #000,
+        1px -1px 1px #000,
+        -1px -1px 1px #000 !important;
+}
+
 .nitro-catalog-swf-price-plus {
     width: 7px;
     height: 7px;

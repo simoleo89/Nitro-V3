@@ -4,8 +4,9 @@ import { BuildPurchasableClothingFigure, FurniCategory, Offer, ProductTypeEnum }
 import { AutoGrid, Column, LayoutGridItem, LayoutRoomPreviewerView } from '../../../../../common';
 import { useCatalogData, useCatalogUiState } from '../../../../../hooks';
 
-export const CatalogViewProductWidgetView: FC<{}> = props =>
+export const CatalogViewProductWidgetView: FC<{ height?: number }> = props =>
 {
+    const { height = 240 } = props;
     const { currentOffer = null, roomPreviewer = null } = useCatalogData();
     const { purchaseOptions = null } = useCatalogUiState();
     const { previewStuffData = null } = purchaseOptions;
@@ -125,5 +126,5 @@ export const CatalogViewProductWidgetView: FC<{}> = props =>
         );
     }
 
-    return <LayoutRoomPreviewerView key={ currentOffer?.offerId } height={ 240 } roomPreviewer={ roomPreviewer } />;
+    return <LayoutRoomPreviewerView key={ currentOffer?.offerId } height={ height } roomPreviewer={ roomPreviewer } />;
 };

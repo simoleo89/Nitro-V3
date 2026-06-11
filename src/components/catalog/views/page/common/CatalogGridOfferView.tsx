@@ -1,5 +1,5 @@
 import { MouseEventType } from '@nitrots/nitro-renderer';
-import { CSSProperties, FC, MouseEvent, useMemo, useState } from 'react';
+import { FC, MouseEvent, useMemo, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { CatalogType, GetConfigurationValue, IPurchasableOffer, Offer, ProductTypeEnum } from '../../../../../api';
 import { LayoutAvatarImageView, LayoutGridItem, LayoutGridItemProps } from '../../../../../common';
@@ -114,10 +114,9 @@ export const CatalogGridOfferView: FC<CatalogGridOfferViewProps> = props =>
 
     return (
         <LayoutGridItem
-            className={ `group/tile relative ${ itemActive ? 'is-active' : '' } ${ tintColor ? 'has-guild-tint' : '' }` }
+            className={ `group/tile relative ${ itemActive ? 'is-active' : '' }` }
             gap={ 1 }
             itemActive={ itemActive }
-            style={ tintColor ? ({ '--guild-tint': tintColor } as CSSProperties) : undefined }
             itemCount={ ((offer.pricingModel === Offer.PRICING_MODEL_MULTI) ? product.productCount : 1) }
             itemUniqueNumber={ product.uniqueLimitedItemSeriesSize }
             itemUniqueSoldout={ (product.uniqueLimitedItemSeriesSize && !product.uniqueLimitedItemsLeft) }
@@ -132,6 +131,7 @@ export const CatalogGridOfferView: FC<CatalogGridOfferViewProps> = props =>
                     className="nitro-catalog-classic-grid-offer-icon"
                     src={ iconUrl }
                     draggable={ false }
+                    style={ tintColor ? { filter: 'url(#guild-furni-recolor)', transform: 'translateZ(0)' } : undefined }
                     onError={ event =>
                     {
                         const fallbackIconUrl = product.getIconUrl(offer);

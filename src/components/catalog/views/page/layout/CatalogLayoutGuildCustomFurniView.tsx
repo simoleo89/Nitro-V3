@@ -1,7 +1,8 @@
-import { FC } from 'react';
+import { StringDataType } from '@nitrots/nitro-renderer';
+import { FC, useMemo } from 'react';
 import { FaExchangeAlt, FaSyncAlt } from 'react-icons/fa';
 import { Column } from '../../../../../common';
-import { useCatalogData, useUserGroups } from '../../../../../hooks';
+import { useCatalogData, useCatalogUiState, useUserGroups } from '../../../../../hooks';
 import { CatalogFirstProductSelectorWidgetView } from '../widgets/CatalogFirstProductSelectorWidgetView';
 import { CatalogGuildBadgeWidgetView } from '../widgets/CatalogGuildBadgeWidgetView';
 import { CatalogGuildSelectorWidgetView } from '../widgets/CatalogGuildSelectorWidgetView';
@@ -14,8 +15,28 @@ import { CatalogLayoutProps } from './CatalogLayout.types';
 export const CatalogLayouGuildCustomFurniView: FC<CatalogLayoutProps> = () =>
 {
     const { currentOffer = null, roomPreviewer = null } = useCatalogData();
+    const { purchaseOptions = null } = useCatalogUiState();
     const { data: groups = null } = useUserGroups();
     const hasGroups = !!(groups && groups.length);
+
+    const tintColor = useMemo(() =>
+    {
+        const previewStuffData = purchaseOptions?.previewStuffData ?? null;
+
+        if(!previewStuffData) return null;
+
+        const colorA = (previewStuffData as StringDataType).getValue(3);
+        const colorB = (previewStuffData as StringDataType).getValue(4);
+
+        if(!colorA || !colorA.length) return null;
+
+        if(colorB && colorB.length && (colorB !== colorA))
+        {
+            return `linear-gradient(90deg, #${ colorA } 0 50%, #${ colorB } 50% 100%)`;
+        }
+
+        return `#${ colorA }`;
+    }, [ purchaseOptions ]);
 
     return (
         <>
@@ -38,7 +59,7 @@ export const CatalogLayouGuildCustomFurniView: FC<CatalogLayoutProps> = () =>
                         </div>
                     </div> }
                 <div className="grow! min-h-0 overflow-auto">
-                    <CatalogItemGridWidgetView columnCount={ 5 } columnMinWidth={ 36 } />
+                    <CatalogItemGridWidgetView className="nitro-catalog-classic-grid" columnCount={ 6 } columnMinHeight={ 80 } columnMinWidth={ 55 } tintColor={ tintColor } />
                 </div>
                 { !!currentOffer &&
                     <div className="flex shrink-0 flex-col gap-1">

@@ -1,5 +1,5 @@
 import { MouseEventType } from '@nitrots/nitro-renderer';
-import { FC, MouseEvent, useMemo, useState } from 'react';
+import { CSSProperties, FC, MouseEvent, useMemo, useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { CatalogType, GetConfigurationValue, IPurchasableOffer, Offer, ProductTypeEnum } from '../../../../../api';
 import { LayoutAvatarImageView, LayoutGridItem, LayoutGridItemProps } from '../../../../../common';
@@ -9,11 +9,12 @@ interface CatalogGridOfferViewProps extends LayoutGridItemProps
 {
     offer: IPurchasableOffer;
     selectOffer: (offer: IPurchasableOffer) => void;
+    tintColor?: string;
 }
 
 export const CatalogGridOfferView: FC<CatalogGridOfferViewProps> = props =>
 {
-    const { offer = null, selectOffer = null, itemActive = false, ...rest } = props;
+    const { offer = null, selectOffer = null, itemActive = false, tintColor = null, ...rest } = props;
     const [ isMouseDown, setMouseDown ] = useState(false);
     const { requestOfferToMover = null } = useCatalogActions();
     const { currentType = CatalogType.NORMAL } = useCatalogUiState();
@@ -113,9 +114,10 @@ export const CatalogGridOfferView: FC<CatalogGridOfferViewProps> = props =>
 
     return (
         <LayoutGridItem
-            className={ `group/tile relative ${ itemActive ? 'is-active' : '' }` }
+            className={ `group/tile relative ${ itemActive ? 'is-active' : '' } ${ tintColor ? 'has-guild-tint' : '' }` }
             gap={ 1 }
             itemActive={ itemActive }
+            style={ tintColor ? ({ '--guild-tint': tintColor } as CSSProperties) : undefined }
             itemCount={ ((offer.pricingModel === Offer.PRICING_MODEL_MULTI) ? product.productCount : 1) }
             itemUniqueNumber={ product.uniqueLimitedItemSeriesSize }
             itemUniqueSoldout={ (product.uniqueLimitedItemSeriesSize && !product.uniqueLimitedItemsLeft) }

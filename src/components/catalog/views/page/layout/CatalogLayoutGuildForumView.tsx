@@ -33,7 +33,9 @@ export const CatalogLayouGuildForumView: FC<CatalogLayoutProps> = props =>
                                 </div>
                             </Flex>
                             { hasGroups &&
-                                <CatalogPurchaseWidgetView noGiftOption={ true } /> }
+                                <div className="flex justify-center">
+                                    <CatalogPurchaseWidgetView noGiftOption={ true } />
+                                </div> }
                         </div> }
                 </Column>
                 <Column alignItems="center" overflow="hidden" size={ 4 }>

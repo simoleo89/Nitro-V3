@@ -7,12 +7,12 @@ import { CatalogGridOfferView } from '../common/CatalogGridOfferView';
 
 interface CatalogItemGridWidgetViewProps extends AutoGridProps
 {
-
+    tintColor?: string;
 }
 
 export const CatalogItemGridWidgetView: FC<CatalogItemGridWidgetViewProps> = props =>
 {
-    const { columnCount = 5, children = null, ...rest } = props;
+    const { columnCount = 5, tintColor = null, children = null, ...rest } = props;
     const { currentOffer = null, currentPage = null } = useCatalogData();
     const { selectCatalogOffer = null } = useCatalogActions();
     const catalogAdmin = useCatalogAdmin();
@@ -26,13 +26,6 @@ export const CatalogItemGridWidgetView: FC<CatalogItemGridWidgetViewProps> = pro
         if(elementRef && elementRef.current) elementRef.current.scrollTop = 0;
     }, [ currentPage ]);
 
-    // Drag-and-drop handlers — hooks MUST run unconditionally so the
-    // hook order stays stable when currentPage flips from null to a
-    // real value (the `if(!currentPage) return null` below would
-    // otherwise hide these from the first render and React would flag
-    // "Rendered more hooks than during the previous render"). Bodies
-    // are safe to evaluate pre-load: currentPage? optional chaining
-    // already guards the only access inside handleDrop.
     const handleDragStart = useCallback((index: number) =>
     {
         setDragIndex(index);
@@ -96,6 +89,7 @@ export const CatalogItemGridWidgetView: FC<CatalogItemGridWidgetViewProps> = pro
                             itemActive={ (currentOffer && (currentOffer.offerId === offer.offerId)) }
                             offer={ offer }
                             selectOffer={ selectOffer }
+                            tintColor={ tintColor }
                         />
                     </div>
                 );

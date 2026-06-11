@@ -714,6 +714,12 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-color: #cdd3d9;
+    border: 2px solid #c4cabf;
+    border-radius: 6px;
+}
+
+.layout-grid-item.is-grid-active {
+    border-color: #aeb7aa;
 }
 
 .nitro-friends-spritesheet {

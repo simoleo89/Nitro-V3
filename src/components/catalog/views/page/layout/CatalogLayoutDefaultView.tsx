@@ -112,6 +112,7 @@ export const CatalogLayoutDefaultView: FC<CatalogLayoutProps> = props =>
                         <CatalogSpinnerWidgetView />
                     </div>
                     <div className="nitro-catalog-classic-total-price-slot">
+                        <span className="nitro-catalog-classic-total-price-label">{ LocalizeText('catalog.bundlewidget.price') }</span>
                         <CatalogTotalPriceWidget />
                     </div>
                 </div> }

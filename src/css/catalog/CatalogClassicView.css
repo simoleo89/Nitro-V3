@@ -827,40 +827,49 @@
     overflow: visible !important;
 }
 
-.nitro-catalog-classic-window .layout-grid-item {
-    width: 100% !important;
-    height: var(--nitro-grid-column-min-height, 70px) !important;
-    min-width: 0 !important;
-    min-height: var(--nitro-grid-column-min-height, 70px) !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-}
+@layer utilities {
+    .nitro-catalog-classic-window .layout-grid-item {
+        width: 100% !important;
+        height: var(--nitro-grid-column-min-height, 70px) !important;
+        min-width: 0 !important;
+        min-height: var(--nitro-grid-column-min-height, 70px) !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+    }
 
-.nitro-catalog-classic-window .layout-grid-item:not(.has-highlight) {
-    background-color: transparent !important;
-}
+    .nitro-catalog-classic-window .layout-grid-item:not(.has-highlight) {
+        background-color: #e4e7df !important;
+        border: 2px solid transparent !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+    }
 
-.nitro-catalog-classic-window .nitro-catalog-classic-pet-breeds .layout-grid-item {
-    width: 84px !important;
-    min-width: 84px !important;
-    height: 74px !important;
-    min-height: 74px !important;
-}
+    .nitro-catalog-classic-window .nitro-catalog-classic-pet-breeds .layout-grid-item {
+        width: 84px !important;
+        min-width: 84px !important;
+        height: 74px !important;
+        min-height: 74px !important;
+    }
 
-.nitro-catalog-classic-window .layout-grid-item:hover {
-    background-image: none !important;
-    box-shadow: inset 0 0 0 1px #a1a19b !important;
-}
+    .nitro-catalog-classic-window .layout-grid-item:not(.has-highlight):not(.is-active):hover {
+        background-image: none !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+    }
 
-.nitro-catalog-classic-window .layout-grid-item.is-active {
-    background-image: none !important;
-    box-shadow:
-        inset 0 0 0 1px #63c5e9,
-        inset 2px 2px 0 #ecece4,
-        inset -2px -2px 0 #ecece4 !important;
+    .nitro-catalog-classic-window .layout-grid-item.is-active {
+        background-color: #ffffff !important;
+        background-image: none !important;
+        border: 2px solid #62c4e8 !important;
+        box-shadow: none !important;
+    }
+
+    .nitro-catalog-classic-window .layout-grid-item.has-guild-tint:not(.has-highlight):not(.is-active) {
+        background: var(--guild-tint) !important;
+    }
 }
 
 .nitro-catalog-classic-window .layout-grid-item.has-highlight {
@@ -901,13 +910,15 @@
     pointer-events: none;
 }
 
+
 .nitro-catalog-classic-grid-price {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 3px;
     width: 100%;
+    padding-right: 4px;
     color: #000;
     font-size: 11px;
     font-weight: 700;
@@ -963,7 +974,8 @@
 .nitro-catalog-classic-grid-price.is-multi-price {
     height: auto;
     min-height: 0;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-end;
     row-gap: 1px;
 }
 
@@ -971,7 +983,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 1px;
+    gap: 3px;
     height: 13px;
     white-space: nowrap;
 }
@@ -1022,8 +1034,7 @@
     padding-right: 2px;
 }
 
-.nitro-catalog-classic-total-price-slot::before {
-    content: "Prezzo";
+.nitro-catalog-classic-total-price-label {
     color: #666;
     font-size: 11px;
     line-height: 17px;

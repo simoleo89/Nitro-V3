@@ -287,6 +287,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="soundboard" onClick={ () => CreateLinkEvent('soundboard/toggle') } className="tb-icon" />
                         </motion.div> }
+                    </>) }
                     { isMod &&
                         <motion.div variants={ itemVariants } className="relative">
                             <ToolbarItemView icon="modtools" onClick={ () => CreateLinkEvent('mod-tools/toggle') } className="tb-icon" />
@@ -301,7 +302,6 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="furnieditor" onClick={ () => CreateLinkEvent('furni-editor/toggle') } className="tb-icon" />
                         </motion.div> }
-                    </>) }
                 </motion.div>
             </motion.div>
             <motion.div

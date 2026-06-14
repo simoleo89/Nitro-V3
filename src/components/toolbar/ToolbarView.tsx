@@ -208,10 +208,10 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={ 3 } d={ leftCollapsed ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7' } />
                     </svg>
                 </button>
-                { !leftCollapsed &&
                 <motion.div
                     variants={ containerVariants }
                     className="tb-open-shell flex h-[52px] max-w-full items-center gap-2 overflow-visible bg-transparent px-[8px] pt-[10px] pb-[2px]">
+                    { !leftCollapsed && (<>
                     <motion.div variants={ itemVariants }>
                         { isInRoom
                             ? <ToolbarItemView icon="habbo" onClick={ () => VisitDesktop() } className="tb-icon" />
@@ -224,6 +224,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="game" onClick={ () => CreateLinkEvent('games/toggle') } className="tb-icon" />
                         </motion.div> }
+                    </>) }
                     <motion.div variants={ itemVariants }>
                         <ToolbarItemView icon="catalog" onClick={ () => CreateLinkEvent('catalog/toggle/normal') } className="tb-icon" />
                     </motion.div>
@@ -261,6 +262,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         { (getFullCount > 0) &&
                             <LayoutItemCountView count={ getFullCount } className="absolute -right-1 top-0" /> }
                     </motion.div>
+                    { !leftCollapsed && (<>
                     <motion.div variants={ itemVariants }>
                         <ToolbarItemView icon="rare-values" onClick={ () => CreateLinkEvent('rare-values/toggle') } className="tb-icon" />
                     </motion.div>
@@ -271,10 +273,12 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="wired-tools" onClick={ openMonitor } className="tb-icon" />
                         </motion.div> }
+                    </>) }
                     { isInRoom &&
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="camera" onClick={ () => CreateLinkEvent('camera/toggle') } className="tb-icon" />
                         </motion.div> }
+                    { !leftCollapsed && (<>
                     { (isInRoom && youtubeEnabled) &&
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="youtube" onClick={ openYouTubePlayer } className="tb-icon" />
@@ -297,7 +301,8 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="furnieditor" onClick={ () => CreateLinkEvent('furni-editor/toggle') } className="tb-icon" />
                         </motion.div> }
-                </motion.div> }
+                    </>) }
+                </motion.div>
             </motion.div>
             <motion.div
                 initial="visible"

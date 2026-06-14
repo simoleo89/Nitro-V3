@@ -11,7 +11,7 @@ interface ChatInputStyleSelectorViewProps
 
 export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = props =>
 {
-    const { chatStyleIds = null, selectChatStyleId = null } = props;
+    const { chatStyleId = 0, chatStyleIds = null, selectChatStyleId = null } = props;
     const [ selectorVisible, setSelectorVisible ] = useState(false);
 
     const selectStyle = (styleId: number) =>
@@ -23,8 +23,13 @@ export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = p
     return (
         <Popover.Root open={selectorVisible} onOpenChange={setSelectorVisible}>
             <Popover.Trigger asChild>
-                <div className="chatstyles-anchor">
-                    <div className="nitro-icon chatstyles-icon" />
+                <div className="flex h-[26px] items-center gap-[3px] cursor-pointer select-none pl-[2px]" aria-label="Stili chat">
+                    <svg className="h-[9px] w-[9px] shrink-0 text-black/70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={ 3 } d="M19 9l-7 7-7-7" />
+                    </svg>
+                    <div className="relative h-[24px] w-[30px] overflow-hidden pointer-events-none">
+                        <div className={ `chat-bubble bubble-${ chatStyleId } absolute left-0 top-[1px] h-[22px] w-[52px]` } />
+                    </div>
                 </div>
             </Popover.Trigger>
             <Popover.Portal>

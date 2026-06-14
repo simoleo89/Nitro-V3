@@ -32,6 +32,8 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
     const { isInRoom } = props;
     const [ isMeExpanded, setMeExpanded ] = useState(false);
     const [ isTouchLayout, setIsTouchLayout ] = useState(false);
+    const [ leftCollapsed, setLeftCollapsed ] = useState(false);
+    const [ rightCollapsed, setRightCollapsed ] = useState(false);
     const [ staffStackBottom, setStaffStackBottom ] = useState<number | null>(null);
     const [ useGuideTool, setUseGuideTool ] = useState(false);
     const [ youtubeEnabled, setYoutubeEnabled ] = useState(false);
@@ -197,6 +199,16 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 variants={ leftNavVariants }
                 transition={ NAV_TRANSITION }
                 className={ `tb-nav-clip fixed bottom-0 left-0 z-40 h-[52px] max-w-[calc(50vw-242px)] items-center pl-3 ${ desktopFlexClasses }` }>
+                <button
+                    type="button"
+                    onClick={ () => setLeftCollapsed(value => !value) }
+                    aria-label="Mostra/Nascondi icone"
+                    className="tb-collapse pointer-events-auto mt-[6px] mr-[3px]">
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={ 3 } d={ leftCollapsed ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7' } />
+                    </svg>
+                </button>
+                { !leftCollapsed &&
                 <motion.div
                     variants={ containerVariants }
                     className="tb-open-shell flex h-[52px] max-w-full items-center gap-2 overflow-visible bg-transparent px-[8px] pt-[10px] pb-[2px]">
@@ -285,7 +297,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         <motion.div variants={ itemVariants }>
                             <ToolbarItemView icon="furnieditor" onClick={ () => CreateLinkEvent('furni-editor/toggle') } className="tb-icon" />
                         </motion.div> }
-                </motion.div>
+                </motion.div> }
             </motion.div>
             <motion.div
                 initial="visible"
@@ -293,6 +305,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 variants={ rightNavVariants }
                 transition={ NAV_TRANSITION }
                 className={ `tb-nav-clip fixed bottom-0 z-40 h-[52px] max-w-[calc(50vw-242px)] items-center pr-3 ${ desktopFlexClasses } ${ isInRoom ? 'right-0' : 'right-3' }` }>
+                { !rightCollapsed &&
                 <motion.div
                     variants={ containerVariants }
                     className="tb-open-shell flex h-[52px] max-w-full items-center gap-3 overflow-visible bg-transparent px-[8px] pt-[10px] pb-[2px]">
@@ -313,7 +326,16 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                         </motion.div> }
                     <div className={ `mx-1 h-5 w-[1px] bg-white/20 ${ desktopBlockClasses }` } />
                     <div className={ `h-full shrink-0 ${ desktopBlockClasses }` } id="toolbar-friend-bar-container-desktop" />
-                </motion.div>
+                </motion.div> }
+                <button
+                    type="button"
+                    onClick={ () => setRightCollapsed(value => !value) }
+                    aria-label="Mostra/Nascondi icone"
+                    className="tb-collapse pointer-events-auto mt-[6px] ml-[3px]">
+                    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={ 3 } d={ rightCollapsed ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7' } />
+                    </svg>
+                </button>
             </motion.div>
             <motion.div
                 initial="visible"
@@ -483,6 +505,26 @@ const TOOLBAR_STYLES = `
 
   .tb-icon:active {
     transform: translateY(0);
+  }
+
+  .tb-collapse {
+    width: 15px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: rgba(62, 64, 72, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.70);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .tb-collapse:hover {
+    color: #fff;
+    background: rgba(80, 82, 90, 0.65);
   }
 
   .tb-bar-scroll {

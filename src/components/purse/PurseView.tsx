@@ -1,5 +1,5 @@
 import { CreateLinkEvent } from '@nitrots/nitro-renderer';
-import { FC, useCallback, useMemo } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { FaChartBar, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { ClearRememberLogin, GetConfigurationValue, GetRememberLogin, LocalizeText } from '../../api';
 import { Column, LayoutCurrencyIcon } from '../../common';
@@ -16,6 +16,13 @@ const localizeWithFallback = (key: string, fallback: string) =>
 export const PurseView: FC<{}> = props =>
 {
     const { purse = null, hcDisabled = false } = usePurse();
+    const [ settingsMenuOpen, setSettingsMenuOpen ] = useState(false);
+
+    const openSettingsSection = useCallback((section: string) =>
+    {
+        CreateLinkEvent('user-settings/show/' + section);
+        setSettingsMenuOpen(false);
+    }, []);
 
     const displayedCurrencies = useMemo(() => GetConfigurationValue<number[]>('system.currency.types', []), []);
     const currencyDisplayNumberShort = useMemo(() => GetConfigurationValue<boolean>('currency.display.number.short', false), []);
@@ -123,13 +130,21 @@ export const PurseView: FC<{}> = props =>
                         </button>
                         <button type="button" className="nitro-purse__btn nitro-purse__btn--icon nitro-purse__btn--settings" onClick={ event =>
                         {
-                            event.stopPropagation(); CreateLinkEvent('user-settings/toggle');
+                            event.stopPropagation(); setSettingsMenuOpen(value => !value);
                         } } title={ LocalizeText('widget.memenu.settings.title') }>
                             <FaCog />
                         </button>
                     </div>
                 </div>
             </div>
+            { settingsMenuOpen &&
+                <div className="nitro-purse-menu">
+                    <button type="button" className="nitro-purse-menu__item" onClick={ () => openSettingsSection('audio') }>Impostazioni Audio</button>
+                    <button type="button" className="nitro-purse-menu__item nitro-purse-menu__item--disabled" disabled>Impostazioni Discord</button>
+                    <button type="button" className="nitro-purse-menu__item" onClick={ () => openSettingsSection('chat') }>Impostazioni Chat</button>
+                    <button type="button" className="nitro-purse-menu__item" onClick={ () => openSettingsSection('other') }>Altre Impostazioni</button>
+                    <button type="button" className="nitro-purse-menu__item nitro-purse-menu__item--disabled" disabled>Filtro Parole</button>
+                </div> }
             { otherCurrencies.length > 0 &&
                 <div className="nitro-purse__other">
                     { otherCurrencies.map(type => <SeasonalView key={ type } type={ type } amount={ purse.activityPoints.get(type) || 0 } />) }

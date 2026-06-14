@@ -1,6 +1,6 @@
 import { CreateLinkEvent, Dispose, DropBounce, EaseOut, JumpBy, Motions, NitroToolbarAnimateIconEvent, PerkAllowancesMessageEvent, PerkEnum, Queue, Wait, YouTubeRoomSettingsEvent } from '@nitrots/nitro-renderer';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { GetConfigurationValue, isHousekeepingEnabled, MessengerIconState, OpenMessengerChat, setYoutubeRoomEnabled, VisitDesktop } from '../../api';
 import { Flex, LayoutAvatarImageView, LayoutItemCountView } from '../../common';
 import { useAchievements, useFriends, useHasPermission, useInventoryUnseenTracker, useMentionsSnapshot, useMessageEvent, useMessenger, useModTools, useNitroEvent, useSessionInfo, useSoundboard, useWiredTools } from '../../hooks';
@@ -26,13 +26,11 @@ const shellVariants: Variants = {
 const SHELL_TRANSITION = { type: 'spring' as const, stiffness: 260, damping: 26 };
 const NAV_TRANSITION = { type: 'spring' as const, stiffness: 300, damping: 28 };
 const ME_POPOVER_TRANSITION = { type: 'spring' as const, stiffness: 420, damping: 28 };
-const TOGGLE_LOCK_MS = 220;
 
 export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
 {
     const { isInRoom } = props;
     const [ isMeExpanded, setMeExpanded ] = useState(false);
-    const [ isToolbarOpen, setIsToolbarOpen ] = useState(false);
     const [ isTouchLayout, setIsTouchLayout ] = useState(false);
     const [ staffStackBottom, setStaffStackBottom ] = useState<number | null>(null);
     const [ useGuideTool, setUseGuideTool ] = useState(false);
@@ -54,26 +52,9 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
         () => isMod ? tickets.filter(ticket => ticket && (ticket.state === 1)).length : 0,
         [ isMod, tickets ]
     );
-    const isVisible = (isToolbarOpen || !isInRoom);
-    const visibilityVariant = isVisible ? 'visible' : 'hidden';
-    const toggleLockRef = useRef(false);
-    const toggleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const visibilityVariant = 'visible';
 
-    useEffect(() => () =>
-    {
-        if(toggleTimeoutRef.current) clearTimeout(toggleTimeoutRef.current);
-    }, []);
-
-    const handleToggleClick = useCallback(() =>
-    {
-        if(toggleLockRef.current) return;
-        toggleLockRef.current = true;
-        setIsToolbarOpen(value => !value);
-        if(toggleTimeoutRef.current) clearTimeout(toggleTimeoutRef.current);
-        toggleTimeoutRef.current = setTimeout(() => { toggleLockRef.current = false; }, TOGGLE_LOCK_MS);
-    }, []);
-
-    const compactFramePosition = (isToolbarOpen && isInRoom) ? 'bottom-[90px] min-[1700px]:bottom-0' : 'bottom-0';
+    const compactFramePosition = 'bottom-[90px] min-[1700px]:bottom-0';
     const mobileOnlyClasses = isTouchLayout ? '' : 'min-[1700px]:hidden';
     const desktopBlockClasses = isTouchLayout ? 'hidden' : 'hidden min-[1700px]:block';
     const desktopFlexClasses = isTouchLayout ? 'hidden' : 'hidden min-[1700px]:flex';
@@ -196,20 +177,6 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
 
             { isInRoom &&
                 <div className={ `tb-frame fixed ${ compactFramePosition } left-1/2 -translate-x-1/2 z-40 flex h-[38px] w-[420px] max-w-[95vw] items-center px-[6px] py-[4px] pointer-events-none` }>
-                    <motion.div
-                        className="tb-toggle pointer-events-auto mr-2 flex-shrink-0"
-                        onClick={ handleToggleClick }
-                        whileTap={ { scale: 0.9 } }>
-                        <motion.svg
-                            className="h-3.5 w-3.5 text-white/70"
-                            animate={ { rotate: isToolbarOpen ? 180 : 0 } }
-                            transition={ { type: 'spring', stiffness: 320, damping: 24 } }
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={ 2.5 } d="M5 15l7-7 7 7" />
-                        </motion.svg>
-                    </motion.div>
                     <Flex
                         alignItems="center"
                         justifyContent="center"
@@ -218,14 +185,14 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 </div> }
 
             <motion.div
-                initial="hidden"
+                initial="visible"
                 animate={ visibilityVariant }
                 variants={ shellVariants }
                 transition={ SHELL_TRANSITION }
                 className={ `pointer-events-none fixed bottom-0 left-0 right-0 z-[39] h-[52px] rounded-t-[12px] border border-b-0 border-white/8 bg-[rgba(18,19,24,0.97)] shadow-[0_-6px_18px_rgba(0,0,0,0.18)] ${ desktopBlockClasses }` } />
 
             <motion.div
-                initial="hidden"
+                initial="visible"
                 animate={ visibilityVariant }
                 variants={ leftNavVariants }
                 transition={ NAV_TRANSITION }
@@ -321,7 +288,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 </motion.div>
             </motion.div>
             <motion.div
-                initial="hidden"
+                initial="visible"
                 animate={ visibilityVariant }
                 variants={ rightNavVariants }
                 transition={ NAV_TRANSITION }
@@ -349,7 +316,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 </motion.div>
             </motion.div>
             <motion.div
-                initial="hidden"
+                initial="visible"
                 animate={ visibilityVariant }
                 variants={ mobileNavVariants }
                 transition={ NAV_TRANSITION }
@@ -443,7 +410,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                  room. Always present (Builders Club), plus camera in-room
                  and the staff-only tools when permitted. */ }
             <motion.div
-                initial="hidden"
+                initial="visible"
                 animate={ visibilityVariant }
                 variants={ mobileNavVariants }
                 transition={ NAV_TRANSITION }
@@ -516,28 +483,6 @@ const TOOLBAR_STYLES = `
 
   .tb-icon:active {
     transform: translateY(0);
-  }
-
-  .tb-toggle {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    border-radius: 9px;
-    background: rgba(18, 16, 14, 0.80);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
-    transition: background 0.15s, border-color 0.15s;
-  }
-
-  .tb-toggle:hover {
-    background: rgba(30, 26, 20, 0.88);
-    border-color: rgba(255, 255, 255, 0.13);
   }
 
   .tb-bar-scroll {

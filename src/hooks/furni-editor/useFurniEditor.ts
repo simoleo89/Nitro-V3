@@ -190,6 +190,15 @@ export const useFurniEditor = () =>
         {
             setError(parser.message || 'Operation failed');
 
+            // updateFurnidata applies an optimistic publicName change before the
+            // server replies. On failure (e.g. a sprite-id collision when creating
+            // an entry for a variant furni) re-fetch the detail so the UI reverts
+            // to the true state instead of showing the name that was never applied.
+            if(actionItemId)
+            {
+                SendMessageComposer(new FurniEditorDetailComposer(actionItemId));
+            }
+
             if(simpleAlert)
             {
                 simpleAlert(parser.message || 'Operation failed', NotificationAlertType.ALERT, null, null, 'Furni Editor Error');

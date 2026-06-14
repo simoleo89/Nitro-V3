@@ -121,13 +121,13 @@
 }
 
 .nitro-purse__btn--join {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: #33312c;
+    border-color: #4f7a22;
+    background: linear-gradient(180deg, #72b03a 0%, #5a8c2a 100%);
 }
 
 .nitro-purse__btn--earnings {
-    border-color: rgba(255, 255, 255, 0.1);
-    background: #33312c;
+    border-color: #4f7a22;
+    background: linear-gradient(180deg, #72b03a 0%, #5a8c2a 100%);
 }
 
 .nitro-purse__btn--help {

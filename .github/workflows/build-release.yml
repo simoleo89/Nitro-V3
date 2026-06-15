@@ -10,6 +10,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  NITRO_SINGLE_BUNDLE: '1'
   NITRO_JSON_MODE: 'legacy'
 
 jobs:

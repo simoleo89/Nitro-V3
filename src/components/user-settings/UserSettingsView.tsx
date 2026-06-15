@@ -142,7 +142,7 @@ export const UserSettingsView: FC<{}> = props =>
     if(!isVisible || !userSettings) return null;
 
     return (
-        <NitroCardView className="user-settings-window w-[360px]" theme="primary-slim" uniqueKey="user-settings">
+        <NitroCardView className="user-settings-window w-[340px]" theme="primary-slim" uniqueKey="user-settings">
             <NitroCardHeaderView headerText={ LocalizeText('widget.memenu.settings.title') } onCloseClick={ event => processAction('close_view') } />
             <NitroCardTabsView>
                 <NitroCardTabsItemView isActive={ activeTab === 'audio' } onClick={ () => setActiveTab('audio') }>
@@ -161,42 +161,44 @@ export const UserSettingsView: FC<{}> = props =>
             { (activeTab === 'account')
                 ? <UserAccountSettingsView embedded />
                 : (
-                    <NitroCardContentView className="text-black">
+                    <NitroCardContentView className="flex flex-col gap-2 text-black">
                         { (activeTab === 'chat') &&
-                            <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-1">
+                            <>
+                                <Text small className="text-black/60 uppercase tracking-wider px-1">{ localizeWithFallback('room.chat.settings.title', 'Chat') }</Text>
+                                <label className="flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 cursor-pointer hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors">
                                     <input checked={ userSettings.oldChat } className="form-check-input" type="checkbox" onChange={ event => processAction('oldchat', event.target.checked) } />
                                     <Text>{ LocalizeText('memenu.settings.chat.prefer.old.chat') }</Text>
-                                </div>
-                                <div className="flex items-center gap-1">
+                                </label>
+                                <label className="flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 cursor-pointer hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors">
                                     <input checked={ chatWindowEnabled } className="form-check-input" type="checkbox" onChange={ event => setChatWindowEnabled(event.target.checked) } />
                                     <Text>{ LocalizeText('memenu.settings.other.enable.chat.window') }</Text>
-                                </div>
-                            </div> }
+                                </label>
+                            </> }
                         { (activeTab === 'other') &&
-                            <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-1">
+                            <>
+                                <Text small className="text-black/60 uppercase tracking-wider px-1">{ localizeWithFallback('memenu.settings.other', 'Altre') }</Text>
+                                <label className="flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 cursor-pointer hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors">
                                     <input checked={ userSettings.roomInvites } className="form-check-input" type="checkbox" onChange={ event => processAction('room_invites', event.target.checked) } />
                                     <Text>{ LocalizeText('memenu.settings.other.ignore.room.invites') }</Text>
-                                </div>
-                                <div className="flex items-center gap-1">
+                                </label>
+                                <label className="flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 cursor-pointer hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors">
                                     <input checked={ userSettings.cameraFollow } className="form-check-input" type="checkbox" onChange={ event => processAction('camera_follow', event.target.checked) } />
                                     <Text>{ LocalizeText('memenu.settings.other.disable.room.camera.follow') }</Text>
-                                </div>
-                                <div className="flex items-center gap-1">
+                                </label>
+                                <label className="flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 cursor-pointer hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors">
                                     <input checked={ catalogPlaceMultipleObjects } className="form-check-input" type="checkbox" onChange={ event => setCatalogPlaceMultipleObjects(event.target.checked) } />
                                     <Text>{ LocalizeText('memenu.settings.other.place.multiple.objects') }</Text>
-                                </div>
-                                <div className="flex items-center gap-1">
+                                </label>
+                                <label className="flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 cursor-pointer hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors">
                                     <input checked={ catalogSkipPurchaseConfirmation } className="form-check-input" type="checkbox" onChange={ event => setCatalogSkipPurchaseConfirmation(event.target.checked) } />
                                     <Text>{ LocalizeText('memenu.settings.other.skip.purchase.confirmation') }</Text>
-                                </div>
-                            </div> }
+                                </label>
+                            </> }
                         { (activeTab === 'audio') &&
-                            <div className="flex flex-col">
-                                <Text bold>{ LocalizeText('widget.memenu.settings.volume') }</Text>
-                                <div className="flex flex-col gap-1">
-                                    <Text>{ LocalizeText('widget.memenu.settings.volume.ui') }</Text>
+                            <>
+                                <Text small className="text-black/60 uppercase tracking-wider px-1">{ localizeWithFallback('widget.memenu.settings.volume', 'Audio') }</Text>
+                                <div className="flex flex-col gap-1 rounded-md border border-black/10 bg-white px-3 py-2">
+                                    <Text bold>{ LocalizeText('widget.memenu.settings.volume.ui') }</Text>
                                     <div className="flex items-center gap-1">
                                         { (userSettings.volumeSystem === 0) && <FaVolumeMute className={ classNames((userSettings.volumeSystem >= 50) && 'text-muted', 'fa-icon') } /> }
                                         { (userSettings.volumeSystem > 0) && <FaVolumeDown className={ classNames((userSettings.volumeSystem >= 50) && 'text-muted', 'fa-icon') } /> }
@@ -204,8 +206,8 @@ export const UserSettingsView: FC<{}> = props =>
                                         <FaVolumeUp className={ classNames((userSettings.volumeSystem < 50) && 'text-muted', 'fa-icon') } />
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <Text>{ LocalizeText('widget.memenu.settings.volume.furni') }</Text>
+                                <div className="flex flex-col gap-1 rounded-md border border-black/10 bg-white px-3 py-2">
+                                    <Text bold>{ LocalizeText('widget.memenu.settings.volume.furni') }</Text>
                                     <div className="flex items-center gap-1">
                                         { (userSettings.volumeFurni === 0) && <FaVolumeMute className={ classNames((userSettings.volumeFurni >= 50) && 'text-muted', 'fa-icon') } /> }
                                         { (userSettings.volumeFurni > 0) && <FaVolumeDown className={ classNames((userSettings.volumeFurni >= 50) && 'text-muted', 'fa-icon') } /> }
@@ -213,8 +215,8 @@ export const UserSettingsView: FC<{}> = props =>
                                         <FaVolumeUp className={ classNames((userSettings.volumeFurni < 50) && 'text-muted', 'fa-icon') } />
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <Text>{ LocalizeText('widget.memenu.settings.volume.trax') }</Text>
+                                <div className="flex flex-col gap-1 rounded-md border border-black/10 bg-white px-3 py-2">
+                                    <Text bold>{ LocalizeText('widget.memenu.settings.volume.trax') }</Text>
                                     <div className="flex items-center gap-1">
                                         { (userSettings.volumeTrax === 0) && <FaVolumeMute className={ classNames((userSettings.volumeTrax >= 50) && 'text-muted', 'fa-icon') } /> }
                                         { (userSettings.volumeTrax > 0) && <FaVolumeDown className={ classNames((userSettings.volumeTrax >= 50) && 'text-muted', 'fa-icon') } /> }
@@ -222,7 +224,7 @@ export const UserSettingsView: FC<{}> = props =>
                                         <FaVolumeUp className={ classNames((userSettings.volumeTrax < 50) && 'text-muted', 'fa-icon') } />
                                     </div>
                                 </div>
-                            </div> }
+                            </> }
                     </NitroCardContentView>
                 ) }
         </NitroCardView>

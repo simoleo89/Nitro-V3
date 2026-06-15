@@ -86,7 +86,7 @@ export const VaultView: FC<{}> = props =>
             <NitroCardContentView className="flex flex-col gap-[5px] text-black">
                 { EARNINGS.map(row => (
                     <div key={ row.key } className="flex items-center gap-2">
-                        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-[5px] border-2 border-[#b3b3b3] bg-white px-1.5 py-1">
+                        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-[5px] border border-[#9aa0a8] bg-white px-1.5 py-1">
                             <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded border border-black/15 bg-white">
                                 <img src={ row.img } alt="" className="max-h-[24px] max-w-[24px] object-contain [image-rendering:pixelated]" />
                             </span>
@@ -100,13 +100,13 @@ export const VaultView: FC<{}> = props =>
                                 </span>
                             )) }
                         </div>
-                        <button type="button" disabled className="shrink-0 cursor-default rounded border border-black/20 bg-[#cfcfcf] px-2 py-[3px] text-[0.7rem] font-bold text-black/45">
+                        <button type="button" disabled className="shrink-0 cursor-default rounded-[4px] border border-[#909090] bg-[linear-gradient(180deg,#f2f2f2_0%,#cdcdcd_100%)] px-2.5 py-[3px] text-[0.72rem] font-bold text-[#7c7c7c] shadow-[inset_0_1px_0_#ffffff]">
                             { localizeWithFallback('earnings.claim', 'Riscatta') }
                         </button>
                     </div>
                 )) }
                 <div className="flex justify-center pt-1">
-                    <button type="button" disabled className="cursor-default rounded border border-black/20 bg-[#cfcfcf] px-7 py-1 text-[0.78rem] font-bold text-black/45">
+                    <button type="button" disabled className="cursor-default rounded-[4px] border border-[#909090] bg-[linear-gradient(180deg,#f2f2f2_0%,#cdcdcd_100%)] px-7 py-1 text-[0.78rem] font-bold text-[#7c7c7c] shadow-[inset_0_1px_0_#ffffff]">
                         { localizeWithFallback('earnings.claim.all', 'Richiedili Tutti') }
                     </button>
                 </div>

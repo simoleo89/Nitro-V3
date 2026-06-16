@@ -1,5 +1,5 @@
 export interface BanInfo {
-    type: 'account' | 'ip' | 'machine' | 'super' | string;
+    type: 'account' | 'ip' | 'machine' | 'super' | (string & {});
     reason: string;
     permanent: boolean;
     expiresAt?: number;

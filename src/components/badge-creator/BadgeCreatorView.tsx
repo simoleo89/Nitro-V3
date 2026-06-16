@@ -198,7 +198,7 @@ const loadGridFromUrl = (url: string): Promise<Uint32Array> =>
                 }
                 resolve(grid);
             } catch (err) {
-                reject(err);
+                reject(err instanceof Error ? err : new Error('Failed to process badge image.'));
             }
         };
         image.onerror = () => reject(new Error('Could not load badge image (CORS?).'));

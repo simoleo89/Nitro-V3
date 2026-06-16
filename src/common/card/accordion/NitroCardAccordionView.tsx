@@ -6,7 +6,7 @@ interface NitroCardAccordionViewProps extends ColumnProps {}
 
 export const NitroCardAccordionView: FC<NitroCardAccordionViewProps> = (props) => {
     const { ...rest } = props;
-    const [closers, setClosers] = useState<Function[]>([]);
+    const [closers, setClosers] = useState<(() => void)[]>([]);
 
     const closeAll = useCallback(() => {
         for (const closer of closers) closer();

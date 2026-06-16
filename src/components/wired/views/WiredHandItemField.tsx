@@ -36,7 +36,7 @@ export const WiredHandItemField: FC<WiredHandItemFieldProps> = (props) => {
         const roomObject = GetOwnRoomObject();
         const copiedHandItem = roomObject?.model?.getValue<number>(RoomObjectVariable.FIGURE_CARRY_OBJECT) || 0;
 
-        onChange && onChange(copiedHandItem);
+        onChange?.(copiedHandItem);
     };
 
     return (

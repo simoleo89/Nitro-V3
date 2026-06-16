@@ -57,7 +57,7 @@ export class AchievementUtilities {
 
         let unseen = 0;
 
-        for (const achievement of category.achievements) achievement.unseen > 0 && unseen++;
+        for (const achievement of category.achievements) if (achievement.unseen > 0) unseen++;
 
         return unseen;
     }

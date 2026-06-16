@@ -108,7 +108,7 @@ const useInventoryUnseenTrackerState = () => {
 
                 const itemIds = parser.getItemsByCategory(category);
 
-                for (const itemId of itemIds) existing.indexOf(itemId) === -1 && existing.push(itemId);
+                for (const itemId of itemIds) if (existing.indexOf(itemId) === -1) existing.push(itemId);
             }
 
             return newValue;

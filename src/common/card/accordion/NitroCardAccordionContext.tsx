@@ -1,8 +1,8 @@
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext } from 'react';
 
 export interface INitroCardAccordionContext {
-    closers: Function[];
-    setClosers: Dispatch<SetStateAction<Function[]>>;
+    closers: (() => void)[];
+    setClosers: Dispatch<SetStateAction<(() => void)[]>>;
     closeAll: () => void;
 }
 

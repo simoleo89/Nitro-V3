@@ -211,8 +211,8 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
         });
 
         setShowDeleteDialog(false);
-        setFurniName(String(furniDataEntry?.name ?? ''));
-        setFurniDescription(String(furniDataEntry?.description ?? ''));
+        setFurniName(String((furniDataEntry?.name as string) ?? ''));
+        setFurniDescription(String((furniDataEntry?.description as string) ?? ''));
         setConfirmFurnidata(false);
         setImportNote('');
     }, [item, furniDataEntry]);
@@ -268,7 +268,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
     // cryptic "Classname not found in furnidata" error on save.
     const furnidataEditable = useMemo(() => {
         if (!furniDataEntry) return false;
-        const cn = String((furniDataEntry as { classname?: unknown }).classname ?? '')
+        const cn = String(((furniDataEntry as { classname?: unknown }).classname as string) ?? '')
             .trim()
             .toLowerCase();
         const itemCn = String(item?.itemName ?? '')
@@ -283,17 +283,17 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
     // found in furnidata" — so we never let an unchanged save fire.
     const furnidataDirty = useMemo(
         () =>
-            furniName !== String(furniDataEntry?.name ?? '') ||
-            furniDescription !== String(furniDataEntry?.description ?? ''),
+            furniName !== String((furniDataEntry?.name as string) ?? '') ||
+            furniDescription !== String((furniDataEntry?.description as string) ?? ''),
         [furniName, furniDescription, furniDataEntry],
     );
 
     const furnidataMissReason = useMemo(() => {
-        const reason = String(furniDataDiagnostic?.reason ?? '');
+        const reason = String((furniDataDiagnostic?.reason as string) ?? '');
         return reason || 'not_found';
     }, [furniDataDiagnostic]);
 
-    const furnidataSourcePath = String(furniDataDiagnostic?.sourcePath ?? '');
+    const furnidataSourcePath = String((furniDataDiagnostic?.sourcePath as string) ?? '');
 
     // Apply an "Import from Habbo" result into the editable fields (review then Save).
     useEffect(() => {
@@ -726,10 +726,10 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                             Apply furnidata change to ALL clients?
                         </Text>
                         <div className="text-xs mb-1">
-                            <b>Name:</b> {String(furniDataEntry?.name ?? '')} → {furniName}
+                            <b>Name:</b> {String((furniDataEntry?.name as string) ?? '')} → {furniName}
                         </div>
                         <div className="text-xs mb-3">
-                            <b>Desc:</b> {String(furniDataEntry?.description ?? '')} → {furniDescription}
+                            <b>Desc:</b> {String((furniDataEntry?.description as string) ?? '')} → {furniDescription}
                         </div>
                         <Flex gap={1} justifyContent="end">
                             <Button variant="secondary" onClick={() => setConfirmFurnidata(false)}>

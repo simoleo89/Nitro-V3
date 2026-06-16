@@ -257,22 +257,22 @@ export const WiredSourcesSelector: FC<WiredSourcesSelectorProps> = (props) => {
 
     const prevFurni = () => {
         const next = (furniIndex - 1 + orderedFurniSources.length) % orderedFurniSources.length;
-        onChangeFurni && onChangeFurni(orderedFurniSources[next].value);
+        onChangeFurni?.(orderedFurniSources[next].value);
     };
 
     const nextFurni = () => {
         const next = (furniIndex + 1) % orderedFurniSources.length;
-        onChangeFurni && onChangeFurni(orderedFurniSources[next].value);
+        onChangeFurni?.(orderedFurniSources[next].value);
     };
 
     const prevUsers = () => {
         const next = (userIndex - 1 + orderedUserSources.length) % orderedUserSources.length;
-        onChangeUsers && onChangeUsers(orderedUserSources[next].value);
+        onChangeUsers?.(orderedUserSources[next].value);
     };
 
     const nextUsers = () => {
         const next = (userIndex + 1) % orderedUserSources.length;
-        onChangeUsers && onChangeUsers(orderedUserSources[next].value);
+        onChangeUsers?.(orderedUserSources[next].value);
     };
 
     if (!showFurni && !showUsers) return null;

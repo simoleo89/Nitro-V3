@@ -459,8 +459,8 @@ export const LoginView: FC<LoginViewProps> = ({ onAuthenticated, isEntering = fa
             if (nowTs - submitTimeRef.current < 1000) return null;
             submitTimeRef.current = nowTs;
 
-            const usernameInput = String(formData.get('username') || '').trim();
-            const passwordInput = String(formData.get('password') || '');
+            const usernameInput = ((formData.get('username') as string) || '').trim();
+            const passwordInput = (formData.get('password') as string) || '';
             const rememberFlag = formData.get('remember') === 'on';
 
             const lockSnapshot = readLock();
@@ -2054,7 +2054,7 @@ const ForgotDialog: FC<ForgotDialogProps> = (props) => {
         async (_prev: null, formData: FormData): Promise<null> => {
             setLocalError(null);
 
-            const emailInput = String(formData.get('email') || '').trim();
+            const emailInput = ((formData.get('email') as string) || '').trim();
 
             if (!emailInput) {
                 setLocalError(t('nitro.login.forgot.error.email_required', 'Please enter your email address.'));

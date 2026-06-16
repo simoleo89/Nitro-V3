@@ -523,7 +523,7 @@ export const App: FC<{}> = (props) => {
 
                     console.warn('[App] no SSO path — login gate', {
                         configInitError: configInitError
-                            ? String((configInitError as Error)?.message ?? configInitError)
+                            ? ((configInitError as Error)?.message ?? 'unknown error')
                             : null,
                         rawLoginEnabled,
                         rawLoginEnabledType: typeof rawLoginEnabled,
@@ -556,7 +556,7 @@ export const App: FC<{}> = (props) => {
                         if (configInitError) {
                             setHomeUrl(window.location.origin + '/');
                             setErrorMessage(
-                                `Unable to load renderer-config.json.\n${String((configInitError as Error)?.message ?? configInitError)}`,
+                                `Unable to load renderer-config.json.\n${(configInitError as Error)?.message ?? 'unknown error'}`,
                             );
                             setIsReady(false);
                             setShowLogin(false);

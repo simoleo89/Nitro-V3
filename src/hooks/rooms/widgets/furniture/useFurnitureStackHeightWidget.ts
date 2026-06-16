@@ -32,7 +32,7 @@ const useFurnitureStackHeightWidgetState = () => {
 
         height = Math.abs(height);
 
-        if (!server) height > MAX_HEIGHT && (height = MAX_HEIGHT);
+        if (!server && height > MAX_HEIGHT) height = MAX_HEIGHT;
 
         setHeight(parseFloat(height.toFixed(2)));
 

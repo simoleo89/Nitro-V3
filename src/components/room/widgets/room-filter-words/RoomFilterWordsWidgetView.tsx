@@ -40,9 +40,8 @@ export const RoomFilterWordsWidgetView: FC<{}> = (props) => {
         setWordsFilter((prevValue) => {
             const newWords = [...prevValue];
 
-            isAddingWord
-                ? newWords.push(isSelectingWord ? selectedWord : word)
-                : newWords.splice(newWords.indexOf(isSelectingWord ? selectedWord : word), 1);
+            if (isAddingWord) newWords.push(isSelectingWord ? selectedWord : word);
+            else newWords.splice(newWords.indexOf(isSelectingWord ? selectedWord : word), 1);
 
             return newWords;
         });

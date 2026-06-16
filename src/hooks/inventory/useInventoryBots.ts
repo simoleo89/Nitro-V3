@@ -35,7 +35,7 @@ const useInventoryBotsState = () => {
             const addedDatas: BotData[] = [];
 
             for (const botData of parser.items.values())
-                existingIds.indexOf(botData.id) === -1 && addedDatas.push(botData);
+                if (existingIds.indexOf(botData.id) === -1) addedDatas.push(botData);
 
             for (const existingId of existingIds) {
                 let remove = true;

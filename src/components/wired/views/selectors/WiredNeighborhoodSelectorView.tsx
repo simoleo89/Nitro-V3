@@ -98,25 +98,25 @@ const NeighborhoodGrid: FC<NeighborhoodGridProps> = (props) => {
 
         if (targetPlacementMode) {
             setDragMode('target');
-            onMoveTarget && onMoveTarget(rx, ry);
+            onMoveTarget?.(rx, ry);
             return;
         }
 
         const nextDragMode = isSelected ? 'remove' : 'add';
 
         setDragMode(nextDragMode);
-        onSetTile && onSetTile(rx, ry, nextDragMode === 'add');
+        onSetTile?.(rx, ry, nextDragMode === 'add');
     };
 
     const continueTileDrag = (event: ReactMouseEvent<HTMLDivElement>, rx: number, ry: number) => {
         if (!(event.buttons & 1) || !dragMode) return;
 
         if (dragMode === 'target') {
-            onMoveTarget && onMoveTarget(rx, ry);
+            onMoveTarget?.(rx, ry);
             return;
         }
 
-        onSetTile && onSetTile(rx, ry, dragMode === 'add');
+        onSetTile?.(rx, ry, dragMode === 'add');
     };
 
     for (let ry = -GRID_RANGE; ry <= GRID_RANGE; ry++) {

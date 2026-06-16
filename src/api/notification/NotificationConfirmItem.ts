@@ -4,8 +4,8 @@ export class NotificationConfirmItem {
     private _id: number;
     private _confirmType: string;
     private _message: string;
-    private _onConfirm: Function;
-    private _onCancel: Function;
+    private _onConfirm: () => void;
+    private _onCancel: () => void;
     private _confirmText: string;
     private _cancelText: string;
     private _title: string;
@@ -13,8 +13,8 @@ export class NotificationConfirmItem {
     constructor(
         confirmType: string,
         message: string,
-        onConfirm: Function,
-        onCancel: Function,
+        onConfirm: () => void,
+        onCancel: () => void,
         confirmText: string,
         cancelText: string,
         title: string,
@@ -43,11 +43,11 @@ export class NotificationConfirmItem {
         return this._message;
     }
 
-    public get onConfirm(): Function {
+    public get onConfirm(): () => void {
         return this._onConfirm;
     }
 
-    public get onCancel(): Function {
+    public get onCancel(): () => void {
         return this._onCancel;
     }
 

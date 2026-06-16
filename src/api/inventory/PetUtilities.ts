@@ -52,9 +52,9 @@ export const processPetFragment = (
     const addedIds: number[] = [];
     const removedIds: number[] = [];
 
-    for (const key of fragment.keys()) existingIds.indexOf(key) === -1 && addedIds.push(key);
+    for (const key of fragment.keys()) if (existingIds.indexOf(key) === -1) addedIds.push(key);
 
-    for (const itemId of existingIds) !fragment.get(itemId) && removedIds.push(itemId);
+    for (const itemId of existingIds) if (!fragment.get(itemId)) removedIds.push(itemId);
 
     const emptyExistingSet = existingIds.length === 0;
 

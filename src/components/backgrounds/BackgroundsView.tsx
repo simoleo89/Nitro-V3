@@ -50,7 +50,10 @@ const loadBackgroundsData = (): Promise<RemoteData | null> =>
             return result;
         })
         .catch(() => null)
-        .finally(() => { inflightBackgroundsFetch = null; });
+        .finally(() =>
+        {
+            inflightBackgroundsFetch = null;
+        });
 
     return inflightBackgroundsFetch;
 };
@@ -81,7 +84,10 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
         {
             if(!cancelled && data) setRemoteData(data);
         });
-        return () => { cancelled = true; };
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [remoteData]);
 
     const processData = useCallback((configData: any[], idField: string): ItemData[] =>
@@ -119,7 +125,8 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
         roomSession.sendBackgroundMessage( newValues.backgrounds, newValues.stands, newValues.overlays, newValues.cards, newValues.borders );
     }, [activeTab, roomSession, selectedBackground, selectedStand, selectedOverlay, selectedCardBackground, selectedBorder, setSelectedBackground, setSelectedStand, setSelectedOverlay, setSelectedCardBackground, setSelectedBorder]);
 
-    const itemTypeFor = (tab: TabType): string => {
+    const itemTypeFor = (tab: TabType): string =>
+    {
         if(tab === 'cards') return 'card-background';
         if(tab === 'borders') return 'border';
         return tab.slice(0, -1);
@@ -136,8 +143,8 @@ export const BackgroundsView: FC<BackgroundsViewProps> = ({
                 className={`profile-${type} ${type}-${item.id}`}
                 style={
                     type === 'card-background' ? { width: 60, height: 80, borderRadius: 4 }
-                    : type === 'border' ? { width: 60, height: 76, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }
-                    : undefined
+                        : type === 'border' ? { width: 60, height: 76, backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }
+                            : undefined
                 }
             />
         </Flex>

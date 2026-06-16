@@ -27,6 +27,7 @@ export const useHousekeepingConfirm = () =>
         const cancelText = options.cancelText ?? LocalizeText('housekeeping.confirm.cancel');
         const title = options.title ?? LocalizeText('housekeeping.confirm.title');
 
-        showConfirm(message, onConfirm, () => {}, confirmText, cancelText, title);
+        showConfirm(message, onConfirm, () =>
+        {}, confirmText, cancelText, title);
     }, [ showConfirm ]);
 };

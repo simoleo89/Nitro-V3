@@ -104,7 +104,8 @@ const useCatalogStore = () =>
             GetSessionDataManager().mergeFurnitureDataFromUrl(importedUrl).then(added =>
             {
                 if(added && added.length) GetRoomContentLoader().processFurnitureData(added);
-            }).catch(() => {});
+            }).catch(() =>
+            {});
         }
         catch
         {}

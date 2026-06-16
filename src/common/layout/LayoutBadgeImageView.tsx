@@ -196,7 +196,10 @@ export const LayoutBadgeImageView: FC<LayoutBadgeImageViewProps> = props =>
                 setBadgeRarityStat(null);
             });
 
-        return () => { cancelled = true; };
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ badgeCode, highlightRarity, isGroup, showRarityInfo ]);
 
     const rarityColors = badgeRarityStat ? BADGE_RARITY_COLORS[badgeRarityStat.rarity] : null;

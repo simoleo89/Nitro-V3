@@ -230,7 +230,7 @@ export const HousekeepingUsersTab: FC = () =>
                                 </div>
                                 <div className="text-xs text-zinc-600 truncate mt-0.5 italic">{ selectedUser.motto || '—' }</div>
                                 <div className="grid grid-cols-3 gap-1 text-[10px] mt-2">
-                                     <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200" title={ LocalizeText('housekeeping.user.credits') }>
+                                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200" title={ LocalizeText('housekeeping.user.credits') }>
                                         <LayoutCurrencyIcon type={ -1 } />
                                         <span className="tabular-nums font-semibold text-amber-800">{ selectedUser.creditsBalance.toLocaleString() }</span>
                                     </div>

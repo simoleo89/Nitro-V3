@@ -20,11 +20,11 @@ const dispatchForBrush = (
 {
     switch(action)
     {
-        case 'SET':   dispatch({ type: 'PAINT_TILE', row, col, h, source: 'local' }); return;
+        case 'SET': dispatch({ type: 'PAINT_TILE', row, col, h, source: 'local' }); return;
         case 'UNSET': dispatch({ type: 'ERASE_TILE', row, col, source: 'local' }); return;
-        case 'UP':    dispatch({ type: 'ADJUST_HEIGHT', row, col, delta: 1, source: 'local' }); return;
-        case 'DOWN':  dispatch({ type: 'ADJUST_HEIGHT', row, col, delta: -1, source: 'local' }); return;
-        case 'DOOR':  dispatch({ type: 'SET_DOOR', x: col, y: row, source: 'local' }); return;
+        case 'UP': dispatch({ type: 'ADJUST_HEIGHT', row, col, delta: 1, source: 'local' }); return;
+        case 'DOWN': dispatch({ type: 'ADJUST_HEIGHT', row, col, delta: -1, source: 'local' }); return;
+        case 'DOOR': dispatch({ type: 'SET_DOOR', x: col, y: row, source: 'local' }); return;
     }
 };
 
@@ -52,7 +52,12 @@ export const useTool = (
     {
         isDownRef.current = true;
         lastTileRef.current = null;
-        try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch {}
+        try
+        {
+            e.currentTarget.setPointerCapture?.(e.pointerId);
+        }
+        catch
+        {}
 
         if(state.squareSelect)
         {
@@ -87,7 +92,12 @@ export const useTool = (
     {
         isDownRef.current = false;
         lastTileRef.current = null;
-        try { e.currentTarget.releasePointerCapture?.(e.pointerId); } catch {}
+        try
+        {
+            e.currentTarget.releasePointerCapture?.(e.pointerId);
+        }
+        catch
+        {}
 
         if(state.squareSelect && squareStartRef.current)
         {

@@ -18,7 +18,8 @@ describe('WidgetErrorBoundary', () =>
         // react-error-boundary lets React's "uncaught error" log through
         // by default — silence it so jsdom doesn't dump a stack trace
         // every time we deliberately throw below.
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'error').mockImplementation(() =>
+        {});
     });
 
     afterEach(() =>

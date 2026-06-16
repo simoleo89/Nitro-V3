@@ -21,7 +21,7 @@ import { useNavigatorUiStore } from './navigatorUiStore';
 export const useNavigatorSearch = () =>
 {
     const tabCode = useNavigatorUiStore(s => s.currentTabCode);
-    const filter  = useNavigatorUiStore(s => s.currentFilter);
+    const filter = useNavigatorUiStore(s => s.currentFilter);
 
     const [ searchResult, setSearchResult ] = useState<NavigatorSearchResultSet | null>(null);
     const [ isFetching, setIsFetching ] = useState(false);

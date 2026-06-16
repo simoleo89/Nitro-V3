@@ -21,12 +21,12 @@ const makeSearchEvent = (code: string) =>
 {
     // Cast constructors as `any` so tsgo doesn't check required args against
     // the real renderer SDK types (the mock stubs have no required args).
-    const result = new (NavigatorSearchResultSet as any)() as any;
+    const result = new (NavigatorSearchResultSet as any)();
     result.code = code;
     result.data = '';
     result.results = [];
 
-    const ev = new (NavigatorSearchEvent as any)() as any;
+    const ev = new (NavigatorSearchEvent as any)();
     ev.getParser = () => ({ result });
     return ev;
 };
@@ -84,7 +84,7 @@ describe('useNavigatorSearch', () =>
 
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
         await waitFor(() => expect(result.current.searchResult).not.toBeNull());
@@ -103,7 +103,7 @@ describe('useNavigatorSearch', () =>
         await waitFor(() => expect(result.current.isFetching).toBe(true));
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
         await waitFor(() => expect(result.current.isFetching).toBe(false));
 
@@ -116,7 +116,7 @@ describe('useNavigatorSearch', () =>
 
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -137,7 +137,7 @@ describe('useNavigatorSearch', () =>
         await waitFor(() => expect(result.current.isFetching).toBe(true));
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
         await waitFor(() => expect(result.current.isFetching).toBe(false));
 
@@ -153,7 +153,7 @@ describe('useNavigatorSearch', () =>
 
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('events') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('events'));
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -173,7 +173,7 @@ describe('useNavigatorSearch', () =>
 
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
         await waitFor(() =>
@@ -196,7 +196,7 @@ describe('useNavigatorSearch', () =>
 
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('wrong_tab') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('wrong_tab'));
         });
 
         // The wrong-tab event is filtered out by the accept guard.
@@ -204,7 +204,7 @@ describe('useNavigatorSearch', () =>
 
         act(() =>
         {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
         await waitFor(() => expect(result.current.searchResult).not.toBeNull());

@@ -16,9 +16,11 @@ const playLocal = (url: string) =>
     {
         const audio = new Audio(url);
         audio.volume = 0.8;
-        void audio.play().catch(() => {});
+        void audio.play().catch(() =>
+        {});
     }
-    catch {}
+    catch
+    {}
 };
 
 // Resolve a stored sound url (which may be relative, like custom badges) to an
@@ -81,7 +83,8 @@ const useSoundboardState = () =>
                     : [];
                 setFileSounds(list);
             }
-            catch {}
+            catch
+            {}
         })();
     }, [ enabled, serverSounds.length ]);
 

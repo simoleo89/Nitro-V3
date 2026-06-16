@@ -72,9 +72,9 @@ const FloorplanTileImpl: FC<Props> = ({ row, col, tile, selected, isDoor, southH
     const [ cx, cyBase ] = tileToScreen(row, col);
     const cy = cyBase - tile.h * HEIGHT_LIFT;
     const southDrop = Math.max(0, tile.h - southH) * HEIGHT_LIFT;
-    const westDrop  = Math.max(0, tile.h - westH)  * HEIGHT_LIFT;
+    const westDrop = Math.max(0, tile.h - westH) * HEIGHT_LIFT;
     const southFill = (southDrop > 0) ? darkenHex(fill, 0.70) : null;
-    const westFill  = (westDrop  > 0) ? darkenHex(fill, 0.55) : null;
+    const westFill = (westDrop > 0) ? darkenHex(fill, 0.55) : null;
 
     return (
         <g>

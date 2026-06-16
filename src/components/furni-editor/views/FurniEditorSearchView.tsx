@@ -72,13 +72,19 @@ export const FurniEditorSearchView: FC<FurniEditorSearchViewProps> = props =>
     }, [ onSearch ]);
 
     // Keep the page input synced with the authoritative page from the server.
-    useEffect(() => { setPageInput(String(page)); }, [ page ]);
+    useEffect(() =>
+    {
+        setPageInput(String(page));
+    }, [ page ]);
 
     // Debounced live search as the user types (skips the first render).
     const firstQuery = useRef(true);
     useEffect(() =>
     {
-        if(firstQuery.current) { firstQuery.current = false; return; }
+        if(firstQuery.current)
+        {
+            firstQuery.current = false; return;
+        }
 
         const handle = window.setTimeout(() =>
         {
@@ -235,7 +241,10 @@ export const FurniEditorSearchView: FC<FurniEditorSearchViewProps> = props =>
                             type="text"
                             value={ pageInput }
                             onChange={ e => setPageInput(e.target.value.replace(/[^0-9]/g, '')) }
-                            onKeyDown={ e => { if(e.key === 'Enter') goTo(Number(pageInput)); } }
+                            onKeyDown={ e =>
+                            {
+                                if(e.key === 'Enter') goTo(Number(pageInput));
+                            } }
                             className="w-12 px-1.5 py-1 text-center rounded-lg border border-slate-200 bg-[#ffffff] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
                         />
                         <span className="text-slate-400">/ { totalPages.toLocaleString() }</span>

@@ -84,7 +84,8 @@ const useRadioState = () =>
         {
             window.removeEventListener('pointerdown', resume);
             window.removeEventListener('keydown', resume);
-            if(audioRef.current) void audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+            if(audioRef.current) void audioRef.current.play().then(() => setIsPlaying(true)).catch(() =>
+            {});
         };
         window.addEventListener('pointerdown', resume, { once: true });
         window.addEventListener('keydown', resume, { once: true });

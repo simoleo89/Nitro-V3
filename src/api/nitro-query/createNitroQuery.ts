@@ -105,7 +105,7 @@ export const awaitNitroResponse = <TParser extends IMessageEvent, TData>(
 
                 try
                 {
-                    resolve(select ? select(event) : (event as unknown as TData));
+                    resolve(select ? select(event) : (event));
                 }
                 catch(err)
                 {

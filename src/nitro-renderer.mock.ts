@@ -184,7 +184,8 @@ export class RoomSessionDoorbellEvent
     // Mirrors the real constructor signature `(type, session, userName)`
     // so `tsgo` is happy. Tests can pass `null` for the session: the
     // SUT only reads `.userName` and `.type`.
-    constructor(public readonly type: string, public readonly _session: unknown, public readonly userName: string) {}
+    constructor(public readonly type: string, public readonly _session: unknown, public readonly userName: string)
+    {}
 }
 
 // ---------------------------------------------------------------------------
@@ -195,16 +196,24 @@ export class RoomSessionDoorbellEvent
 
 class StubClass
 {
-    constructor(..._args: unknown[]) {}
+    constructor(..._args: unknown[])
+    {}
 }
 
-export class NitroAlphaFilter extends StubClass {}
-export class NitroContainer extends StubClass {}
-export class NitroRectangle extends StubClass {}
-export class NitroSprite extends StubClass {}
-export class NitroTexture extends StubClass {}
-export class NitroSoundEvent extends StubClass {}
-export class NitroEvent extends StubClass {}
+export class NitroAlphaFilter extends StubClass
+{}
+export class NitroContainer extends StubClass
+{}
+export class NitroRectangle extends StubClass
+{}
+export class NitroSprite extends StubClass
+{}
+export class NitroTexture extends StubClass
+{}
+export class NitroSoundEvent extends StubClass
+{}
+export class NitroEvent extends StubClass
+{}
 
 // MessageEvent — stores the handler so GetCommunication (below) can
 // route dispatches through mockEventDispatcher. Each concrete subclass
@@ -219,15 +228,24 @@ export class MessageEvent
         this._callBack = callBack ?? null;
     }
 
-    public get callBack(): Function | null { return this._callBack; }
+    public get callBack(): Function | null
+    {
+        return this._callBack;
+    }
 
     // Each concrete subclass is identified by its class name.
-    public get type(): string { return this.constructor.name; }
+    public get type(): string
+    {
+        return this.constructor.name;
+    }
 
     // Concrete subclasses override this; the no-arg construction path used
     // by makeParserlessEvent in tests leaves it returning null — tests
     // override it with (ev as any).getParser = () => parser.
-    public getParser(): any { return null; }
+    public getParser(): any
+    {
+        return null;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -245,39 +263,64 @@ export class MessageEvent
 // fire, receiving `ev` — and the implementation reads `ev.getParser()`.
 // ---------------------------------------------------------------------------
 
-export class DoorbellMessageEvent extends MessageEvent {}
-export class RoomDoorbellAcceptedEvent extends MessageEvent {}
-export class FlatAccessDeniedMessageEvent extends MessageEvent {}
-export class GenericErrorEvent extends MessageEvent {}
-export class GetGuestRoomResultEvent extends MessageEvent {}
+export class DoorbellMessageEvent extends MessageEvent
+{}
+export class RoomDoorbellAcceptedEvent extends MessageEvent
+{}
+export class FlatAccessDeniedMessageEvent extends MessageEvent
+{}
+export class GenericErrorEvent extends MessageEvent
+{}
+export class GetGuestRoomResultEvent extends MessageEvent
+{}
 
 // Mentions system — incoming events extend MessageEvent (they expose
 // getParser()); the request/mark composers are symbol-only constructors.
-export class MentionReceivedEvent extends MessageEvent {}
-export class MentionsListEvent extends MessageEvent {}
+export class MentionReceivedEvent extends MessageEvent
+{}
+export class MentionsListEvent extends MessageEvent
+{}
 
 // ---------------------------------------------------------------------------
 // Navigator event classes — MessageEvent subclasses needed by useNavigatorStore
 // ---------------------------------------------------------------------------
 
-export class CanCreateRoomEventEvent extends MessageEvent {}
-export class FavouriteChangedEvent extends MessageEvent {}
-export class FavouritesEvent extends MessageEvent {}
-export class FlatCreatedEvent extends MessageEvent {}
-export class NavigatorHomeRoomEvent extends MessageEvent {}
-export class NavigatorMetadataEvent extends MessageEvent {}
-export class NavigatorOpenRoomCreatorEvent extends MessageEvent {}
-export class NavigatorSearchesEvent extends MessageEvent {}
-export class NavigatorSearchEvent extends MessageEvent {}
-export class RoomEnterErrorEvent extends MessageEvent {}
-export class RoomEntryInfoMessageEvent extends MessageEvent {}
-export class RoomForwardEvent extends MessageEvent {}
-export class RoomScoreEvent extends MessageEvent {}
-export class RoomSettingsUpdatedEvent extends MessageEvent {}
-export class UserEventCatsEvent extends MessageEvent {}
-export class UserFlatCatsEvent extends MessageEvent {}
-export class UserInfoEvent extends MessageEvent {}
-export class UserPermissionsEvent extends MessageEvent {}
+export class CanCreateRoomEventEvent extends MessageEvent
+{}
+export class FavouriteChangedEvent extends MessageEvent
+{}
+export class FavouritesEvent extends MessageEvent
+{}
+export class FlatCreatedEvent extends MessageEvent
+{}
+export class NavigatorHomeRoomEvent extends MessageEvent
+{}
+export class NavigatorMetadataEvent extends MessageEvent
+{}
+export class NavigatorOpenRoomCreatorEvent extends MessageEvent
+{}
+export class NavigatorSearchesEvent extends MessageEvent
+{}
+export class NavigatorSearchEvent extends MessageEvent
+{}
+export class RoomEnterErrorEvent extends MessageEvent
+{}
+export class RoomEntryInfoMessageEvent extends MessageEvent
+{}
+export class RoomForwardEvent extends MessageEvent
+{}
+export class RoomScoreEvent extends MessageEvent
+{}
+export class RoomSettingsUpdatedEvent extends MessageEvent
+{}
+export class UserEventCatsEvent extends MessageEvent
+{}
+export class UserFlatCatsEvent extends MessageEvent
+{}
+export class UserInfoEvent extends MessageEvent
+{}
+export class UserPermissionsEvent extends MessageEvent
+{}
 
 // ---------------------------------------------------------------------------
 // Notification event classes — MessageEvent subclasses needed by
@@ -286,28 +329,50 @@ export class UserPermissionsEvent extends MessageEvent {}
 // here is the same as the Navigator event stubs above.
 // ---------------------------------------------------------------------------
 
-export class AchievementNotificationMessageEvent extends MessageEvent {}
-export class ActivityPointNotificationMessageEvent extends MessageEvent {}
-export class BadgeReceivedEvent extends MessageEvent {}
-export class ClubGiftNotificationEvent extends MessageEvent {}
-export class ClubGiftSelectedEvent extends MessageEvent {}
-export class ConnectionErrorEvent extends MessageEvent {}
-export class HabboBroadcastMessageEvent extends MessageEvent {}
-export class HotelClosedAndOpensEvent extends MessageEvent {}
-export class HotelClosesAndWillOpenAtEvent extends MessageEvent {}
-export class HotelWillCloseInMinutesEvent extends MessageEvent {}
-export class InfoFeedEnableMessageEvent extends MessageEvent {}
-export class MaintenanceStatusMessageEvent extends MessageEvent {}
-export class ModeratorCautionEvent extends MessageEvent {}
-export class ModeratorMessageEvent extends MessageEvent {}
-export class MOTDNotificationEvent extends MessageEvent {}
-export class NotificationDialogMessageEvent extends MessageEvent {}
-export class PetLevelNotificationEvent extends MessageEvent {}
-export class PetReceivedMessageEvent extends MessageEvent {}
-export class RespectReceivedEvent extends MessageEvent {}
-export class RoomEnterEvent extends MessageEvent {}
-export class SimpleAlertMessageEvent extends MessageEvent {}
-export class UserBannedMessageEvent extends MessageEvent {}
+export class AchievementNotificationMessageEvent extends MessageEvent
+{}
+export class ActivityPointNotificationMessageEvent extends MessageEvent
+{}
+export class BadgeReceivedEvent extends MessageEvent
+{}
+export class ClubGiftNotificationEvent extends MessageEvent
+{}
+export class ClubGiftSelectedEvent extends MessageEvent
+{}
+export class ConnectionErrorEvent extends MessageEvent
+{}
+export class HabboBroadcastMessageEvent extends MessageEvent
+{}
+export class HotelClosedAndOpensEvent extends MessageEvent
+{}
+export class HotelClosesAndWillOpenAtEvent extends MessageEvent
+{}
+export class HotelWillCloseInMinutesEvent extends MessageEvent
+{}
+export class InfoFeedEnableMessageEvent extends MessageEvent
+{}
+export class MaintenanceStatusMessageEvent extends MessageEvent
+{}
+export class ModeratorCautionEvent extends MessageEvent
+{}
+export class ModeratorMessageEvent extends MessageEvent
+{}
+export class MOTDNotificationEvent extends MessageEvent
+{}
+export class NotificationDialogMessageEvent extends MessageEvent
+{}
+export class PetLevelNotificationEvent extends MessageEvent
+{}
+export class PetReceivedMessageEvent extends MessageEvent
+{}
+export class RespectReceivedEvent extends MessageEvent
+{}
+export class RoomEnterEvent extends MessageEvent
+{}
+export class SimpleAlertMessageEvent extends MessageEvent
+{}
+export class UserBannedMessageEvent extends MessageEvent
+{}
 export class WiredRewardResultMessageEvent extends MessageEvent
 {
     static readonly PRODUCT_DONATED_CODE = 7;
@@ -321,13 +386,20 @@ export const RoomEnterEffect = {
     totalRunningTime: 0
 };
 
-export class RoomEngineObjectEvent extends StubClass {}
-export class CreateLinkEvent extends StubClass {}
-export class EventDispatcher extends StubClass {}
-export class AdvancedMap extends StubClass {}
-export class AvatarFigureContainer extends StubClass {}
-export class Vector3d extends StubClass {}
-export class ObjectDataFactory extends StubClass {}
+export class RoomEngineObjectEvent extends StubClass
+{}
+export class CreateLinkEvent extends StubClass
+{}
+export class EventDispatcher extends StubClass
+{}
+export class AdvancedMap extends StubClass
+{}
+export class AvatarFigureContainer extends StubClass
+{}
+export class Vector3d extends StubClass
+{}
+export class ObjectDataFactory extends StubClass
+{}
 
 // RoomDataParser — real static constants needed by useDoorState and its tests.
 export class RoomDataParser
@@ -336,15 +408,22 @@ export class RoomDataParser
     static readonly PASSWORD_STATE = 2;
 }
 
-export class RoomModerationSettings extends StubClass {}
-export class StringDataType extends StubClass {}
+export class RoomModerationSettings extends StubClass
+{}
+export class StringDataType extends StubClass
+{}
 
 // Navigator data/parser stubs
-export class NavigatorCategoryDataParser extends StubClass {}
-export class NavigatorEventCategoryDataParser extends StubClass {}
-export class NavigatorSavedSearch extends StubClass {}
-export class NavigatorSearchResultSet extends StubClass {}
-export class NavigatorTopLevelContext extends StubClass {}
+export class NavigatorCategoryDataParser extends StubClass
+{}
+export class NavigatorEventCategoryDataParser extends StubClass
+{}
+export class NavigatorSavedSearch extends StubClass
+{}
+export class NavigatorSearchResultSet extends StubClass
+{}
+export class NavigatorTopLevelContext extends StubClass
+{}
 export class CantConnectMessageParser extends StubClass
 {
     static readonly REASON_FULL = 1;
@@ -355,45 +434,80 @@ export class CantConnectMessageParser extends StubClass
 export class LegacyExternalInterface
 {
     static readonly available = false;
-    static call(..._args: unknown[]): void {}
+    static call(..._args: unknown[]): void
+    {}
 }
-export class SellablePetPaletteData extends StubClass {}
-export class PetFigureData extends StubClass {}
-export class PetData extends StubClass {}
-export class NodeData extends StubClass {}
-export class ItemDataStructure extends StubClass {}
-export class HabboGroupEntryData extends StubClass {}
-export class FriendParser extends StubClass {}
-export class FriendCategoryData extends StubClass {}
-export class FriendRequestData extends StubClass {}
-export class FurnitureListItemParser extends StubClass {}
-export class BotData extends StubClass {}
-export class AchievementData extends StubClass {}
-export class CatalogPageMessageProductData extends StubClass {}
-export class GiftWrappingConfigurationParser extends StubClass {}
-export class WiredFilter extends StubClass {}
-export class HabboWebTools extends StubClass {}
+export class SellablePetPaletteData extends StubClass
+{}
+export class PetFigureData extends StubClass
+{}
+export class PetData extends StubClass
+{}
+export class NodeData extends StubClass
+{}
+export class ItemDataStructure extends StubClass
+{}
+export class HabboGroupEntryData extends StubClass
+{}
+export class FriendParser extends StubClass
+{}
+export class FriendCategoryData extends StubClass
+{}
+export class FriendRequestData extends StubClass
+{}
+export class FurnitureListItemParser extends StubClass
+{}
+export class BotData extends StubClass
+{}
+export class AchievementData extends StubClass
+{}
+export class CatalogPageMessageProductData extends StubClass
+{}
+export class GiftWrappingConfigurationParser extends StubClass
+{}
+export class WiredFilter extends StubClass
+{}
+export class HabboWebTools extends StubClass
+{}
 
 // Composers — symbol-only constructors; only their identity matters in the
 // codebase ("did the SUT call SendMessageComposer(new FooComposer(args))").
-export class AddFavouriteRoomMessageComposer extends StubClass {}
-export class DeleteFavouriteRoomMessageComposer extends StubClass {}
-export class FollowFriendMessageComposer extends StubClass {}
-export class GetUserEventCatsMessageComposer extends StubClass {}
-export class GetUserFlatCatsMessageComposer extends StubClass {}
-export class NavigatorSearchComposer extends StubClass {}
-export class RequestMentionsComposer extends StubClass {}
-export class MarkMentionsReadComposer extends StubClass {}
-export class DeleteMentionComposer extends StubClass {}
-export class DesktopViewComposer extends StubClass {}
-export class FurniturePlacePaintComposer extends StubClass {}
-export class GetGuestRoomMessageComposer extends StubClass {}
-export class GetProductOfferComposer extends StubClass {}
-export class GroupFavoriteComposer extends StubClass {}
-export class GroupInformationComposer extends StubClass {}
-export class GroupJoinComposer extends StubClass {}
-export class GroupUnfavoriteComposer extends StubClass {}
-export class UserProfileComposer extends StubClass {}
+export class AddFavouriteRoomMessageComposer extends StubClass
+{}
+export class DeleteFavouriteRoomMessageComposer extends StubClass
+{}
+export class FollowFriendMessageComposer extends StubClass
+{}
+export class GetUserEventCatsMessageComposer extends StubClass
+{}
+export class GetUserFlatCatsMessageComposer extends StubClass
+{}
+export class NavigatorSearchComposer extends StubClass
+{}
+export class RequestMentionsComposer extends StubClass
+{}
+export class MarkMentionsReadComposer extends StubClass
+{}
+export class DeleteMentionComposer extends StubClass
+{}
+export class DesktopViewComposer extends StubClass
+{}
+export class FurniturePlacePaintComposer extends StubClass
+{}
+export class GetGuestRoomMessageComposer extends StubClass
+{}
+export class GetProductOfferComposer extends StubClass
+{}
+export class GroupFavoriteComposer extends StubClass
+{}
+export class GroupInformationComposer extends StubClass
+{}
+export class GroupJoinComposer extends StubClass
+{}
+export class GroupUnfavoriteComposer extends StubClass
+{}
+export class UserProfileComposer extends StubClass
+{}
 
 // `ChooserSelectionFilter` is used as a string enum in some call sites.
 export const ChooserSelectionFilter = makeEnumProxy('ChooserSelectionFilter');
@@ -427,8 +541,10 @@ export const COLORMAP: object = {
 // ---------------------------------------------------------------------------
 
 // Composer stubs for floor-plan-editor message events
-export class GetRoomEntryTileMessageComposer extends StubClass {}
-export class GetOccupiedTilesMessageComposer extends StubClass {}
+export class GetRoomEntryTileMessageComposer extends StubClass
+{}
+export class GetOccupiedTilesMessageComposer extends StubClass
+{}
 export class UpdateFloorPropertiesMessageComposer extends StubClass
 {
     public tilemap: string;
@@ -452,10 +568,14 @@ export class UpdateFloorPropertiesMessageComposer extends StubClass
 }
 
 // Event class stubs for useMessageEvent registration
-export class FloorHeightMapEvent extends StubClass {}
-export class RoomVisualizationSettingsEvent extends StubClass {}
-export class RoomEntryTileMessageEvent extends StubClass {}
-export class RoomOccupiedTilesMessageEvent extends StubClass {}
+export class FloorHeightMapEvent extends StubClass
+{}
+export class RoomVisualizationSettingsEvent extends StubClass
+{}
+export class RoomEntryTileMessageEvent extends StubClass
+{}
+export class RoomOccupiedTilesMessageEvent extends StubClass
+{}
 export const RoomEngineEvent = makeEnumProxy('RoomEngineEvent');
 
 // Link tracker stubs
@@ -531,10 +651,13 @@ export const GetCommunication = vi.fn(() => ({
     registerMessageEvent(event: MessageEvent)
     {
         if(!event.callBack) return;
-        const wrapper = (ev: any) => event.callBack!(ev);
+        const wrapper = (ev: any) => event.callBack(ev);
         _msgEventWrappers.set(event, wrapper);
         let bucket = msgListeners.get(event.type);
-        if(!bucket) { bucket = new Set(); msgListeners.set(event.type, bucket); }
+        if(!bucket)
+        {
+            bucket = new Set(); msgListeners.set(event.type, bucket);
+        }
         bucket.add(wrapper);
     },
     removeMessageEvent(event: MessageEvent)
@@ -560,22 +683,36 @@ export class RoomPreviewer
 {
     static PREVIEW_COUNTER = 0;
 
-    constructor(public readonly _engine: unknown, public readonly _id: number) {}
+    constructor(public readonly _engine: unknown, public readonly _id: number)
+    {}
 
-    public updatePreviewModel(_model: string, _wallHeight: number, _scale?: boolean): void {}
-    public modifyRoomCanvas(_w: number, _h: number): void {}
-    public getRoomCanvas(_w: number, _h: number): unknown { return null; }
-    public getRenderingCanvas(): unknown { return null; }
-    public updatePreviewRoomView(): void {}
-    public changeRoomObjectDirection(): void {}
-    public changeRoomObjectState(): void {}
-    public dispose(): void {}
+    public updatePreviewModel(_model: string, _wallHeight: number, _scale?: boolean): void
+    {}
+    public modifyRoomCanvas(_w: number, _h: number): void
+    {}
+    public getRoomCanvas(_w: number, _h: number): unknown
+    {
+        return null;
+    }
+    public getRenderingCanvas(): unknown
+    {
+        return null;
+    }
+    public updatePreviewRoomView(): void
+    {}
+    public changeRoomObjectDirection(): void
+    {}
+    public changeRoomObjectState(): void
+    {}
+    public dispose(): void
+    {}
 }
 export const GetSessionDataManager = vi.fn(stubManager);
 export const GetTickerTime = vi.fn(() => 0);
 export const GetTicker = vi.fn(stubManager);
 export const GetRenderer = vi.fn(stubManager);
-export class NitroTicker {}
+export class NitroTicker
+{}
 // TextureUtils — a real-enough stub of the createRenderTexture
 // roundtrip. Tests that mount LayoutRoomPreviewerView allocate a
 // texture on mount and destroy it on unmount; without a real

@@ -83,7 +83,7 @@ export const awaitMessageEvent = <T extends IMessageEvent, R = T>(eventCtor: new
 
             try
             {
-                snapshot = select ? select(event) : (event as unknown as R);
+                snapshot = select ? select(event) : (event);
             }
             catch(err)
             {

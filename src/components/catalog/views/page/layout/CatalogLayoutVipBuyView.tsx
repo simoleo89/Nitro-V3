@@ -253,7 +253,10 @@ export const CatalogLayoutVipBuyView: FC<CatalogLayoutProps> = props =>
                             <Column className="mt-1" gap={ 1 }>
                                 <Flex alignItems="center" gap={ 2 }>
                                     <label className="flex items-center gap-1 cursor-pointer text-sm">
-                                        <input checked={ giftMode } className="cursor-pointer" type="checkbox" onChange={ event => { setGiftMode(event.target.checked); setGiftError(null); setGiftSuccess(false); } } />
+                                        <input checked={ giftMode } className="cursor-pointer" type="checkbox" onChange={ event =>
+                                        {
+                                            setGiftMode(event.target.checked); setGiftError(null); setGiftSuccess(false);
+                                        } } />
                                         <span>{ LocalizeText('catalog.purchase_confirmation.gift') }</span>
                                     </label>
                                     { giftMode &&

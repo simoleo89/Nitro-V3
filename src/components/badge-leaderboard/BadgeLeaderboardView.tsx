@@ -108,7 +108,10 @@ export const BadgeLeaderboardView: FC<{}> = props =>
                 setIsLoading(false);
             });
 
-        return () => { cancelled = true; };
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ isVisible, version ]);
 
     const leaderboard = getCachedBadgeLeaderboard();
@@ -202,7 +205,7 @@ export const BadgeLeaderboardView: FC<{}> = props =>
             figure: session.figure || '',
             score: 0,
             rank: 0
-        } as BadgeLeaderboardEntry;
+        };
     }, [ currentPage?.board?.viewerEntry, leaderboard?.viewerUserId ]);
     const rankedEntries = useMemo(() =>
     {
@@ -238,7 +241,10 @@ export const BadgeLeaderboardView: FC<{}> = props =>
                         { isCategoryMenuVisible &&
                             <div className="nitro-badge-leaderboard__category-menu" onPointerDown={ event => event.stopPropagation() }>
                                 { pages.map((page, index) => (
-                                    <button key={ page.key } className={ `nitro-badge-leaderboard__category-option ${ index === categoryIndex ? 'is-active' : '' }` } type="button" onClick={ () => { setCategoryIndex(index); setIsCategoryMenuVisible(false); } }>
+                                    <button key={ page.key } className={ `nitro-badge-leaderboard__category-option ${ index === categoryIndex ? 'is-active' : '' }` } type="button" onClick={ () =>
+                                    {
+                                        setCategoryIndex(index); setIsCategoryMenuVisible(false);
+                                    } }>
                                         { page.option() }
                                     </button>
                                 )) }

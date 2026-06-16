@@ -47,7 +47,8 @@ describe('FloorplanToolbar', () =>
     it('marks active brush button with data-active', () =>
     {
         const state = { ...initialState, brush: { h: 0, action: 'UP' as const } };
-        const { getByTestId } = render(<FloorplanToolbar state={ state } dispatch={ () => {} } />);
+        const { getByTestId } = render(<FloorplanToolbar state={ state } dispatch={ () =>
+        {} } />);
         expect(getByTestId('tool-up').getAttribute('data-active')).toBe('true');
         expect(getByTestId('tool-set').getAttribute('data-active')).toBe('false');
     });

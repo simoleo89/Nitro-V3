@@ -16,11 +16,11 @@ type Props = {
 };
 
 const BRUSH_BUTTONS: { id: string; mode: FloorActionMode; iconClass: string }[] = [
-    { id: 'tool-set',   mode: 'SET',   iconClass: 'icon-set-tile' },
+    { id: 'tool-set', mode: 'SET', iconClass: 'icon-set-tile' },
     { id: 'tool-unset', mode: 'UNSET', iconClass: 'icon-unset-tile' },
-    { id: 'tool-up',    mode: 'UP',    iconClass: 'icon-increase-height' },
-    { id: 'tool-down',  mode: 'DOWN',  iconClass: 'icon-decrease-height' },
-    { id: 'tool-door',  mode: 'DOOR',  iconClass: 'icon-set-door' }
+    { id: 'tool-up', mode: 'UP', iconClass: 'icon-increase-height' },
+    { id: 'tool-down', mode: 'DOWN', iconClass: 'icon-decrease-height' },
+    { id: 'tool-door', mode: 'DOOR', iconClass: 'icon-set-door' }
 ];
 
 export const FloorplanToolbar: FC<Props> = ({ state, dispatch, canUndo, canRedo, onUndo, onRedo, panMode, setPanMode }) =>

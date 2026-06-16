@@ -9,30 +9,30 @@ import { useMessageEvent } from '../../events';
 // hotels in different locales see the right language.
 const CLIENT_COMMANDS: { key: string; descriptionKey: string }[] = [
     // Room effects
-    { key: 'shake',       descriptionKey: 'chatcmd.client.shake' },
-    { key: 'rotate',      descriptionKey: 'chatcmd.client.rotate' },
-    { key: 'zoom',        descriptionKey: 'chatcmd.client.zoom' },
-    { key: 'flip',        descriptionKey: 'chatcmd.client.flip' },
-    { key: 'iddqd',       descriptionKey: 'chatcmd.client.iddqd' },
-    { key: 'screenshot',  descriptionKey: 'chatcmd.client.screenshot' },
-    { key: 'togglefps',   descriptionKey: 'chatcmd.client.togglefps' },
+    { key: 'shake', descriptionKey: 'chatcmd.client.shake' },
+    { key: 'rotate', descriptionKey: 'chatcmd.client.rotate' },
+    { key: 'zoom', descriptionKey: 'chatcmd.client.zoom' },
+    { key: 'flip', descriptionKey: 'chatcmd.client.flip' },
+    { key: 'iddqd', descriptionKey: 'chatcmd.client.iddqd' },
+    { key: 'screenshot', descriptionKey: 'chatcmd.client.screenshot' },
+    { key: 'togglefps', descriptionKey: 'chatcmd.client.togglefps' },
     // Expressions
-    { key: 'd',           descriptionKey: 'chatcmd.client.laugh' },
-    { key: 'kiss',        descriptionKey: 'chatcmd.client.kiss' },
-    { key: 'jump',        descriptionKey: 'chatcmd.client.jump' },
-    { key: 'idle',        descriptionKey: 'chatcmd.client.idle' },
-    { key: 'sign',        descriptionKey: 'chatcmd.client.sign' },
+    { key: 'd', descriptionKey: 'chatcmd.client.laugh' },
+    { key: 'kiss', descriptionKey: 'chatcmd.client.kiss' },
+    { key: 'jump', descriptionKey: 'chatcmd.client.jump' },
+    { key: 'idle', descriptionKey: 'chatcmd.client.idle' },
+    { key: 'sign', descriptionKey: 'chatcmd.client.sign' },
     // Room management
-    { key: 'furni',       descriptionKey: 'chatcmd.client.furni' },
-    { key: 'chooser',     descriptionKey: 'chatcmd.client.chooser' },
-    { key: 'floor',       descriptionKey: 'chatcmd.client.floor' },
-    { key: 'bcfloor',     descriptionKey: 'chatcmd.client.floor' },
-    { key: 'pickall',     descriptionKey: 'chatcmd.client.pickall' },
-    { key: 'ejectall',    descriptionKey: 'chatcmd.client.ejectall' },
-    { key: 'settings',    descriptionKey: 'chatcmd.client.settings' },
+    { key: 'furni', descriptionKey: 'chatcmd.client.furni' },
+    { key: 'chooser', descriptionKey: 'chatcmd.client.chooser' },
+    { key: 'floor', descriptionKey: 'chatcmd.client.floor' },
+    { key: 'bcfloor', descriptionKey: 'chatcmd.client.floor' },
+    { key: 'pickall', descriptionKey: 'chatcmd.client.pickall' },
+    { key: 'ejectall', descriptionKey: 'chatcmd.client.ejectall' },
+    { key: 'settings', descriptionKey: 'chatcmd.client.settings' },
     // Info
-    { key: 'client',      descriptionKey: 'chatcmd.client.info' },
-    { key: 'nitro',       descriptionKey: 'chatcmd.client.info' },
+    { key: 'client', descriptionKey: 'chatcmd.client.info' },
+    { key: 'nitro', descriptionKey: 'chatcmd.client.info' },
 ];
 
 /**

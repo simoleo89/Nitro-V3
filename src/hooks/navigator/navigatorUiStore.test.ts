@@ -148,7 +148,7 @@ describe('useNavigatorUiStore', () =>
 
     describe('tab + filter', () =>
     {
-        it("setTab('public') sets currentTabCode and clears currentFilter", () =>
+        it('setTab(\'public\') sets currentTabCode and clears currentFilter', () =>
         {
             useNavigatorUiStore.setState({ currentTabCode: 'events', currentFilter: 'habbo' });
             useNavigatorUiStore.getState().setTab('public');
@@ -156,7 +156,7 @@ describe('useNavigatorUiStore', () =>
             expect(useNavigatorUiStore.getState().currentFilter).toBe('');
         });
 
-        it("setFilter('cocco') sets currentFilter without touching tab", () =>
+        it('setFilter(\'cocco\') sets currentFilter without touching tab', () =>
         {
             useNavigatorUiStore.getState().setTab('events');
             useNavigatorUiStore.getState().setFilter('cocco');

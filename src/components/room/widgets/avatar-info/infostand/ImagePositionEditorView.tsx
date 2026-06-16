@@ -47,7 +47,10 @@ export const ImagePositionEditorView: FC<Props> = props =>
         roomObject.model.setValue(RoomObjectVariable.FURNITURE_BRANDING_SCALE, nScale);
     }, [ roomId, objectId, category ]);
 
-    useEffect(() => { applyLive(x, y, z, scale); }, [ x, y, z, scale, applyLive ]);
+    useEffect(() =>
+    {
+        applyLive(x, y, z, scale);
+    }, [ x, y, z, scale, applyLive ]);
 
     const setFromPointer = useCallback((clientX: number, clientY: number) =>
     {

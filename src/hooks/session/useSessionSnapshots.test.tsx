@@ -79,7 +79,7 @@ describe('use-between + useSyncExternalStore incompatibility', () =>
         );
 
         expect(captured).not.toBeNull();
-        expect(captured!.message).toMatch(/useSyncExternalStore is not a function|intermediate value/);
+        expect(captured.message).toMatch(/useSyncExternalStore is not a function|intermediate value/);
 
         consoleError.mockRestore();
     });
@@ -135,7 +135,7 @@ const makeFakeDispatcher = () =>
                 listeners.set(type, bucket);
             }
             bucket.add(cb);
-            return () => bucket!.delete(cb);
+            return () => bucket.delete(cb);
         },
         dispatch(type: string): void
         {
@@ -217,9 +217,9 @@ describe('useHasPermission + usePermissionValue + useUserPermissions', () =>
     it('useHasPermission returns true only for ALLOWED (value 1), false for ROOM_OWNER/absent/zero', () =>
     {
         permissionsSnapshot = new Map([
-            [ 'acc_supporttool', 1 ],     // ALLOWED
-            [ 'acc_anyroomowner', 2 ],    // ROOM_OWNER — requires room ownership at call time
-            [ 'acc_closedice_room', 0 ]   // DISALLOWED (shouldn't reach the client, but defensive)
+            [ 'acc_supporttool', 1 ], // ALLOWED
+            [ 'acc_anyroomowner', 2 ], // ROOM_OWNER — requires room ownership at call time
+            [ 'acc_closedice_room', 0 ] // DISALLOWED (shouldn't reach the client, but defensive)
         ]);
 
         // ALLOWED → true. Matches Habbo.hasPermission(key) which calls

@@ -95,7 +95,12 @@ const useLocalStorageState = <T>(key: string, initialValue: T, options: UseLocal
         {
             NitroLogger.error(retryError);
             // Last resort: drop the key entirely so future writes have room.
-            try { window.localStorage.removeItem(key); } catch(_) { /* ignore */ }
+            try
+            {
+                window.localStorage.removeItem(key);
+            }
+            catch(_)
+            { /* ignore */ }
         }
     };
 

@@ -133,8 +133,14 @@ export interface EmuStatsSnapshot
 
 const interpolate = (value: string): string =>
 {
-    try { return GetConfiguration().interpolate(value); }
-    catch { return value; }
+    try
+    {
+        return GetConfiguration().interpolate(value);
+    }
+    catch
+    {
+        return value;
+    }
 };
 
 const getUrl = (): string =>
@@ -166,8 +172,14 @@ const parseJson = async <T>(response: Response): Promise<T> =>
 
     if(!text) return {} as T;
 
-    try { return JSON.parse(text) as T; }
-    catch { throw new Error('Invalid emulator stats response.'); }
+    try
+    {
+        return JSON.parse(text) as T;
+    }
+    catch
+    {
+        throw new Error('Invalid emulator stats response.');
+    }
 };
 
 export const fetchEmuStats = async (force = false): Promise<EmuStatsSnapshot> =>

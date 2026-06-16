@@ -82,7 +82,10 @@ export const FriendsCategoryManagerView: FC<FriendsCategoryManagerViewProps> = p
                                     <span
                                         className="cursor-pointer text-base leading-none select-none"
                                         title={ LocalizeText('generic.edit') }
-                                        onClick={ () => { setEditingId(category.id); setEditingName(category.name); } }>
+                                        onClick={ () =>
+                                        {
+                                            setEditingId(category.id); setEditingName(category.name);
+                                        } }>
                                         { '✎' }
                                     </span>
                                     <span

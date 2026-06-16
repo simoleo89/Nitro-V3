@@ -24,7 +24,7 @@ export const useClubGifts = (
 ): UseQueryResult<ClubGiftInfoParser> =>
 {
     const query = useNitroQuery<ClubGiftInfoEvent, ClubGiftInfoParser>({
-        key: CLUB_GIFTS_KEY as unknown as string[],
+        key: CLUB_GIFTS_KEY,
         request: () => new GetClubGiftInfo(),
         parser: ClubGiftInfoEvent,
         select: event => event.getParser(),
@@ -32,7 +32,7 @@ export const useClubGifts = (
         staleTime: Infinity
     });
 
-    useNitroEventInvalidator<ClubGiftInfoEvent>(ClubGiftInfoEvent, CLUB_GIFTS_KEY as unknown as string[]);
+    useNitroEventInvalidator<ClubGiftInfoEvent>(ClubGiftInfoEvent, CLUB_GIFTS_KEY);
 
     return query;
 };

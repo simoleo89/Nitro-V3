@@ -3,12 +3,18 @@ import { IMentionEntry } from '../../api/mentions';
 let mentions: IMentionEntry[] = [];
 const listeners = new Set<() => void>();
 
-const emit = () => { for(const l of listeners) l(); };
+const emit = () =>
+{
+    for(const l of listeners) l();
+};
 
 export const subscribeMentions = (onChange: () => void): (() => void) =>
 {
     listeners.add(onChange);
-    return () => { listeners.delete(onChange); };
+    return () =>
+    {
+        listeners.delete(onChange);
+    };
 };
 
 export const getMentionsSnapshot = (): ReadonlyArray<IMentionEntry> => mentions;
@@ -48,4 +54,7 @@ export const removeMention = (mentionId: number): void =>
     emit();
 };
 
-export const resetMentions = (): void => { mentions = []; emit(); };
+export const resetMentions = (): void =>
+{
+    mentions = []; emit();
+};

@@ -47,8 +47,14 @@ export interface BadgeLeaderboardResponse
 
 const interpolate = (value: string): string =>
 {
-    try { return GetConfiguration().interpolate(value); }
-    catch { return value; }
+    try
+    {
+        return GetConfiguration().interpolate(value);
+    }
+    catch
+    {
+        return value;
+    }
 };
 
 const getUrl = (): string =>
@@ -78,8 +84,14 @@ const parseJson = async <T>(response: Response): Promise<T> =>
 
     if(!text) return {} as T;
 
-    try { return JSON.parse(text) as T; }
-    catch { throw new Error('Invalid response from badge leaderboard endpoint.'); }
+    try
+    {
+        return JSON.parse(text) as T;
+    }
+    catch
+    {
+        throw new Error('Invalid response from badge leaderboard endpoint.');
+    }
 };
 
 const throwOnError = async (response: Response): Promise<void> =>

@@ -473,7 +473,8 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                         <div key={ group.label }>
                             <Text className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5 block">{ group.label }</Text>
                             <div className="flex flex-wrap gap-1.5">
-                                { group.keys.map(key => {
+                                { group.keys.map(key =>
+                                {
                                     const on = (form as any)[key];
                                     return (
                                         <button
@@ -560,7 +561,10 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = props =>
                         <div className="text-xs mb-3"><b>Desc:</b> { String(furniDataEntry?.description ?? '') } → { furniDescription }</div>
                         <Flex gap={ 1 } justifyContent="end">
                             <Button variant="secondary" onClick={ () => setConfirmFurnidata(false) }>Cancel</Button>
-                            <Button variant="success" onClick={ () => { onUpdateFurnidata(item.id, furniName, furniDescription); setConfirmFurnidata(false); } }>Confirm</Button>
+                            <Button variant="success" onClick={ () =>
+                            {
+                                onUpdateFurnidata(item.id, furniName, furniDescription); setConfirmFurnidata(false);
+                            } }>Confirm</Button>
                         </Flex>
                     </div>
                 </div>

@@ -15,7 +15,8 @@ const resolveJsonMode = (): 'legacy' | 'json5' | 'auto' =>
             if(__NITRO_JSON_MODE__ === 'legacy' || __NITRO_JSON_MODE__ === 'json5' || __NITRO_JSON_MODE__ === 'auto') return __NITRO_JSON_MODE__;
         }
     }
-    catch {}
+    catch
+    {}
 
     return 'auto';
 };

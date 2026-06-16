@@ -27,7 +27,7 @@ export const CatalogLayoutPetView: FC<CatalogLayoutProps> = props =>
     const { setCurrentOffer = null, setPurchaseOptions = null } = useCatalogUiState();
     const catalogAdmin = useCatalogAdmin();
     const adminMode = catalogAdmin?.adminMode ?? false;
-    const breed: string = (currentOffer?.product?.productData?.type as unknown as string) ?? '';
+    const breed: string = (currentOffer?.product?.productData?.type) ?? '';
     const { data: petPalette = null } = useSellablePetPalette(breed);
 
     const getColor = useMemo(() =>

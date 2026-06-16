@@ -58,7 +58,10 @@ export const HousekeepingRoomsTab: FC = () =>
                             : LocalizeText('housekeeping.room.search.placeholder') }
                         value={ query }
                         onChange={ event => setQuery(event.target.value) }
-                        onKeyDown={ event => { if(event.key === 'Enter') submitLookup(); } } />
+                        onKeyDown={ event =>
+                        {
+                            if(event.key === 'Enter') submitLookup();
+                        } } />
                 </div>
                 { currentRoomId > 0 && currentRoomId !== selectedRoom?.id &&
                     <Button

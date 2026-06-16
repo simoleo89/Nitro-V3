@@ -120,39 +120,39 @@ export const ChatHistoryView: FC<{}> = props =>
                             )) }
                     </div>
                 ) : (
-                  <>
-                <NitroInput placeholder={LocalizeText('generic.search')} type="text" value={searchText} onChange={event => setSearchText(event.target.value)} />
-                <div ref={elementRef} style={{ flex: 1, overflowY: 'auto', background: 'inherit' }}>
-                    {filteredChatHistory.map((row, index) => (
-                        <Flex key={index} alignItems="center" className="p-1" gap={2}>
-                            <Text variant="gray">{row.timestamp}</Text>
-                            {row.type === ChatEntryType.TYPE_CHAT && (
-                                <div className="bubble-container" style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-                                    <div
-                                        className={`chat-bubble bubble-${row.style} type-${row.chatType}`}
-                                        style={{ maxWidth: '100%', backgroundColor: row.style === 0 ? row.color : 'transparent', position: 'relative', zIndex: 1 }}>
-                                        <div className="user-container">
-                                            {row.imageUrl && row.imageUrl.length > 0 && (
-                                                <div className="user-image" style={{ backgroundImage: `url(${row.imageUrl})` }} />
-                                            )}
+                    <>
+                        <NitroInput placeholder={LocalizeText('generic.search')} type="text" value={searchText} onChange={event => setSearchText(event.target.value)} />
+                        <div ref={elementRef} style={{ flex: 1, overflowY: 'auto', background: 'inherit' }}>
+                            {filteredChatHistory.map((row, index) => (
+                                <Flex key={index} alignItems="center" className="p-1" gap={2}>
+                                    <Text variant="gray">{row.timestamp}</Text>
+                                    {row.type === ChatEntryType.TYPE_CHAT && (
+                                        <div className="bubble-container" style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                                            <div
+                                                className={`chat-bubble bubble-${row.style} type-${row.chatType}`}
+                                                style={{ maxWidth: '100%', backgroundColor: row.style === 0 ? row.color : 'transparent', position: 'relative', zIndex: 1 }}>
+                                                <div className="user-container">
+                                                    {row.imageUrl && row.imageUrl.length > 0 && (
+                                                        <div className="user-image" style={{ backgroundImage: `url(${row.imageUrl})` }} />
+                                                    )}
+                                                </div>
+                                                <div className="chat-content">
+                                                    <b className="mr-1 username" dangerouslySetInnerHTML={{ __html: `${row.name}: ` }} />
+                                                    <span className="message" dangerouslySetInnerHTML={{ __html: `${row.message}` }} onClick={ onClickChat } />
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="chat-content">
-                                            <b className="mr-1 username" dangerouslySetInnerHTML={{ __html: `${row.name}: ` }} />
-                                            <span className="message" dangerouslySetInnerHTML={{ __html: `${row.message}` }} onClick={ onClickChat } />
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            {row.type === ChatEntryType.TYPE_ROOM_INFO && (
-                                <>
-                                    <i className="nitro-icon icon-small-room" />
-                                    <Text grow textBreak wrap>{row.name}</Text>
-                                </>
-                            )}
-                        </Flex>
-                    ))}
-                </div>
-                  </>
+                                    )}
+                                    {row.type === ChatEntryType.TYPE_ROOM_INFO && (
+                                        <>
+                                            <i className="nitro-icon icon-small-room" />
+                                            <Text grow textBreak wrap>{row.name}</Text>
+                                        </>
+                                    )}
+                                </Flex>
+                            ))}
+                        </div>
+                    </>
                 ) }
             </NitroCardContentView>
         </NitroCardView>

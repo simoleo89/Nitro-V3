@@ -21,23 +21,23 @@ interface CategoryDef
 }
 
 const CATEGORIES: CategoryDef[] = [
-    { key: 'item',     labelKey: 'rarevalues.editor.cat.item' },
+    { key: 'item', labelKey: 'rarevalues.editor.cat.item' },
     { key: 'diamonds', labelKey: 'achievements.activitypoint.5' },
-    { key: 'duckets',  labelKey: 'achievements.activitypoint.0' },
-    { key: 'credits',  labelKey: 'credits' },
-    { key: 'spins',    labelKey: 'rarevalues.editor.cat.spin' },
-    { key: 'nothing',  labelKey: 'rarevalues.editor.cat.nothing' }
+    { key: 'duckets', labelKey: 'achievements.activitypoint.0' },
+    { key: 'credits', labelKey: 'credits' },
+    { key: 'spins', labelKey: 'rarevalues.editor.cat.spin' },
+    { key: 'nothing', labelKey: 'rarevalues.editor.cat.nothing' }
 ];
 
 const prizeToCategory = (prize: IWheelAdminPrize): string =>
 {
     switch(prize.type)
     {
-        case 'item':    return 'item';
-        case 'points':  return (prize.pointsType === 5) ? 'diamonds' : 'duckets';
+        case 'item': return 'item';
+        case 'points': return (prize.pointsType === 5) ? 'diamonds' : 'duckets';
         case 'credits': return 'credits';
-        case 'spin':    return 'spins';
-        default:        return 'nothing';
+        case 'spin': return 'spins';
+        default: return 'nothing';
     }
 };
 
@@ -52,12 +52,12 @@ const rowToEdit = (row: EditRow): IWheelAdminPrizeEdit =>
 
     switch(row.category)
     {
-        case 'item':     return { ...base, type: 'item',    value: String(row.num), amount: 1,       pointsType: 0 };
-        case 'diamonds': return { ...base, type: 'points',  value: '',              amount: row.num, pointsType: 5 };
-        case 'duckets':  return { ...base, type: 'points',  value: '',              amount: row.num, pointsType: 0 };
-        case 'credits':  return { ...base, type: 'credits', value: '',              amount: row.num, pointsType: 0 };
-        case 'spins':    return { ...base, type: 'spin',    value: '',              amount: row.num, pointsType: 0 };
-        default:         return { ...base, type: 'nothing', value: '',              amount: 0,       pointsType: 0 };
+        case 'item': return { ...base, type: 'item', value: String(row.num), amount: 1, pointsType: 0 };
+        case 'diamonds': return { ...base, type: 'points', value: '', amount: row.num, pointsType: 5 };
+        case 'duckets': return { ...base, type: 'points', value: '', amount: row.num, pointsType: 0 };
+        case 'credits': return { ...base, type: 'credits', value: '', amount: row.num, pointsType: 0 };
+        case 'spins': return { ...base, type: 'spin', value: '', amount: row.num, pointsType: 0 };
+        default: return { ...base, type: 'nothing', value: '', amount: 0, pointsType: 0 };
     }
 };
 

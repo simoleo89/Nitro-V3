@@ -123,8 +123,18 @@ export const App: FC<{}> = props =>
     const clearStoredCredentials = useCallback(() =>
     {
         ClearRememberLogin();
-        try { delete (window as any).NitroConfig?.['sso.ticket']; } catch {}
-        try { GetConfiguration().setValue('sso.ticket', ''); } catch {}
+        try
+        {
+            delete (window as any).NitroConfig?.['sso.ticket'];
+        }
+        catch
+        {}
+        try
+        {
+            GetConfiguration().setValue('sso.ticket', '');
+        }
+        catch
+        {}
         try
         {
             const url = new URL(window.location.href);
@@ -135,7 +145,8 @@ export const App: FC<{}> = props =>
                 window.history.replaceState({}, '', url.toString());
             }
         }
-        catch {}
+        catch
+        {}
     }, []);
 
     const showSessionExpired = useCallback(() =>
@@ -297,9 +308,18 @@ export const App: FC<{}> = props =>
         }
     }, []);
 
-    useEffect(() => { isReadyRef.current = isReady; }, [ isReady ]);
-    useNitroEvent(NitroEventType.SOCKET_RECONNECTING, () => { reconnectInProgressRef.current = true; });
-    useNitroEvent(NitroEventType.SOCKET_REAUTHENTICATED, () => { reconnectInProgressRef.current = false; });
+    useEffect(() =>
+    {
+        isReadyRef.current = isReady;
+    }, [ isReady ]);
+    useNitroEvent(NitroEventType.SOCKET_RECONNECTING, () =>
+    {
+        reconnectInProgressRef.current = true;
+    });
+    useNitroEvent(NitroEventType.SOCKET_REAUTHENTICATED, () =>
+    {
+        reconnectInProgressRef.current = false;
+    });
 
     useNitroEvent(NitroEventType.SOCKET_CLOSED, () =>
     {

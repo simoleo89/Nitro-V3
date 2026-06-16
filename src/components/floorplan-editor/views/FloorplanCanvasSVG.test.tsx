@@ -14,7 +14,8 @@ describe('FloorplanCanvasSVG', () =>
                 [{ h: 2, blocked: false }, { h: 3, blocked: false }]
             ]
         };
-        const { container } = render(<FloorplanCanvasSVG state={ state } dispatch={ () => {} } />);
+        const { container } = render(<FloorplanCanvasSVG state={ state } dispatch={ () =>
+        {} } />);
         const polys = container.querySelectorAll('polygon');
         expect(polys.length).toBeGreaterThanOrEqual(3);
     });
@@ -26,7 +27,8 @@ describe('FloorplanCanvasSVG', () =>
             tiles: [[{ h: 0, blocked: false }, { h: 0, blocked: false }]],
             door: { x: 1, y: 0, dir: 2 as const }
         };
-        const { container } = render(<FloorplanCanvasSVG state={ state } dispatch={ () => {} } />);
+        const { container } = render(<FloorplanCanvasSVG state={ state } dispatch={ () =>
+        {} } />);
         expect(container.querySelector('[data-testid="door-marker"]')).toBeTruthy();
     });
 
@@ -39,11 +41,11 @@ describe('FloorplanCanvasSVG', () =>
         };
         const dispatch = vi.fn();
         const { container } = render(<FloorplanCanvasSVG state={ state } dispatch={ dispatch } />);
-        const svg = container.querySelector('svg') as SVGSVGElement;
+        const svg = container.querySelector('svg');
         // usePointerToTile resolves the tile via document.elementFromPoint first
         // (the tile polygons carry data-row/data-col). jsdom returns null and has
         // no SVGSVGElement.getScreenCTM, so point the hit-test at the tile polygon.
-        const tilePoly = container.querySelector('polygon[data-row="0"][data-col="0"]') as Element;
+        const tilePoly = container.querySelector('polygon[data-row="0"][data-col="0"]');
         // jsdom's document has no elementFromPoint at all — define it for this test.
         const prevEfp = (document as { elementFromPoint?: unknown }).elementFromPoint;
         (document as unknown as { elementFromPoint: (x: number, y: number) => Element | null }).elementFromPoint = () => tilePoly;
@@ -56,10 +58,11 @@ describe('FloorplanCanvasSVG', () =>
 
     it('zoom in/out buttons adjust the viewBox', () =>
     {
-        const { container } = render(<FloorplanCanvasSVG state={ initialState } dispatch={ () => {} } />);
-        const svg = container.querySelector('svg') as SVGSVGElement;
+        const { container } = render(<FloorplanCanvasSVG state={ initialState } dispatch={ () =>
+        {} } />);
+        const svg = container.querySelector('svg');
         const initialVB = svg.getAttribute('viewBox');
-        fireEvent.click(container.querySelector('[data-testid="zoom-in"]') as Element);
+        fireEvent.click(container.querySelector('[data-testid="zoom-in"]'));
         expect(svg.getAttribute('viewBox')).not.toBe(initialVB);
     });
 });

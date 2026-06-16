@@ -98,24 +98,24 @@ export const PurseClassicView: FC<{}> = props =>
         <Column alignItems="end" className="nitro-purse-container" gap={ 0 }>
             <div className="nitro-purse-classic">
                 <div className={ `nitro-purse-shell ${ isCompact ? 'is-closed' : '' }` }>
-                <div className={ `nitro-purse ${ isCompact ? 'is-closed' : '' }` }>
-                    <div className={ `nitro-purse__header ${ isCompact ? 'is-closed' : '' }` } onClick={ () => setIsOpen(value => !value) }>
-                        <Flex alignItems="center" gap={ 1 } className={ isCompact ? 'nitro-purse__header-main is-closed' : 'nitro-purse__header-main' }>
-                            <div className="nitro-purse__header-icon">
-                                <img src={ purseIcon } alt="" className="nitro-purse__header-image" />
+                    <div className={ `nitro-purse ${ isCompact ? 'is-closed' : '' }` }>
+                        <div className={ `nitro-purse__header ${ isCompact ? 'is-closed' : '' }` } onClick={ () => setIsOpen(value => !value) }>
+                            <Flex alignItems="center" gap={ 1 } className={ isCompact ? 'nitro-purse__header-main is-closed' : 'nitro-purse__header-main' }>
+                                <div className="nitro-purse__header-icon">
+                                    <img src={ purseIcon } alt="" className="nitro-purse__header-image" />
+                                </div>
+                            </Flex>
+                            <div className={ `nitro-purse__header-toggle ${ isOpen ? 'is-open' : '' }` }>
+                                <FaChevronDown className="fa-icon text-[10px]" />
                             </div>
-                        </Flex>
-                        <div className={ `nitro-purse__header-toggle ${ isOpen ? 'is-open' : '' }` }>
-                            <FaChevronDown className="fa-icon text-[10px]" />
                         </div>
-                    </div>
-                    <div className={ `nitro-purse__content ${ isOpen ? 'is-open' : 'is-closed' }` }>
-                        <div className={ `nitro-purse__summary nitro-purse__summary--compact ${ hcDisabled ? 'is-no-hc' : '' }` }>
-                            <div className="nitro-purse__primary">
-                                <CurrencyView type={ -1 } amount={ purse.credits } short={ currencyDisplayNumberShort } />
-                                { primaryCurrencies.map(type => <CurrencyView key={ type } type={ type } amount={ purse.activityPoints.get(type) || 0 } short={ currencyDisplayNumberShort } />) }
-                            </div>
-                            { !hcDisabled &&
+                        <div className={ `nitro-purse__content ${ isOpen ? 'is-open' : 'is-closed' }` }>
+                            <div className={ `nitro-purse__summary nitro-purse__summary--compact ${ hcDisabled ? 'is-no-hc' : '' }` }>
+                                <div className="nitro-purse__primary">
+                                    <CurrencyView type={ -1 } amount={ purse.credits } short={ currencyDisplayNumberShort } />
+                                    { primaryCurrencies.map(type => <CurrencyView key={ type } type={ type } amount={ purse.activityPoints.get(type) || 0 } short={ currencyDisplayNumberShort } />) }
+                                </div>
+                                { !hcDisabled &&
                                     <div className="nitro-purse-subscription" onClick={ event =>
                                     {
                                         event.stopPropagation(); CreateLinkEvent('catalog/open/' + GetConfigurationValue<Record<string, string>>('catalog.links')?.['hc.buy_hc']);
@@ -128,30 +128,30 @@ export const PurseClassicView: FC<{}> = props =>
                                             <Text variant="white" className="nitro-purse-subscription__value">{ getClubText }</Text>
                                         </div>
                                     </div> }
-                            <div className="nitro-purse__actions">
-                                <button type="button" className="nitro-purse__action-button nitro-purse__action-button--translate" onClick={ event =>
-                                {
-                                    event.stopPropagation(); CreateLinkEvent('translation-settings/toggle');
-                                } } title="Google Translate">
-                                    <FaLanguage />
-                                </button>
-                                <button type="button" className="nitro-purse__action-button nitro-purse__action-button--help" onClick={ event =>
-                                {
-                                    event.stopPropagation(); CreateLinkEvent('help/show');
-                                } } title={ LocalizeText('help.button.name') }>
-                                    <FaQuestionCircle />
-                                </button>
-                                <button type="button" className="nitro-purse__action-button nitro-purse__action-button--settings" onClick={ event =>
-                                {
-                                    event.stopPropagation(); CreateLinkEvent('user-settings/toggle');
-                                } } title={ LocalizeText('widget.memenu.settings.title') }>
-                                    <i className="nitro-icon icon-cog" />
-                                </button>
-                                <button type="button" className="nitro-purse__action-button nitro-purse__action-button--logout" onClick={ handleLogout } title="Log out">
-                                    <FaSignOutAlt />
-                                </button>
+                                <div className="nitro-purse__actions">
+                                    <button type="button" className="nitro-purse__action-button nitro-purse__action-button--translate" onClick={ event =>
+                                    {
+                                        event.stopPropagation(); CreateLinkEvent('translation-settings/toggle');
+                                    } } title="Google Translate">
+                                        <FaLanguage />
+                                    </button>
+                                    <button type="button" className="nitro-purse__action-button nitro-purse__action-button--help" onClick={ event =>
+                                    {
+                                        event.stopPropagation(); CreateLinkEvent('help/show');
+                                    } } title={ LocalizeText('help.button.name') }>
+                                        <FaQuestionCircle />
+                                    </button>
+                                    <button type="button" className="nitro-purse__action-button nitro-purse__action-button--settings" onClick={ event =>
+                                    {
+                                        event.stopPropagation(); CreateLinkEvent('user-settings/toggle');
+                                    } } title={ LocalizeText('widget.memenu.settings.title') }>
+                                        <i className="nitro-icon icon-cog" />
+                                    </button>
+                                    <button type="button" className="nitro-purse__action-button nitro-purse__action-button--logout" onClick={ handleLogout } title="Log out">
+                                        <FaSignOutAlt />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>

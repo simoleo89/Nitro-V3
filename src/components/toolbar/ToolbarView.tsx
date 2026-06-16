@@ -70,7 +70,10 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
         toggleLockRef.current = true;
         setIsToolbarOpen(value => !value);
         if(toggleTimeoutRef.current) clearTimeout(toggleTimeoutRef.current);
-        toggleTimeoutRef.current = setTimeout(() => { toggleLockRef.current = false; }, TOGGLE_LOCK_MS);
+        toggleTimeoutRef.current = setTimeout(() =>
+        {
+            toggleLockRef.current = false;
+        }, TOGGLE_LOCK_MS);
     }, []);
 
     const compactFramePosition = (isToolbarOpen && isInRoom) ? 'bottom-[90px] min-[1700px]:bottom-0' : 'bottom-0';
@@ -125,7 +128,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
     {
         const measure = () =>
         {
-            const roomTools = document.querySelector('.nitro-room-tools-container') as HTMLElement | null;
+            const roomTools = document.querySelector('.nitro-room-tools-container');
             const next = roomTools
                 ? Math.max(8, Math.round(window.innerHeight - roomTools.getBoundingClientRect().top + 15))
                 : null;

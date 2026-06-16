@@ -97,8 +97,22 @@ export const HousekeepingView: FC = () =>
                                     let name = '';
                                     let figure = '';
 
-                                    try { name = decodeURIComponent(parts[3] || ''); } catch { name = parts[3] || ''; }
-                                    try { figure = decodeURIComponent(parts[4] || ''); } catch { figure = parts[4] || ''; }
+                                    try
+                                    {
+                                        name = decodeURIComponent(parts[3] || '');
+                                    }
+                                    catch
+                                    {
+                                        name = parts[3] || '';
+                                    }
+                                    try
+                                    {
+                                        figure = decodeURIComponent(parts[4] || '');
+                                    }
+                                    catch
+                                    {
+                                        figure = parts[4] || '';
+                                    }
 
                                     seedUserFromAvatar(userId, name, figure);
                                 }

@@ -78,14 +78,23 @@ export const FriendsListGroupItemView: FC<{ friend: MessengerFriend, selected: b
                             <div className="nitro-friends-spritesheet icon-chat cursor-pointer" title={ LocalizeText('friendlist.tip.im') } onClick={ openMessengerChat } /> }
                         { (friend.id > 0) && (categories.length > 0) &&
                             <div className="friends-list-group-assign position-relative">
-                                <div className="friends-list-group-toggle cursor-pointer" title={ LocalizeText('friendlist.friends') } onClick={ event => { event.stopPropagation(); setIsGroupMenuOpen(prev => !prev); } }>{ '📁' }</div>
+                                <div className="friends-list-group-toggle cursor-pointer" title={ LocalizeText('friendlist.friends') } onClick={ event =>
+                                {
+                                    event.stopPropagation(); setIsGroupMenuOpen(prev => !prev);
+                                } }>{ '📁' }</div>
                                 { isGroupMenuOpen &&
                                     <div className="friends-list-group-menu">
-                                        <div className={ `friends-list-group-menu-item${ (friend.categoryId === 0) ? ' active' : '' }` } onClick={ event => { event.stopPropagation(); moveFriendToCategory(friend.id, 0); setIsGroupMenuOpen(false); } }>
+                                        <div className={ `friends-list-group-menu-item${ (friend.categoryId === 0) ? ' active' : '' }` } onClick={ event =>
+                                        {
+                                            event.stopPropagation(); moveFriendToCategory(friend.id, 0); setIsGroupMenuOpen(false);
+                                        } }>
                                             { LocalizeText('friendlist.friends') }
                                         </div>
                                         { categories.map(category => (
-                                            <div key={ category.id } className={ `friends-list-group-menu-item${ (friend.categoryId === category.id) ? ' active' : '' }` } onClick={ event => { event.stopPropagation(); moveFriendToCategory(friend.id, category.id); setIsGroupMenuOpen(false); } }>
+                                            <div key={ category.id } className={ `friends-list-group-menu-item${ (friend.categoryId === category.id) ? ' active' : '' }` } onClick={ event =>
+                                            {
+                                                event.stopPropagation(); moveFriendToCategory(friend.id, category.id); setIsGroupMenuOpen(false);
+                                            } }>
                                                 { category.name }
                                             </div>
                                         )) }

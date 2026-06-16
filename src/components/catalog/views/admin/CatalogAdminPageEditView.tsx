@@ -286,7 +286,10 @@ export const CatalogAdminPageEditView: FC<{}> = () =>
                                 className="px-2 py-1 rounded text-[10px] font-bold text-muted border border-card-grid-item-border hover:bg-gray-100 transition-colors cursor-pointer"
                                 disabled={ isTranslating }
                                 type="button"
-                                onClick={ () => { setShowTranslate(false); setTranslateError(null); } }>
+                                onClick={ () =>
+                                {
+                                    setShowTranslate(false); setTranslateError(null);
+                                } }>
                                 Cancel
                             </button>
                         </div> }

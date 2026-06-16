@@ -184,8 +184,12 @@ export const UserAccountSettingsView: FC<{}> = () =>
             });
 
             let payload: Record<string, unknown> = {};
-            try { payload = await response.json(); }
-            catch {}
+            try
+            {
+                payload = await response.json();
+            }
+            catch
+            {}
 
             if(!response.ok)
             {
@@ -265,8 +269,12 @@ export const UserAccountSettingsView: FC<{}> = () =>
             });
 
             let payload: Record<string, unknown> = {};
-            try { payload = await response.json(); }
-            catch {}
+            try
+            {
+                payload = await response.json();
+            }
+            catch
+            {}
 
             if(!response.ok)
             {
@@ -350,8 +358,12 @@ export const UserAccountSettingsView: FC<{}> = () =>
             });
 
             let payload: Record<string, unknown> = {};
-            try { payload = await response.json(); }
-            catch {}
+            try
+            {
+                payload = await response.json();
+            }
+            catch
+            {}
 
             if(!response.ok)
             {
@@ -372,12 +384,26 @@ export const UserAccountSettingsView: FC<{}> = () =>
 
             // The server has dropped our session — clear local credentials and bounce
             // the user back to the login screen so the whole client reloads cleanly.
-            try { window.localStorage.removeItem('nitro.access.token'); } catch {}
-            try { window.localStorage.removeItem('nitro.access.token.exp'); } catch {}
+            try
+            {
+                window.localStorage.removeItem('nitro.access.token');
+            }
+            catch
+            {}
+            try
+            {
+                window.localStorage.removeItem('nitro.access.token.exp');
+            }
+            catch
+            {}
             window.setTimeout(() =>
             {
-                try { window.location.reload(); }
-                catch {}
+                try
+                {
+                    window.location.reload();
+                }
+                catch
+                {}
             }, 2500);
         }
         catch
@@ -423,7 +449,10 @@ export const UserAccountSettingsView: FC<{}> = () =>
                         <button
                             type="button"
                             className="group flex items-center gap-3 rounded-md border border-black/10 bg-white px-3 py-2 hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors cursor-pointer text-left"
-                            onClick={ () => { resetForm(); setSection('password'); } }>
+                            onClick={ () =>
+                            {
+                                resetForm(); setSection('password');
+                            } }>
                             <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[#1e7295] text-white shrink-0 shadow-[inset_0_2px_#ffffff26,inset_0_-2px_#0000001a]">
                                 <FaKey />
                             </div>
@@ -437,7 +466,10 @@ export const UserAccountSettingsView: FC<{}> = () =>
                         <button
                             type="button"
                             className="group flex items-center gap-3 rounded-md border border-black/10 bg-white px-3 py-2 hover:bg-[#f5fbfd] hover:border-[#1e7295] transition-colors cursor-pointer text-left"
-                            onClick={ () => { resetForm(); setSection('email'); } }>
+                            onClick={ () =>
+                            {
+                                resetForm(); setSection('email');
+                            } }>
                             <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[#185d79] text-white shrink-0 shadow-[inset_0_2px_#ffffff26,inset_0_-2px_#0000001a]">
                                 <FaEnvelope />
                             </div>
@@ -451,7 +483,10 @@ export const UserAccountSettingsView: FC<{}> = () =>
                         <button
                             type="button"
                             className="group flex items-center gap-3 rounded-md border border-black/10 bg-white px-3 py-2 hover:bg-[#fef7e0] hover:border-[#ffc107] transition-colors cursor-pointer text-left"
-                            onClick={ () => { resetForm(); setSection('username'); } }>
+                            onClick={ () =>
+                            {
+                                resetForm(); setSection('username');
+                            } }>
                             <div className="flex items-center justify-center w-9 h-9 rounded-full bg-[#ffc107] text-[#5c4400] shrink-0 shadow-[inset_0_2px_#ffffff80,inset_0_-2px_#0000001a]">
                                 <FaIdBadge />
                             </div>
@@ -475,12 +510,21 @@ export const UserAccountSettingsView: FC<{}> = () =>
                 ) }
 
                 { section === 'password' && (
-                    <div className="flex flex-col gap-2" onKeyDown={ (event: KeyboardEvent<HTMLDivElement>) => { if(event.key === 'Enter') { event.preventDefault(); submitPasswordChange(); } } }>
+                    <div className="flex flex-col gap-2" onKeyDown={ (event: KeyboardEvent<HTMLDivElement>) =>
+                    {
+                        if(event.key === 'Enter')
+                        {
+                            event.preventDefault(); submitPasswordChange();
+                        }
+                    } }>
                         <div className="flex items-center gap-2 -mt-1 mb-1">
                             <button
                                 type="button"
                                 disabled={ submitting }
-                                onClick={ () => { resetForm(); setSection('menu'); } }
+                                onClick={ () =>
+                                {
+                                    resetForm(); setSection('menu');
+                                } }
                                 className="flex items-center justify-center w-7 h-7 rounded-full bg-black/5 hover:bg-black/10 text-black/70 disabled:opacity-50">
                                 <FaArrowLeft size={ 11 } />
                             </button>
@@ -576,7 +620,10 @@ export const UserAccountSettingsView: FC<{}> = () =>
                         ) }
 
                         <div className="flex justify-end gap-2 pt-1">
-                            <Button variant="secondary" disabled={ submitting } onClick={ () => { resetForm(); setSection('menu'); } }>
+                            <Button variant="secondary" disabled={ submitting } onClick={ () =>
+                            {
+                                resetForm(); setSection('menu');
+                            } }>
                                 { LocalizeText('usersettings.btn.cancel') }
                             </Button>
                             <Button variant="success" disabled={ submitting } onClick={ () => submitPasswordChange() }>
@@ -587,12 +634,21 @@ export const UserAccountSettingsView: FC<{}> = () =>
                 ) }
 
                 { section === 'email' && (
-                    <div className="flex flex-col gap-2" onKeyDown={ (event: KeyboardEvent<HTMLDivElement>) => { if(event.key === 'Enter') { event.preventDefault(); submitEmailChange(); } } }>
+                    <div className="flex flex-col gap-2" onKeyDown={ (event: KeyboardEvent<HTMLDivElement>) =>
+                    {
+                        if(event.key === 'Enter')
+                        {
+                            event.preventDefault(); submitEmailChange();
+                        }
+                    } }>
                         <div className="flex items-center gap-2 -mt-1 mb-1">
                             <button
                                 type="button"
                                 disabled={ submitting }
-                                onClick={ () => { resetForm(); setSection('menu'); } }
+                                onClick={ () =>
+                                {
+                                    resetForm(); setSection('menu');
+                                } }
                                 className="flex items-center justify-center w-7 h-7 rounded-full bg-black/5 hover:bg-black/10 text-black/70 disabled:opacity-50">
                                 <FaArrowLeft size={ 11 } />
                             </button>
@@ -659,7 +715,10 @@ export const UserAccountSettingsView: FC<{}> = () =>
                         ) }
 
                         <div className="flex justify-end gap-2 pt-1">
-                            <Button variant="secondary" disabled={ submitting } onClick={ () => { resetForm(); setSection('menu'); } }>
+                            <Button variant="secondary" disabled={ submitting } onClick={ () =>
+                            {
+                                resetForm(); setSection('menu');
+                            } }>
                                 { LocalizeText('usersettings.btn.cancel') }
                             </Button>
                             <Button variant="success" disabled={ submitting } onClick={ () => submitEmailChange() }>
@@ -670,12 +729,21 @@ export const UserAccountSettingsView: FC<{}> = () =>
                 ) }
 
                 { section === 'username' && (
-                    <div className="flex flex-col gap-2" onKeyDown={ (event: KeyboardEvent<HTMLDivElement>) => { if(event.key === 'Enter') { event.preventDefault(); submitUsernameChange(); } } }>
+                    <div className="flex flex-col gap-2" onKeyDown={ (event: KeyboardEvent<HTMLDivElement>) =>
+                    {
+                        if(event.key === 'Enter')
+                        {
+                            event.preventDefault(); submitUsernameChange();
+                        }
+                    } }>
                         <div className="flex items-center gap-2 -mt-1 mb-1">
                             <button
                                 type="button"
                                 disabled={ submitting }
-                                onClick={ () => { resetForm(); setSection('menu'); } }
+                                onClick={ () =>
+                                {
+                                    resetForm(); setSection('menu');
+                                } }
                                 className="flex items-center justify-center w-7 h-7 rounded-full bg-black/5 hover:bg-black/10 text-black/70 disabled:opacity-50">
                                 <FaArrowLeft size={ 11 } />
                             </button>
@@ -743,7 +811,10 @@ export const UserAccountSettingsView: FC<{}> = () =>
                         ) }
 
                         <div className="flex justify-end gap-2 pt-1">
-                            <Button variant="secondary" disabled={ submitting } onClick={ () => { resetForm(); setSection('menu'); } }>
+                            <Button variant="secondary" disabled={ submitting } onClick={ () =>
+                            {
+                                resetForm(); setSection('menu');
+                            } }>
                                 { LocalizeText('usersettings.btn.cancel') }
                             </Button>
                             <Button variant="warning" disabled={ submitting } onClick={ () => submitUsernameChange() }>

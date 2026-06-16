@@ -1528,7 +1528,10 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                 setRoomTemplates([]);
                 setRoomTemplatesError(t('nitro.login.register.room.error', 'Could not load room options. You can still skip this step.'));
             });
-        return () => { cancelled = true; };
+        return () =>
+        {
+            cancelled = true;
+        };
     }, [ step, roomTemplates, roomTemplatesUrl ]);
 
     const busy = submitting || isCredentialsPending || isAvatarPending || isRoomPending || pingingServer;
@@ -1718,7 +1721,10 @@ const RegisterDialog: FC<RegisterDialogProps> = props =>
                                             onChange={ () => setSelectedTemplateId(template.templateId) } />
                                         { template.thumbnail &&
                                             <img className="room-template-thumb" src={ template.thumbnail } alt={ template.title }
-                                                onError={ e => { (e.currentTarget as HTMLImageElement).style.visibility = 'hidden'; } } /> }
+                                                onError={ e =>
+                                                {
+                                                    (e.currentTarget).style.visibility = 'hidden';
+                                                } } /> }
                                         <div className="room-template-body">
                                             <div className="room-template-title">{ template.title }</div>
                                             { template.description &&

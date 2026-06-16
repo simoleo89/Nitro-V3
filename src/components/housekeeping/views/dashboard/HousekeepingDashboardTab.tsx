@@ -251,11 +251,18 @@ export const HousekeepingDashboardTab: FC = () =>
                                 type="text"
                                 value={ alertMessage }
                                 onChange={ e => setAlertMessage(e.target.value) }
-                                onKeyDown={ e => { if(e.key === 'Enter' && canSendAlert) { e.preventDefault(); onSubmitAlert(e as unknown as FormEvent); } } }
+                                onKeyDown={ e =>
+                                {
+                                    if(e.key === 'Enter' && canSendAlert)
+                                    {
+                                        e.preventDefault(); onSubmitAlert(e);
+                                    }
+                                } }
                                 placeholder={ LocalizeText('housekeeping.hotel.alert.placeholder') }
                                 className="grow rounded border border-amber-200 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-zinc-400"
                                 maxLength={ 280 } />
-                            <Button size="sm" variant="primary" disabled={ !canSendAlert } onClick={ () => onSubmitAlert({ preventDefault: () => {} } as FormEvent) }>
+                            <Button size="sm" variant="primary" disabled={ !canSendAlert } onClick={ () => onSubmitAlert({ preventDefault: () =>
+                            {} } as FormEvent) }>
                                 <FaPaperPlane size={ 9 } className={ isSendingAlert ? 'animate-pulse' : '' } />
                                 <span className="ml-1">{ LocalizeText('housekeeping.hotel.alert.send') }</span>
                             </Button>

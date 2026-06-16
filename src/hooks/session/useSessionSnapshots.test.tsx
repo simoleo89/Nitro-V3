@@ -52,7 +52,7 @@ describe('use-between + useSyncExternalStore incompatibility', () => {
         const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
         const Broken = () => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks -- intentional: this test asserts the runtime crash
+            /* eslint-disable react-hooks/rules-of-hooks -- intentional: this test asserts the runtime crash */
             useBetween(() =>
                 useSyncExternalStore(
                     () => () => undefined,
@@ -60,6 +60,7 @@ describe('use-between + useSyncExternalStore incompatibility', () => {
                     () => 'v',
                 ),
             );
+            /* eslint-enable react-hooks/rules-of-hooks */
             return null;
         };
 

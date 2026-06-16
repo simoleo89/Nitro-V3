@@ -49,6 +49,30 @@ export type FloorplanAction =
     | { type: 'CLEAR_SELECTION' }
     | { type: 'APPLY_BRUSH_TO_SELECTION'; source: LocalSource }
     | { type: 'SQUARE_SELECT_TOGGLE' }
-    | { type: 'IMPORT_STRING'; raw: string; door?: Door; thickness?: { wall: ThicknessLevel; floor: ThicknessLevel }; wallHeight?: number; source: LocalSource }
-    | { type: 'APPLY_REMOTE_DIFF'; diff: { tiles?: Array<{ row: number; col: number; h: number; blocked: boolean }>; door?: Door; thickness?: { wall: ThicknessLevel; floor: ThicknessLevel }; wallHeight?: number }; seq: number; editorUserId: number }
-    | { type: 'APPLY_REMOTE_SNAPSHOT'; raw: string; door: Door; thickness: { wall: ThicknessLevel; floor: ThicknessLevel }; wallHeight: number; seq: number };
+    | {
+          type: 'IMPORT_STRING';
+          raw: string;
+          door?: Door;
+          thickness?: { wall: ThicknessLevel; floor: ThicknessLevel };
+          wallHeight?: number;
+          source: LocalSource;
+      }
+    | {
+          type: 'APPLY_REMOTE_DIFF';
+          diff: {
+              tiles?: Array<{ row: number; col: number; h: number; blocked: boolean }>;
+              door?: Door;
+              thickness?: { wall: ThicknessLevel; floor: ThicknessLevel };
+              wallHeight?: number;
+          };
+          seq: number;
+          editorUserId: number;
+      }
+    | {
+          type: 'APPLY_REMOTE_SNAPSHOT';
+          raw: string;
+          door: Door;
+          thickness: { wall: ThicknessLevel; floor: ThicknessLevel };
+          wallHeight: number;
+          seq: number;
+      };

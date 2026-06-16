@@ -1,11 +1,10 @@
-export function LocalizeShortNumber(number: number): string
-{
-    if(!number || isNaN(number)) return '0';
+export function LocalizeShortNumber(number: number): string {
+    if (!number || isNaN(number)) return '0';
 
     let abs = Math.abs(number);
 
     const rounder = Math.pow(10, 1);
-    const isNegative = (number < 0);
+    const isNegative = number < 0;
 
     let key = '';
 
@@ -14,17 +13,15 @@ export function LocalizeShortNumber(number: number): string
         { key: 'T', value: Math.pow(10, 12) },
         { key: 'B', value: Math.pow(10, 9) },
         { key: 'M', value: Math.pow(10, 6) },
-        { key: 'K', value: 1000 }
+        { key: 'K', value: 1000 },
     ];
 
-    for(const power of powers)
-    {
+    for (const power of powers) {
         let reduced = abs / power.value;
 
         reduced = Math.round(reduced * rounder) / rounder;
 
-        if(reduced >= 1)
-        {
+        if (reduced >= 1) {
             abs = reduced;
             key = power.key;
 
@@ -32,5 +29,5 @@ export function LocalizeShortNumber(number: number): string
         }
     }
 
-    return ((isNegative ? '-' : '') + abs + key);
+    return (isNegative ? '-' : '') + abs + key;
 }

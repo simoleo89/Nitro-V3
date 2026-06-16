@@ -3,22 +3,22 @@ import { INavigatorSearchFilter } from './INavigatorSearchFilter';
 export const SearchFilterOptions: INavigatorSearchFilter[] = [
     {
         name: 'anything',
-        query: null
+        query: null,
     },
     {
         name: 'room.name',
-        query: 'roomname'
+        query: 'roomname',
     },
     {
         name: 'owner',
-        query: 'owner'
+        query: 'owner',
     },
     {
         name: 'tag',
-        query: 'tag'
+        query: 'tag',
     },
     {
         name: 'group',
-        query: 'group'
-    }
+        query: 'group',
+    },
 ];

@@ -3,7 +3,7 @@ export {
     HEIGHT_SCHEME,
     COLORMAP,
     TILE_SIZE,
-    MAX_NUM_TILE_PER_AXIS
+    MAX_NUM_TILE_PER_AXIS,
 } from '@nitrots/nitro-renderer';
 
 export const MIN_WALL_HEIGHT = 0;

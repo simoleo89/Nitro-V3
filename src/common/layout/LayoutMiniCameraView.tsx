@@ -9,13 +9,11 @@ interface LayoutMiniCameraViewProps {
     onClose: () => void;
 }
 
-export const LayoutMiniCameraView: FC<LayoutMiniCameraViewProps> = props =>
-{
+export const LayoutMiniCameraView: FC<LayoutMiniCameraViewProps> = (props) => {
     const { roomId = -1, textureReceiver = null, onClose = null } = props;
     const elementRef = useRef<HTMLDivElement>(null);
 
-    const getCameraBounds = () =>
-    {
+    const getCameraBounds = () => {
         if (!elementRef || !elementRef.current) return null;
 
         const frameBounds = elementRef.current.getBoundingClientRect();
@@ -24,12 +22,11 @@ export const LayoutMiniCameraView: FC<LayoutMiniCameraViewProps> = props =>
             Math.floor(frameBounds.x),
             Math.floor(frameBounds.y),
             Math.floor(frameBounds.width),
-            Math.floor(frameBounds.height)
+            Math.floor(frameBounds.height),
         );
     };
 
-    const takePicture = () =>
-    {
+    const takePicture = () => {
         PlaySound(SoundNames.CAMERA_SHUTTER);
         textureReceiver(GetRoomEngine().createTextureFromRoom(roomId, 1, getCameraBounds()));
     };
@@ -54,18 +51,10 @@ export const LayoutMiniCameraView: FC<LayoutMiniCameraViewProps> = props =>
                             justifyContent: 'space-between',
                         }}
                     >
-                        <button
-                            className="btn btn-sm btn-danger"
-                            style={{ width: '80px' }}
-                            onClick={onClose}
-                        >
+                        <button className="btn btn-sm btn-danger" style={{ width: '80px' }} onClick={onClose}>
                             {LocalizeText('cancel')}
                         </button>
-                        <button
-                            className="btn btn-sm btn-success"
-                            style={{ width: '80px' }}
-                            onClick={takePicture}
-                        >
+                        <button className="btn btn-sm btn-success" style={{ width: '80px' }} onClick={takePicture}>
                             {LocalizeText('navigator.thumbeditor.save')}
                         </button>
                     </div>

@@ -1,4 +1,8 @@
-import type { RoomSessionFavoriteGroupUpdateEvent, RoomSessionUserBadgesEvent, RoomSessionUserFigureUpdateEvent } from '@nitrots/nitro-renderer';
+import type {
+    RoomSessionFavoriteGroupUpdateEvent,
+    RoomSessionUserBadgesEvent,
+    RoomSessionUserFigureUpdateEvent,
+} from '@nitrots/nitro-renderer';
 import { dedupeBadges } from '../../../api/avatar/dedupeBadges';
 import type { IAvatarInfo } from '../../../api/room/widgets/IAvatarInfo';
 import { AvatarInfoUser } from '../../../api/room/widgets/AvatarInfoUser';
@@ -13,8 +17,7 @@ import { AvatarInfoUser } from '../../../api/room/widgets/AvatarInfoUser';
  * uselessly.
  */
 
-const cloneAvatarInfoUser = (state: AvatarInfoUser): AvatarInfoUser =>
-{
+const cloneAvatarInfoUser = (state: AvatarInfoUser): AvatarInfoUser => {
     const clone = new AvatarInfoUser(state.type);
 
     Object.assign(clone, state);
@@ -22,14 +25,16 @@ const cloneAvatarInfoUser = (state: AvatarInfoUser): AvatarInfoUser =>
     return clone;
 };
 
-export const applyUserBadgesUpdate = (state: IAvatarInfo | null, event: RoomSessionUserBadgesEvent): IAvatarInfo | null =>
-{
-    if(!(state instanceof AvatarInfoUser)) return state;
-    if(state.webID !== event.userId) return state;
+export const applyUserBadgesUpdate = (
+    state: IAvatarInfo | null,
+    event: RoomSessionUserBadgesEvent,
+): IAvatarInfo | null => {
+    if (!(state instanceof AvatarInfoUser)) return state;
+    if (state.webID !== event.userId) return state;
 
     const dedupedBadges = dedupeBadges(event.badges);
 
-    if(state.badges.join('') === dedupedBadges.join('')) return state;
+    if (state.badges.join('') === dedupedBadges.join('')) return state;
 
     const next = cloneAvatarInfoUser(state);
 
@@ -38,10 +43,12 @@ export const applyUserBadgesUpdate = (state: IAvatarInfo | null, event: RoomSess
     return next;
 };
 
-export const applyUserFigureUpdate = (state: IAvatarInfo | null, event: RoomSessionUserFigureUpdateEvent): IAvatarInfo | null =>
-{
-    if(!(state instanceof AvatarInfoUser)) return state;
-    if(state.roomIndex !== event.roomIndex) return state;
+export const applyUserFigureUpdate = (
+    state: IAvatarInfo | null,
+    event: RoomSessionUserFigureUpdateEvent,
+): IAvatarInfo | null => {
+    if (!(state instanceof AvatarInfoUser)) return state;
+    if (state.roomIndex !== event.roomIndex) return state;
 
     const next = cloneAvatarInfoUser(state);
 
@@ -65,13 +72,12 @@ export const applyUserFigureUpdate = (state: IAvatarInfo | null, event: RoomSess
 export const applyFavouriteGroupUpdate = (
     state: IAvatarInfo | null,
     event: RoomSessionFavoriteGroupUpdateEvent,
-    resolveGroupBadge: (groupId: number) => string
-): IAvatarInfo | null =>
-{
-    if(!(state instanceof AvatarInfoUser)) return state;
-    if(state.roomIndex !== event.roomIndex) return state;
+    resolveGroupBadge: (groupId: number) => string,
+): IAvatarInfo | null => {
+    if (!(state instanceof AvatarInfoUser)) return state;
+    if (state.roomIndex !== event.roomIndex) return state;
 
-    const clearGroup = (event.status === -1) || (event.habboGroupId <= 0);
+    const clearGroup = event.status === -1 || event.habboGroupId <= 0;
     const next = cloneAvatarInfoUser(state);
 
     next.groupId = clearGroup ? -1 : event.habboGroupId;

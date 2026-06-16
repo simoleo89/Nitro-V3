@@ -9,12 +9,11 @@ import iconWiredDirSw from '../../../assets/images/wired/icon_wired_dir_sw.png';
 import iconWiredDirW from '../../../assets/images/wired/icon_wired_dir_w.png';
 
 export const WIRED_DIRECTION_GRID = [
-    [ 7, 0, 1, 2 ],
-    [ 6, 5, 4, 3 ]
+    [7, 0, 1, 2],
+    [6, 5, 4, 3],
 ];
 
-interface WiredDirectionIconProps
-{
+interface WiredDirectionIconProps {
     direction: number;
     selected?: boolean;
     debugValue?: number | string;
@@ -30,24 +29,26 @@ const DIRECTION_ICON_MAP: Record<number, string> = {
     4: iconWiredDirS,
     5: iconWiredDirSw,
     6: iconWiredDirW,
-    7: iconWiredDirNw
+    7: iconWiredDirNw,
 };
 
-export const WiredDirectionIcon: FC<WiredDirectionIconProps> = props =>
-{
+export const WiredDirectionIcon: FC<WiredDirectionIconProps> = (props) => {
     const { direction = 0, selected = false, debugValue = null, iconSrc = null, showImage = true } = props;
     const icon = iconSrc ?? DIRECTION_ICON_MAP[direction];
 
     return (
         <span className="inline-flex flex-col items-center justify-center leading-none">
-            { showImage &&
+            {showImage && (
                 <img
                     alt=""
-                    className={ `h-auto w-auto object-contain ${ selected ? 'brightness-100' : 'opacity-90' }` }
-                    draggable={ false }
-                    src={ icon } /> }
-            { (debugValue !== null && debugValue !== undefined) &&
-                <span className={ `${ showImage ? 'mt-[1px]' : '' } text-[9px] text-black` }>{ debugValue }</span> }
+                    className={`h-auto w-auto object-contain ${selected ? 'brightness-100' : 'opacity-90'}`}
+                    draggable={false}
+                    src={icon}
+                />
+            )}
+            {debugValue !== null && debugValue !== undefined && (
+                <span className={`${showImage ? 'mt-[1px]' : ''} text-[9px] text-black`}>{debugValue}</span>
+            )}
         </span>
     );
 };

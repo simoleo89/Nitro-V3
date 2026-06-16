@@ -1,19 +1,27 @@
-import { CreateLinkEvent, GetSessionDataManager, WiredRoomSettingsDataEvent, WiredRoomSettingsRequestComposer, WiredRoomSettingsSaveComposer, WiredUserVariableManageComposer, WiredUserVariableUpdateComposer, WiredUserVariablesDataEvent, WiredUserVariablesRequestComposer } from '@nitrots/nitro-renderer';
+import {
+    CreateLinkEvent,
+    GetSessionDataManager,
+    WiredRoomSettingsDataEvent,
+    WiredRoomSettingsRequestComposer,
+    WiredRoomSettingsSaveComposer,
+    WiredUserVariableManageComposer,
+    WiredUserVariableUpdateComposer,
+    WiredUserVariablesDataEvent,
+    WiredUserVariablesRequestComposer,
+} from '@nitrots/nitro-renderer';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { LocalizeText, NotificationAlertType, SendMessageComposer } from '../../api';
 import { useMessageEvent } from '../events';
 import { useNotification } from '../notification';
 import { useRoom } from '../rooms';
 
-export interface IWiredAccountPreferences
-{
+export interface IWiredAccountPreferences {
     showInspectButton: boolean;
     showSystemNotifications: boolean;
     showToolbarButton: boolean;
 }
 
-export interface IWiredRoomSettings
-{
+export interface IWiredRoomSettings {
     canInspect: boolean;
     canManageSettings: boolean;
     canModify: boolean;
@@ -23,8 +31,7 @@ export interface IWiredRoomSettings
     roomId: number;
 }
 
-export interface IWiredUserVariableDefinition
-{
+export interface IWiredUserVariableDefinition {
     availability: number;
     hasValue: boolean;
     isReadOnly?: boolean;
@@ -33,8 +40,7 @@ export interface IWiredUserVariableDefinition
     name: string;
 }
 
-export interface IWiredUserVariableAssignment
-{
+export interface IWiredUserVariableAssignment {
     createdAt: number;
     hasValue: boolean;
     updatedAt: number;
@@ -42,8 +48,7 @@ export interface IWiredUserVariableAssignment
     variableItemId: number;
 }
 
-export interface IWiredFurniVariableDefinition
-{
+export interface IWiredFurniVariableDefinition {
     availability: number;
     hasValue: boolean;
     isReadOnly?: boolean;
@@ -52,8 +57,7 @@ export interface IWiredFurniVariableDefinition
     name: string;
 }
 
-export interface IWiredFurniVariableAssignment
-{
+export interface IWiredFurniVariableAssignment {
     createdAt: number;
     hasValue: boolean;
     updatedAt: number;
@@ -61,8 +65,7 @@ export interface IWiredFurniVariableAssignment
     variableItemId: number;
 }
 
-export interface IWiredRoomVariableDefinition
-{
+export interface IWiredRoomVariableDefinition {
     availability: number;
     hasValue: boolean;
     isReadOnly?: boolean;
@@ -71,8 +74,7 @@ export interface IWiredRoomVariableDefinition
     name: string;
 }
 
-export interface IWiredRoomVariableAssignment
-{
+export interface IWiredRoomVariableAssignment {
     createdAt: number;
     hasValue: boolean;
     updatedAt: number;
@@ -80,8 +82,7 @@ export interface IWiredRoomVariableAssignment
     variableItemId: number;
 }
 
-export interface IWiredContextVariableDefinition
-{
+export interface IWiredContextVariableDefinition {
     availability: number;
     hasValue: boolean;
     isReadOnly?: boolean;
@@ -101,7 +102,7 @@ const getCurrentUnixTime = () => Math.floor(Date.now() / 1000);
 const DEFAULT_ACCOUNT_PREFERENCES: IWiredAccountPreferences = {
     showToolbarButton: false,
     showInspectButton: false,
-    showSystemNotifications: false
+    showSystemNotifications: false,
 };
 
 const DEFAULT_ROOM_SETTINGS: IWiredRoomSettings = {
@@ -111,7 +112,7 @@ const DEFAULT_ROOM_SETTINGS: IWiredRoomSettings = {
     canInspect: false,
     canModify: false,
     canManageSettings: false,
-    isLoaded: false
+    isLoaded: false,
 };
 
 /**
@@ -125,36 +126,35 @@ const DEFAULT_ROOM_SETTINGS: IWiredRoomSettings = {
  * the tree sees the same instance (matches the previous
  * useBetween(useWiredToolsState) wiring).
  */
-export const useWiredToolsStore = () =>
-{
+export const useWiredToolsStore = () => {
     const { roomSession = null } = useRoom();
     const { simpleAlert = null } = useNotification();
-    const [ accountPreferences, setAccountPreferences ] = useState<IWiredAccountPreferences>(DEFAULT_ACCOUNT_PREFERENCES);
-    const [ roomSettings, setRoomSettings ] = useState<IWiredRoomSettings>(DEFAULT_ROOM_SETTINGS);
-    const [ userVariableDefinitions, setUserVariableDefinitions ] = useState<IWiredUserVariableDefinition[]>([]);
-    const [ userVariableAssignments, setUserVariableAssignments ] = useState<Record<number, IWiredUserVariableAssignment[]>>({});
-    const [ furniVariableDefinitions, setFurniVariableDefinitions ] = useState<IWiredFurniVariableDefinition[]>([]);
-    const [ furniVariableAssignments, setFurniVariableAssignments ] = useState<Record<number, IWiredFurniVariableAssignment[]>>({});
-    const [ roomVariableDefinitions, setRoomVariableDefinitions ] = useState<IWiredRoomVariableDefinition[]>([]);
-    const [ roomVariableAssignments, setRoomVariableAssignments ] = useState<IWiredRoomVariableAssignment[]>([]);
-    const [ contextVariableDefinitions, setContextVariableDefinitions ] = useState<IWiredContextVariableDefinition[]>([]);
-    const [ areUserVariablesLoaded, setAreUserVariablesLoaded ] = useState(false);
+    const [accountPreferences, setAccountPreferences] = useState<IWiredAccountPreferences>(DEFAULT_ACCOUNT_PREFERENCES);
+    const [roomSettings, setRoomSettings] = useState<IWiredRoomSettings>(DEFAULT_ROOM_SETTINGS);
+    const [userVariableDefinitions, setUserVariableDefinitions] = useState<IWiredUserVariableDefinition[]>([]);
+    const [userVariableAssignments, setUserVariableAssignments] = useState<
+        Record<number, IWiredUserVariableAssignment[]>
+    >({});
+    const [furniVariableDefinitions, setFurniVariableDefinitions] = useState<IWiredFurniVariableDefinition[]>([]);
+    const [furniVariableAssignments, setFurniVariableAssignments] = useState<
+        Record<number, IWiredFurniVariableAssignment[]>
+    >({});
+    const [roomVariableDefinitions, setRoomVariableDefinitions] = useState<IWiredRoomVariableDefinition[]>([]);
+    const [roomVariableAssignments, setRoomVariableAssignments] = useState<IWiredRoomVariableAssignment[]>([]);
+    const [contextVariableDefinitions, setContextVariableDefinitions] = useState<IWiredContextVariableDefinition[]>([]);
+    const [areUserVariablesLoaded, setAreUserVariablesLoaded] = useState(false);
 
-    const storageKey = useMemo(() =>
-    {
+    const storageKey = useMemo(() => {
         const userId = GetSessionDataManager().userId;
 
-        return `${ WIRED_TOOLS_STORAGE_PREFIX }.${ userId || 'guest' }`;
+        return `${WIRED_TOOLS_STORAGE_PREFIX}.${userId || 'guest'}`;
     }, []);
 
-    useEffect(() =>
-    {
-        try
-        {
+    useEffect(() => {
+        try {
             const rawValue = window.localStorage.getItem(storageKey);
 
-            if(!rawValue)
-            {
+            if (!rawValue) {
                 setAccountPreferences(DEFAULT_ACCOUNT_PREFERENCES);
                 return;
             }
@@ -163,30 +163,21 @@ export const useWiredToolsStore = () =>
 
             setAccountPreferences({
                 ...DEFAULT_ACCOUNT_PREFERENCES,
-                ...(parsedValue || {})
+                ...(parsedValue || {}),
             });
-        }
-        catch
-        {
+        } catch {
             setAccountPreferences(DEFAULT_ACCOUNT_PREFERENCES);
         }
-    }, [ storageKey ]);
+    }, [storageKey]);
 
-    useEffect(() =>
-    {
-        try
-        {
+    useEffect(() => {
+        try {
             window.localStorage.setItem(storageKey, JSON.stringify(accountPreferences));
-        }
-        catch
-        {
-        }
-    }, [ accountPreferences, storageKey ]);
+        } catch {}
+    }, [accountPreferences, storageKey]);
 
-    useEffect(() =>
-    {
-        if(!roomSession?.roomId)
-        {
+    useEffect(() => {
+        if (!roomSession?.roomId) {
             setRoomSettings(DEFAULT_ROOM_SETTINGS);
             setUserVariableDefinitions([]);
             setUserVariableAssignments({});
@@ -199,21 +190,19 @@ export const useWiredToolsStore = () =>
             return;
         }
 
-        setRoomSettings(prevValue => ({
+        setRoomSettings((prevValue) => ({
             ...DEFAULT_ROOM_SETTINGS,
             roomId: roomSession.roomId,
             canInspect: prevValue.roomId === roomSession.roomId ? prevValue.canInspect : false,
             canModify: prevValue.roomId === roomSession.roomId ? prevValue.canModify : false,
-            canManageSettings: prevValue.roomId === roomSession.roomId ? prevValue.canManageSettings : false
+            canManageSettings: prevValue.roomId === roomSession.roomId ? prevValue.canManageSettings : false,
         }));
 
         SendMessageComposer(new WiredRoomSettingsRequestComposer());
-    }, [ roomSession?.roomId ]);
+    }, [roomSession?.roomId]);
 
-    useEffect(() =>
-    {
-        if(!roomSession?.roomId || !roomSettings.canInspect)
-        {
+    useEffect(() => {
+        if (!roomSession?.roomId || !roomSettings.canInspect) {
             setUserVariableDefinitions([]);
             setUserVariableAssignments({});
             setFurniVariableDefinitions([]);
@@ -226,13 +215,12 @@ export const useWiredToolsStore = () =>
         }
 
         SendMessageComposer(new WiredUserVariablesRequestComposer());
-    }, [ roomSession?.roomId, roomSettings.canInspect ]);
+    }, [roomSession?.roomId, roomSettings.canInspect]);
 
-    useMessageEvent<WiredRoomSettingsDataEvent>(WiredRoomSettingsDataEvent, event =>
-    {
+    useMessageEvent<WiredRoomSettingsDataEvent>(WiredRoomSettingsDataEvent, (event) => {
         const parser = event.getParser();
 
-        if(roomSession?.roomId && parser.roomId && (parser.roomId !== roomSession.roomId)) return;
+        if (roomSession?.roomId && parser.roomId && parser.roomId !== roomSession.roomId) return;
 
         setRoomSettings({
             roomId: parser.roomId,
@@ -241,361 +229,412 @@ export const useWiredToolsStore = () =>
             canInspect: parser.canInspect,
             canModify: parser.canModify,
             canManageSettings: parser.canManageSettings,
-            isLoaded: true
+            isLoaded: true,
         });
     });
 
-    useMessageEvent<WiredUserVariablesDataEvent>(WiredUserVariablesDataEvent, event =>
-    {
+    useMessageEvent<WiredUserVariablesDataEvent>(WiredUserVariablesDataEvent, (event) => {
         const parser = event.getParser();
 
-        if(roomSession?.roomId && parser.roomId && (parser.roomId !== roomSession.roomId)) return;
+        if (roomSession?.roomId && parser.roomId && parser.roomId !== roomSession.roomId) return;
 
         const nextAssignments: Record<number, IWiredUserVariableAssignment[]> = {};
         const nextFurniAssignments: Record<number, IWiredFurniVariableAssignment[]> = {};
 
-        for(const userEntry of (parser.users || []))
-        {
-            nextAssignments[userEntry.userId] = [ ...(userEntry.assignments || []) ];
+        for (const userEntry of parser.users || []) {
+            nextAssignments[userEntry.userId] = [...(userEntry.assignments || [])];
         }
 
-        for(const furniEntry of (parser.furnis || []))
-        {
-            nextFurniAssignments[furniEntry.furniId] = [ ...(furniEntry.assignments || []) ];
+        for (const furniEntry of parser.furnis || []) {
+            nextFurniAssignments[furniEntry.furniId] = [...(furniEntry.assignments || [])];
         }
 
-        setUserVariableDefinitions([ ...(parser.definitions || []) ]);
+        setUserVariableDefinitions([...(parser.definitions || [])]);
         setUserVariableAssignments(nextAssignments);
-        setFurniVariableDefinitions([ ...(parser.furniDefinitions || []) ]);
+        setFurniVariableDefinitions([...(parser.furniDefinitions || [])]);
         setFurniVariableAssignments(nextFurniAssignments);
-        setRoomVariableDefinitions([ ...(parser.roomDefinitions || []) ]);
-        setRoomVariableAssignments([ ...(parser.roomAssignments || []) ]);
-        setContextVariableDefinitions([ ...(parser.contextDefinitions || []) ]);
+        setRoomVariableDefinitions([...(parser.roomDefinitions || [])]);
+        setRoomVariableAssignments([...(parser.roomAssignments || [])]);
+        setContextVariableDefinitions([...(parser.contextDefinitions || [])]);
         setAreUserVariablesLoaded(true);
     });
 
-    const updateAccountPreferences = useCallback((partialPreferences: Partial<IWiredAccountPreferences>) =>
-    {
-        setAccountPreferences(prevValue => ({
+    const updateAccountPreferences = useCallback((partialPreferences: Partial<IWiredAccountPreferences>) => {
+        setAccountPreferences((prevValue) => ({
             ...prevValue,
-            ...partialPreferences
+            ...partialPreferences,
         }));
     }, []);
 
-    const saveRoomSettings = useCallback((inspectMask: number, modifyMask: number) =>
-    {
-        if(!roomSettings.canManageSettings) return;
+    const saveRoomSettings = useCallback(
+        (inspectMask: number, modifyMask: number) => {
+            if (!roomSettings.canManageSettings) return;
 
-        setRoomSettings(prevValue => ({
-            ...prevValue,
-            inspectMask,
-            modifyMask
-        }));
+            setRoomSettings((prevValue) => ({
+                ...prevValue,
+                inspectMask,
+                modifyMask,
+            }));
 
-        SendMessageComposer(new WiredRoomSettingsSaveComposer(inspectMask, modifyMask));
-    }, [ roomSettings.canManageSettings ]);
+            SendMessageComposer(new WiredRoomSettingsSaveComposer(inspectMask, modifyMask));
+        },
+        [roomSettings.canManageSettings],
+    );
 
-    const requestUserVariables = useCallback(() =>
-    {
-        if(!roomSettings.canInspect) return;
+    const requestUserVariables = useCallback(() => {
+        if (!roomSettings.canInspect) return;
 
         SendMessageComposer(new WiredUserVariablesRequestComposer());
-    }, [ roomSettings.canInspect ]);
+    }, [roomSettings.canInspect]);
 
-    const updateUserVariableValue = useCallback((userId: number, variableItemId: number, value: number) =>
-    {
-        if(!roomSettings.canModify) return;
+    const updateUserVariableValue = useCallback(
+        (userId: number, variableItemId: number, value: number) => {
+            if (!roomSettings.canModify) return;
 
-        setUserVariableAssignments(prevValue =>
-        {
-            const existingAssignments = prevValue[userId];
+            setUserVariableAssignments((prevValue) => {
+                const existingAssignments = prevValue[userId];
 
-            if(!existingAssignments?.length) return prevValue;
+                if (!existingAssignments?.length) return prevValue;
 
-            let didChange = false;
-            const nextAssignments = existingAssignments.map(assignment =>
-            {
-                if(assignment.variableItemId !== variableItemId) return assignment;
+                let didChange = false;
+                const nextAssignments = existingAssignments.map((assignment) => {
+                    if (assignment.variableItemId !== variableItemId) return assignment;
 
-                didChange = true;
+                    didChange = true;
+
+                    return {
+                        ...assignment,
+                        hasValue: true,
+                        value,
+                        updatedAt: getCurrentUnixTime(),
+                    };
+                });
+
+                if (!didChange) return prevValue;
 
                 return {
-                    ...assignment,
-                    hasValue: true,
-                    value,
-                    updatedAt: getCurrentUnixTime()
+                    ...prevValue,
+                    [userId]: nextAssignments,
                 };
             });
 
-            if(!didChange) return prevValue;
+            SendMessageComposer(
+                new WiredUserVariableUpdateComposer(WIRED_VARIABLE_TARGET_USER, userId, variableItemId, value),
+            );
+        },
+        [roomSettings.canModify],
+    );
 
-            return {
-                ...prevValue,
-                [userId]: nextAssignments
-            };
-        });
+    const updateFurniVariableValue = useCallback(
+        (furniId: number, variableItemId: number, value: number) => {
+            if (!roomSettings.canModify) return;
 
-        SendMessageComposer(new WiredUserVariableUpdateComposer(WIRED_VARIABLE_TARGET_USER, userId, variableItemId, value));
-    }, [ roomSettings.canModify ]);
+            setFurniVariableAssignments((prevValue) => {
+                const existingAssignments = prevValue[furniId];
 
-    const updateFurniVariableValue = useCallback((furniId: number, variableItemId: number, value: number) =>
-    {
-        if(!roomSettings.canModify) return;
+                if (!existingAssignments?.length) return prevValue;
 
-        setFurniVariableAssignments(prevValue =>
-        {
-            const existingAssignments = prevValue[furniId];
+                let didChange = false;
+                const nextAssignments = existingAssignments.map((assignment) => {
+                    if (assignment.variableItemId !== variableItemId) return assignment;
 
-            if(!existingAssignments?.length) return prevValue;
+                    didChange = true;
 
-            let didChange = false;
-            const nextAssignments = existingAssignments.map(assignment =>
-            {
-                if(assignment.variableItemId !== variableItemId) return assignment;
+                    return {
+                        ...assignment,
+                        hasValue: true,
+                        value,
+                        updatedAt: getCurrentUnixTime(),
+                    };
+                });
 
-                didChange = true;
+                if (!didChange) return prevValue;
 
                 return {
-                    ...assignment,
-                    hasValue: true,
-                    value,
-                    updatedAt: getCurrentUnixTime()
+                    ...prevValue,
+                    [furniId]: nextAssignments,
                 };
             });
 
-            if(!didChange) return prevValue;
+            SendMessageComposer(
+                new WiredUserVariableUpdateComposer(WIRED_VARIABLE_TARGET_FURNI, furniId, variableItemId, value),
+            );
+        },
+        [roomSettings.canModify],
+    );
 
-            return {
-                ...prevValue,
-                [furniId]: nextAssignments
-            };
-        });
+    const updateRoomVariableValue = useCallback(
+        (variableItemId: number, value: number) => {
+            if (!roomSettings.canModify) return;
 
-        SendMessageComposer(new WiredUserVariableUpdateComposer(WIRED_VARIABLE_TARGET_FURNI, furniId, variableItemId, value));
-    }, [ roomSettings.canModify ]);
+            setRoomVariableAssignments((prevValue) => {
+                const now = getCurrentUnixTime();
+                let didChange = false;
+                const nextAssignments = prevValue.map((assignment) => {
+                    if (assignment.variableItemId !== variableItemId) return assignment;
 
-    const updateRoomVariableValue = useCallback((variableItemId: number, value: number) =>
-    {
-        if(!roomSettings.canModify) return;
+                    didChange = true;
 
-        setRoomVariableAssignments(prevValue =>
-        {
+                    return {
+                        ...assignment,
+                        hasValue: true,
+                        value,
+                        updatedAt: now,
+                    };
+                });
+
+                if (didChange) return nextAssignments;
+
+                return [
+                    ...prevValue,
+                    {
+                        variableItemId,
+                        hasValue: true,
+                        value,
+                        createdAt: 0,
+                        updatedAt: now,
+                    },
+                ];
+            });
+
+            SendMessageComposer(
+                new WiredUserVariableUpdateComposer(
+                    WIRED_VARIABLE_TARGET_ROOM,
+                    roomSettings.roomId,
+                    variableItemId,
+                    value,
+                ),
+            );
+        },
+        [roomSettings.canModify, roomSettings.roomId],
+    );
+
+    const assignUserVariable = useCallback(
+        (userId: number, variableItemId: number, value: number) => {
+            if (!roomSettings.canModify) return;
+
+            const definition = userVariableDefinitions.find((entry) => entry.itemId === variableItemId);
+
+            if (!definition) return;
+
             const now = getCurrentUnixTime();
-            let didChange = false;
-            const nextAssignments = prevValue.map(assignment =>
-            {
-                if(assignment.variableItemId !== variableItemId) return assignment;
+            const normalizedValue = definition.hasValue ? value : null;
 
-                didChange = true;
+            setUserVariableAssignments((prevValue) => {
+                const existingAssignments = [...(prevValue[userId] || [])];
+                const existingIndex = existingAssignments.findIndex(
+                    (assignment) => assignment.variableItemId === variableItemId,
+                );
+
+                if (existingIndex >= 0) {
+                    const existingAssignment = existingAssignments[existingIndex];
+
+                    existingAssignments[existingIndex] = {
+                        ...existingAssignment,
+                        hasValue: definition.hasValue,
+                        value: normalizedValue,
+                        updatedAt: now,
+                    };
+                } else {
+                    existingAssignments.push({
+                        variableItemId,
+                        hasValue: definition.hasValue,
+                        value: normalizedValue,
+                        createdAt: now,
+                        updatedAt: now,
+                    });
+                }
 
                 return {
-                    ...assignment,
-                    hasValue: true,
-                    value,
-                    updatedAt: now
+                    ...prevValue,
+                    [userId]: existingAssignments,
                 };
             });
 
-            if(didChange) return nextAssignments;
-
-            return [
-                ...prevValue,
-                {
+            SendMessageComposer(
+                new WiredUserVariableManageComposer(
+                    WIRED_VARIABLE_MANAGE_ACTION_ASSIGN,
+                    WIRED_VARIABLE_TARGET_USER,
+                    userId,
                     variableItemId,
-                    hasValue: true,
-                    value,
-                    createdAt: 0,
-                    updatedAt: now
+                    Number(normalizedValue ?? 0),
+                ),
+            );
+        },
+        [roomSettings.canModify, userVariableDefinitions],
+    );
+
+    const removeUserVariable = useCallback(
+        (userId: number, variableItemId: number) => {
+            if (!roomSettings.canModify) return;
+
+            setUserVariableAssignments((prevValue) => {
+                const existingAssignments = prevValue[userId];
+
+                if (!existingAssignments?.length) return prevValue;
+
+                const nextAssignments = existingAssignments.filter(
+                    (assignment) => assignment.variableItemId !== variableItemId,
+                );
+
+                if (nextAssignments.length === existingAssignments.length) return prevValue;
+
+                const nextValue = { ...prevValue };
+
+                if (nextAssignments.length) nextValue[userId] = nextAssignments;
+                else delete nextValue[userId];
+
+                return nextValue;
+            });
+
+            SendMessageComposer(
+                new WiredUserVariableManageComposer(
+                    WIRED_VARIABLE_MANAGE_ACTION_REMOVE,
+                    WIRED_VARIABLE_TARGET_USER,
+                    userId,
+                    variableItemId,
+                    0,
+                ),
+            );
+        },
+        [roomSettings.canModify],
+    );
+
+    const assignFurniVariable = useCallback(
+        (furniId: number, variableItemId: number, value: number) => {
+            if (!roomSettings.canModify) return;
+
+            const definition = furniVariableDefinitions.find((entry) => entry.itemId === variableItemId);
+
+            if (!definition) return;
+
+            const now = getCurrentUnixTime();
+            const normalizedValue = definition.hasValue ? value : null;
+
+            setFurniVariableAssignments((prevValue) => {
+                const existingAssignments = [...(prevValue[furniId] || [])];
+                const existingIndex = existingAssignments.findIndex(
+                    (assignment) => assignment.variableItemId === variableItemId,
+                );
+
+                if (existingIndex >= 0) {
+                    const existingAssignment = existingAssignments[existingIndex];
+
+                    existingAssignments[existingIndex] = {
+                        ...existingAssignment,
+                        hasValue: definition.hasValue,
+                        value: normalizedValue,
+                        updatedAt: now,
+                    };
+                } else {
+                    existingAssignments.push({
+                        variableItemId,
+                        hasValue: definition.hasValue,
+                        value: normalizedValue,
+                        createdAt: now,
+                        updatedAt: now,
+                    });
                 }
-            ];
-        });
 
-        SendMessageComposer(new WiredUserVariableUpdateComposer(WIRED_VARIABLE_TARGET_ROOM, roomSettings.roomId, variableItemId, value));
-    }, [ roomSettings.canModify, roomSettings.roomId ]);
-
-    const assignUserVariable = useCallback((userId: number, variableItemId: number, value: number) =>
-    {
-        if(!roomSettings.canModify) return;
-
-        const definition = userVariableDefinitions.find(entry => (entry.itemId === variableItemId));
-
-        if(!definition) return;
-
-        const now = getCurrentUnixTime();
-        const normalizedValue = (definition.hasValue ? value : null);
-
-        setUserVariableAssignments(prevValue =>
-        {
-            const existingAssignments = [ ...(prevValue[userId] || []) ];
-            const existingIndex = existingAssignments.findIndex(assignment => (assignment.variableItemId === variableItemId));
-
-            if(existingIndex >= 0)
-            {
-                const existingAssignment = existingAssignments[existingIndex];
-
-                existingAssignments[existingIndex] = {
-                    ...existingAssignment,
-                    hasValue: definition.hasValue,
-                    value: normalizedValue,
-                    updatedAt: now
+                return {
+                    ...prevValue,
+                    [furniId]: existingAssignments,
                 };
-            }
-            else
-            {
-                existingAssignments.push({
+            });
+
+            SendMessageComposer(
+                new WiredUserVariableManageComposer(
+                    WIRED_VARIABLE_MANAGE_ACTION_ASSIGN,
+                    WIRED_VARIABLE_TARGET_FURNI,
+                    furniId,
                     variableItemId,
-                    hasValue: definition.hasValue,
-                    value: normalizedValue,
-                    createdAt: now,
-                    updatedAt: now
-                });
-            }
+                    Number(normalizedValue ?? 0),
+                ),
+            );
+        },
+        [furniVariableDefinitions, roomSettings.canModify],
+    );
 
-            return {
-                ...prevValue,
-                [userId]: existingAssignments
-            };
-        });
+    const removeFurniVariable = useCallback(
+        (furniId: number, variableItemId: number) => {
+            if (!roomSettings.canModify) return;
 
-        SendMessageComposer(new WiredUserVariableManageComposer(WIRED_VARIABLE_MANAGE_ACTION_ASSIGN, WIRED_VARIABLE_TARGET_USER, userId, variableItemId, Number(normalizedValue ?? 0)));
-    }, [ roomSettings.canModify, userVariableDefinitions ]);
+            setFurniVariableAssignments((prevValue) => {
+                const existingAssignments = prevValue[furniId];
 
-    const removeUserVariable = useCallback((userId: number, variableItemId: number) =>
-    {
-        if(!roomSettings.canModify) return;
+                if (!existingAssignments?.length) return prevValue;
 
-        setUserVariableAssignments(prevValue =>
-        {
-            const existingAssignments = prevValue[userId];
+                const nextAssignments = existingAssignments.filter(
+                    (assignment) => assignment.variableItemId !== variableItemId,
+                );
 
-            if(!existingAssignments?.length) return prevValue;
+                if (nextAssignments.length === existingAssignments.length) return prevValue;
 
-            const nextAssignments = existingAssignments.filter(assignment => (assignment.variableItemId !== variableItemId));
+                const nextValue = { ...prevValue };
 
-            if(nextAssignments.length === existingAssignments.length) return prevValue;
+                if (nextAssignments.length) nextValue[furniId] = nextAssignments;
+                else delete nextValue[furniId];
 
-            const nextValue = { ...prevValue };
+                return nextValue;
+            });
 
-            if(nextAssignments.length) nextValue[userId] = nextAssignments;
-            else delete nextValue[userId];
-
-            return nextValue;
-        });
-
-        SendMessageComposer(new WiredUserVariableManageComposer(WIRED_VARIABLE_MANAGE_ACTION_REMOVE, WIRED_VARIABLE_TARGET_USER, userId, variableItemId, 0));
-    }, [ roomSettings.canModify ]);
-
-    const assignFurniVariable = useCallback((furniId: number, variableItemId: number, value: number) =>
-    {
-        if(!roomSettings.canModify) return;
-
-        const definition = furniVariableDefinitions.find(entry => (entry.itemId === variableItemId));
-
-        if(!definition) return;
-
-        const now = getCurrentUnixTime();
-        const normalizedValue = (definition.hasValue ? value : null);
-
-        setFurniVariableAssignments(prevValue =>
-        {
-            const existingAssignments = [ ...(prevValue[furniId] || []) ];
-            const existingIndex = existingAssignments.findIndex(assignment => (assignment.variableItemId === variableItemId));
-
-            if(existingIndex >= 0)
-            {
-                const existingAssignment = existingAssignments[existingIndex];
-
-                existingAssignments[existingIndex] = {
-                    ...existingAssignment,
-                    hasValue: definition.hasValue,
-                    value: normalizedValue,
-                    updatedAt: now
-                };
-            }
-            else
-            {
-                existingAssignments.push({
+            SendMessageComposer(
+                new WiredUserVariableManageComposer(
+                    WIRED_VARIABLE_MANAGE_ACTION_REMOVE,
+                    WIRED_VARIABLE_TARGET_FURNI,
+                    furniId,
                     variableItemId,
-                    hasValue: definition.hasValue,
-                    value: normalizedValue,
-                    createdAt: now,
-                    updatedAt: now
-                });
-            }
+                    0,
+                ),
+            );
+        },
+        [roomSettings.canModify],
+    );
 
-            return {
-                ...prevValue,
-                [furniId]: existingAssignments
-            };
-        });
+    const showInvalidRoomAlert = useCallback(() => {
+        if (!simpleAlert) return;
 
-        SendMessageComposer(new WiredUserVariableManageComposer(WIRED_VARIABLE_MANAGE_ACTION_ASSIGN, WIRED_VARIABLE_TARGET_FURNI, furniId, variableItemId, Number(normalizedValue ?? 0)));
-    }, [ furniVariableDefinitions, roomSettings.canModify ]);
+        simpleAlert(
+            LocalizeText('wiredmenu.invalid_room.desc'),
+            NotificationAlertType.ALERT,
+            null,
+            null,
+            LocalizeText('generic.alert.title'),
+        );
+    }, [simpleAlert]);
 
-    const removeFurniVariable = useCallback((furniId: number, variableItemId: number) =>
-    {
-        if(!roomSettings.canModify) return;
-
-        setFurniVariableAssignments(prevValue =>
-        {
-            const existingAssignments = prevValue[furniId];
-
-            if(!existingAssignments?.length) return prevValue;
-
-            const nextAssignments = existingAssignments.filter(assignment => (assignment.variableItemId !== variableItemId));
-
-            if(nextAssignments.length === existingAssignments.length) return prevValue;
-
-            const nextValue = { ...prevValue };
-
-            if(nextAssignments.length) nextValue[furniId] = nextAssignments;
-            else delete nextValue[furniId];
-
-            return nextValue;
-        });
-
-        SendMessageComposer(new WiredUserVariableManageComposer(WIRED_VARIABLE_MANAGE_ACTION_REMOVE, WIRED_VARIABLE_TARGET_FURNI, furniId, variableItemId, 0));
-    }, [ roomSettings.canModify ]);
-
-    const showInvalidRoomAlert = useCallback(() =>
-    {
-        if(!simpleAlert) return;
-
-        simpleAlert(LocalizeText('wiredmenu.invalid_room.desc'), NotificationAlertType.ALERT, null, null, LocalizeText('generic.alert.title'));
-    }, [ simpleAlert ]);
-
-    const openMonitor = useCallback(() =>
-    {
-        if(!roomSettings.canInspect)
-        {
+    const openMonitor = useCallback(() => {
+        if (!roomSettings.canInspect) {
             showInvalidRoomAlert();
             return;
         }
 
         CreateLinkEvent('wired-tools/show');
-    }, [ roomSettings.canInspect, showInvalidRoomAlert ]);
+    }, [roomSettings.canInspect, showInvalidRoomAlert]);
 
-    const openInspectionForFurni = useCallback((objectId: number, category: number) =>
-    {
-        if(!roomSettings.canInspect)
-        {
-            showInvalidRoomAlert();
-            return;
-        }
+    const openInspectionForFurni = useCallback(
+        (objectId: number, category: number) => {
+            if (!roomSettings.canInspect) {
+                showInvalidRoomAlert();
+                return;
+            }
 
-        CreateLinkEvent(`wired-tools/inspection/furni/${ objectId }/${ category }`);
-    }, [ roomSettings.canInspect, showInvalidRoomAlert ]);
+            CreateLinkEvent(`wired-tools/inspection/furni/${objectId}/${category}`);
+        },
+        [roomSettings.canInspect, showInvalidRoomAlert],
+    );
 
-    const openInspectionForUser = useCallback((roomIndex: number) =>
-    {
-        if(!roomSettings.canInspect)
-        {
-            showInvalidRoomAlert();
-            return;
-        }
+    const openInspectionForUser = useCallback(
+        (roomIndex: number) => {
+            if (!roomSettings.canInspect) {
+                showInvalidRoomAlert();
+                return;
+            }
 
-        CreateLinkEvent(`wired-tools/inspection/user/${ roomIndex }`);
-    }, [ roomSettings.canInspect, showInvalidRoomAlert ]);
+            CreateLinkEvent(`wired-tools/inspection/user/${roomIndex}`);
+        },
+        [roomSettings.canInspect, showInvalidRoomAlert],
+    );
 
     const showToolbarButton = !!roomSession?.roomId && roomSettings.canInspect && accountPreferences.showToolbarButton;
     const showInspectButton = !!roomSession?.roomId && roomSettings.canInspect && accountPreferences.showInspectButton;
@@ -625,6 +664,6 @@ export const useWiredToolsStore = () =>
         updateRoomVariableValue,
         openMonitor,
         openInspectionForFurni,
-        openInspectionForUser
+        openInspectionForUser,
     };
 };

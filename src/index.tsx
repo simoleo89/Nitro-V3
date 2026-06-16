@@ -10,9 +10,9 @@ const queryClient = new QueryClient({
         queries: {
             staleTime: 30_000,
             retry: 1,
-            refetchOnWindowFocus: false
-        }
-    }
+            refetchOnWindowFocus: false,
+        },
+    },
 });
 
 import './css/index.css';
@@ -30,7 +30,6 @@ import './css/mentions/MentionsPanel.css';
 import './css/common/Buttons.css';
 import './css/common/ClassicScrollbar.css';
 
-
 import './css/forms/form_select.css';
 
 import './css/friends/FriendsView.css';
@@ -45,9 +44,7 @@ import './css/icons/icons.css';
 
 import './css/inventory/InventoryView.css';
 
-
 import './css/layout/LayoutTrophy.css';
-
 
 import './css/nitrocard/NitroCardView.css';
 
@@ -68,18 +65,20 @@ import './css/widgets/FurnitureWidgets.css';
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <QueryClientProvider client={ queryClient }>
+        <QueryClientProvider client={queryClient}>
             <ErrorBoundary
-                fallbackRender={ ({ error }) => (
+                fallbackRender={({ error }) => (
                     <LoadingView
-                        isError={ true }
-                        message={ `Something went wrong.\n${ (error as Error)?.message ?? 'Unknown error' }` }
-                        homeUrl={ window.location.origin + '/' } />
-                ) }>
-                <Suspense fallback={ <LoadingView message="Loading…" /> }>
+                        isError={true}
+                        message={`Something went wrong.\n${(error as Error)?.message ?? 'Unknown error'}`}
+                        homeUrl={window.location.origin + '/'}
+                    />
+                )}
+            >
+                <Suspense fallback={<LoadingView message="Loading…" />}>
                     <App />
                 </Suspense>
             </ErrorBoundary>
         </QueryClientProvider>
-    </StrictMode>
+    </StrictMode>,
 );

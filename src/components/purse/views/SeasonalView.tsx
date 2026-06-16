@@ -3,12 +3,11 @@ import { GetConfigurationValue, LocalizeFormattedNumber, LocalizeText } from '..
 import { Flex, Text } from '../../../common';
 
 interface SeasonalViewProps {
-  type: number;
-  amount: number;
+    type: number;
+    amount: number;
 }
 
-export const SeasonalView: FC<SeasonalViewProps> = props =>
-{
+export const SeasonalView: FC<SeasonalViewProps> = (props) => {
     const { type = -1, amount = -1 } = props;
     const seasonalColor = GetConfigurationValue<string>('currency.seasonal.color', 'blue');
     const formattedAmount = LocalizeFormattedNumber(amount);
@@ -24,15 +23,11 @@ export const SeasonalView: FC<SeasonalViewProps> = props =>
                 <Text truncate fullWidth variant="white" className="seasonal-text-padding seasonal-text">
                     {LocalizeText(`purse.seasonal.currency.${type}`)}
                 </Text>
-                <Text
-                    variant="white"
-                    className="seasonal-amount text-end"
-                    title={formattedAmount}
-                >
+                <Text variant="white" className="seasonal-amount text-end" title={formattedAmount}>
                     {formattedAmount}
                 </Text>
                 <Flex className="nitro-seasonal-box seasonal-image-padding">
-                    <img src={ iconUrl } alt="" className="seasonal-image" />
+                    <img src={iconUrl} alt="" className="seasonal-image" />
                 </Flex>
             </Flex>
         </Flex>

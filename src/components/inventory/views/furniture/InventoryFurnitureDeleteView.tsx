@@ -7,25 +7,22 @@ import { DeleteItemConfirmEvent } from '../../../../events';
 import { useNotification, useUiEvent } from '../../../../hooks';
 import { NitroButton, NitroInput } from '../../../../layout';
 
-export const InventoryFurnitureDeleteView: FC<{}> = props =>
-{
-    const [ item, setItem ] = useState<FurnitureItem>(null);
-    const [ amount, setAmount ] = useState(1);
-    const [ maxAmount, setMaxAmount ] = useState(1);
+export const InventoryFurnitureDeleteView: FC<{}> = (props) => {
+    const [item, setItem] = useState<FurnitureItem>(null);
+    const [amount, setAmount] = useState(1);
+    const [maxAmount, setMaxAmount] = useState(1);
     const { showConfirm = null } = useNotification();
 
-    const onClose = () =>
-    {
+    const onClose = () => {
         setItem(null);
         setAmount(1);
         setMaxAmount(1);
     };
 
-    const updateAmount = (value: string) =>
-    {
+    const updateAmount = (value: string) => {
         let newValue = parseInt(value);
 
-        if(isNaN(newValue)) newValue = 1;
+        if (isNaN(newValue)) newValue = 1;
 
         newValue = Math.max(newValue, 1);
         newValue = Math.min(newValue, maxAmount);
@@ -33,75 +30,85 @@ export const InventoryFurnitureDeleteView: FC<{}> = props =>
         setAmount(newValue);
     };
 
-    const deleteItem = () =>
-    {
-        if(!item) return;
+    const deleteItem = () => {
+        if (!item) return;
 
         const furniTitle = LocalizeText(item.isWallItem ? 'wallItem.name.' + item.type : 'roomItem.name.' + item.type);
 
         showConfirm(
-            LocalizeText('inventory.delete.confirm_delete.info', [ 'furniname', 'amount' ], [ furniTitle, amount.toString() ]),
-            () =>
-            {
+            LocalizeText(
+                'inventory.delete.confirm_delete.info',
+                ['furniname', 'amount'],
+                [furniTitle, amount.toString()],
+            ),
+            () => {
                 SendMessageComposer(new DeleteItemMessageComposer(item.id, amount));
                 onClose();
             },
             () => onClose(),
             null,
             null,
-            LocalizeText('inventory.delete.confirm_delete.title')
+            LocalizeText('inventory.delete.confirm_delete.title'),
         );
     };
 
-    useUiEvent<DeleteItemConfirmEvent>(DeleteItemConfirmEvent.DELETE_ITEM_CONFIRM, event =>
-    {
+    useUiEvent<DeleteItemConfirmEvent>(DeleteItemConfirmEvent.DELETE_ITEM_CONFIRM, (event) => {
         setItem(event.item);
         setMaxAmount(event.amount);
         setAmount(1);
     });
 
-    if(!item) return null;
+    if (!item) return null;
 
     const furniTitle = LocalizeText(item.isWallItem ? 'wallItem.name.' + item.type : 'roomItem.name.' + item.type);
 
     return (
         <NitroCardView className="w-[340px]" uniqueKey="inventory-delete">
             <NitroCardHeaderView
-                headerText={ LocalizeText('inventory.delete.confirm_delete.title') }
-                onCloseClick={ onClose } />
+                headerText={LocalizeText('inventory.delete.confirm_delete.title')}
+                onCloseClick={onClose}
+            />
             <div className="bg-[#DFDFDF] p-2">
                 <div className="flex items-center gap-2">
                     <div className="shrink-0 w-[64px] h-[64px] bg-white rounded flex items-center justify-center">
                         <LayoutFurniImageView
-                            extraData={ item.extra.toString() }
-                            productClassId={ item.type }
-                            productType={ item.isWallItem ? ProductTypeEnum.WALL : ProductTypeEnum.FLOOR } />
+                            extraData={item.extra.toString()}
+                            productClassId={item.type}
+                            productType={item.isWallItem ? ProductTypeEnum.WALL : ProductTypeEnum.FLOOR}
+                        />
                     </div>
                     <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                        <span className="font-bold text-sm truncate">{ furniTitle }</span>
+                        <span className="font-bold text-sm truncate">{furniTitle}</span>
                         <div className="flex items-center gap-1">
                             <FaCaretLeft
                                 className="cursor-pointer text-black fa-icon shrink-0"
-                                onClick={ () => updateAmount((amount - 1).toString()) } />
+                                onClick={() => updateAmount((amount - 1).toString())}
+                            />
                             <NitroInput
                                 className="w-[49px] text-center py-0.5!"
                                 type="number"
-                                min={ 1 }
-                                max={ maxAmount }
-                                value={ amount }
-                                onChange={ event => updateAmount(event.target.value) } />
+                                min={1}
+                                max={maxAmount}
+                                value={amount}
+                                onChange={(event) => updateAmount(event.target.value)}
+                            />
                             <FaCaretRight
                                 className="cursor-pointer text-black fa-icon shrink-0"
-                                onClick={ () => updateAmount((amount + 1).toString()) } />
-                            <NitroButton className="text-xs py-0.5 px-1 shrink-0" onClick={ () => updateAmount(maxAmount.toString()) }>
-                                { LocalizeText('inventory.delete.max_amount.button') }
+                                onClick={() => updateAmount((amount + 1).toString())}
+                            />
+                            <NitroButton
+                                className="text-xs py-0.5 px-1 shrink-0"
+                                onClick={() => updateAmount(maxAmount.toString())}
+                            >
+                                {LocalizeText('inventory.delete.max_amount.button')}
                             </NitroButton>
                         </div>
                         <NitroButton
                             className="bg-danger! hover:bg-danger/80! w-full"
-                            disabled={ amount > maxAmount }
-                            onClick={ deleteItem }>
-                            { LocalizeText('inventory.delete.confirm_delete.button') }
+                            disabled={amount > maxAmount}
+                            onClick={deleteItem}
+                        >
+                            {LocalizeText('inventory.delete.confirm_delete.button')}
                         </NitroButton>
                     </div>
                 </div>

@@ -24,15 +24,14 @@ export const isHousekeepingEnabled = (): boolean =>
  * management. Anything else than `'light'` resolves to `'full'`
  * so a typo doesn't quietly hide tabs.
  */
-export const resolveHousekeepingMode = (raw: unknown): HousekeepingMode =>
-    (raw === 'light') ? 'light' : 'full';
+export const resolveHousekeepingMode = (raw: unknown): HousekeepingMode => (raw === 'light' ? 'light' : 'full');
 
 export const getHousekeepingMode = (): HousekeepingMode =>
     resolveHousekeepingMode(GetConfigurationValue<string>(HOUSEKEEPING_MODE_KEY, 'full'));
 
 const LIGHT_TABS: ReadonlySet<HousekeepingTabId> = new Set<HousekeepingTabId>([
     HousekeepingTabId.USERS,
-    HousekeepingTabId.ROOMS
+    HousekeepingTabId.ROOMS,
 ]);
 
 /**
@@ -40,22 +39,20 @@ const LIGHT_TABS: ReadonlySet<HousekeepingTabId> = new Set<HousekeepingTabId>([
  * filtering and toolbar / link-event gating can all read the same
  * source of truth without hitting the config layer multiple times.
  */
-export const isHousekeepingTabAvailable = (tab: HousekeepingTabId, mode: HousekeepingMode): boolean =>
-{
-    if(mode === 'full') return true;
+export const isHousekeepingTabAvailable = (tab: HousekeepingTabId, mode: HousekeepingMode): boolean => {
+    if (mode === 'full') return true;
 
     return LIGHT_TABS.has(tab);
 };
 
-export const housekeepingTabsForMode = (mode: HousekeepingMode): HousekeepingTabId[] =>
-{
+export const housekeepingTabsForMode = (mode: HousekeepingMode): HousekeepingTabId[] => {
     const all: HousekeepingTabId[] = [
         HousekeepingTabId.DASHBOARD,
         HousekeepingTabId.USERS,
         HousekeepingTabId.ROOMS,
         HousekeepingTabId.ECONOMY,
-        HousekeepingTabId.AUDIT
+        HousekeepingTabId.AUDIT,
     ];
 
-    return all.filter(tab => isHousekeepingTabAvailable(tab, mode));
+    return all.filter((tab) => isHousekeepingTabAvailable(tab, mode));
 };

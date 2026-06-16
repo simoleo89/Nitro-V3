@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Flex, FlexProps } from '../..';
 
-export interface NitroCardAccordionItemViewProps extends FlexProps {}
+export type NitroCardAccordionItemViewProps = FlexProps;
 
 export const NitroCardAccordionItemView: FC<NitroCardAccordionItemViewProps> = (props) => {
     const { alignItems = 'center', gap = 1, children = null, ...rest } = props;

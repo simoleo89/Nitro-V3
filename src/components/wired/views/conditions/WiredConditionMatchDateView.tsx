@@ -120,7 +120,7 @@ const MatchDateSection: FC<MatchDateSectionProps> = (props) => {
     );
 };
 
-export const WiredConditionMatchDateView: FC<{}> = () => {
+export const WiredConditionMatchDateView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const currentYear = useMemo(() => new Date().getFullYear(), []);
     const [weekdayMask, setWeekdayMask] = useState(ALL_WEEKDAYS_MASK);

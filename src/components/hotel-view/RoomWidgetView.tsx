@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { GetConfigurationValue } from '../../api';
 import { Base } from '../../common';
 
-export interface RoomWidgetViewProps {}
+export type RoomWidgetViewProps = Record<string, never>;
 
 export const RoomWidgetView: FC<RoomWidgetViewProps> = (props) => {
     const poolId = GetConfigurationValue<string>('hotelview')['room.pool'];

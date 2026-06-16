@@ -4,7 +4,7 @@ import { LocalizeText, chooserSelectionVisualizer } from '../../../../api';
 import { useUserChooserWidget } from '../../../../hooks';
 import { ChooserWidgetView } from './ChooserWidgetView';
 
-export const UserChooserWidgetView: FC<{}> = (props) => {
+export const UserChooserWidgetView: FC = (props) => {
     const { items = null, onClose = null, selectItem = null, populateChooser = null } = useUserChooserWidget();
 
     useEffect(() => {

@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { LayoutTrophyView } from '../../../../common';
 import { useFurnitureTrophyWidget } from '../../../../hooks';
 
-export const FurnitureTrophyView: FC<{}> = (props) => {
+export const FurnitureTrophyView: FC = (props) => {
     const {
         objectId = -1,
         color = '1',

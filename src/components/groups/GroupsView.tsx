@@ -13,7 +13,7 @@ import { GroupInformationStandaloneView } from './views/GroupInformationStandalo
 import { GroupManagerView } from './views/GroupManagerView';
 import { GroupMembersView } from './views/GroupMembersView';
 
-export const GroupsView: FC<{}> = (props) => {
+export const GroupsView: FC = (props) => {
     const [isCreatorVisible, setCreatorVisible] = useState<boolean>(false);
     const {} = useGroup();
 

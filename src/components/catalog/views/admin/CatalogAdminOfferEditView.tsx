@@ -5,7 +5,7 @@ import { LocalizeText } from '../../../../api';
 import { useCatalogData } from '../../../../hooks';
 import { IOfferEditData, useCatalogAdmin } from '../../CatalogAdminContext';
 
-export const CatalogAdminOfferEditView: FC<{}> = () => {
+export const CatalogAdminOfferEditView: FC = () => {
     const { currentPage = null } = useCatalogData();
     const catalogAdmin = useCatalogAdmin();
     const editingOffer = catalogAdmin?.editingOffer ?? null;

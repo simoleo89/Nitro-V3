@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionSetFurniStateToView: FC<{}> = (props) => {
+export const WiredActionSetFurniStateToView: FC = (props) => {
     const [stateFlag, setStateFlag] = useState(0);
     const [directionFlag, setDirectionFlag] = useState(0);
     const [positionFlag, setPositionFlag] = useState(0);

@@ -217,7 +217,7 @@ const buildPreviewEntries = (
     }
 };
 
-export const WiredExtraVariableLevelUpSystemView: FC<{}> = () => {
+export const WiredExtraVariableLevelUpSystemView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [mode, setMode] = useState(MODE_LINEAR);
     const [stepSizeInput, setStepSizeInput] = useState(DEFAULT_STEP_SIZE.toString());

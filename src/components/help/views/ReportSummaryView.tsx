@@ -10,7 +10,7 @@ import { LocalizeText, ReportType, SendMessageComposer } from '../../../api';
 import { Button, Text } from '../../../common';
 import { useHelp } from '../../../hooks';
 
-export const ReportSummaryView: FC<{}> = (props) => {
+export const ReportSummaryView: FC = (props) => {
     const { activeReport = null, setActiveReport = null } = useHelp();
 
     const submitReport = () => {

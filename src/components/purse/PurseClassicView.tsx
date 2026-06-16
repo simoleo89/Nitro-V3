@@ -8,7 +8,7 @@ import purseIcon from '../../assets/images/rightside/purse.gif';
 import { CurrencyView } from './views/CurrencyView';
 import { SeasonalView } from './views/SeasonalView';
 
-export const PurseClassicView: FC<{}> = (props) => {
+export const PurseClassicView: FC = (props) => {
     const { purse = null, hcDisabled = false } = usePurse();
     const [isOpen, setIsOpen] = useState(true);
     const [isCompact, setIsCompact] = useState(false);

@@ -4,7 +4,7 @@ import { useWordQuizWidget } from '../../../../hooks';
 import { WordQuizQuestionView } from './WordQuizQuestionView';
 import { WordQuizVoteView } from './WordQuizVoteView';
 
-export const WordQuizWidgetView: FC<{}> = (props) => {
+export const WordQuizWidgetView: FC = (props) => {
     const {
         question = null,
         answerSent = false,

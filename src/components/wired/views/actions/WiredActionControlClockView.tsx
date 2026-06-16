@@ -28,7 +28,7 @@ const normalizeControl = (value: number) => {
     return value;
 };
 
-export const WiredActionControlClockView: FC<{}> = () => {
+export const WiredActionControlClockView: FC = () => {
     const {
         trigger = null,
         setIntParams = null,

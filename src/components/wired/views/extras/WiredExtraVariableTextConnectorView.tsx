@@ -25,7 +25,7 @@ const getLineCount = (value: string) => {
     return value.split('\n').length;
 };
 
-export const WiredExtraVariableTextConnectorView: FC<{}> = () => {
+export const WiredExtraVariableTextConnectorView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [mappingsText, setMappingsText] = useState('');
 

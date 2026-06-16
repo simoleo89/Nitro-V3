@@ -6,7 +6,7 @@ import { useFurnitureHighScoreWidget } from '../../../../hooks';
 import { ContextMenuHeaderView } from '../context-menu/ContextMenuHeaderView';
 import { ContextMenuListView } from '../context-menu/ContextMenuListView';
 
-export const FurnitureHighScoreView: FC<{}> = (props) => {
+export const FurnitureHighScoreView: FC = (props) => {
     const { stuffDatas = null, getScoreType = null, getClearType = null } = useFurnitureHighScoreWidget();
 
     if (!stuffDatas || !stuffDatas.size) return null;

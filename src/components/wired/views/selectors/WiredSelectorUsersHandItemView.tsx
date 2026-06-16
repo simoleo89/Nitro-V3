@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 import { WiredHandItemField } from '../WiredHandItemField';
 
-export const WiredSelectorUsersHandItemView: FC<{}> = () => {
+export const WiredSelectorUsersHandItemView: FC = () => {
     const [handItemId, setHandItemId] = useState(0);
     const [filterExisting, setFilterExisting] = useState(false);
     const [invert, setInvert] = useState(false);

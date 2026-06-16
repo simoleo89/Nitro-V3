@@ -9,7 +9,7 @@ import { Button, LayoutAvatarImageView, LayoutCurrencyIcon } from '../../common'
 import { useAvatarEditor } from '../../hooks';
 import { InfiniteGrid } from '../../layout';
 
-export const AvatarEditorWardrobeView: FC<{}> = (props) => {
+export const AvatarEditorWardrobeView: FC = (props) => {
     const {
         savedFigures = [],
         setSavedFigures = null,

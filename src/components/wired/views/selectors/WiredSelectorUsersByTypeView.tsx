@@ -6,7 +6,7 @@ import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 const USER_TYPES = [1, 2, 4];
 
-export const WiredSelectorUsersByTypeView: FC<{}> = () => {
+export const WiredSelectorUsersByTypeView: FC = () => {
     const [userType, setUserType] = useState(1);
     const [filterExisting, setFilterExisting] = useState(false);
     const [invert, setInvert] = useState(false);

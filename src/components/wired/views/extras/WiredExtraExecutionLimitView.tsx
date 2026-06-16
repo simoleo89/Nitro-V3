@@ -32,7 +32,7 @@ const formatTimeWindow = (value: number) => {
     return Number.isInteger(seconds) ? seconds.toString() : seconds.toFixed(1);
 };
 
-export const WiredExtraExecutionLimitView: FC<{}> = () => {
+export const WiredExtraExecutionLimitView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [executions, setExecutions] = useState(DEFAULT_EXECUTIONS);
     const [timeWindowMs, setTimeWindowMs] = useState(DEFAULT_TIME_WINDOW_MS);

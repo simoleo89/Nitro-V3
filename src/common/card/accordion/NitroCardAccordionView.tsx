@@ -2,7 +2,7 @@ import { FC, useCallback, useState } from 'react';
 import { Column, ColumnProps } from '../..';
 import { NitroCardAccordionContextProvider } from './NitroCardAccordionContext';
 
-interface NitroCardAccordionViewProps extends ColumnProps {}
+type NitroCardAccordionViewProps = ColumnProps;
 
 export const NitroCardAccordionView: FC<NitroCardAccordionViewProps> = (props) => {
     const { ...rest } = props;

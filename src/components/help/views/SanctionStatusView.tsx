@@ -3,7 +3,7 @@ import { LocalizeText } from '../../../api';
 import { Button, Column, Grid, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../common';
 import { useHelp } from '../../../hooks';
 
-export const SanctionSatusView: FC<{}> = (props) => {
+export const SanctionSatusView: FC = (props) => {
     const { sanctionInfo = null, setSanctionInfo = null } = useHelp();
 
     const sanctionLocalization = (param: string, sanctionName: string, length?: number) => {

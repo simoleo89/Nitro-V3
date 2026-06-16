@@ -5,7 +5,7 @@ import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../
 
 const NEW_LINE_REGEX = /\n\r|\n|\r/gm;
 
-export const NitropediaView: FC<{}> = (props) => {
+export const NitropediaView: FC = (props) => {
     const [content, setContent] = useState<string>(null);
     const [header, setHeader] = useState<string>('');
     const [dimensions, setDimensions] = useState<{ width: number; height: number }>(null);

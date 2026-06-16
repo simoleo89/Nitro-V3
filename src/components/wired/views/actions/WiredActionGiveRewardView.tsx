@@ -138,7 +138,7 @@ const parseRewardEntry = (rawType: string, rawCode: string, rawProbability: stri
     };
 };
 
-export const WiredActionGiveRewardView: FC<{}> = (props) => {
+export const WiredActionGiveRewardView: FC = (props) => {
     const [limitEnabled, setLimitEnabled] = useState(false);
     const [rewardTime, setRewardTime] = useState(1);
     const [uniqueRewards, setUniqueRewards] = useState(false);

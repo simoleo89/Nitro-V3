@@ -14,7 +14,7 @@ import {
 import { useFilterWordsWidget, useNavigatorData } from '../../../../hooks';
 import { NitroInput, classNames } from '../../../../layout';
 
-export const RoomFilterWordsWidgetView: FC<{}> = (props) => {
+export const RoomFilterWordsWidgetView: FC = (props) => {
     const [word, setWord] = useState<string>('bobba');
     const [selectedWord, setSelectedWord] = useState<string>('');
     const [isSelectingWord, setIsSelectingWord] = useState<boolean>(false);

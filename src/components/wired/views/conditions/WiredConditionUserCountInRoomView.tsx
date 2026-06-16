@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredConditionUserCountInRoomView: FC<{}> = (props) => {
+export const WiredConditionUserCountInRoomView: FC = (props) => {
     const [min, setMin] = useState(1);
     const [max, setMax] = useState(0);
     const { trigger = null, setIntParams = null } = useWired();

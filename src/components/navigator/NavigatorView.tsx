@@ -36,7 +36,7 @@ import { NavigatorSearchSavesResultView } from './views/search/NavigatorSearchSa
 import { NavigatorSearchSkeletonView } from './views/search/NavigatorSearchSkeletonView';
 import { NavigatorSearchView } from './views/search/NavigatorSearchView';
 
-export const NavigatorView: FC<{}> = (props) => {
+export const NavigatorView: FC = (props) => {
     const { topLevelContext, topLevelContexts, navigatorData, navigatorSearches } = useNavigatorData();
     const { searchResult, isFetching } = useNavigatorSearch();
     const { isVisible, isCreatorOpen, isRoomInfoOpen, isRoomLinkOpen, isOpenSavesSearches, needsInit, currentTabCode } =

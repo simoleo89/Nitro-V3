@@ -20,7 +20,7 @@ export const WiredTextCounter: FC<WiredTextCounterProps> = (props) => {
     return <Text small>{`${getWiredTextLineCount(value)} righe - ${value.length}/${maxLength} caratteri`}</Text>;
 };
 
-export const WiredTextFormattingHelp: FC<{}> = () => {
+export const WiredTextFormattingHelp: FC = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (

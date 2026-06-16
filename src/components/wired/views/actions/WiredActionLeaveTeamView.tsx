@@ -4,7 +4,7 @@ import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionLeaveTeamView: FC<{}> = (props) => {
+export const WiredActionLeaveTeamView: FC = (props) => {
     const { trigger = null, setIntParams = null } = useWired();
     const [userSource, setUserSource] = useState<number>(() => {
         if (trigger?.intData?.length >= 1) return trigger.intData[0];

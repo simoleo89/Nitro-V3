@@ -5,7 +5,7 @@ import { Flex, Text } from '../../../../common';
 import { useMessageEvent, useRoomPromote } from '../../../../hooks';
 import { RoomPromoteEditWidgetView, RoomPromoteMyOwnEventWidgetView, RoomPromoteOtherEventWidgetView } from './views';
 
-export const RoomPromotesWidgetView: FC<{}> = (props) => {
+export const RoomPromotesWidgetView: FC = (props) => {
     const [isEditingPromote, setIsEditingPromote] = useState<boolean>(false);
     const [isOpen, setIsOpen] = useState<boolean>(true);
     const { promoteInformation, setPromoteInformation } = useRoomPromote();

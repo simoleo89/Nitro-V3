@@ -80,7 +80,7 @@ const PRESET_COLORS: string[] = [
     '#8D5524',
 ];
 
-export const CustomizeNickIconView: FC<{}> = () => {
+export const CustomizeNickIconView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<CustomizeTab>('icons');

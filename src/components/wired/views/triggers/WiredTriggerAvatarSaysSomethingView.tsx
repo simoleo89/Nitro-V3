@@ -9,7 +9,7 @@ const MATCH_CONTAINS = 0;
 const MATCH_EXACT = 1;
 const MATCH_ALL = 2;
 
-export const WiredTriggerAvatarSaysSomethingView: FC<{}> = () => {
+export const WiredTriggerAvatarSaysSomethingView: FC = () => {
     const [message, setMessage] = useState('');
     const [matchMode, setMatchMode] = useState(MATCH_CONTAINS);
     const [hideMessage, setHideMessage] = useState(false);

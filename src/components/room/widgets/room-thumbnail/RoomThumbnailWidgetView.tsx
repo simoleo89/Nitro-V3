@@ -4,7 +4,7 @@ import { LayoutMiniCameraView } from '../../../../common';
 import { RoomWidgetThumbnailEvent } from '../../../../events';
 import { useRoom, useUiEvent } from '../../../../hooks';
 
-export const RoomThumbnailWidgetView: FC<{}> = (props) => {
+export const RoomThumbnailWidgetView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const { roomSession = null } = useRoom();
 

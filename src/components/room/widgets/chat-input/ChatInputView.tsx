@@ -22,7 +22,7 @@ import { ChatInputEmojiSelectorView } from './ChatInputEmojiSelectorView';
 import { ChatInputMentionSelectorView } from './ChatInputMentionSelectorView';
 import { ChatInputStyleSelectorView } from './ChatInputStyleSelectorView';
 
-export const ChatInputView: FC<{}> = (props) => {
+export const ChatInputView: FC = (props) => {
     const [chatValue, setChatValue] = useState<string>('');
     const { chatStyleId = 0, updateChatStyleId = null } = useSessionInfo();
     const {

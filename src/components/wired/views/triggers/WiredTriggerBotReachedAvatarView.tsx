@@ -14,7 +14,7 @@ const BOT_SOURCE_OPTIONS: WiredSourceOption[] = [
 const normalizeBotSource = (value: number) =>
     BOT_SOURCE_OPTIONS.some((option) => option.value === value) ? value : 100;
 
-export const WiredTriggerBotReachedAvatarView: FC<{}> = (props) => {
+export const WiredTriggerBotReachedAvatarView: FC = (props) => {
     const [botName, setBotName] = useState('');
     const [botSource, setBotSource] = useState(100);
     const { trigger = null, setStringParam = null, setIntParams = null } = useWired();

@@ -43,7 +43,7 @@ const handleVariableNameKeyDown = (event: React.KeyboardEvent<HTMLInputElement>,
     );
 };
 
-export const WiredExtraContextVariableView: FC<{}> = () => {
+export const WiredExtraContextVariableView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [variableName, setVariableName] = useState('');
     const [hasValue, setHasValue] = useState(false);

@@ -15,7 +15,7 @@ const MODE_CAPTURE: number = 1;
 const MODE_EDITOR: number = 2;
 const MODE_CHECKOUT: number = 3;
 
-export const CameraWidgetView: FC<{}> = (props) => {
+export const CameraWidgetView: FC = (props) => {
     const [mode, setMode] = useState<number>(MODE_NONE);
     const [base64Url, setSavedPictureUrl] = useState<string>(null);
     const {

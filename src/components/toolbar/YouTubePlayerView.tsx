@@ -35,7 +35,7 @@ const extractVideoId = (input: string): string => {
     return input;
 };
 
-export const YouTubePlayerView: FC<{}> = () => {
+export const YouTubePlayerView: FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [tab, setTab] = useState<'player' | 'playlist' | 'spectators' | 'settings' | 'history' | 'share'>('player');
     const [inputValue, setInputValue] = useState('');

@@ -25,7 +25,7 @@ import { AvatarEditorNftView } from './AvatarEditorNftView';
 import { AvatarEditorPetView } from './AvatarEditorPetView';
 import { AvatarEditorWardrobeView } from './AvatarEditorWardrobeView';
 
-export const AvatarEditorView: FC<{}> = (props) => {
+export const AvatarEditorView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const {
         setIsVisible: setEditorVisibility,

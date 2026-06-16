@@ -12,7 +12,7 @@ const toggleDirection = (mask: number, direction: number, checked: boolean) => {
     return mask & ~(1 << direction);
 };
 
-export const WiredConditionActorDirView: FC<{}> = () => {
+export const WiredConditionActorDirView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [directionMask, setDirectionMask] = useState(0);
     const [userSource, setUserSource] = useState(0);

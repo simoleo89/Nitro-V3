@@ -6,7 +6,7 @@ import { AvatarEditorIcon } from './AvatarEditorIcon';
 
 const DEFAULT_DIRECTION: number = 4;
 
-export const AvatarEditorFigurePreviewView: FC<{}> = (props) => {
+export const AvatarEditorFigurePreviewView: FC = (props) => {
     const [direction, setDirection] = useState<number>(DEFAULT_DIRECTION);
     const { getFigureString = null, gender = 'M' } = useAvatarEditor();
 

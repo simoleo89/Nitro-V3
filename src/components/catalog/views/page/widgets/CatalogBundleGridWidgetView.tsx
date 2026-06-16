@@ -2,7 +2,7 @@ import { FC, useEffect, useRef } from 'react';
 import { AutoGrid, AutoGridProps, LayoutGridItem } from '../../../../../common';
 import { useCatalogData } from '../../../../../hooks';
 
-interface CatalogBundleGridWidgetViewProps extends AutoGridProps {}
+type CatalogBundleGridWidgetViewProps = AutoGridProps;
 
 export const CatalogBundleGridWidgetView: FC<CatalogBundleGridWidgetViewProps> = (props) => {
     const { columnCount = 5, children = null, ...rest } = props;

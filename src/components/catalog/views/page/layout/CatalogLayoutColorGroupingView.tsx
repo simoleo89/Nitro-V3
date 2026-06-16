@@ -13,7 +13,7 @@ import { CatalogTotalPriceWidget } from '../widgets/CatalogTotalPriceWidget';
 import { CatalogViewProductWidgetView } from '../widgets/CatalogViewProductWidgetView';
 import { CatalogLayoutProps } from './CatalogLayout.types';
 
-export interface CatalogLayoutColorGroupViewProps extends CatalogLayoutProps {}
+export type CatalogLayoutColorGroupViewProps = CatalogLayoutProps;
 
 export const CatalogLayoutColorGroupingView: FC<CatalogLayoutColorGroupViewProps> = (props) => {
     const { page = null } = props;

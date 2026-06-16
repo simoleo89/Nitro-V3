@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useCatalogData, useCatalogUiState } from '../../../../../hooks';
 
-export const CatalogFirstProductSelectorWidgetView: FC<{}> = (props) => {
+export const CatalogFirstProductSelectorWidgetView: FC = (props) => {
     const { currentPage = null } = useCatalogData();
     const { setCurrentOffer = null } = useCatalogUiState();
 

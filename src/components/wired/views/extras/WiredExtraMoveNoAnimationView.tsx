@@ -3,7 +3,7 @@ import { WiredFurniType } from '../../../../api';
 import { useWired } from '../../../../hooks';
 import { WiredExtraBaseView } from './WiredExtraBaseView';
 
-export const WiredExtraMoveNoAnimationView: FC<{}> = () => {
+export const WiredExtraMoveNoAnimationView: FC = () => {
     const { setIntParams = null, setStringParam = null } = useWired();
 
     const save = () => {

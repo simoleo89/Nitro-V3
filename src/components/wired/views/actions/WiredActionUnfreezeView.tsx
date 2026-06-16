@@ -4,7 +4,7 @@ import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionUnfreezeView: FC<{}> = () => {
+export const WiredActionUnfreezeView: FC = () => {
     const [userSource, setUserSource] = useState(0);
     const { trigger = null, setIntParams = null } = useWired();
 

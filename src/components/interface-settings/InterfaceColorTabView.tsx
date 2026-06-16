@@ -13,7 +13,7 @@ const rgbaToHex = (rgba: RgbaColor): string => {
     return '#' + ((1 << 24) + (rgba.r << 16) + (rgba.g << 8) + rgba.b).toString(16).slice(1);
 };
 
-export const InterfaceColorTabView: FC<{}> = () => {
+export const InterfaceColorTabView: FC = () => {
     const { settings, updateSettings, resetSettings } = useUiSettings();
     const [color, setColor] = useState<RgbaColor>(() => hexToRgba(settings.headerColor, settings.headerAlpha / 100));
     const [importValue, setImportValue] = useState('');

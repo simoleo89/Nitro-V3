@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredConditionFurniHasNotFurniOnView: FC<{}> = (props) => {
+export const WiredConditionFurniHasNotFurniOnView: FC = (props) => {
     const [requireAll, setRequireAll] = useState(-1);
     const { trigger = null, setIntParams = null } = useWired();
     const [furniSource, setFurniSource] = useState<number>(() => {

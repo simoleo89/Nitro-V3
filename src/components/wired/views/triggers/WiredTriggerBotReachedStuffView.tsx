@@ -21,7 +21,7 @@ const normalizeFurniSource = (value: number) =>
 const normalizeBotSource = (value: number) =>
     BOT_SOURCE_OPTIONS.some((option) => option.value === value) ? value : 100;
 
-export const WiredTriggerBotReachedStuffView: FC<{}> = (props) => {
+export const WiredTriggerBotReachedStuffView: FC = (props) => {
     const [botName, setBotName] = useState('');
     const [furniSource, setFurniSource] = useState(100);
     const [botSource, setBotSource] = useState(100);

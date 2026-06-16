@@ -13,7 +13,7 @@ const FURNI_SOURCE_OPTIONS: WiredSourceOption[] = [
 const normalizeFurniSource = (value: number) =>
     FURNI_SOURCE_OPTIONS.some((option) => option.value === value) ? value : 100;
 
-export const WiredTriggerClickTileView: FC<{}> = () => {
+export const WiredTriggerClickTileView: FC = () => {
     const {
         trigger = null,
         setIntParams = null,

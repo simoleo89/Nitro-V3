@@ -19,7 +19,7 @@ import { useFriends, useHelp, useMessenger, useTranslation } from '../../../../h
 import { resolveAvatarFigure } from '../friends-list/resolveAvatarFigure';
 import { FriendsMessengerThreadView } from './messenger-thread/FriendsMessengerThreadView';
 
-export const FriendsMessengerView: FC<{}> = (props) => {
+export const FriendsMessengerView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [lastThreadId, setLastThreadId] = useState(-1);
     const [messageText, setMessageText] = useState('');

@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
-export const WiredSelectorUsersOnFurniView: FC<{}> = () => {
+export const WiredSelectorUsersOnFurniView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [filterExisting, setFilterExisting] = useState(false);
     const [invert, setInvert] = useState(false);

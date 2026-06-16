@@ -5,7 +5,7 @@ import { GetAlertLayout } from './views/alert-layouts/GetAlertLayout';
 import { GetBubbleLayout } from './views/bubble-layouts/GetBubbleLayout';
 import { GetConfirmLayout } from './views/confirm-layouts/GetConfirmLayout';
 
-export const NotificationCenterView: FC<{}> = (props) => {
+export const NotificationCenterView: FC = (props) => {
     const {
         alerts = [],
         bubbleAlerts = [],

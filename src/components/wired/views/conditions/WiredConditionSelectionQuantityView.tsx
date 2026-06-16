@@ -51,7 +51,7 @@ const normalizeSourceType = (value: number, allowed: number[]) => {
     return allowed.includes(value) ? value : SOURCE_TRIGGER;
 };
 
-export const WiredConditionSelectionQuantityView: FC<{}> = () => {
+export const WiredConditionSelectionQuantityView: FC = () => {
     const {
         trigger = null,
         furniIds = [],

@@ -25,7 +25,7 @@ import { FriendsListGroupChipsView } from './FriendsListGroupChipsView';
 import { FriendsListGroupView } from './friends-list-group/FriendsListGroupView';
 import { FriendsListRequestView } from './friends-list-request/FriendsListRequestView';
 
-export const FriendsListView: FC<{}> = (props) => {
+export const FriendsListView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [selectedFriendsIds, setSelectedFriendsIds] = useState<number[]>([]);
     const [showRoomInvite, setShowRoomInvite] = useState<boolean>(false);

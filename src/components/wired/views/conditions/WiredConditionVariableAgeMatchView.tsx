@@ -130,7 +130,7 @@ const buildCustomVariableEntries = (
 
 const getSourceTitle = () => LocalizeText('wiredfurni.params.sources.merged.title.variables');
 
-export const WiredConditionVariableAgeMatchView: FC<{}> = () => {
+export const WiredConditionVariableAgeMatchView: FC = () => {
     const {
         trigger = null,
         furniIds = [],

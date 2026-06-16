@@ -6,7 +6,7 @@ import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 const TEAM_TYPES = [0, 1, 2, 3, 4];
 
-export const WiredSelectorUsersTeamView: FC<{}> = () => {
+export const WiredSelectorUsersTeamView: FC = () => {
     const [teamType, setTeamType] = useState(0);
     const [filterExisting, setFilterExisting] = useState(false);
     const [invert, setInvert] = useState(false);

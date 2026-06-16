@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionGiveScoreView: FC<{}> = (props) => {
+export const WiredActionGiveScoreView: FC = (props) => {
     const [points, setPoints] = useState(1);
     const [operation, setOperation] = useState(0);
     const { trigger = null, setIntParams = null } = useWired();

@@ -5,7 +5,7 @@ import { useCatalogData, useCatalogUiState, useInventoryBadges } from '../../../
 
 const EXCLUDED_BADGE_CODES: string[] = [];
 
-interface CatalogBadgeSelectorWidgetViewProps extends AutoGridProps {}
+type CatalogBadgeSelectorWidgetViewProps = AutoGridProps;
 
 export const CatalogBadgeSelectorWidgetView: FC<CatalogBadgeSelectorWidgetViewProps> = (props) => {
     const { columnCount = 5, ...rest } = props;

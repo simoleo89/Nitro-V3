@@ -25,7 +25,7 @@ import { ModToolsTicketsView } from './views/tickets/ModToolsTicketsView';
 import { ModToolsUserChatlogView } from './views/user/ModToolsUserChatlogView';
 import { ModToolsUserView } from './views/user/ModToolsUserView';
 
-export const ModToolsView: FC<{}> = (props) => {
+export const ModToolsView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [currentRoomId, setCurrentRoomId] = useState<number>(-1);
     const [selectedUser, setSelectedUser] = useState<ISelectedUser>(null);

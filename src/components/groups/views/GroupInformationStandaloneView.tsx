@@ -5,7 +5,7 @@ import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../
 import { useMessageEvent } from '../../../hooks';
 import { GroupInformationView } from './GroupInformationView';
 
-export const GroupInformationStandaloneView: FC<{}> = (props) => {
+export const GroupInformationStandaloneView: FC = (props) => {
     const [groupInformation, setGroupInformation] = useState<GroupInformationParser>(null);
 
     useMessageEvent<GroupInformationEvent>(GroupInformationEvent, (event) => {

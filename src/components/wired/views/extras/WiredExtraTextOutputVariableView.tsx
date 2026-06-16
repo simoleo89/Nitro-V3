@@ -142,7 +142,7 @@ const getTargetDefinitions = (
 const serializeStringData = (variableToken: string, placeholderName: string, delimiter: string) =>
     `${variableToken || ''}\t${normalizePlaceholderName(placeholderName)}\t${normalizeDelimiter(delimiter)}`;
 
-export const WiredExtraTextOutputVariableView: FC<{}> = () => {
+export const WiredExtraTextOutputVariableView: FC = () => {
     const {
         trigger = null,
         furniIds = [],

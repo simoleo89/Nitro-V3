@@ -4,7 +4,7 @@ import { subscribePlugins } from './NitroPluginApi';
 
 import './NitroPluginApi';
 
-export const ExternalPluginLoader: FC<{}> = () => {
+export const ExternalPluginLoader: FC = () => {
     const [, forceUpdate] = useState(0);
     const [pluginUrls, setPluginUrls] = useState<string[]>([]);
 

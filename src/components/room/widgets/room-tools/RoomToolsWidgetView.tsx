@@ -19,7 +19,7 @@ import { Text } from '../../../../common';
 import { useMessageEvent, useNavigatorData, useRoom } from '../../../../hooks';
 import { getRegisteredPlugins, INitroPlugin, subscribePlugins } from '../../../plugins/NitroPluginApi';
 
-export const RoomToolsWidgetView: FC<{}> = (props) => {
+export const RoomToolsWidgetView: FC = (props) => {
     const [areBubblesMuted, setAreBubblesMuted] = useState(false);
     const [isZoomedIn, setIsZoomedIn] = useState<boolean>(false);
     const [roomName, setRoomName] = useState<string>(null);

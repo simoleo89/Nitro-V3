@@ -19,7 +19,7 @@ import { NitroCard } from '../../layout';
 import { GroupsContainerView } from './GroupsContainerView';
 import { UserContainerView } from './UserContainerView';
 
-export const UserProfileView: FC<{}> = () => {
+export const UserProfileView: FC = () => {
     const [userProfile, setUserProfile] = useState<UserProfileParser>(null);
     const [userBadges, setUserBadges] = useState<string[]>([]);
     const [userRelationships, setUserRelationships] = useState<RelationshipStatusInfoMessageParser>(null);

@@ -2,7 +2,7 @@ import { AddLinkEventTracker, ILinkEventTracker, RemoveLinkEventTracker } from '
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useChatHistory } from '../../hooks';
 
-export const NitrobubbleHiddenView: FC<{}> = (props) => {
+export const NitrobubbleHiddenView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [searchText, setSearchText] = useState<string>('');
     const { chatHistory = [] } = useChatHistory();

@@ -26,7 +26,7 @@ const normalizeSource = (value: number, options: WiredSourceOption[]) =>
     options.some((option) => option.value === value) ? value : DEFAULT_SOURCE;
 const getFlag = (value: number) => value === 1;
 
-export const WiredExtraMovePhysicsView: FC<{}> = () => {
+export const WiredExtraMovePhysicsView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [keepAltitude, setKeepAltitude] = useState(false);
     const [moveThroughFurni, setMoveThroughFurni] = useState(false);

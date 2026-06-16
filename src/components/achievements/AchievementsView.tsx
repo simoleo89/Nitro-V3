@@ -7,7 +7,7 @@ import { NitroCard } from '../../layout';
 import { AchievementCategoryView } from './AchievementCategoryView';
 import { AchievementsCategoryListView } from './category-list';
 
-export const AchievementsView: FC<{}> = (props) => {
+export const AchievementsView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const {
         achievementCategories = [],

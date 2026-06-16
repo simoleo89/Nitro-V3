@@ -4,7 +4,7 @@ import { ChatEntryType, IChatEntry, LocalizeText, ReportState, ReportType } from
 import { AutoGrid, Button, Column, Flex, LayoutGridItem, Text } from '../../../common';
 import { useChatHistory, useHelp } from '../../../hooks';
 
-export const SelectReportedChatsView: FC<{}> = (props) => {
+export const SelectReportedChatsView: FC = (props) => {
     const [selectedChats, setSelectedChats] = useState<IChatEntry[]>([]);
     const { activeReport = null, setActiveReport = null } = useHelp();
     const { chatHistory = [], messengerHistory = [] } = useChatHistory();

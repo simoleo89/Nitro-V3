@@ -20,7 +20,7 @@ const normalizeSkipExecutions = (value: number) => {
     return Math.max(MIN_SKIP_EXECUTIONS, Math.min(MAX_RANDOM_VALUE, Math.floor(value)));
 };
 
-export const WiredExtraRandomView: FC<{}> = () => {
+export const WiredExtraRandomView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [pickAmount, setPickAmount] = useState(MIN_PICK_AMOUNT);
     const [skipExecutions, setSkipExecutions] = useState(MIN_SKIP_EXECUTIONS);

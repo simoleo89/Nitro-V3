@@ -13,7 +13,7 @@ const VISIBLE_STATES = [
 ];
 const DOORBELL_STATES = [DoorStateType.START_DOORBELL, DoorStateType.STATE_WAITING, DoorStateType.STATE_NO_ANSWER];
 
-export const NavigatorDoorStateView: FC<{}> = (props) => {
+export const NavigatorDoorStateView: FC = (props) => {
     const [password, setPassword] = useState('');
     const { snapshot, setSnapshot, reset } = useDoorState();
 

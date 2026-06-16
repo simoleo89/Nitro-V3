@@ -3,7 +3,7 @@ import { LocalizeText, ReportState, ReportType } from '../../../api';
 import { Button, Flex, Text } from '../../../common';
 import { useHelp } from '../../../hooks';
 
-export const DescribeReportView: FC<{}> = (props) => {
+export const DescribeReportView: FC = (props) => {
     const [message, setMessage] = useState('');
     const { activeReport = null, setActiveReport = null } = useHelp();
 

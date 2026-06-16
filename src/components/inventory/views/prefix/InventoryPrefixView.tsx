@@ -118,7 +118,7 @@ const NickIconItemView: FC<{
     );
 };
 
-export const InventoryPrefixView: FC<{}> = () => {
+export const InventoryPrefixView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState<InventoryIdentityTab>('prefixes');
     const {

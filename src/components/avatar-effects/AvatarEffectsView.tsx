@@ -24,7 +24,7 @@ interface EffectMapEntry {
 const DEFAULT_DIRECTION = 4;
 const PAGE_SIZE = 50;
 
-export const AvatarEffectsView: FC<{}> = () => {
+export const AvatarEffectsView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [effects, setEffects] = useState<EffectMapEntry[]>([]);
     const [loadError, setLoadError] = useState<string>(null);

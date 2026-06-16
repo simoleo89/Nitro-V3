@@ -3,7 +3,7 @@ import { LocalizeText, ReportState } from '../../../api';
 import { Button, Column, Flex, Text } from '../../../common';
 import { useHelp, useModTools } from '../../../hooks';
 
-export const SelectTopicView: FC<{}> = (props) => {
+export const SelectTopicView: FC = (props) => {
     const [selectedCategory, setSelectedCategory] = useState(-1);
     const [selectedTopic, setSelectedTopic] = useState(-1);
     const { setActiveReport = null } = useHelp();

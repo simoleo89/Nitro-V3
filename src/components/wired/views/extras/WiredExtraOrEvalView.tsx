@@ -38,7 +38,7 @@ const normalizeCompareValue = (value: number) => {
     return Math.max(MIN_COMPARE_VALUE, Math.min(MAX_COMPARE_VALUE, Math.floor(value)));
 };
 
-export const WiredExtraOrEvalView: FC<{}> = () => {
+export const WiredExtraOrEvalView: FC = () => {
     const {
         trigger = null,
         setIntParams = null,

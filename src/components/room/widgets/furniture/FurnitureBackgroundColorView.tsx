@@ -4,7 +4,7 @@ import { ColorUtils, LocalizeText } from '../../../../api';
 import { Button, NitroCardContentView, NitroCardHeaderView, NitroCardView, Slider, Text } from '../../../../common';
 import { useFurnitureBackgroundColorWidget } from '../../../../hooks';
 
-export const FurnitureBackgroundColorView: FC<{}> = (props) => {
+export const FurnitureBackgroundColorView: FC = (props) => {
     const {
         objectId = -1,
         hue = 0,

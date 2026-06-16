@@ -12,7 +12,7 @@ const FURNI_SOURCE_OPTIONS: WiredSourceOption[] = [
 const normalizeFurniSource = (value: number) =>
     FURNI_SOURCE_OPTIONS.some((option) => option.value === value) ? value : 100;
 
-export const WiredTriggerAvatarWalksOffFurniView: FC<{}> = () => {
+export const WiredTriggerAvatarWalksOffFurniView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [furniSource, setFurniSource] = useState(100);
 

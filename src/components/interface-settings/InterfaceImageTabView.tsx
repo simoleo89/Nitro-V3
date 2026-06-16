@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo } from 'react';
 import { GetConfigurationValue, useUiSettings } from '../../api';
 
-export const InterfaceImageTabView: FC<{}> = () => {
+export const InterfaceImageTabView: FC = () => {
     const { settings, updateSettings } = useUiSettings();
 
     const imageCount = useMemo(() => {

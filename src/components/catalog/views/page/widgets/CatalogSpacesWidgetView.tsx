@@ -4,7 +4,7 @@ import { AutoGrid, AutoGridProps, Button } from '../../../../../common';
 import { useCatalogData, useCatalogUiState } from '../../../../../hooks';
 import { CatalogGridOfferView } from '../common/CatalogGridOfferView';
 
-interface CatalogSpacesWidgetViewProps extends AutoGridProps {}
+type CatalogSpacesWidgetViewProps = AutoGridProps;
 
 const SPACES_GROUP_NAMES = ['floors', 'walls', 'views'];
 

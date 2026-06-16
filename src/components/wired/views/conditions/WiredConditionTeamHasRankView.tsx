@@ -8,7 +8,7 @@ import { WiredConditionBaseView } from './WiredConditionBaseView';
 const TEAM_OPTIONS = [0, 1, 2, 3, 4];
 const PLACEMENT_OPTIONS = [1, 2, 3, 4];
 
-export const WiredConditionTeamHasRankView: FC<{}> = () => {
+export const WiredConditionTeamHasRankView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [team, setTeam] = useState(1);
     const [placement, setPlacement] = useState(1);

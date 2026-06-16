@@ -3,7 +3,7 @@ import { WiredFurniType } from '../../../../api';
 import { useWired } from '../../../../hooks';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 
-export const WiredConditionMovementValidationView: FC<{}> = () => {
+export const WiredConditionMovementValidationView: FC = () => {
     const { setIntParams = null, setStringParam = null } = useWired();
 
     const save = () => {

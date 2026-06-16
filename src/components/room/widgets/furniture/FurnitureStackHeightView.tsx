@@ -4,7 +4,7 @@ import { LocalizeText, SendMessageComposer } from '../../../../api';
 import { Button, NitroCardContentView, NitroCardHeaderView, NitroCardView, Slider, Text } from '../../../../common';
 import { useFurnitureStackHeightWidget } from '../../../../hooks';
 
-export const FurnitureStackHeightView: FC<{}> = (props) => {
+export const FurnitureStackHeightView: FC = (props) => {
     const {
         objectId = -1,
         height = 0,

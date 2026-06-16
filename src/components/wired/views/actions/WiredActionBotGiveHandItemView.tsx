@@ -25,7 +25,7 @@ const normalizeUserSource = (value: number) =>
 const normalizeBotSource = (value: number, hasBotName = false) =>
     BOT_SOURCE_OPTIONS.some((option) => option.value === value) ? value : hasBotName ? 100 : 0;
 
-export const WiredActionBotGiveHandItemView: FC<{}> = (props) => {
+export const WiredActionBotGiveHandItemView: FC = (props) => {
     const [botName, setBotName] = useState('');
     const [handItemId, setHandItemId] = useState(-1);
     const { trigger = null, setStringParam = null, setIntParams = null } = useWired();

@@ -4,7 +4,7 @@ import { Slider, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
-export const WiredActionGiveScoreToPredefinedTeamView: FC<{}> = (props) => {
+export const WiredActionGiveScoreToPredefinedTeamView: FC = (props) => {
     const [points, setPoints] = useState(1);
     const [operation, setOperation] = useState(0);
     const [selectedTeam, setSelectedTeam] = useState(1);

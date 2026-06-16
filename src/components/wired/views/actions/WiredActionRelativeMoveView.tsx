@@ -30,7 +30,7 @@ const normalizeDistance = (value: number) => {
     return Math.max(0, Math.min(MAX_DISTANCE, value));
 };
 
-export const WiredActionRelativeMoveView: FC<{}> = () => {
+export const WiredActionRelativeMoveView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
 
     const [horizontalDirection, setHorizontalDirection] = useState(1);

@@ -5,7 +5,7 @@ import { useFurniturePlaylistEditorWidget } from '../../../../../hooks';
 import { DiskInventoryView } from './DiskInventoryView';
 import { SongPlaylistView } from './SongPlaylistView';
 
-export const FurniturePlaylistEditorWidgetView: FC<{}> = (props) => {
+export const FurniturePlaylistEditorWidgetView: FC = (props) => {
     const {
         objectId = -1,
         currentPlayingIndex = -1,

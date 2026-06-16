@@ -22,7 +22,7 @@ const RADIO_STYLES = `
 // Compact, polished top-left radio widget. Shows the selected station with a
 // dropdown (3 visible, scrolls if more) to switch. Nudged down so it clears the
 // CMS top bar most hotels render there.
-export const RadioView: FC<{}> = () => {
+export const RadioView: FC = () => {
     const { stations, currentId, isPlaying, volume, loadError, play, stop, setVolume } = useRadio();
     const [open, setOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);

@@ -7,7 +7,7 @@ import { useRoom } from '../../../../hooks/rooms';
 
 const BOTTOM_SCROLL_THRESHOLD = 20;
 
-export const ChatWidgetWindowView: FC<{}> = () => {
+export const ChatWidgetWindowView: FC = () => {
     const contentRef = useRef<HTMLDivElement>(null);
     const lastScrollTop = useRef(0);
     const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);

@@ -165,7 +165,7 @@ const isGlobalTarget = (targetType: VariableTargetType) => targetType === 'globa
 const isFurniTarget = (targetType: VariableTargetType) => targetType === 'furni';
 const isContextTarget = (targetType: VariableTargetType) => targetType === 'context';
 
-export const WiredConditionVariableValueMatchView: FC<{}> = () => {
+export const WiredConditionVariableValueMatchView: FC = () => {
     const {
         trigger = null,
         furniIds = [],

@@ -11,9 +11,9 @@ import {
 import { useFurnitureYoutubeWidget } from '../../../../hooks';
 import ReactPlayer from '../../../youtube/YoutubeReactPlayer';
 
-interface FurnitureYoutubeDisplayViewProps extends AutoGridProps {}
+type FurnitureYoutubeDisplayViewProps = AutoGridProps;
 
-export const FurnitureYoutubeDisplayView: FC<{}> = (FurnitureYoutubeDisplayViewProps) => {
+export const FurnitureYoutubeDisplayView: FC = (FurnitureYoutubeDisplayViewProps) => {
     const {
         objectId = -1,
         videoId = null,

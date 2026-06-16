@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { LocalizeText } from '../../../../api';
 import { WiredExtraVariableView } from './WiredExtraUserVariableView';
 
-export const WiredExtraFurniVariableView: FC<{}> = () => {
+export const WiredExtraFurniVariableView: FC = () => {
     return (
         <WiredExtraVariableView
             availabilityRadioName="wiredFurniVariableAvailability"

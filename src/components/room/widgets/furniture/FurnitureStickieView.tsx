@@ -24,7 +24,7 @@ const getStickieTypeName = (type: string) => {
     return STICKIE_TYPE_NAMES[index];
 };
 
-export const FurnitureStickieView: FC<{}> = (props) => {
+export const FurnitureStickieView: FC = (props) => {
     const {
         objectId = -1,
         color = '0',

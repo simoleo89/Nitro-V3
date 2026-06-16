@@ -22,7 +22,7 @@ const parsePublisherIdFromAdsTxt = (text: string): string | null => {
     return null;
 };
 
-export const GoogleAdsView: FC<{}> = () => {
+export const GoogleAdsView: FC = () => {
     const adsEnabled = GetConfigurationValue<boolean>('show.google.ads', false);
     const [isOpen, setIsOpen] = useState(false);
     const [publisherId, setPublisherId] = useState<string | null>(null);

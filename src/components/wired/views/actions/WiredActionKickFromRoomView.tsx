@@ -6,7 +6,7 @@ import { NitroInput } from '../../../../layout';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionKickFromRoomView: FC<{}> = (props) => {
+export const WiredActionKickFromRoomView: FC = (props) => {
     const [message, setMessage] = useState('');
     const { trigger = null, setStringParam = null, setIntParams = null } = useWired();
     const [userSource, setUserSource] = useState<number>(() => {

@@ -21,7 +21,7 @@ const clampShowMessage = (value: string) => {
     return joined.slice(0, SHOW_MESSAGE_MAX_LENGTH);
 };
 
-export const WiredActionChatView: FC<{}> = (props) => {
+export const WiredActionChatView: FC = (props) => {
     const [message, setMessage] = useState('');
     const [visibilitySelection, setVisibilitySelection] = useState<number>(0);
     const [bubbleStyle, setBubbleStyle] = useState<number>(DEFAULT_SHOW_MESSAGE_STYLE_ID);

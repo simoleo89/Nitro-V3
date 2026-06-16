@@ -14,7 +14,7 @@ import {
 } from '../../../../common';
 import { useMessageEvent, useRoom, useSessionInfo } from '../../../../hooks';
 
-export const AvatarInfoPetTrainingPanelView: FC<{}> = (props) => {
+export const AvatarInfoPetTrainingPanelView: FC = (props) => {
     const [petData, setPetData] = useState<IRoomUserData>(null);
     const [petTrainInformation, setPetTrainInformation] = useState<PetTrainingMessageParser>(null);
     const { chatStyleId = 0 } = useSessionInfo();

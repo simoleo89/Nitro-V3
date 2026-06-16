@@ -23,7 +23,7 @@ const VIEW_THREAD = 2;
 const VIEW_NEW_THREAD = 3;
 const VIEW_SETTINGS = 4;
 
-export const GroupForumView: FC<{}> = (props) => {
+export const GroupForumView: FC = (props) => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [currentView, setCurrentView] = useState<number>(VIEW_FORUM_LIST);
     const [groupId, setGroupId] = useState<number>(0);

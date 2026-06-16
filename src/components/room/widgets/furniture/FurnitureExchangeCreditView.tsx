@@ -3,7 +3,7 @@ import { LocalizeText } from '../../../../api';
 import { Button, Column, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../../common';
 import { useFurnitureExchangeWidget } from '../../../../hooks';
 
-export const FurnitureExchangeCreditView: FC<{}> = (props) => {
+export const FurnitureExchangeCreditView: FC = (props) => {
     const { objectId = -1, value = 0, onClose = null, redeem = null } = useFurnitureExchangeWidget();
 
     if (objectId === -1) return null;

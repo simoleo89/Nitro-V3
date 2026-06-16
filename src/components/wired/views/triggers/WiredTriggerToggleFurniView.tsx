@@ -13,7 +13,7 @@ const FURNI_SOURCE_OPTIONS: WiredSourceOption[] = [
 const normalizeFurniSource = (value: number) =>
     FURNI_SOURCE_OPTIONS.some((option) => option.value === value) ? value : 100;
 
-export const WiredTriggerToggleFurniView: FC<{}> = () => {
+export const WiredTriggerToggleFurniView: FC = () => {
     const [triggerMode, setTriggerMode] = useState(0);
     const [furniSource, setFurniSource] = useState(100);
     const { trigger = null, setIntParams = null } = useWired();

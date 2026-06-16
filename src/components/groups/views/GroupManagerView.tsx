@@ -18,7 +18,7 @@ import { GroupTabSettingsView } from './tabs/GroupTabSettingsView';
 
 const TABS: number[] = [1, 2, 3, 5];
 
-export const GroupManagerView: FC<{}> = (props) => {
+export const GroupManagerView: FC = (props) => {
     const [currentTab, setCurrentTab] = useState<number>(1);
     const [closeAction, setCloseAction] = useState<{ action: () => boolean }>(null);
     const [groupData, setGroupData] = useState<IGroupData>(null);

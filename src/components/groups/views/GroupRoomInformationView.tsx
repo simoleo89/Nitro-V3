@@ -24,7 +24,7 @@ import groupIcon from '../../../assets/images/rightside/group.png';
 import { Button, Flex, LayoutBadgeImageView, Text } from '../../../common';
 import { useMessageEvent, useNotification } from '../../../hooks';
 
-export const GroupRoomInformationView: FC<{}> = (props) => {
+export const GroupRoomInformationView: FC = (props) => {
     const expectedGroupIdRef = useRef<number>(0);
     const requestRetryCountRef = useRef<number>(0);
     const requestRetryTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);

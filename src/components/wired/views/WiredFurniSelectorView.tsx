@@ -3,7 +3,7 @@ import { LocalizeText } from '../../../api';
 import { Text } from '../../../common';
 import { useWired } from '../../../hooks';
 
-export const WiredFurniSelectorView: FC<{}> = (props) => {
+export const WiredFurniSelectorView: FC = (props) => {
     const { trigger = null, furniIds = [] } = useWired();
 
     return (

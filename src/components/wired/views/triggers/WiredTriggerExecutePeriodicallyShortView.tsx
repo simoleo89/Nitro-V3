@@ -4,7 +4,7 @@ import { Slider, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredTriggerBaseView } from './WiredTriggerBaseView';
 
-export const WiredTriggeExecutePeriodicallyShortView: FC<{}> = () => {
+export const WiredTriggeExecutePeriodicallyShortView: FC = () => {
     const [time, setTime] = useState(10);
     const { trigger = null, setIntParams = null } = useWired();
 

@@ -105,7 +105,7 @@ const getTargetValue = (targetType: EchoSourceTarget) => {
     }
 };
 
-export const WiredExtraVariableEchoView: FC<{}> = () => {
+export const WiredExtraVariableEchoView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const {
         userVariableDefinitions = [],

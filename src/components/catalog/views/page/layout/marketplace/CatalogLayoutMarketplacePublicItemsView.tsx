@@ -22,7 +22,7 @@ import { SearchFormView } from './CatalogLayoutMarketplaceSearchFormView';
 const SORT_TYPES_VALUE = [1, 2];
 const SORT_TYPES_ACTIVITY = [3, 4, 5, 6];
 const SORT_TYPES_ADVANCED = [1, 2, 3, 4, 5, 6];
-export interface CatalogLayoutMarketplacePublicItemsViewProps extends CatalogLayoutProps {}
+export type CatalogLayoutMarketplacePublicItemsViewProps = CatalogLayoutProps;
 
 export const CatalogLayoutMarketplacePublicItemsView: FC<CatalogLayoutMarketplacePublicItemsViewProps> = (props) => {
     const [searchType, setSearchType] = useState(MarketplaceSearchType.BY_ACTIVITY);

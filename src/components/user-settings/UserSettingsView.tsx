@@ -22,7 +22,7 @@ import {
 } from '../../hooks';
 import { classNames } from '../../layout';
 
-export const UserSettingsView: FC<{}> = (props) => {
+export const UserSettingsView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [userSettings, setUserSettings] = useState<NitroSettingsEvent>(null);
     const [catalogPlaceMultipleObjects, setCatalogPlaceMultipleObjects] = useCatalogPlaceMultipleItems();

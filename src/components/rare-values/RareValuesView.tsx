@@ -21,7 +21,7 @@ interface RareValueRow {
     value: IRareValue;
 }
 
-export const RareValuesView: FC<{}> = () => {
+export const RareValuesView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);

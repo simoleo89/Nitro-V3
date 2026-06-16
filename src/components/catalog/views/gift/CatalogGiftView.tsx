@@ -34,7 +34,7 @@ import { classNames } from '../../../../layout';
 
 let isBuyingGift = false;
 
-export const CatalogGiftView: FC<{}> = (props) => {
+export const CatalogGiftView: FC = (props) => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [pageId, setPageId] = useState<number>(0);
     const [offerId, setOfferId] = useState<number>(0);

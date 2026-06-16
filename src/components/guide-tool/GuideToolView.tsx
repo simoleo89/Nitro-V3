@@ -38,7 +38,7 @@ import { GuideToolUserPendingView } from './views/GuideToolUserPendingView';
 import { GuideToolUserSomethingWrogView } from './views/GuideToolUserSomethingWrogView';
 import { GuideToolUserThanksView } from './views/GuideToolUserThanksView';
 
-export const GuideToolView: FC<{}> = (props) => {
+export const GuideToolView: FC = (props) => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [headerText, setHeaderText] = useState<string>(LocalizeText('guide.help.guide.tool.title'));
     const [noCloseButton, setNoCloseButton] = useState<boolean>(false);

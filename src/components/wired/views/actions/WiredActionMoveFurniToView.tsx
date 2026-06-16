@@ -24,7 +24,7 @@ const directionOptions: { value: number; icon: string }[] = [
     },
 ];
 
-export const WiredActionMoveFurniToView: FC<{}> = (props) => {
+export const WiredActionMoveFurniToView: FC = (props) => {
     const [spacing, setSpacing] = useState(-1);
     const [movement, setMovement] = useState(-1);
     const { trigger = null, setIntParams = null } = useWired();

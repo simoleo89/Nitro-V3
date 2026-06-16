@@ -33,7 +33,7 @@ const formatSeconds = (halfSeconds: number) => {
     return text.endsWith('.0') ? text.slice(0, -2) : text;
 };
 
-export const WiredActionAdjustClockView: FC<{}> = () => {
+export const WiredActionAdjustClockView: FC = () => {
     const {
         trigger = null,
         setIntParams = null,

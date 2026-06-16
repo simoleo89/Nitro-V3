@@ -7,7 +7,7 @@ import { DeleteItemConfirmEvent } from '../../../../events';
 import { useNotification, useUiEvent } from '../../../../hooks';
 import { NitroButton, NitroInput } from '../../../../layout';
 
-export const InventoryFurnitureDeleteView: FC<{}> = (props) => {
+export const InventoryFurnitureDeleteView: FC = (props) => {
     const [item, setItem] = useState<FurnitureItem>(null);
     const [amount, setAmount] = useState(1);
     const [maxAmount, setMaxAmount] = useState(1);

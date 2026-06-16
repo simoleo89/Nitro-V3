@@ -16,7 +16,7 @@ const colorMap = {
     red: 10104881,
 };
 
-export const MysteryBoxExtensionView: FC<{}> = (props) => {
+export const MysteryBoxExtensionView: FC = (props) => {
     const [isOpen, setIsOpen] = useState<boolean>(true);
     const [keyColor, setKeyColor] = useState<string>('');
     const [boxColor, setBoxColor] = useState<string>('');

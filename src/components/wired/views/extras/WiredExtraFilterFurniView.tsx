@@ -13,7 +13,7 @@ const clampValue = (value: number) => {
     return Math.max(MIN_FILTER, Math.min(MAX_FILTER, Math.floor(value)));
 };
 
-export const WiredExtraFilterFurniView: FC<{}> = () => {
+export const WiredExtraFilterFurniView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [amount, setAmount] = useState(0);
 

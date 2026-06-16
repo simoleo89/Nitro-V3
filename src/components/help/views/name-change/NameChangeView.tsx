@@ -11,7 +11,7 @@ const INIT: string = 'INIT';
 const INPUT: string = 'INPUT';
 const CONFIRMATION: string = 'CONFIRMATION';
 
-export const NameChangeView: FC<{}> = (props) => {
+export const NameChangeView: FC = (props) => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [layout, setLayout] = useState<string>(INIT);
     const [newUsername, setNewUsername] = useState<string>('');

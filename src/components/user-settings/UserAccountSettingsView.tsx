@@ -58,7 +58,7 @@ const passwordStrength = (value: string): { score: number; labelKey: string; col
     return { score: 4, labelKey: 'usersettings.strength.strong', color: 'bg-[#00800b]' };
 };
 
-export const UserAccountSettingsView: FC<{}> = () => {
+export const UserAccountSettingsView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [section, setSection] = useState<Section>('menu');
     const [currentPassword, setCurrentPassword] = useState('');

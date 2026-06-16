@@ -4,7 +4,7 @@ import { LocalizeText, chooserSelectionVisualizer } from '../../../../api';
 import { useFurniChooserWidget, useRoom } from '../../../../hooks';
 import { ChooserWidgetView } from './ChooserWidgetView';
 
-export const FurniChooserWidgetView: FC<{}> = (props) => {
+export const FurniChooserWidgetView: FC = (props) => {
     const { items = null, onClose = null, selectItem = null, populateChooser = null } = useFurniChooserWidget();
     const { roomSession = null } = useRoom();
 

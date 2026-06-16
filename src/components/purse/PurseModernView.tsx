@@ -12,7 +12,7 @@ const localizeWithFallback = (key: string, fallback: string) => {
     return text && text !== key ? text : fallback;
 };
 
-export const PurseModernView: FC<{}> = (props) => {
+export const PurseModernView: FC = (props) => {
     const { purse = null, hcDisabled = false } = usePurse();
 
     const displayedCurrencies = useMemo(() => GetConfigurationValue<number[]>('system.currency.types', []), []);

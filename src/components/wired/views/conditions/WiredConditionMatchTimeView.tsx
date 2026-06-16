@@ -108,7 +108,7 @@ const TimeFilterSection: FC<TimeFilterSectionProps> = (props) => {
     );
 };
 
-export const WiredConditionMatchTimeView: FC<{}> = () => {
+export const WiredConditionMatchTimeView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [hourMode, setHourMode] = useState(MODE_SKIP);
     const [hourFrom, setHourFrom] = useState(0);

@@ -18,7 +18,7 @@ import { MentionRowView } from '../mentions';
 const TAB_CHAT = 'chat';
 const TAB_MENTIONS = 'mentions';
 
-export const ChatHistoryView: FC<{}> = (props) => {
+export const ChatHistoryView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [searchText, setSearchText] = useState<string>('');
     const [activeTab, setActiveTab] = useState<string>(TAB_CHAT);

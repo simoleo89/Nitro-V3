@@ -16,7 +16,7 @@ import {
 import { useFurnitureDimmerWidget, useNitroEvent } from '../../../../hooks';
 import { classNames } from '../../../../layout';
 
-export const FurnitureDimmerView: FC<{}> = (props) => {
+export const FurnitureDimmerView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const {
         presets = [],

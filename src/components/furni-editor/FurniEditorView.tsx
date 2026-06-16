@@ -15,7 +15,7 @@ import { FurniEditorSearchView } from './views/FurniEditorSearchView';
 const TAB_SEARCH = 0;
 const TAB_EDIT = 1;
 
-export const FurniEditorView: FC<{}> = () => {
+export const FurniEditorView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [activeTab, setActiveTab] = useState(TAB_SEARCH);
 

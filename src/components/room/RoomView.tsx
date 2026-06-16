@@ -13,7 +13,7 @@ import { classNames } from '../../layout';
 import { RoomSpectatorView } from './spectator/RoomSpectatorView';
 import { RoomWidgetsView } from './widgets/RoomWidgetsView';
 
-export const RoomView: FC<{}> = (props) => {
+export const RoomView: FC = (props) => {
     const { roomSession = null } = useRoom();
     const elementRef = useRef<HTMLDivElement>(null);
 

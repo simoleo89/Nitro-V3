@@ -12,7 +12,7 @@ import { Button, Text } from '../../../common';
 import { GuideToolEvent } from '../../../events';
 import { useHelp } from '../../../hooks';
 
-export const HelpIndexView: FC<{}> = (props) => {
+export const HelpIndexView: FC = (props) => {
     const { setActiveReport = null } = useHelp();
 
     const onReportClick = () => {

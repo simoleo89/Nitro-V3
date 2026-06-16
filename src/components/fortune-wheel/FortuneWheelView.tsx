@@ -28,7 +28,7 @@ const SETTLE_MS = 550;
 
 type SpinPhase = 'idle' | 'windback' | 'spin' | 'settle';
 
-export const FortuneWheelView: FC<{}> = () => {
+export const FortuneWheelView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const {

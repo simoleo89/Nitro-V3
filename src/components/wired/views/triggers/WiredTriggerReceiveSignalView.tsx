@@ -13,7 +13,7 @@ const FURNI_SOURCE_OPTIONS: WiredSourceOption[] = [
 const normalizeFurniSource = (value: number) =>
     FURNI_SOURCE_OPTIONS.some((option) => option.value === value) ? value : 100;
 
-export const WiredTriggerReceiveSignalView: FC<{}> = () => {
+export const WiredTriggerReceiveSignalView: FC = () => {
     const [senderCount, setSenderCount] = useState(0);
     const [channel, setChannel] = useState(0);
     const [furniSource, setFurniSource] = useState(100);

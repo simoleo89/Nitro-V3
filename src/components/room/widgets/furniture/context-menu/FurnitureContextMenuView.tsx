@@ -25,7 +25,7 @@ import { EffectBoxConfirmView } from './EffectBoxConfirmView';
 import { MonsterPlantSeedConfirmView } from './MonsterPlantSeedConfirmView';
 import { PurchasableClothingConfirmView } from './PurchasableClothingConfirmView';
 
-export const FurnitureContextMenuView: FC<{}> = (props) => {
+export const FurnitureContextMenuView: FC = (props) => {
     const {
         closeConfirm = null,
         processAction = null,

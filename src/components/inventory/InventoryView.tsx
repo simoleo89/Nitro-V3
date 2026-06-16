@@ -70,7 +70,7 @@ const TAB_ICONS: Record<string, ReactNode> = {
     [TAB_BOTS]: <FaRobot />,
 };
 
-export const InventoryView: FC<{}> = (props) => {
+export const InventoryView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [currentTab, setCurrentTab] = useState<string>(TABS[0]);
     const [roomSession, setRoomSession] = useState<IRoomSession>(null);

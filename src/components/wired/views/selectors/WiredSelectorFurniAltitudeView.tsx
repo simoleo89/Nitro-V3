@@ -34,7 +34,7 @@ const parseAltitude = (value: string) => {
     return clampAltitude(parsed);
 };
 
-export const WiredSelectorFurniAltitudeView: FC<{}> = () => {
+export const WiredSelectorFurniAltitudeView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [comparison, setComparison] = useState(1);
     const [filterExisting, setFilterExisting] = useState(false);

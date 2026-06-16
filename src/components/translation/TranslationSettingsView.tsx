@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import { NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../common';
 import { useTranslation } from '../../hooks';
 
-export const TranslationSettingsView: FC<{}> = () => {
+export const TranslationSettingsView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const {
         settings,

@@ -35,7 +35,7 @@ import {
 } from '../../common';
 import { useInventoryBadges, useMessageEvent, usePurse, useSessionInfo } from '../../hooks';
 
-export const HcCenterView: FC<{}> = (props) => {
+export const HcCenterView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [kickbackData, setKickbackData] = useState<ScrKickbackData>(null);
     const [unclaimedGifts, setUnclaimedGifts] = useState(0);

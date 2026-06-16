@@ -6,7 +6,7 @@ import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
 const SOURCE_FURNI_PICKED = 0;
 
-export const WiredSelectorFurniByTypeView: FC<{}> = () => {
+export const WiredSelectorFurniByTypeView: FC = () => {
     const [matchState, setMatchState] = useState(false);
     const [filterExisting, setFilterExisting] = useState(false);
     const [invert, setInvert] = useState(false);

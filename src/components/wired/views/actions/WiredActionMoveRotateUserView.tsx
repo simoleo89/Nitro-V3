@@ -95,7 +95,7 @@ const DirectionPicker: FC<DirectionPickerProps> = (props) => {
     );
 };
 
-export const WiredActionMoveRotateUserView: FC<{}> = (props) => {
+export const WiredActionMoveRotateUserView: FC = (props) => {
     const [movementDirection, setMovementDirection] = useState(-1);
     const [rotationDirection, setRotationDirection] = useState(-1);
     const { trigger = null, setIntParams = null } = useWired();

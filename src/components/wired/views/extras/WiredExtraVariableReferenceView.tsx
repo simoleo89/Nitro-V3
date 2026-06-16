@@ -79,7 +79,7 @@ const parseEditorData = (value: string): IVariableReferenceEditorData => {
     }
 };
 
-export const WiredExtraVariableReferenceView: FC<{}> = () => {
+export const WiredExtraVariableReferenceView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [variableName, setVariableName] = useState('');
     const [sourceRoomId, setSourceRoomId] = useState(0);

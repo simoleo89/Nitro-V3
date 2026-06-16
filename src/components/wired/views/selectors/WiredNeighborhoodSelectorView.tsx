@@ -201,7 +201,7 @@ const NeighborhoodGrid: FC<NeighborhoodGridProps> = (props) => {
     );
 };
 
-export const WiredNeighborhoodSelectorView: FC<{}> = () => {
+export const WiredNeighborhoodSelectorView: FC = () => {
     const [selectedTiles, setSelectedTiles] = useState<Tile[]>([]);
     const [filterExisting, setFilterExisting] = useState(false);
     const [invert, setInvert] = useState(false);

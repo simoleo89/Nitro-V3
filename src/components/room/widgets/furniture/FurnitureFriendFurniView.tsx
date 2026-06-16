@@ -10,7 +10,7 @@ import {
 } from '../../../../common';
 import { useFurnitureFriendFurniWidget } from '../../../../hooks';
 
-export const FurnitureFriendFurniView: FC<{}> = (props) => {
+export const FurnitureFriendFurniView: FC = (props) => {
     const {
         objectId = -1,
         type = 0,

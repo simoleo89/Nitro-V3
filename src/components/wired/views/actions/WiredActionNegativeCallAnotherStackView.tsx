@@ -4,7 +4,7 @@ import { useWired } from '../../../../hooks';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
-export const WiredActionNegativeCallAnotherStackView: FC<{}> = () => {
+export const WiredActionNegativeCallAnotherStackView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [furniSource, setFurniSource] = useState<number>(() => {
         if (trigger?.intData?.length >= 1) return trigger.intData[0];

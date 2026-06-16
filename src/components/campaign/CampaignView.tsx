@@ -13,7 +13,7 @@ import { CalendarItem, SendMessageComposer } from '../../api';
 import { useMessageEvent } from '../../hooks';
 import { CalendarView } from './CalendarView';
 
-export const CampaignView: FC<{}> = (props) => {
+export const CampaignView: FC = (props) => {
     const [calendarData, setCalendarData] = useState<CampaignCalendarData>(null);
     const [lastOpenAttempt, setLastOpenAttempt] = useState<number>(-1);
     const [receivedProducts, setReceivedProducts] = useState<Map<number, CalendarItem>>(new Map());

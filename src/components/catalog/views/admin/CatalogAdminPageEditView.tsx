@@ -41,7 +41,7 @@ const MODE_OPTIONS = [
     { value: 'BOTH', label: 'Both' },
 ];
 
-export const CatalogAdminPageEditView: FC<{}> = () => {
+export const CatalogAdminPageEditView: FC = () => {
     const { currentPage = null, rootNode = null } = useCatalogData();
     const { activeNodes = [], currentType = CatalogType.NORMAL } = useCatalogUiState();
     const catalogAdmin = useCatalogAdmin();

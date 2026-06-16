@@ -26,7 +26,7 @@ import { RoomThumbnailWidgetView } from './room-thumbnail/RoomThumbnailWidgetVie
 import { RoomToolsWidgetView } from './room-tools/RoomToolsWidgetView';
 import { WordQuizWidgetView } from './word-quiz/WordQuizWidgetView';
 
-export const RoomWidgetsView: FC<{}> = (props) => {
+export const RoomWidgetsView: FC = (props) => {
     const { roomSession = null } = useRoom();
     const { simpleAlert = null } = useNotification();
 

@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 
-export const WiredConditionDateRangeView: FC<{}> = (props) => {
+export const WiredConditionDateRangeView: FC = (props) => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const { trigger = null, setIntParams = null } = useWired();

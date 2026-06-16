@@ -4,7 +4,7 @@ import { Slider, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
 
-export const WiredConditionTimeElapsedMoreView: FC<{}> = (props) => {
+export const WiredConditionTimeElapsedMoreView: FC = (props) => {
     const [time, setTime] = useState(-1);
     const { trigger = null, setIntParams = null } = useWired();
 

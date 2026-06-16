@@ -58,7 +58,7 @@ const getTargetValue = (value: VariableTargetType) => {
     }
 };
 
-export const WiredTriggerVariableChangedView: FC<{}> = () => {
+export const WiredTriggerVariableChangedView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const {
         userVariableDefinitions = [],

@@ -5,7 +5,7 @@ import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 import { useWired } from '../../../../hooks';
 
-export const WiredActionToggleFurniStateView: FC<{}> = (props) => {
+export const WiredActionToggleFurniStateView: FC = (props) => {
     const { trigger = null, setIntParams = null } = useWired();
     const [toggleType, setToggleType] = useState<number>(() => {
         if (trigger?.intData?.length > 1) return trigger.intData[0];

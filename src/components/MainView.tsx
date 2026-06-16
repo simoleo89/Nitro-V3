@@ -58,7 +58,7 @@ import { WiredView } from './wired/WiredView';
 import { WiredCreatorToolsView } from './wired-tools/WiredCreatorToolsView';
 import { MentionsView } from './mentions';
 
-export const MainView: FC<{}> = (props) => {
+export const MainView: FC = (props) => {
     const [isReady, setIsReady] = useState(false);
     const [localizationVersion, setLocalizationVersion] = useState(0);
     const [mentionsVisible, setMentionsVisible] = useState(false);

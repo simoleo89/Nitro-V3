@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { LocalizeText } from '../../../../api';
 import { useCatalogActions, useCatalogUiState } from '../../../../hooks';
 
-export const CatalogBreadcrumbView: FC<{}> = () => {
+export const CatalogBreadcrumbView: FC = () => {
     const { activeNodes = [] } = useCatalogUiState();
     const { activateNode } = useCatalogActions();
 

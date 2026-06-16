@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { WiredFurniType } from '../../../../api';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
-export const WiredActionResetView: FC<{}> = (props) => {
+export const WiredActionResetView: FC = (props) => {
     return (
         <WiredActionBaseView
             hasSpecialInput={false}

@@ -3,7 +3,7 @@ import { GetConfigurationValue, LocalizeText } from '../../../../api';
 import { Button, NitroCardContentView, NitroCardHeaderView, NitroCardView, Text } from '../../../../common';
 import { usePetPackageWidget } from '../../../../hooks';
 
-export const PetPackageWidgetView: FC<{}> = (props) => {
+export const PetPackageWidgetView: FC = (props) => {
     const {
         isVisible = false,
         errorResult = null,

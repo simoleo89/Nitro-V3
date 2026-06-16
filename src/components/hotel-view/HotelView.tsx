@@ -47,7 +47,7 @@ const SKY_COLORS: Record<string, string> = {
     night: '#000000',
 };
 
-export const HotelView: FC<{}> = (props) => {
+export const HotelView: FC = (props) => {
     const configBgColor = GetConfigurationValue('hotelview')['images']['background.colour'];
 
     const timezone = GetConfigurationValue<string>('timezone.settings', '');

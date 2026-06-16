@@ -5,7 +5,7 @@ import { WiredActionLayoutView } from './views/actions/WiredActionLayoutView';
 import { WiredConditionLayoutView } from './views/conditions/WiredConditionLayoutView';
 import { WiredTriggerLayoutView } from './views/triggers/WiredTriggerLayoutView';
 
-export const WiredView: FC<{}> = (props) => {
+export const WiredView: FC = (props) => {
     const { trigger = null } = useWired();
 
     if (!trigger) return null;

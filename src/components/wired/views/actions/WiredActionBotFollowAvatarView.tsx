@@ -9,7 +9,7 @@ import { BOT_SOURCES, WiredSourcesSelector } from '../WiredSourcesSelector';
 const normalizeBotSource = (value: number, hasBotName = false) =>
     BOT_SOURCES.some((option) => option.value === value) ? value : hasBotName ? 100 : 0;
 
-export const WiredActionBotFollowAvatarView: FC<{}> = (props) => {
+export const WiredActionBotFollowAvatarView: FC = (props) => {
     const [botName, setBotName] = useState('');
     const [followMode, setFollowMode] = useState(-1);
     const { trigger = null, setStringParam = null, setIntParams = null } = useWired();

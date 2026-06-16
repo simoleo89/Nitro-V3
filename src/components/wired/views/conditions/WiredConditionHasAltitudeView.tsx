@@ -36,7 +36,7 @@ const parseAltitude = (value: string) => {
     return clampAltitude(parsed);
 };
 
-export const WiredConditionHasAltitudeView: FC<{}> = () => {
+export const WiredConditionHasAltitudeView: FC = () => {
     const {
         trigger = null,
         setIntParams = null,

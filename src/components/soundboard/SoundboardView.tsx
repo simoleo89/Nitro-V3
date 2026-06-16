@@ -5,7 +5,7 @@ import { Column, Flex, Text } from '../../common';
 import { useSoundboard } from '../../hooks';
 import { NitroCard } from '../../layout';
 
-export const SoundboardView: FC<{}> = () => {
+export const SoundboardView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const { enabled, sounds, lastPlayed, play } = useSoundboard();
 

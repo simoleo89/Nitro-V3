@@ -8,7 +8,7 @@ import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
 const rotationOptions: number[] = [0, 1, 2, 3, 4, 5, 6];
 
-export const WiredActionMoveAndRotateFurniView: FC<{}> = (props) => {
+export const WiredActionMoveAndRotateFurniView: FC = (props) => {
     const [movement, setMovement] = useState(-1);
     const [rotation, setRotation] = useState(-1);
     const [blockOnUserCollision, setBlockOnUserCollision] = useState(false);

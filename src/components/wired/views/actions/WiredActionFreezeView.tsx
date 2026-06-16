@@ -13,7 +13,7 @@ const EFFECT_OPTIONS = [
     { value: 163, label: 'fx_163' },
 ];
 
-export const WiredActionFreezeView: FC<{}> = () => {
+export const WiredActionFreezeView: FC = () => {
     const [effectId, setEffectId] = useState(218);
     const [cancelOnTeleport, setCancelOnTeleport] = useState(false);
     const [userSource, setUserSource] = useState(0);

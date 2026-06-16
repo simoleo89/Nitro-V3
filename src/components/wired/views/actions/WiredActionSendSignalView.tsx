@@ -35,7 +35,7 @@ const serializeForwardIds = (ids: number[]): string => {
     return ids.filter((id) => id > 0).join(FORWARD_ITEM_DELIMITER);
 };
 
-export const WiredActionSendSignalView: FC<{}> = () => {
+export const WiredActionSendSignalView: FC = () => {
     const [furniSource, setFurniSource] = useState<number>(SOURCE_TRIGGER);
     const [userSource, setUserSource] = useState<number>(SOURCE_TRIGGER);
     const [signalPerFurni, setSignalPerFurni] = useState(false);

@@ -17,7 +17,7 @@ import { NitroInput } from '../../../../../../layout';
 
 let isPostingMarketplaceOffer = false;
 
-export const MarketplacePostOfferView: FC<{}> = (props) => {
+export const MarketplacePostOfferView: FC = (props) => {
     const [item, setItem] = useState<FurnitureItem>(null);
     const [askingPrice, setAskingPrice] = useState(0);
     const [tempAskingPrice, setTempAskingPrice] = useState('0');

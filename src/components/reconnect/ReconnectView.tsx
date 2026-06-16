@@ -3,7 +3,7 @@ import { FC, useCallback, useState } from 'react';
 import { Base, Column, Text } from '../../common';
 import { useNitroEvent } from '../../hooks';
 
-export const ReconnectView: FC<{}> = (props) => {
+export const ReconnectView: FC = (props) => {
     const [isReconnecting, setIsReconnecting] = useState(false);
     const [attempt, setAttempt] = useState(0);
     const [maxAttempts, setMaxAttempts] = useState(0);

@@ -30,7 +30,7 @@ const buildModifyOptions = (): RoomAccessOption[] => [
     { bit: WIRED_ACCESS_GROUP_ADMINS, label: 'Group admins' },
 ];
 
-export const WiredToolsSettingsTabView: FC<{}> = () => {
+export const WiredToolsSettingsTabView: FC = () => {
     const { roomSession = null } = useRoom();
     const { showConfirm = null } = useNotification();
     const { accountPreferences, roomSettings, saveRoomSettings, updateAccountPreferences } = useWiredTools();

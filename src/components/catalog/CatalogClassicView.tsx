@@ -25,7 +25,7 @@ import { CatalogSearchView } from './views/page/common/CatalogSearchView';
 import { GetCatalogLayout } from './views/page/layout/GetCatalogLayout';
 import { MarketplacePostOfferView } from './views/page/layout/marketplace/MarketplacePostOfferView';
 
-const CatalogClassicViewInner: FC<{}> = () => {
+const CatalogClassicViewInner: FC = () => {
     const { rootNode = null, currentPage = null, currentOffer = null, searchResult = null } = useCatalogData();
     const {
         isVisible = false,
@@ -418,7 +418,7 @@ const CatalogClassicViewInner: FC<{}> = () => {
     );
 };
 
-export const CatalogClassicView: FC<{}> = () => {
+export const CatalogClassicView: FC = () => {
     return (
         <CatalogAdminProvider>
             <CatalogClassicViewInner />

@@ -467,7 +467,7 @@ const MetricCard: FC<{ title: string; value: string; subtitle?: string; accent?:
     );
 };
 
-export const EmuStatsView: FC<{}> = () => {
+export const EmuStatsView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>(null);

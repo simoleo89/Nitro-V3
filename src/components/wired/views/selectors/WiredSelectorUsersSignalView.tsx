@@ -4,7 +4,7 @@ import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
-export const WiredSelectorUsersSignalView: FC<{}> = () => {
+export const WiredSelectorUsersSignalView: FC = () => {
     const [filterExisting, setFilterExisting] = useState(false);
     const [invert, setInvert] = useState(false);
     const { trigger = null, setIntParams = null } = useWired();

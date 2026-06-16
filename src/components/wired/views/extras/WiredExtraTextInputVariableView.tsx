@@ -57,7 +57,7 @@ const escapeHtml = (value: string) =>
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
-export const WiredExtraTextInputVariableView: FC<{}> = () => {
+export const WiredExtraTextInputVariableView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const { contextVariableDefinitions = [] } = useWiredTools();
     const [variableToken, setVariableToken] = useState('');

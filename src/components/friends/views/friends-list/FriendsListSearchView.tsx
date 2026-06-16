@@ -14,7 +14,7 @@ import { useFriends, useMessageEvent } from '../../../../hooks';
 import { resolveAvatarFigure } from './resolveAvatarFigure';
 import { resolveAvatarGender } from './resolveAvatarGender';
 
-interface FriendsSearchViewProps extends NitroCardAccordionSetViewProps {}
+type FriendsSearchViewProps = NitroCardAccordionSetViewProps;
 
 export const FriendsSearchView: FC<FriendsSearchViewProps> = (props) => {
     const { ...rest } = props;

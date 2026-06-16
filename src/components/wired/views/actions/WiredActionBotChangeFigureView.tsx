@@ -11,7 +11,7 @@ const DEFAULT_FIGURE: string = 'hd-180-1.ch-210-66.lg-270-82.sh-290-81';
 const normalizeBotSource = (value: number, hasBotName = false) =>
     BOT_SOURCES.some((option) => option.value === value) ? value : hasBotName ? 100 : 0;
 
-export const WiredActionBotChangeFigureView: FC<{}> = (props) => {
+export const WiredActionBotChangeFigureView: FC = (props) => {
     const [botName, setBotName] = useState('');
     const [figure, setFigure] = useState('');
     const [botSource, setBotSource] = useState<number>(100);

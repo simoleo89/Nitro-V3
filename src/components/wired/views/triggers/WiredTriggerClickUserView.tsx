@@ -4,7 +4,7 @@ import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredTriggerBaseView } from './WiredTriggerBaseView';
 
-export const WiredTriggerClickUserView: FC<{}> = () => {
+export const WiredTriggerClickUserView: FC = () => {
     const [blockMenuOpen, setBlockMenuOpen] = useState(false);
     const [doNotRotate, setDoNotRotate] = useState(false);
     const { trigger = null, setIntParams = null } = useWired();

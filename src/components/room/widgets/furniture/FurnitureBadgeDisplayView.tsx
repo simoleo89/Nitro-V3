@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { LayoutTrophyView } from '../../../../common';
 import { useFurnitureBadgeDisplayWidget } from '../../../../hooks';
 
-export const FurnitureBadgeDisplayView: FC<{}> = (props) => {
+export const FurnitureBadgeDisplayView: FC = (props) => {
     const {
         objectId = -1,
         color = '1',

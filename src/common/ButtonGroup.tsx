@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { Base, BaseProps } from './Base';
 
-export interface ButtonGroupProps extends BaseProps<HTMLDivElement> {}
+export type ButtonGroupProps = BaseProps<HTMLDivElement>;
 
 export const ButtonGroup: FC<ButtonGroupProps> = (props) => {
     const { classNames = [], ...rest } = props;

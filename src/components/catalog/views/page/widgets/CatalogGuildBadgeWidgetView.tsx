@@ -3,7 +3,7 @@ import { FC, useMemo } from 'react';
 import { BaseProps, LayoutBadgeImageView } from '../../../../../common';
 import { useCatalogData, useCatalogUiState } from '../../../../../hooks';
 
-interface CatalogGuildBadgeWidgetViewProps extends BaseProps<HTMLDivElement> {}
+type CatalogGuildBadgeWidgetViewProps = BaseProps<HTMLDivElement>;
 
 export const CatalogGuildBadgeWidgetView: FC<CatalogGuildBadgeWidgetViewProps> = (props) => {
     const { ...rest } = props;

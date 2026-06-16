@@ -34,7 +34,7 @@ import {
 import { useMessageEvent, useNotification } from '../../../hooks';
 import { classNames } from '../../../layout';
 
-export const GroupMembersView: FC<{}> = (props) => {
+export const GroupMembersView: FC = (props) => {
     const [groupId, setGroupId] = useState<number>(-1);
     const [levelId, setLevelId] = useState<number>(-1);
     const [membersData, setMembersData] = useState<GroupMembersParser>(null);

@@ -6,7 +6,7 @@ import { WiredTriggerBaseView } from './WiredTriggerBaseView';
 
 const TEAM_TYPES = [0, 1, 2, 3, 4];
 
-export const WiredTriggeScoreAchievedView: FC<{}> = (props) => {
+export const WiredTriggeScoreAchievedView: FC = (props) => {
     const [points, setPoints] = useState(1);
     const [teamType, setTeamType] = useState(0);
     const { trigger = null, setIntParams = null } = useWired();

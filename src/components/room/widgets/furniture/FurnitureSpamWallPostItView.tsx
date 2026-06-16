@@ -14,7 +14,7 @@ const getStickieColorName = (color: string) => {
     return STICKIE_COLOR_NAMES[index];
 };
 
-export const FurnitureSpamWallPostItView: FC<{}> = (props) => {
+export const FurnitureSpamWallPostItView: FC = (props) => {
     const {
         objectId = -1,
         color = '0',

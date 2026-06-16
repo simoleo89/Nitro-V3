@@ -5,7 +5,7 @@ import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
-export const WiredSelectorUsersAreaView: FC<{}> = (props) => {
+export const WiredSelectorUsersAreaView: FC = (props) => {
     const [rootX, setRootX] = useState(0);
     const [rootY, setRootY] = useState(0);
     const [areaWidth, setAreaWidth] = useState(0);

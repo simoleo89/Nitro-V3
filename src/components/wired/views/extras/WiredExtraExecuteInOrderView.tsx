@@ -3,7 +3,7 @@ import { WiredFurniType } from '../../../../api';
 import { useWired } from '../../../../hooks';
 import { WiredExtraBaseView } from './WiredExtraBaseView';
 
-export const WiredExtraExecuteInOrderView: FC<{}> = () => {
+export const WiredExtraExecuteInOrderView: FC = () => {
     const { setIntParams = null, setStringParam = null } = useWired();
 
     const save = () => {

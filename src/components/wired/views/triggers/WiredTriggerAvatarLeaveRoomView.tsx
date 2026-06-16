@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
 import { WiredTriggerBaseView } from './WiredTriggerBaseView';
 
-export const WiredTriggerAvatarLeaveRoomView: FC<{}> = (props) => {
+export const WiredTriggerAvatarLeaveRoomView: FC = (props) => {
     const [username, setUsername] = useState('');
     const [avatarMode, setAvatarMode] = useState(0);
     const { trigger = null, setStringParam = null } = useWired();

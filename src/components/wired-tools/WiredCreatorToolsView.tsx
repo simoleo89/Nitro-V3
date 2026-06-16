@@ -123,7 +123,7 @@ import { WiredMonitorTabView } from './WiredMonitorTabView';
 import { WiredToolsSettingsTabView } from './WiredToolsSettingsTabView';
 import { WiredVariablesTabView } from './WiredVariablesTabView';
 
-export const WiredCreatorToolsView: FC<{}> = () => {
+export const WiredCreatorToolsView: FC = () => {
     const isVisible = useWiredCreatorToolsUiStore((s) => s.isVisible);
     const setIsVisible = useWiredCreatorToolsUiStore((s) => s.setIsVisible);
     const activeTab = useWiredCreatorToolsUiStore((s) => s.activeTab);

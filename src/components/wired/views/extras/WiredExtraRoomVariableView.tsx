@@ -46,7 +46,7 @@ const handleVariableNameKeyDown = (event: React.KeyboardEvent<HTMLInputElement>,
     );
 };
 
-export const WiredExtraRoomVariableView: FC<{}> = () => {
+export const WiredExtraRoomVariableView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [variableName, setVariableName] = useState('');
     const [availability, setAvailability] = useState(AVAILABILITY_ROOM_ACTIVE);

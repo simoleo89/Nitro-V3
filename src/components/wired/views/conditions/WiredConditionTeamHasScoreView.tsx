@@ -17,7 +17,7 @@ const clampScore = (value: number) => {
     return Math.max(MIN_SCORE, Math.min(MAX_SCORE, Math.floor(value)));
 };
 
-export const WiredConditionTeamHasScoreView: FC<{}> = () => {
+export const WiredConditionTeamHasScoreView: FC = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [team, setTeam] = useState(1);
     const [comparison, setComparison] = useState(1);

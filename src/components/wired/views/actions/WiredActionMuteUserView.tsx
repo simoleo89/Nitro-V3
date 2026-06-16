@@ -6,7 +6,7 @@ import { NitroInput } from '../../../../layout';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionMuteUserView: FC<{}> = (props) => {
+export const WiredActionMuteUserView: FC = (props) => {
     const [time, setTime] = useState(-1);
     const [message, setMessage] = useState('');
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();

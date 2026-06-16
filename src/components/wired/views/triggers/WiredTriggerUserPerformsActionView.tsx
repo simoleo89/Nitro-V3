@@ -42,7 +42,7 @@ const DANCE_OPTIONS = [
     { value: 4, label: 'widget.memenu.dance4' },
 ];
 
-export const WiredTriggerUserPerformsActionView: FC<{}> = () => {
+export const WiredTriggerUserPerformsActionView: FC = () => {
     const [selectedAction, setSelectedAction] = useState(ACTION_WAVE);
     const [signFilterEnabled, setSignFilterEnabled] = useState(false);
     const [signId, setSignId] = useState(0);

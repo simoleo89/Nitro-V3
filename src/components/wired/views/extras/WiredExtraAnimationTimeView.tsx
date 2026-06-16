@@ -15,7 +15,7 @@ const normalizeDuration = (value: number) => {
     return Math.max(MIN_DURATION, Math.min(MAX_DURATION, Math.round(value / STEP_DURATION) * STEP_DURATION));
 };
 
-export const WiredExtraAnimationTimeView: FC<{}> = () => {
+export const WiredExtraAnimationTimeView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [duration, setDuration] = useState(DEFAULT_DURATION);
 

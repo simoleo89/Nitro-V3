@@ -44,7 +44,7 @@ const serializeIds = (ids: number[]): string => {
     return ids.filter((id) => id > 0).join(FURNI_DELIMITER);
 };
 
-export const WiredActionFurniToFurniView: FC<{}> = () => {
+export const WiredActionFurniToFurniView: FC = () => {
     const [moveSource, setMoveSource] = useState<number>(SOURCE_TRIGGER);
     const [targetSource, setTargetSource] = useState<number>(SOURCE_TRIGGER);
     const [moveFurniIds, setMoveFurniIds] = useState<number[]>([]);

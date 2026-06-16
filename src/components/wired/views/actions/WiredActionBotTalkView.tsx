@@ -10,7 +10,7 @@ import { BOT_SOURCES, WiredSourcesSelector } from '../WiredSourcesSelector';
 const normalizeBotSource = (value: number, hasBotName = false) =>
     BOT_SOURCES.some((option) => option.value === value) ? value : hasBotName ? 100 : 0;
 
-export const WiredActionBotTalkView: FC<{}> = (props) => {
+export const WiredActionBotTalkView: FC = (props) => {
     const [botName, setBotName] = useState('');
     const [message, setMessage] = useState('');
     const [talkMode, setTalkMode] = useState(-1);

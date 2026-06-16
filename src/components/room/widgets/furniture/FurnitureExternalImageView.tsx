@@ -5,7 +5,7 @@ import { NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../
 import { useFurnitureExternalImageWidget, useHelp } from '../../../../hooks';
 import { CameraWidgetShowPhotoView } from '../../../camera/views/CameraWidgetShowPhotoView';
 
-export const FurnitureExternalImageView: FC<{}> = (props) => {
+export const FurnitureExternalImageView: FC = (props) => {
     const {
         objectId = -1,
         currentPhotoIndex = -1,

@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useCatalogData } from '../../../../../hooks';
 import { CatalogPriceDisplayWidgetView } from './CatalogPriceDisplayWidgetView';
 
-export const CatalogSimplePriceWidgetView: FC<{}> = (props) => {
+export const CatalogSimplePriceWidgetView: FC = (props) => {
     const { currentOffer = null } = useCatalogData();
 
     return (

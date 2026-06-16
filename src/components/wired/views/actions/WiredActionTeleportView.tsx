@@ -6,7 +6,7 @@ import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredActionLayoutCode } from '../../../../api/wired/WiredActionLayoutCode';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionTeleportView: FC<{}> = (props) => {
+export const WiredActionTeleportView: FC = (props) => {
     const { trigger = null, setIntParams = null } = useWired();
     const isTeleportEffect = trigger?.code === WiredActionLayoutCode.TELEPORT;
     const isUserToFurniEffect = trigger?.code === WiredActionLayoutCode.USER_TO_FURNI;

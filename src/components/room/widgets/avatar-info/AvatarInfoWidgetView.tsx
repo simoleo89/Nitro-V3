@@ -38,7 +38,7 @@ import { AvatarInfoWidgetOwnPetView } from './menu/AvatarInfoWidgetOwnPetView';
 import { AvatarInfoWidgetPetView } from './menu/AvatarInfoWidgetPetView';
 import { AvatarInfoWidgetRentableBotView } from './menu/AvatarInfoWidgetRentableBotView';
 
-export const AvatarInfoWidgetView: FC<{}> = (props) => {
+export const AvatarInfoWidgetView: FC = (props) => {
     const BLOCK_MENU_WINDOW_MS = 500;
     const BLOCK_ROTATE_WINDOW_MS = 500;
     const [isGameMode, setGameMode] = useState(false);

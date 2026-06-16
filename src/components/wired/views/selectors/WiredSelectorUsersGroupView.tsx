@@ -7,7 +7,7 @@ import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 const GROUP_CURRENT_ROOM = 0;
 const GROUP_SELECTED = 1;
 
-export const WiredSelectorUsersGroupView: FC<{}> = () => {
+export const WiredSelectorUsersGroupView: FC = () => {
     const { data: groups = [] } = useUserGroups();
     const [groupType, setGroupType] = useState(GROUP_CURRENT_ROOM);
     const [selectedGroupId, setSelectedGroupId] = useState(0);

@@ -12,7 +12,7 @@ import { SelectReportedUserView } from './views/SelectReportedUserView';
 import { SelectTopicView } from './views/SelectTopicView';
 import { NameChangeView } from './views/name-change/NameChangeView';
 
-export const HelpView: FC<{}> = (props) => {
+export const HelpView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const { activeReport = null, setActiveReport = null, report = null } = useHelp();
 

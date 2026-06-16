@@ -30,7 +30,7 @@ const TABS: string[] = [
     'product.type.other',
 ];
 
-export const NavigatorRoomSettingsView: FC<{}> = (props) => {
+export const NavigatorRoomSettingsView: FC = (props) => {
     const [roomData, setRoomData] = useState<IRoomData>(null);
     const [currentTab, setCurrentTab] = useState(TABS[0]);
 

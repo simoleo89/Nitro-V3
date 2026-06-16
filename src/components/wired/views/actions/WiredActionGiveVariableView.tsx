@@ -60,7 +60,7 @@ const getTargetValue = (value: VariableTargetType) => {
     }
 };
 
-export const WiredActionGiveVariableView: FC<{}> = () => {
+export const WiredActionGiveVariableView: FC = () => {
     const {
         trigger = null,
         furniIds = [],

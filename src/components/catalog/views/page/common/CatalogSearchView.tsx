@@ -15,7 +15,7 @@ import {
 } from '../../../../../api';
 import { useCatalogData, useCatalogUiState } from '../../../../../hooks';
 
-export const CatalogSearchView: FC<{}> = () => {
+export const CatalogSearchView: FC = () => {
     const [searchValue, setSearchValue] = useState('');
     const { rootNode = null, searchResult = null } = useCatalogData();
     const { currentType = null, setSearchResult = null, setCurrentPage = null } = useCatalogUiState();

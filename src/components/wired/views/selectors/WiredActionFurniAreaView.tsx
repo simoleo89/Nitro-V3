@@ -5,7 +5,7 @@ import { Button, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredSelectorBaseView } from './WiredSelectorBaseView';
 
-export const WiredActionFurniAreaView: FC<{}> = (props) => {
+export const WiredActionFurniAreaView: FC = (props) => {
     const [rootX, setRootX] = useState(0);
     const [rootY, setRootY] = useState(0);
     const [areaWidth, setAreaWidth] = useState(0);

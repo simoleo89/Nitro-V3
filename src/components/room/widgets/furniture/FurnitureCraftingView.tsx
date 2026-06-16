@@ -13,7 +13,7 @@ import {
 } from '../../../../common';
 import { useFurnitureCraftingWidget, useRoom } from '../../../../hooks';
 
-export const FurnitureCraftingView: FC<{}> = (props) => {
+export const FurnitureCraftingView: FC = (props) => {
     const {
         objectId = -1,
         recipes = [],

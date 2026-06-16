@@ -52,7 +52,7 @@ const escapeHtml = (value: string) =>
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
 
-export const WiredExtraTextOutputUsernameView: FC<{}> = () => {
+export const WiredExtraTextOutputUsernameView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [placeholderName, setPlaceholderName] = useState(DEFAULT_PLACEHOLDER_NAME);
     const [placeholderType, setPlaceholderType] = useState(TYPE_SINGLE);

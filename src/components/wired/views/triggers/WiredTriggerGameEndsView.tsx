@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { WiredFurniType } from '../../../../api';
 import { WiredTriggerBaseView } from './WiredTriggerBaseView';
 
-export const WiredTriggerGameEndsView: FC<{}> = (props) => {
+export const WiredTriggerGameEndsView: FC = (props) => {
     return (
         <WiredTriggerBaseView
             hasSpecialInput={false}

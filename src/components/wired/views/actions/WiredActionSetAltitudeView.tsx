@@ -47,7 +47,7 @@ const normalizeOperator = (value: number) => {
     return value;
 };
 
-export const WiredActionSetAltitudeView: FC<{}> = () => {
+export const WiredActionSetAltitudeView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
 
     const [operator, setOperator] = useState(2);

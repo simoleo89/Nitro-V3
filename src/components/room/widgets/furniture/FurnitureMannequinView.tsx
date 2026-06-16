@@ -26,7 +26,7 @@ const MODE_PEER: number = 2;
 const MODE_NO_CLUB: number = 3;
 const MODE_WRONG_GENDER: number = 4;
 
-export const FurnitureMannequinView: FC<{}> = (props) => {
+export const FurnitureMannequinView: FC = (props) => {
     const [renderedFigure, setRenderedFigure] = useState<string>(null);
     const [mode, setMode] = useState(MODE_NONE);
     const {

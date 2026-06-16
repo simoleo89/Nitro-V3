@@ -20,7 +20,7 @@ const normalizeCarryMode = (value: number) =>
     value === CARRY_MODE_SAME_TILE ? CARRY_MODE_SAME_TILE : CARRY_MODE_DIRECT;
 const normalizeUserSource = (value: number) => (USER_SOURCES.some((option) => option.value === value) ? value : 0);
 
-export const WiredExtraMoveCarryUsersView: FC<{}> = () => {
+export const WiredExtraMoveCarryUsersView: FC = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
     const [carryMode, setCarryMode] = useState(CARRY_MODE_DIRECT);
     const [userSource, setUserSource] = useState(0);

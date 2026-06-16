@@ -162,7 +162,7 @@ export const WiredExtraVariableView: FC<WiredExtraVariableViewProps> = (props) =
     );
 };
 
-export const WiredExtraUserVariableView: FC<{}> = () => {
+export const WiredExtraUserVariableView: FC = () => {
     return (
         <WiredExtraVariableView
             availabilityRadioName="wiredUserVariableAvailability"

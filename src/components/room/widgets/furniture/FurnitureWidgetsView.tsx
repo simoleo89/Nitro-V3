@@ -21,7 +21,7 @@ import { FurnitureYoutubeDisplayView } from './FurnitureYoutubeDisplayView';
 import { FurnitureContextMenuView } from './context-menu/FurnitureContextMenuView';
 import { FurniturePlaylistEditorWidgetView } from './playlist-editor/FurniturePlaylistEditorWidgetView';
 
-export const FurnitureWidgetsView: FC<{}> = (props) => {
+export const FurnitureWidgetsView: FC = (props) => {
     return (
         <>
             <WidgetErrorBoundary name="FurnitureAreaHide">

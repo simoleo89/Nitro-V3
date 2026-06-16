@@ -4,7 +4,7 @@ import { Slider, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredTriggerBaseView } from './WiredTriggerBaseView';
 
-export const WiredTriggeExecuteOnceView: FC<{}> = (props) => {
+export const WiredTriggeExecuteOnceView: FC = (props) => {
     const [time, setTime] = useState(1);
     const { trigger = null, setIntParams = null } = useWired();
 

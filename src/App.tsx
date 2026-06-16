@@ -85,7 +85,7 @@ const asStringArray = (value: unknown): string[] => {
 
 const hasRememberLogin = (): boolean => !!GetRememberLogin();
 
-export const App: FC<{}> = (props) => {
+export const App: FC = (props) => {
     const [isReady, setIsReady] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [homeUrl, setHomeUrl] = useState('');

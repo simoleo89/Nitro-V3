@@ -205,7 +205,7 @@ const loadGridFromUrl = (url: string): Promise<Uint32Array> =>
         image.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
     });
 
-export const BadgeCreatorView: FC<{}> = () => {
+export const BadgeCreatorView: FC = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [grid, setGrid] = useState<Uint32Array>(() => emptyGrid());
     const [selectedColor, setSelectedColor] = useState<number>(PALETTE[0]);

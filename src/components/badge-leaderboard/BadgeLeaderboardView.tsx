@@ -78,7 +78,7 @@ const RARITY_ASSETS: Record<BadgeRarityKey, { frame: string; emblem: string }> =
 const RARITY_ORDER: BadgeRarityKey[] = ['common', 'rare', 'epic', 'legendary', 'mythical', 'unique'];
 const PAGE_SIZE = 10;
 
-export const BadgeLeaderboardView: FC<{}> = (props) => {
+export const BadgeLeaderboardView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [loadError, setLoadError] = useState<string>(null);

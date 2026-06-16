@@ -58,7 +58,7 @@ const getTargetValue = (value: VariableTargetType) => {
     }
 };
 
-export const WiredActionRemoveVariableView: FC<{}> = () => {
+export const WiredActionRemoveVariableView: FC = () => {
     const {
         trigger = null,
         furniIds = [],

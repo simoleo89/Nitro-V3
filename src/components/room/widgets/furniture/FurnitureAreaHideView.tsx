@@ -12,7 +12,7 @@ import {
 } from '../../../../common';
 import { useFurnitureAreaHideWidget } from '../../../../hooks';
 
-export const FurnitureAreaHideView: FC<{}> = (props) => {
+export const FurnitureAreaHideView: FC = (props) => {
     const {
         objectId = -1,
         isOn,

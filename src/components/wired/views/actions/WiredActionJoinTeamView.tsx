@@ -5,7 +5,7 @@ import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 
-export const WiredActionJoinTeamView: FC<{}> = (props) => {
+export const WiredActionJoinTeamView: FC = (props) => {
     const [selectedTeamType, setSelectedTeamType] = useState(0);
     const [selectedTeam, setSelectedTeam] = useState(1);
     const { trigger = null, setIntParams = null } = useWired();

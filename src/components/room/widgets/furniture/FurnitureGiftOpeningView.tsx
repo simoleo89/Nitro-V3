@@ -13,7 +13,7 @@ import {
 } from '../../../../common';
 import { useFurniturePresentWidget, useInventoryFurni } from '../../../../hooks';
 
-export const FurnitureGiftOpeningView: FC<{}> = (props) => {
+export const FurnitureGiftOpeningView: FC = (props) => {
     const {
         objectId = -1,
         classId = -1,

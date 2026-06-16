@@ -45,7 +45,7 @@ const extraDirectionOptions: { value: number; icon: string }[] = [
 
 const rotationOptions: number[] = [0, 1, 2, 3];
 
-export const WiredActionMoveFurniView: FC<{}> = (props) => {
+export const WiredActionMoveFurniView: FC = (props) => {
     const [movement, setMovement] = useState(-1);
     const [rotation, setRotation] = useState(-1);
     const { trigger = null, setIntParams = null } = useWired();

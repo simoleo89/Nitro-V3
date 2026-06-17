@@ -202,6 +202,14 @@ export const useFurniEditor = () => {
         if (!parser.success) {
             setError(parser.message || 'Operation failed');
 
+            // updateFurnidata applies an optimistic publicName change before the
+            // server replies. On failure (e.g. a sprite-id collision when creating
+            // an entry for a variant furni) re-fetch the detail so the UI reverts
+            // to the true state instead of showing the name that was never applied.
+            if (actionItemId) {
+                SendMessageComposer(new FurniEditorDetailComposer(actionItemId));
+            }
+
             if (simpleAlert) {
                 simpleAlert(
                     parser.message || 'Operation failed',
@@ -289,6 +297,16 @@ export const useFurniEditor = () => {
         SendMessageComposer(new FurniEditorRevertFurnidataComposer(id));
     }, []);
 
+    // Fill an empty items_base.public_name from the furnidata display name. Reuses
+    // the generic item update (a partial { publicName } payload is accepted), so the
+    // existing 'update' result path shows the toast and re-fetches the detail.
+    const syncPublicName = useCallback((id: number, name: string) => {
+        setLoading(true);
+        setError(null);
+        pendingActionRef.current = { action: 'update', itemId: id };
+        SendMessageComposer(new FurniEditorUpdateComposer(id, JSON.stringify({ publicName: name })));
+    }, []);
+
     const importText = useCallback((id: number) => {
         setLoading(true);
         setError(null);
@@ -334,6 +352,7 @@ export const useFurniEditor = () => {
         loadInteractions,
         updateFurnidata,
         revertFurnidata,
+        syncPublicName,
         importText,
         importResult,
     };

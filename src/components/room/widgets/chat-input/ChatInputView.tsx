@@ -22,7 +22,7 @@ import { ChatInputEmojiSelectorView } from './ChatInputEmojiSelectorView';
 import { ChatInputMentionSelectorView } from './ChatInputMentionSelectorView';
 import { ChatInputStyleSelectorView } from './ChatInputStyleSelectorView';
 
-export const ChatInputView: FC = (props) => {
+export const ChatInputView: FC<{}> = (props) => {
     const [chatValue, setChatValue] = useState<string>('');
     const { chatStyleId = 0, updateChatStyleId = null } = useSessionInfo();
     const {
@@ -351,7 +351,7 @@ export const ChatInputView: FC = (props) => {
     if (!roomSession || roomSession.isSpectator) return null;
 
     return createPortal(
-        <div className="nitro-chat-input-container relative flex h-[38px] w-full items-center justify-between overflow-visible rounded-[12px] border-2 border-black bg-white pr-[8px]">
+        <div className="nitro-chat-input-container relative flex h-[38px] w-full items-center justify-between gap-[6px] overflow-visible rounded-[12px] border-2 border-black bg-[#dcdcdc] pl-[8px] pr-[8px]">
             {commandSelectorVisible && (
                 <ChatInputCommandSelectorView
                     commands={filteredCommands}
@@ -371,8 +371,13 @@ export const ChatInputView: FC = (props) => {
                     onHover={mention.setSelectedIndex}
                 />
             )}
-            <div className="flex-1 items-center input-sizer">
-                {!floodBlocked && (
+            <ChatInputStyleSelectorView
+                chatStyleId={chatStyleId}
+                chatStyleIds={chatStyleIds}
+                selectChatStyleId={updateChatStyleId}
+            />
+            {!floodBlocked && (
+                <div className="flex-1 items-center input-sizer">
                     <input
                         ref={inputRef}
                         className="w-full border-none bg-transparent px-[10px] text-[0.86rem] text-black placeholder:text-[#6c757d] focus:border-current focus:shadow-none focus:ring-0"
@@ -383,19 +388,19 @@ export const ChatInputView: FC = (props) => {
                         onChange={(event) => updateChatInput(event.target.value)}
                         onMouseDown={(event) => setInputFocus()}
                     />
-                )}
-                {floodBlocked && (
-                    <Text variant="danger">
-                        {LocalizeText('chat.input.alert.flood', ['time'], [floodBlockedSeconds.toString()])}{' '}
+                </div>
+            )}
+            {floodBlocked && (
+                <div className="flex min-w-0 flex-1 items-center px-[10px]">
+                    <Text
+                        variant="danger"
+                        className="w-full truncate whitespace-nowrap text-[0.8rem] font-bold leading-none"
+                    >
+                        {LocalizeText('chat.input.alert.flood', ['time'], [floodBlockedSeconds.toString()])}
                     </Text>
-                )}
-            </div>
+                </div>
+            )}
             <ChatInputEmojiSelectorView addChatEmoji={addChatEmoji} />
-            <ChatInputStyleSelectorView
-                chatStyleId={chatStyleId}
-                chatStyleIds={chatStyleIds}
-                selectChatStyleId={updateChatStyleId}
-            />
         </div>,
         document.getElementById('toolbar-chat-input-container'),
     );

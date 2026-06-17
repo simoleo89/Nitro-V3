@@ -4,7 +4,7 @@ import {
     RequestBadgesComposer,
     SetActivatedBadgesComposer,
 } from '@nitrots/nitro-renderer';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useBetween } from 'use-between';
 import { GetConfigurationValue, SendMessageComposer, UnseenItemCategory } from '../../api';
 import { useMessageEvent } from '../events';
@@ -21,7 +21,6 @@ const useInventoryBadgesState = () => {
     const { isUnseen = null, resetCategory = null } = useInventoryUnseenTracker();
 
     const maxBadgeCount = GetConfigurationValue<number>('user.badges.max.slots', 5);
-    const pendingUpdatesRef = useRef(0);
     const isWearingBadge = (badgeCode: string) => activeBadgeCodes.some((code) => code === badgeCode);
     const canWearBadges = () => activeBadgeCodes.filter(Boolean).length < maxBadgeCount;
 
@@ -36,7 +35,6 @@ const useInventoryBadgesState = () => {
     };
 
     const sendActiveBadges = (badges: (string | null)[]) => {
-        pendingUpdatesRef.current++;
         const composer = new SetActivatedBadgesComposer();
         for (let i = 0; i < maxBadgeCount; i++) composer.addActivatedBadge(badges[i] ?? '');
         SendMessageComposer(composer);
@@ -85,13 +83,14 @@ const useInventoryBadgesState = () => {
             return newValue;
         });
 
-        // Skip overwriting activeBadgeCodes if we have pending local changes
-        if (pendingUpdatesRef.current > 0) {
-            pendingUpdatesRef.current--;
-        } else {
-            const serverBadges = parser.getActiveBadgeCodes();
-            setActiveBadgeCodes(toFixedSlots(serverBadges));
-        }
+        // The emulator answers SetActivatedBadges (UserWearBadgeEvent) with a
+        // UserBadgesComposer room broadcast, NOT a BadgesEvent — so there is no
+        // echo to suppress and the old pendingUpdatesRef counter only ever
+        // leaked (incremented on every edit, never decremented), which then
+        // silently dropped legitimate later BadgesEvent updates. The server is
+        // authoritative here (edits are already persisted), so always apply it.
+        const serverBadges = parser.getActiveBadgeCodes();
+        setActiveBadgeCodes(toFixedSlots(serverBadges));
 
         setBadgeCodes(allBadgeCodes);
     });

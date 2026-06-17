@@ -14,6 +14,7 @@ interface FurniEditorEditViewProps {
     onBack: () => void;
     onUpdateFurnidata: (id: number, name: string, description: string) => void;
     onRevertFurnidata: (id: number) => void;
+    onSyncPublicName: (id: number, name: string) => void;
     onImportText: (id: number) => void;
     importResult: { found: boolean; name: string; description: string; classname: string; nonce: number } | null;
 }
@@ -151,6 +152,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
         onBack,
         onUpdateFurnidata,
         onRevertFurnidata,
+        onSyncPublicName,
         onImportText,
         importResult,
     } = props;
@@ -211,8 +213,8 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
         });
 
         setShowDeleteDialog(false);
-        setFurniName(String((furniDataEntry?.name as string) ?? ''));
-        setFurniDescription(String((furniDataEntry?.description as string) ?? ''));
+        setFurniName(String(furniDataEntry?.name ?? ''));
+        setFurniDescription(String(furniDataEntry?.description ?? ''));
         setConfirmFurnidata(false);
         setImportNote('');
     }, [item, furniDataEntry]);
@@ -268,7 +270,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
     // cryptic "Classname not found in furnidata" error on save.
     const furnidataEditable = useMemo(() => {
         if (!furniDataEntry) return false;
-        const cn = String(((furniDataEntry as { classname?: unknown }).classname as string) ?? '')
+        const cn = String((furniDataEntry as { classname?: unknown }).classname ?? '')
             .trim()
             .toLowerCase();
         const itemCn = String(item?.itemName ?? '')
@@ -277,23 +279,37 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
         return cn ? cn === itemCn : true;
     }, [furniDataEntry, item]);
 
+    // No furnidata entry at all → the editor can CREATE one (the server upserts:
+    // it builds a complete entry from items_base on save). Distinct from the
+    // classname-mismatch case (an entry resolved by id but for a different
+    // classname), which stays locked to avoid an id collision.
+    const furnidataCreatable = useMemo(() => !furniDataEntry, [furniDataEntry]);
+
+    // Show a one-click "sync" when the DB public_name is empty but the (matching)
+    // furnidata entry already has a name — fills items_base.public_name from the
+    // stored furnidata name so the DB fallback stops being blank.
+    const canSyncPublicName = useMemo(
+        () => furnidataEditable && !String(form.publicName ?? '').trim() && !!String(furniDataEntry?.name ?? '').trim(),
+        [furnidataEditable, form.publicName, furniDataEntry],
+    );
+
     // True only when the name/description actually differ from the stored furnidata
     // entry. Used to gate the Save button: saving an unchanged value makes the
     // server writer return false, which the handler misreports as "Classname not
     // found in furnidata" — so we never let an unchanged save fire.
     const furnidataDirty = useMemo(
         () =>
-            furniName !== String((furniDataEntry?.name as string) ?? '') ||
-            furniDescription !== String((furniDataEntry?.description as string) ?? ''),
+            furniName !== String(furniDataEntry?.name ?? '') ||
+            furniDescription !== String(furniDataEntry?.description ?? ''),
         [furniName, furniDescription, furniDataEntry],
     );
 
     const furnidataMissReason = useMemo(() => {
-        const reason = String((furniDataDiagnostic?.reason as string) ?? '');
+        const reason = String(furniDataDiagnostic?.reason ?? '');
         return reason || 'not_found';
     }, [furniDataDiagnostic]);
 
-    const furnidataSourcePath = String((furniDataDiagnostic?.sourcePath as string) ?? '');
+    const furnidataSourcePath = String(furniDataDiagnostic?.sourcePath ?? '');
 
     // Apply an "Import from Habbo" result into the editable fields (review then Save).
     useEffect(() => {
@@ -413,6 +429,10 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                         <span className="text-[9px] font-semibold text-primary bg-primary/10 rounded-md px-1.5 py-0.5">
                             LIVE
                         </span>
+                    ) : furnidataCreatable ? (
+                        <span className="text-[9px] font-semibold text-emerald-700 bg-emerald-100 rounded-md px-1.5 py-0.5">
+                            NEW
+                        </span>
                     ) : (
                         <span className="text-[9px] font-semibold text-amber-700 bg-amber-100 rounded-md px-1.5 py-0.5">
                             NO FURNIDATA
@@ -422,7 +442,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                         <span className="ml-auto text-[10px] text-amber-600 font-medium">Unsaved</span>
                     )}
                 </div>
-                {furnidataEditable ? (
+                {furnidataEditable || furnidataCreatable ? (
                     <>
                         <div className="grid grid-cols-2 gap-2">
                             <div>
@@ -432,6 +452,7 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                                     value={furniName}
                                     onChange={(e) => setFurniName(e.target.value)}
                                     maxLength={256}
+                                    placeholder={furnidataCreatable ? form.publicName || form.itemName : undefined}
                                 />
                             </div>
                             <div>
@@ -447,37 +468,50 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                         <Flex gap={1} className="mt-1.5" alignItems="center">
                             <Button
                                 variant="success"
-                                disabled={loading || !furnidataDirty}
+                                disabled={furnidataEditable ? loading || !furnidataDirty : loading}
                                 onClick={() => setConfirmFurnidata(true)}
                             >
-                                Save name/desc
+                                {furnidataEditable ? 'Save name/desc' : 'Create entry'}
                             </Button>
-                            <Button variant="secondary" disabled={loading} onClick={() => onRevertFurnidata(item.id)}>
-                                Revert
-                            </Button>
-                            <button
-                                type="button"
-                                disabled={loading}
-                                onClick={() => onImportText(item.id)}
-                                title="Fetch the official name &amp; description from Habbo"
-                                className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded-lg border border-slate-300 bg-[#ffffff] text-slate-600 hover:bg-slate-50 hover:border-slate-400 disabled:opacity-50 transition"
-                            >
-                                <svg
-                                    className="w-3.5 h-3.5"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="1.8"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M10 3v9" />
-                                    <path d="m6.5 8.5 3.5 3.5 3.5-3.5" />
-                                    <path d="M4 16h12" />
-                                </svg>
-                                Import from Habbo
-                            </button>
+                            {furnidataEditable && (
+                                <>
+                                    <Button
+                                        variant="secondary"
+                                        disabled={loading}
+                                        onClick={() => onRevertFurnidata(item.id)}
+                                    >
+                                        Revert
+                                    </Button>
+                                    <button
+                                        type="button"
+                                        disabled={loading}
+                                        onClick={() => onImportText(item.id)}
+                                        title="Fetch the official name &amp; description from Habbo"
+                                        className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1.5 rounded-lg border border-slate-300 bg-[#ffffff] text-slate-600 hover:bg-slate-50 hover:border-slate-400 disabled:opacity-50 transition"
+                                    >
+                                        <svg
+                                            className="w-3.5 h-3.5"
+                                            viewBox="0 0 20 20"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="1.8"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        >
+                                            <path d="M10 3v9" />
+                                            <path d="m6.5 8.5 3.5 3.5 3.5-3.5" />
+                                            <path d="M4 16h12" />
+                                        </svg>
+                                        Import from Habbo
+                                    </button>
+                                </>
+                            )}
                         </Flex>
+                        {furnidataCreatable && (
+                            <Text className="mt-1 text-[10px] text-emerald-600">
+                                No furnidata entry yet — saving creates a complete one from the item data.
+                            </Text>
+                        )}
                         {importNote && (
                             <Text
                                 className={`mt-1 text-[10px] ${importNote.startsWith('Not found') ? 'text-amber-600' : 'text-primary'}`}
@@ -490,9 +524,9 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                     <div className="flex items-start gap-2 text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 leading-snug">
                         <span className="text-[#f59e0b] text-sm leading-none mt-px">⚠</span>
                         <span>
-                            This furni has no matching <b>furnidata</b> entry ({furnidataMissReason.replace(/_/g, ' ')}
-                            ), so its display name can&apos;t be edited here. Clients fall back to the DB{' '}
-                            <b>Public Name</b> below.
+                            A furnidata entry resolved by id but for a <b>different classname</b> (
+                            {furnidataMissReason.replace(/_/g, ' ')}) — name editing is locked to avoid an id collision.
+                            Clients fall back to the DB <b>Public Name</b> below.
                         </span>
                     </div>
                 )}
@@ -507,6 +541,16 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                     <div>
                         <label className={labelClass}>Public Name (DB fallback)</label>
                         <CopyValue value={form.publicName} />
+                        {canSyncPublicName && (
+                            <Button
+                                variant="secondary"
+                                disabled={loading}
+                                className="mt-1 w-full"
+                                onClick={() => onSyncPublicName(item.id, String(furniDataEntry?.name ?? ''))}
+                            >
+                                Sync from furnidata
+                            </Button>
+                        )}
                     </div>
                     <div>
                         <label className={labelClass}>Sprite ID</label>
@@ -726,10 +770,10 @@ export const FurniEditorEditView: FC<FurniEditorEditViewProps> = (props) => {
                             Apply furnidata change to ALL clients?
                         </Text>
                         <div className="text-xs mb-1">
-                            <b>Name:</b> {String((furniDataEntry?.name as string) ?? '')} → {furniName}
+                            <b>Name:</b> {String(furniDataEntry?.name ?? '')} → {furniName}
                         </div>
                         <div className="text-xs mb-3">
-                            <b>Desc:</b> {String((furniDataEntry?.description as string) ?? '')} → {furniDescription}
+                            <b>Desc:</b> {String(furniDataEntry?.description ?? '')} → {furniDescription}
                         </div>
                         <Flex gap={1} justifyContent="end">
                             <Button variant="secondary" onClick={() => setConfirmFurnidata(false)}>

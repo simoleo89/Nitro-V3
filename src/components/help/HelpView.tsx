@@ -12,7 +12,7 @@ import { SelectReportedUserView } from './views/SelectReportedUserView';
 import { SelectTopicView } from './views/SelectTopicView';
 import { NameChangeView } from './views/name-change/NameChangeView';
 
-export const HelpView: FC = (props) => {
+export const HelpView: FC<{}> = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const { activeReport = null, setActiveReport = null, report = null } = useHelp();
 
@@ -86,17 +86,21 @@ export const HelpView: FC = (props) => {
     return (
         <>
             {isVisible && (
-                <NitroCardView className="nitro-help" theme="primary-slim">
+                <NitroCardView className={`nitro-help${activeReport ? '' : ' w-[420px]'}`} theme="primary-slim">
                     <NitroCardHeaderView headerText={LocalizeText('help.button.cfh')} onCloseClick={onClose} />
                     <NitroCardContentView className="text-black">
-                        <Grid>
-                            <Column center overflow="hidden" size={5}>
-                                <div className="index-image" />
-                            </Column>
-                            <Column justifyContent="between" overflow="hidden" size={7}>
-                                <CurrentStepView />
-                            </Column>
-                        </Grid>
+                        {activeReport ? (
+                            <Grid>
+                                <Column center overflow="hidden" size={5}>
+                                    <div className="index-image" />
+                                </Column>
+                                <Column justifyContent="between" overflow="hidden" size={7}>
+                                    <CurrentStepView />
+                                </Column>
+                            </Grid>
+                        ) : (
+                            <CurrentStepView />
+                        )}
                     </NitroCardContentView>
                 </NitroCardView>
             )}

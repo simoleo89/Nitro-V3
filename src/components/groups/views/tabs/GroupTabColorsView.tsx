@@ -112,7 +112,7 @@ export const GroupTabColorsView: FC<GroupTabColorsViewProps> = (props) => {
                                     key={index}
                                     className={classNames(
                                         'relative rounded-[.25rem] w-[16px] h-[16px] bg-[#fff] border-2 border-[solid] border-[#fff] [box-shadow:inset_3px_3px_#0000001a] [box-shadow:inset_2px_2px_#0003] cursor-pointer',
-                                        groupData.groupColors[0] === item.id && 'bg-primary [box-shadow:none]',
+                                        colors[0] === item.id && 'bg-primary [box-shadow:none]',
                                     )}
                                     style={{ backgroundColor: '#' + item.color }}
                                     onClick={() => selectColor(0, item.id)}
@@ -132,7 +132,7 @@ export const GroupTabColorsView: FC<GroupTabColorsViewProps> = (props) => {
                                     key={index}
                                     className={classNames(
                                         'relative rounded-[.25rem] w-[16px] h-[16px] bg-[#fff] border-2 border-[solid] border-[#fff] [box-shadow:inset_3px_3px_#0000001a] [box-shadow:inset_2px_2px_#0003] cursor-pointer',
-                                        groupData.groupColors[1] === item.id && 'bg-primary [box-shadow:none]',
+                                        colors[1] === item.id && 'bg-primary [box-shadow:none]',
                                     )}
                                     style={{ backgroundColor: '#' + item.color }}
                                     onClick={() => selectColor(1, item.id)}

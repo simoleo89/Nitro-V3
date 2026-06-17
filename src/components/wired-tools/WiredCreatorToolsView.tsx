@@ -123,7 +123,7 @@ import { WiredMonitorTabView } from './WiredMonitorTabView';
 import { WiredToolsSettingsTabView } from './WiredToolsSettingsTabView';
 import { WiredVariablesTabView } from './WiredVariablesTabView';
 
-export const WiredCreatorToolsView: FC = () => {
+export const WiredCreatorToolsView: FC<{}> = () => {
     const isVisible = useWiredCreatorToolsUiStore((s) => s.isVisible);
     const setIsVisible = useWiredCreatorToolsUiStore((s) => s.setIsVisible);
     const activeTab = useWiredCreatorToolsUiStore((s) => s.activeTab);
@@ -1295,11 +1295,7 @@ export const WiredCreatorToolsView: FC = () => {
             { key: '@position_x', value: String(liveState?.positionX ?? 0), editable: canEditInspection },
             { key: '@position_y', value: String(liveState?.positionY ?? 0), editable: canEditInspection },
             { key: '@rotation', value: String(liveState?.rotation ?? 0), editable: canEditInspection },
-            {
-                key: '@altitude',
-                value: String(Math.round((liveState?.altitude ?? 0) * 100)),
-                editable: canEditInspection,
-            },
+            { key: '@altitude', value: String(liveState?.altitude ?? 0), editable: canEditInspection },
             { key: '@is_invisible', value: '0' },
             ...(wallItemOffset
                 ? [{ key: '@wallitem_offset', value: wallItemOffset, editable: canEditInspection }]
@@ -1471,7 +1467,7 @@ export const WiredCreatorToolsView: FC = () => {
             { key: '@position_x', value: String(liveState?.positionX ?? 0), editable: canEditSelectedUser },
             { key: '@position_y', value: String(liveState?.positionY ?? 0), editable: canEditSelectedUser },
             { key: '@direction', value: String(liveState?.direction ?? 0), editable: canEditSelectedUser },
-            { key: '@altitude', value: String(Math.round((liveState?.altitude ?? 0) * 100)) },
+            { key: '@altitude', value: String(liveState?.altitude ?? 0) },
             ...(Number(selectedUser.favouriteGroupId ?? 0) > 0
                 ? [{ key: '@favourite_group_id', value: String(selectedUser.favouriteGroupId) }]
                 : []),

@@ -26,7 +26,7 @@
         "@tanstack/react-query": "5",
         "@tanstack/react-query-devtools": "5",
         "@tanstack/react-virtual": "^3.14.2",
-        "dompurify": "^3.4.8",
+        "dompurify": "^3.4.10",
         "emoji-mart": "^5.6.0",
         "emoji-toolkit": "10.0.0",
         "framer-motion": "^12.40.0",

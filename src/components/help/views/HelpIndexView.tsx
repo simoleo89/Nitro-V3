@@ -1,9 +1,11 @@
 import { GetCfhStatusMessageComposer } from '@nitrots/nitro-renderer';
 import { FC } from 'react';
-import { DispatchUiEvent, GetConfigurationValue, LocalizeText, ReportState, ReportType, SendMessageComposer } from '../../../api';
-import { Button, Text } from '../../../common';
+import { FaArrowCircleRight } from 'react-icons/fa';
+import { CreateLinkEvent, DispatchUiEvent, GetConfigurationValue, LocalizeText, ReportState, ReportType, SendMessageComposer } from '../../../api';
+import { Text } from '../../../common';
 import { GuideToolEvent } from '../../../events';
 import { useHelp } from '../../../hooks';
+import helpDuck from '../../../assets/images/help/help-duck.png';
 
 export const HelpIndexView: FC<{}> = props =>
 {
@@ -21,17 +23,30 @@ export const HelpIndexView: FC<{}> = props =>
     };
 
     return (
-        <>
-            <div className="flex flex-col justify-center alignp-items-enter grow! gap-1">
-                <Text fontSize={ 3 }>{ LocalizeText('help.main.frame.title') }</Text>
-                <Text>{ LocalizeText('help.main.self.description') }</Text>
+        <div className="flex flex-col gap-2 py-1">
+            <Text bold fontSize={ 3 }>{ LocalizeText('help.main.frame.title') }</Text>
+            <Text center className="text-[#5c5c5c]">{ LocalizeText('help.main.frame.description') }</Text>
+            <div className="flex justify-center py-1">
+                <img src={ helpDuck } alt="" className="h-[105px] w-auto [image-rendering:pixelated]" />
             </div>
-            <div className="flex flex-col gap-1">
-                <Button onClick={ onReportClick }>{ LocalizeText('help.main.bully.subtitle') }</Button>
-                <Button disabled={ !GetConfigurationValue('guides.enabled') } onClick={ () => DispatchUiEvent(new GuideToolEvent(GuideToolEvent.CREATE_HELP_REQUEST)) }>{ LocalizeText('help.main.help.title') }</Button>
-                <Button disabled={ true }>{ LocalizeText('help.main.self.tips.title') }</Button>
+            <div className="flex flex-col gap-1.5">
+                <button type="button" className="habbo-btn-green" onClick={ onReportClick }>{ LocalizeText('help.main.bully.subtitle') }</button>
+                <button type="button" className="habbo-btn-green" disabled={ !GetConfigurationValue('guides.enabled') } onClick={ () => DispatchUiEvent(new GuideToolEvent(GuideToolEvent.CREATE_HELP_REQUEST)) }>{ LocalizeText('help.main.help.title') }</button>
             </div>
-            <Button textColor="black" variant="link" onClick={ () => SendMessageComposer(new GetCfhStatusMessageComposer(false)) }>{ LocalizeText('help.main.my.sanction.status') }</Button>
-        </>
+            <div className="flex flex-col gap-1 pt-1">
+                <button type="button" className="help-link" onClick={ () => CreateLinkEvent('habbopages/help') }>
+                    <FaArrowCircleRight className="help-link__icon" />
+                    { LocalizeText('help.main.faq.link.text') }
+                </button>
+                <button type="button" className="help-link" onClick={ () => SendMessageComposer(new GetCfhStatusMessageComposer(false)) }>
+                    <FaArrowCircleRight className="help-link__icon" />
+                    { LocalizeText('help.main.my.sanction.status') }
+                </button>
+                <button type="button" className="help-link" onClick={ () => SendMessageComposer(new GetCfhStatusMessageComposer(true)) }>
+                    <FaArrowCircleRight className="help-link__icon" />
+                    { LocalizeText('help.main.my.reports.status') }
+                </button>
+            </div>
+        </div>
     );
 };

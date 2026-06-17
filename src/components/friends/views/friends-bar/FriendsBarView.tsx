@@ -79,11 +79,17 @@ export const FriendBarView: FC<{ onlineFriends: MessengerFriend[]; requestsCount
     // below uses it, so a stale `indexOffset` (after the list shrinks or the fit
     // grows) renders correctly and self-corrects on the next arrow click — no
     // write-back effect needed.
-    const maxOffset = Math.max(0, (onlineFriends.length - maxVisible));
+    // Defensive: never let a null/undefined slip into the friend map. The
+    // legacy bar padded empty slots with `null` and rendered each as a
+    // FriendBarItemView (which falls back to the "find friends" chip), so an
+    // empty list produced THREE "Trova Amici" buttons. Filtering here makes the
+    // search chip below the ONLY source of that affordance — exactly one, always.
+    const validFriends = onlineFriends.filter(Boolean);
+    const maxOffset = Math.max(0, (validFriends.length - maxVisible));
     const safeOffset = Math.min(indexOffset, maxOffset);
     const canScrollLeft = (safeOffset > 0);
     const canScrollRight = (safeOffset < maxOffset);
-    const visibleFriends = onlineFriends.slice(safeOffset, (safeOffset + maxVisible));
+    const visibleFriends = validFriends.slice(safeOffset, (safeOffset + maxVisible));
 
     return (
         <motion.div
@@ -135,7 +141,7 @@ export const FriendBarView: FC<{ onlineFriends: MessengerFriend[]; requestsCount
                 >
                     <FriendBarItemView friend={ null } />
                 </motion.div>
-                { (!onlineFriends.length && (requestsCount <= 0)) &&
+                { (!validFriends.length && (requestsCount <= 0)) &&
                     <motion.div
                         key="friend-empty"
                         variants={ itemVariants }

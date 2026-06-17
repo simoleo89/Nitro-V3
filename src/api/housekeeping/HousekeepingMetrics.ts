@@ -6,8 +6,7 @@
  * percentile math.
  */
 
-export interface HousekeepingActionMetric
-{
+export interface HousekeepingActionMetric {
     action: string;
     /** Total calls observed (success + failure). */
     count: number;
@@ -23,10 +22,9 @@ export interface HousekeepingActionMetric
 
 const SAMPLE_CAP = 50;
 
-const percentile = (sorted: ReadonlyArray<number>, p: number): number =>
-{
-    if(sorted.length === 0) return 0;
-    if(sorted.length === 1) return sorted[0];
+const percentile = (sorted: ReadonlyArray<number>, p: number): number => {
+    if (sorted.length === 0) return 0;
+    if (sorted.length === 1) return sorted[0];
 
     // Linear interpolation between adjacent samples — standard
     // percentile definition. Clamp the rank into [0, n-1] so p=100
@@ -35,15 +33,14 @@ const percentile = (sorted: ReadonlyArray<number>, p: number): number =>
     const lo = Math.floor(rank);
     const hi = Math.ceil(rank);
 
-    if(lo === hi) return sorted[lo];
+    if (lo === hi) return sorted[lo];
 
     const frac = rank - lo;
 
-    return (sorted[lo] * (1 - frac)) + (sorted[hi] * frac);
+    return sorted[lo] * (1 - frac) + sorted[hi] * frac;
 };
 
-export interface MetricSample
-{
+export interface MetricSample {
     samples: number[];
     count: number;
     errors: number;
@@ -56,18 +53,18 @@ export const emptySample = (): MetricSample => ({ samples: [], count: 0, errors:
  * object so the shape plays nicely with React state updates — never
  * mutates the input.
  */
-export const recordSample = (current: MetricSample, latencyMs: number, isError: boolean): MetricSample =>
-{
-    const trimmed = current.samples.length >= SAMPLE_CAP
-        ? current.samples.slice(current.samples.length - (SAMPLE_CAP - 1))
-        : current.samples.slice();
+export const recordSample = (current: MetricSample, latencyMs: number, isError: boolean): MetricSample => {
+    const trimmed =
+        current.samples.length >= SAMPLE_CAP
+            ? current.samples.slice(current.samples.length - (SAMPLE_CAP - 1))
+            : current.samples.slice();
 
     trimmed.push(latencyMs);
 
     return {
         samples: trimmed,
         count: current.count + 1,
-        errors: current.errors + (isError ? 1 : 0)
+        errors: current.errors + (isError ? 1 : 0),
     };
 };
 
@@ -76,10 +73,8 @@ export const recordSample = (current: MetricSample, latencyMs: number, isError: 
  * record. Computes percentiles on a sorted copy (small `samples`
  * sizes — cap is 50, so this is essentially O(n log n) on n≤50).
  */
-export const sampleToMetric = (action: string, sample: MetricSample): HousekeepingActionMetric =>
-{
-    if(sample.samples.length === 0)
-    {
+export const sampleToMetric = (action: string, sample: MetricSample): HousekeepingActionMetric => {
+    if (sample.samples.length === 0) {
         return {
             action,
             count: sample.count,
@@ -88,7 +83,7 @@ export const sampleToMetric = (action: string, sample: MetricSample): Housekeepi
             minMs: 0,
             maxMs: 0,
             p50Ms: 0,
-            p95Ms: 0
+            p95Ms: 0,
         };
     }
 
@@ -102,7 +97,7 @@ export const sampleToMetric = (action: string, sample: MetricSample): Housekeepi
         minMs: sorted[0],
         maxMs: sorted[sorted.length - 1],
         p50Ms: percentile(sorted, 50),
-        p95Ms: percentile(sorted, 95)
+        p95Ms: percentile(sorted, 95),
     };
 };
 

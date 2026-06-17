@@ -9,17 +9,19 @@ export type NavigatorFavouritesActions = {
     apply(roomId: number, added: boolean): void;
 };
 
-export const useNavigatorFavouritesStore = createNitroStore<NavigatorFavouritesState & NavigatorFavouritesActions>()((set) => ({
-    ids: new Set<number>(),
+export const useNavigatorFavouritesStore = createNitroStore<NavigatorFavouritesState & NavigatorFavouritesActions>()(
+    (set) => ({
+        ids: new Set<number>(),
 
-    setAll: (roomIds) => set({ ids: new Set(roomIds.map(Number)) }),
-    apply: (roomId, added) => set((s) =>
-    {
-        const id = Number(roomId);
-        if(added ? s.ids.has(id) : !s.ids.has(id)) return s;
-        const ids = new Set(s.ids);
-        if(added) ids.add(id);
-        else ids.delete(id);
-        return { ids };
-    })
-}));
+        setAll: (roomIds) => set({ ids: new Set(roomIds.map(Number)) }),
+        apply: (roomId, added) =>
+            set((s) => {
+                const id = Number(roomId);
+                if (added ? s.ids.has(id) : !s.ids.has(id)) return s;
+                const ids = new Set(s.ids);
+                if (added) ids.add(id);
+                else ids.delete(id);
+                return { ids };
+            }),
+    }),
+);

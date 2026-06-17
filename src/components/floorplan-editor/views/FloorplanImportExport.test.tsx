@@ -3,44 +3,70 @@ import { fireEvent, render, cleanup } from '@testing-library/react';
 import { FloorplanImportExport } from './FloorplanImportExport';
 import { initialState } from '../state/reducer';
 
-describe('FloorplanImportExport', () =>
-{
+describe('FloorplanImportExport', () => {
     afterEach(() => cleanup());
-    it('shows serialized tilemap of current state in textarea', () =>
-    {
+    it('shows serialized tilemap of current state in textarea', () => {
         const state = {
             ...initialState,
             tiles: [
-                [{ h: 0, blocked: false }, { h: 1, blocked: false }],
-                [{ h: 0, blocked: true }, { h: 2, blocked: false }]
-            ]
+                [
+                    { h: 0, blocked: false },
+                    { h: 1, blocked: false },
+                ],
+                [
+                    { h: 0, blocked: true },
+                    { h: 2, blocked: false },
+                ],
+            ],
         };
-        render(<FloorplanImportExport state={ state } dispatch={ () => {} } onClose={ () => {} } onSaveFromText={ () => {} } onRevertText={ () => '' } />);
-        const ta = document.querySelector('textarea') as HTMLTextAreaElement;
+        render(
+            <FloorplanImportExport
+                state={state}
+                dispatch={() => {}}
+                onClose={() => {}}
+                onSaveFromText={() => {}}
+                onRevertText={() => ''}
+            />,
+        );
+        const ta = document.querySelector('textarea');
         expect(ta).toBeTruthy();
         expect(ta.value).toBe('01\nx2');
     });
 
-    it('clicking Load dispatches IMPORT_STRING with textarea content', () =>
-    {
+    it('clicking Load dispatches IMPORT_STRING with textarea content', () => {
         const dispatch = vi.fn();
-        render(<FloorplanImportExport state={ initialState } dispatch={ dispatch } onClose={ () => {} } onSaveFromText={ () => {} } onRevertText={ () => '' } />);
-        const ta = document.querySelector('textarea') as HTMLTextAreaElement;
+        render(
+            <FloorplanImportExport
+                state={initialState}
+                dispatch={dispatch}
+                onClose={() => {}}
+                onSaveFromText={() => {}}
+                onRevertText={() => ''}
+            />,
+        );
+        const ta = document.querySelector('textarea');
         expect(ta).toBeTruthy();
         fireEvent.change(ta, { target: { value: 'xq\n00' } });
-        const button = document.querySelector('[data-testid="import-load"]') as HTMLButtonElement;
+        const button = document.querySelector('[data-testid="import-load"]');
         expect(button).toBeTruthy();
         fireEvent.click(button);
         expect(dispatch).toHaveBeenCalledWith({ type: 'IMPORT_STRING', raw: 'xq\n00', source: 'local' });
     });
 
-    it('clicking Save invokes onSaveFromText with textarea content', () =>
-    {
+    it('clicking Save invokes onSaveFromText with textarea content', () => {
         const onSaveFromText = vi.fn();
-        render(<FloorplanImportExport state={ initialState } dispatch={ () => {} } onClose={ () => {} } onSaveFromText={ onSaveFromText } onRevertText={ () => '' } />);
-        const ta = document.querySelector('textarea') as HTMLTextAreaElement;
+        render(
+            <FloorplanImportExport
+                state={initialState}
+                dispatch={() => {}}
+                onClose={() => {}}
+                onSaveFromText={onSaveFromText}
+                onRevertText={() => ''}
+            />,
+        );
+        const ta = document.querySelector('textarea');
         fireEvent.change(ta, { target: { value: '00\n01' } });
-        const saveBtn = document.querySelector('[data-testid="import-save"]') as HTMLButtonElement;
+        const saveBtn = document.querySelector('[data-testid="import-save"]');
         fireEvent.click(saveBtn);
         expect(onSaveFromText).toHaveBeenCalledWith('00\n01');
     });

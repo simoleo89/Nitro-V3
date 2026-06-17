@@ -34,14 +34,12 @@ import { useMessageEvent } from '../../hooks/events/useMessageEvent';
 export const useNitroEventInvalidator = <T extends IMessageEvent>(
     eventType: typeof MessageEvent,
     queryKey: QueryKey,
-    accept?: (event: T) => boolean
-) =>
-{
+    accept?: (event: T) => boolean,
+) => {
     const queryClient = useQueryClient();
 
-    useMessageEvent<T>(eventType, event =>
-    {
-        if(accept && !accept(event)) return;
+    useMessageEvent<T>(eventType, (event) => {
+        if (accept && !accept(event)) return;
 
         queryClient.invalidateQueries({ queryKey });
     });

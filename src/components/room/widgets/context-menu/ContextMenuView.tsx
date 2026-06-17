@@ -5,12 +5,12 @@ import { BaseProps } from '../../../../common';
 import { ContextMenuCaretView } from './ContextMenuCaretView';
 
 interface ContextMenuViewProps extends BaseProps<HTMLDivElement> {
-  objectId: number;
-  category: number;
-  userType?: number;
-  fades?: boolean;
-  onClose: () => void;
-  collapsable?: boolean;
+    objectId: number;
+    category: number;
+    userType?: number;
+    fades?: boolean;
+    onClose: () => void;
+    collapsable?: boolean;
 }
 
 const LOCATION_STACK_SIZE = 25;
@@ -30,8 +30,7 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
     children = null,
     collapsable = false,
     ...rest
-}) =>
-{
+}) => {
     const [pos, setPos] = useState<{ x: number; y: number }>({ x: null, y: null });
     const [opacity, setOpacity] = useState(1);
     const [isFading, setIsFading] = useState(false);
@@ -41,24 +40,22 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
     const maxStackRef = useRef(-1000000);
 
     const updatePosition = useCallback(
-        (bounds: NitroRectangle, location: { x: number; y: number }) =>
-        {
+        (bounds: NitroRectangle, location: { x: number; y: number }) => {
             if (!bounds || !location || !elementRef.current) return;
 
             let offset = -elementRef.current.offsetHeight;
-            if (userType > -1 && [RoomObjectType.USER, RoomObjectType.BOT, RoomObjectType.RENTABLE_BOT].includes(userType))
-            {
+            if (
+                userType > -1 &&
+                [RoomObjectType.USER, RoomObjectType.BOT, RoomObjectType.RENTABLE_BOT].includes(userType)
+            ) {
                 offset += bounds.height > 50 ? 15 : 0;
-            }
-            else
-            {
+            } else {
                 offset -= 14;
             }
 
             stackRef.current.addValue(location.y - bounds.top);
             let maxStack = stackRef.current.getMax();
-            if (maxStack < maxStackRef.current - BUBBLE_DROP_SPEED)
-            {
+            if (maxStack < maxStackRef.current - BUBBLE_DROP_SPEED) {
                 maxStack = maxStackRef.current - BUBBLE_DROP_SPEED;
             }
             maxStackRef.current = maxStack;
@@ -76,11 +73,10 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
 
             setPos({ x, y });
         },
-        [userType]
+        [userType],
     );
 
-    const getClassNames = useMemo(() =>
-    {
+    const getClassNames = useMemo(() => {
         const classes = [
             'nitro-context-menu',
             'p-[2px]!',
@@ -90,7 +86,7 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
             'border-[rgba(255,255,255,.5)]',
             'rounded-[.25rem]',
             'text-[.7875rem]',
-	  'text-white',
+            'text-white',
             'z-40',
             'pointer-events-auto',
             'absolute',
@@ -108,20 +104,17 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
             opacity,
             ...style,
         }),
-        [pos, opacity, isFading, style]
+        [pos, opacity, isFading, style],
     );
 
-    useEffect(() =>
-    {
+    useEffect(() => {
         if (!elementRef.current) return;
 
-        const update = () =>
-        {
+        const update = () => {
             if (!elementRef.current) return;
             const roomSession = GetRoomSession();
 
-            if (!roomSession)
-            {
+            if (!roomSession) {
                 onClose();
                 return;
             }
@@ -134,15 +127,15 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
         const ticker = GetTicker();
         ticker.add(update);
 
-        return () => { ticker.remove(update); };
+        return () => {
+            ticker.remove(update);
+        };
     }, [objectId, category, updatePosition, onClose]);
 
-    useEffect(() =>
-    {
+    useEffect(() => {
         if (!fades) return;
 
-        const timeout = setTimeout(() =>
-        {
+        const timeout = setTimeout(() => {
             setIsFading(true);
             setTimeout(onClose, FADE_LENGTH);
         }, FADE_DELAY);
@@ -150,8 +143,7 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
         return () => clearTimeout(timeout);
     }, [fades, onClose]);
 
-    useEffect(() =>
-    {
+    useEffect(() => {
         if (!isFading) return;
         setOpacity(0);
     }, [isFading]);
@@ -159,7 +151,9 @@ export const ContextMenuView: FC<ContextMenuViewProps> = ({
     return (
         <div ref={elementRef} className={getClassNames.join(' ')} style={getStyle} {...rest}>
             {!(collapsable && isCollapsed) && children}
-            {collapsable && <ContextMenuCaretView collapsed={isCollapsed} onClick={() => setIsCollapsed((prev) => !prev)} />}
+            {collapsable && (
+                <ContextMenuCaretView collapsed={isCollapsed} onClick={() => setIsCollapsed((prev) => !prev)} />
+            )}
         </div>
     );
 };

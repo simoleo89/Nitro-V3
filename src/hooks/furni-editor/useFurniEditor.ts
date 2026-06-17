@@ -1,10 +1,24 @@
-import { FurniEditorBySpriteComposer, FurniEditorDeleteComposer, FurniEditorDetailComposer, FurniEditorDetailResultEvent, FurniEditorInteractionsComposer, FurniEditorInteractionsResultEvent, FurniEditorResultEvent, FurniEditorRevertFurnidataComposer, FurniEditorSearchComposer, FurniEditorSearchResultEvent, FurniEditorUpdateComposer, FurniEditorUpdateFurnidataComposer, FurniEditorImportTextComposer, FurniEditorImportTextResultEvent } from '@nitrots/nitro-renderer';
+import {
+    FurniEditorBySpriteComposer,
+    FurniEditorDeleteComposer,
+    FurniEditorDetailComposer,
+    FurniEditorDetailResultEvent,
+    FurniEditorInteractionsComposer,
+    FurniEditorInteractionsResultEvent,
+    FurniEditorResultEvent,
+    FurniEditorRevertFurnidataComposer,
+    FurniEditorSearchComposer,
+    FurniEditorSearchResultEvent,
+    FurniEditorUpdateComposer,
+    FurniEditorUpdateFurnidataComposer,
+    FurniEditorImportTextComposer,
+    FurniEditorImportTextResultEvent,
+} from '@nitrots/nitro-renderer';
 import { useCallback, useRef, useState } from 'react';
 import { NotificationAlertType, SendMessageComposer } from '../../api';
 import { useMessageEvent, useNotification } from '../../hooks';
 
-export interface FurniItem
-{
+export interface FurniItem {
     id: number;
     spriteId: number;
     itemName: string;
@@ -21,8 +35,7 @@ export interface FurniItem
     interactionModesCount: number;
 }
 
-export interface FurniDetail extends FurniItem
-{
+export interface FurniDetail extends FurniItem {
     allowGift: boolean;
     allowTrade: boolean;
     allowRecycle: boolean;
@@ -38,8 +51,7 @@ export interface FurniDetail extends FurniItem
     usageCount: number;
 }
 
-export interface CatalogRef
-{
+export interface CatalogRef {
     id: number;
     catalogName: string;
     costCredits: number;
@@ -49,54 +61,59 @@ export interface CatalogRef
     pageName: string;
 }
 
-export const useFurniEditor = () =>
-{
-    const [ items, setItems ] = useState<FurniItem[]>([]);
-    const [ total, setTotal ] = useState(0);
-    const [ page, setPage ] = useState(1);
-    const [ loading, setLoading ] = useState(false);
-    const [ error, setError ] = useState<string | null>(null);
-    const [ selectedItem, setSelectedItem ] = useState<FurniDetail | null>(null);
-    const [ catalogItems, setCatalogItems ] = useState<CatalogRef[]>([]);
-    const [ interactions, setInteractions ] = useState<string[]>([]);
-    const [ furniDataEntry, setFurniDataEntry ] = useState<Record<string, unknown> | null>(null);
-    const [ furniDataDiagnostic, setFurniDataDiagnostic ] = useState<Record<string, unknown> | null>(null);
+export const useFurniEditor = () => {
+    const [items, setItems] = useState<FurniItem[]>([]);
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedItem, setSelectedItem] = useState<FurniDetail | null>(null);
+    const [catalogItems, setCatalogItems] = useState<CatalogRef[]>([]);
+    const [interactions, setInteractions] = useState<string[]>([]);
+    const [furniDataEntry, setFurniDataEntry] = useState<Record<string, unknown> | null>(null);
+    const [furniDataDiagnostic, setFurniDataDiagnostic] = useState<Record<string, unknown> | null>(null);
     const pendingActionRef = useRef<{ action: string; itemId: number } | null>(null);
-    const [ importResult, setImportResult ] = useState<{ found: boolean; name: string; description: string; classname: string; nonce: number } | null>(null);
+    const [importResult, setImportResult] = useState<{
+        found: boolean;
+        name: string;
+        description: string;
+        classname: string;
+        nonce: number;
+    } | null>(null);
     const importNonceRef = useRef(0);
     const { simpleAlert = null } = useNotification();
 
     const clearError = useCallback(() => setError(null), []);
 
     // Handle search results
-    useMessageEvent(FurniEditorSearchResultEvent, (event: FurniEditorSearchResultEvent) =>
-    {
+    useMessageEvent(FurniEditorSearchResultEvent, (event: FurniEditorSearchResultEvent) => {
         const parser = event.getParser();
 
         setLoading(false);
-        setItems(parser.items.map(item => ({
-            id: item.id,
-            spriteId: item.spriteId,
-            itemName: item.itemName,
-            publicName: item.publicName,
-            type: item.type,
-            width: item.width,
-            length: item.length,
-            stackHeight: item.stackHeight,
-            allowStack: item.allowStack,
-            allowWalk: item.allowWalk,
-            allowSit: item.allowSit,
-            allowLay: item.allowLay,
-            interactionType: item.interactionType,
-            interactionModesCount: item.interactionModesCount
-        })));
+        setItems(
+            parser.items.map((item) => ({
+                id: item.id,
+                spriteId: item.spriteId,
+                itemName: item.itemName,
+                publicName: item.publicName,
+                type: item.type,
+                width: item.width,
+                length: item.length,
+                stackHeight: item.stackHeight,
+                allowStack: item.allowStack,
+                allowWalk: item.allowWalk,
+                allowSit: item.allowSit,
+                allowLay: item.allowLay,
+                interactionType: item.interactionType,
+                interactionModesCount: item.interactionModesCount,
+            })),
+        );
         setTotal(parser.total);
         setPage(parser.page);
     });
 
     // Handle detail results (for both detail and by-sprite lookups)
-    useMessageEvent(FurniEditorDetailResultEvent, (event: FurniEditorDetailResultEvent) =>
-    {
+    useMessageEvent(FurniEditorDetailResultEvent, (event: FurniEditorDetailResultEvent) => {
         const parser = event.getParser();
         const item = parser.item;
 
@@ -128,56 +145,52 @@ export const useFurniEditor = () =>
             clothingOnWalk: item.clothingOnWalk,
             multiheight: item.multiheight,
             description: item.description,
-            usageCount: item.usageCount
+            usageCount: item.usageCount,
         });
-        setCatalogItems(parser.catalogItems.map(ref => ({
-            id: ref.id,
-            catalogName: ref.catalogName,
-            costCredits: ref.costCredits,
-            costPoints: ref.costPoints,
-            pointsType: ref.pointsType,
-            pageId: ref.pageId,
-            pageName: ref.pageName
-        })));
+        setCatalogItems(
+            parser.catalogItems.map((ref) => ({
+                id: ref.id,
+                catalogName: ref.catalogName,
+                costCredits: ref.costCredits,
+                costPoints: ref.costPoints,
+                pointsType: ref.pointsType,
+                pageId: ref.pageId,
+                pageName: ref.pageName,
+            })),
+        );
 
         let furniData: Record<string, unknown> | null = null;
 
-        try
-        {
-            if(parser.furniDataJson && parser.furniDataJson !== '{}' && parser.furniDataJson !== '')
-            {
+        try {
+            if (parser.furniDataJson && parser.furniDataJson !== '{}' && parser.furniDataJson !== '') {
                 furniData = JSON.parse(parser.furniDataJson);
             }
-        }
-        catch(e)
-        {}
+        } catch (e) {}
 
         setFurniDataEntry(furniData);
 
         let diagnostic: Record<string, unknown> | null = null;
 
-        try
-        {
-            if(parser.furniDataDiagnosticJson && parser.furniDataDiagnosticJson !== '{}' && parser.furniDataDiagnosticJson !== '')
-            {
+        try {
+            if (
+                parser.furniDataDiagnosticJson &&
+                parser.furniDataDiagnosticJson !== '{}' &&
+                parser.furniDataDiagnosticJson !== ''
+            ) {
                 diagnostic = JSON.parse(parser.furniDataDiagnosticJson);
             }
-        }
-        catch(e)
-        {}
+        } catch (e) {}
 
         setFurniDataDiagnostic(diagnostic);
     });
 
     // Handle interaction types list
-    useMessageEvent(FurniEditorInteractionsResultEvent, (event: FurniEditorInteractionsResultEvent) =>
-    {
+    useMessageEvent(FurniEditorInteractionsResultEvent, (event: FurniEditorInteractionsResultEvent) => {
         setInteractions(event.getParser().interactions);
     });
 
     // Handle operation results (update, create, delete)
-    useMessageEvent(FurniEditorResultEvent, (event: FurniEditorResultEvent) =>
-    {
+    useMessageEvent(FurniEditorResultEvent, (event: FurniEditorResultEvent) => {
         const parser = event.getParser();
         const pending = pendingActionRef.current;
         const action = pending?.action ?? null;
@@ -186,13 +199,17 @@ export const useFurniEditor = () =>
         pendingActionRef.current = null;
         setLoading(false);
 
-        if(!parser.success)
-        {
+        if (!parser.success) {
             setError(parser.message || 'Operation failed');
 
-            if(simpleAlert)
-            {
-                simpleAlert(parser.message || 'Operation failed', NotificationAlertType.ALERT, null, null, 'Furni Editor Error');
+            if (simpleAlert) {
+                simpleAlert(
+                    parser.message || 'Operation failed',
+                    NotificationAlertType.ALERT,
+                    null,
+                    null,
+                    'Furni Editor Error',
+                );
             }
 
             return;
@@ -200,97 +217,85 @@ export const useFurniEditor = () =>
 
         setError(null);
 
-        if(action === 'update')
-        {
+        if (action === 'update') {
             // Auto-reload detail after update using the ID from the original request
-            if(actionItemId)
-            {
+            if (actionItemId) {
                 SendMessageComposer(new FurniEditorDetailComposer(actionItemId));
             }
 
-            if(simpleAlert)
-            {
+            if (simpleAlert) {
                 simpleAlert('Item updated successfully', NotificationAlertType.DEFAULT, null, null, 'Furni Editor');
             }
-        }
-        else if(action === 'delete')
-        {
+        } else if (action === 'delete') {
             setSelectedItem(null);
             setCatalogItems([]);
             setFurniDataEntry(null);
             setFurniDataDiagnostic(null);
 
-            if(simpleAlert)
-            {
+            if (simpleAlert) {
                 simpleAlert('Item deleted successfully', NotificationAlertType.DEFAULT, null, null, 'Furni Editor');
             }
         }
     });
 
-    const searchItems = useCallback((query: string, type: string, pg: number, sortField: string = 'id', sortDir: string = 'asc') =>
-    {
-        setLoading(true);
-        setError(null);
-        SendMessageComposer(new FurniEditorSearchComposer(query, type, pg, sortField, sortDir));
-    }, []);
+    const searchItems = useCallback(
+        (query: string, type: string, pg: number, sortField: string = 'id', sortDir: string = 'asc') => {
+            setLoading(true);
+            setError(null);
+            SendMessageComposer(new FurniEditorSearchComposer(query, type, pg, sortField, sortDir));
+        },
+        [],
+    );
 
-    const loadDetail = useCallback((id: number) =>
-    {
+    const loadDetail = useCallback((id: number) => {
         setLoading(true);
         setError(null);
         SendMessageComposer(new FurniEditorDetailComposer(id));
     }, []);
 
-    const loadBySpriteId = useCallback((spriteId: number) =>
-    {
+    const loadBySpriteId = useCallback((spriteId: number) => {
         setLoading(true);
         setError(null);
         SendMessageComposer(new FurniEditorBySpriteComposer(spriteId));
     }, []);
 
-    const updateItem = useCallback((id: number, fields: Record<string, unknown>) =>
-    {
+    const updateItem = useCallback((id: number, fields: Record<string, unknown>) => {
         setLoading(true);
         setError(null);
         pendingActionRef.current = { action: 'update', itemId: id };
         SendMessageComposer(new FurniEditorUpdateComposer(id, JSON.stringify(fields)));
     }, []);
 
-    const deleteItem = useCallback((id: number) =>
-    {
+    const deleteItem = useCallback((id: number) => {
         setLoading(true);
         setError(null);
         pendingActionRef.current = { action: 'delete', itemId: id };
         SendMessageComposer(new FurniEditorDeleteComposer(id));
     }, []);
 
-    const updateFurnidata = useCallback((id: number, name: string, description: string) =>
-    {
+    const updateFurnidata = useCallback((id: number, name: string, description: string) => {
         pendingActionRef.current = { action: 'update', itemId: id };
         // Optimistic: the server now mirrors the furnidata display name into
         // items_base.public_name, so reflect it immediately in the read-only
         // "Public Name" field. The auto re-fetch that follows will agree (no flicker).
-        setSelectedItem(prev => (prev && prev.id === id ? { ...prev, publicName: name } : prev));
+        setSelectedItem((prev) => (prev && prev.id === id ? { ...prev, publicName: name } : prev));
         setLoading(true);
         SendMessageComposer(new FurniEditorUpdateFurnidataComposer(id, JSON.stringify({ name, description })));
     }, []);
 
-    const revertFurnidata = useCallback((id: number) =>
-    {
+    const revertFurnidata = useCallback((id: number) => {
         pendingActionRef.current = { action: 'update', itemId: id };
         setLoading(true);
         SendMessageComposer(new FurniEditorRevertFurnidataComposer(id));
     }, []);
 
-    const importText = useCallback((id: number) =>
-    {
+    const importText = useCallback((id: number) => {
         setLoading(true);
         setError(null);
         SendMessageComposer(new FurniEditorImportTextComposer(id));
     }, []);
 
-    useMessageEvent(FurniEditorImportTextResultEvent, (event: FurniEditorImportTextResultEvent) =>
-    {
+    useMessageEvent(FurniEditorImportTextResultEvent, (event: FurniEditorImportTextResultEvent) => {
         const parser = event.getParser();
 
         setLoading(false);
@@ -300,20 +305,36 @@ export const useFurniEditor = () =>
             name: parser.name,
             description: parser.description,
             classname: parser.classname,
-            nonce: importNonceRef.current
+            nonce: importNonceRef.current,
         });
     });
 
-    const loadInteractions = useCallback(() =>
-    {
+    const loadInteractions = useCallback(() => {
         SendMessageComposer(new FurniEditorInteractionsComposer());
     }, []);
 
     return {
-        items, total, page, loading, error, clearError,
-        selectedItem, setSelectedItem, catalogItems, furniDataEntry, furniDataDiagnostic,
+        items,
+        total,
+        page,
+        loading,
+        error,
+        clearError,
+        selectedItem,
+        setSelectedItem,
+        catalogItems,
+        furniDataEntry,
+        furniDataDiagnostic,
         interactions,
-        searchItems, loadDetail, loadBySpriteId, updateItem, deleteItem, loadInteractions,
-        updateFurnidata, revertFurnidata, importText, importResult
+        searchItems,
+        loadDetail,
+        loadBySpriteId,
+        updateItem,
+        deleteItem,
+        loadInteractions,
+        updateFurnidata,
+        revertFurnidata,
+        importText,
+        importResult,
     };
 };

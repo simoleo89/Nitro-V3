@@ -2,43 +2,57 @@ import { CreateLinkEvent, PetRespectComposer, PetType } from '@nitrots/nitro-ren
 import { FC, useEffect, useState, useCallback } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { ConvertSeconds, GetConfigurationValue, LocalizeText, SendMessageComposer } from '../../../../../api';
-import { Button, Column, Flex, LayoutCounterTimeView, LayoutPetImageView, LayoutRarityLevelView, Text, UserProfileIconView } from '../../../../../common';
+import {
+    Button,
+    Column,
+    Flex,
+    LayoutCounterTimeView,
+    LayoutPetImageView,
+    LayoutRarityLevelView,
+    Text,
+    UserProfileIconView,
+} from '../../../../../common';
 import { useRoom, useSessionInfo } from '../../../../../hooks';
 
 // TypeScript interface for AvatarInfoPet
 interface AvatarInfoPet {
-  id: number;
-  name: string;
-  petType: number;
-  petBreed: number;
-  petFigure: string;
-  posture: string;
-  level: number;
-  maximumLevel: number;
-  age: number;
-  ownerId: number;
-  ownerName: string;
-  respect: number;
-  dead?: boolean;
-  energy?: number;
-  maximumEnergy?: number;
-  happyness?: number;
-  maximumHappyness?: number;
-  experience?: number;
-  levelExperienceGoal?: number;
-  remainingGrowTime?: number;
-  remainingTimeToLive?: number;
-  maximumTimeToLive?: number;
-  rarityLevel?: number;
-  isOwner?: boolean;
+    id: number;
+    name: string;
+    petType: number;
+    petBreed: number;
+    petFigure: string;
+    posture: string;
+    level: number;
+    maximumLevel: number;
+    age: number;
+    ownerId: number;
+    ownerName: string;
+    respect: number;
+    dead?: boolean;
+    energy?: number;
+    maximumEnergy?: number;
+    happyness?: number;
+    maximumHappyness?: number;
+    experience?: number;
+    levelExperienceGoal?: number;
+    remainingGrowTime?: number;
+    remainingTimeToLive?: number;
+    maximumTimeToLive?: number;
+    rarityLevel?: number;
+    isOwner?: boolean;
 }
 
 interface InfoStandWidgetPetViewProps {
-  avatarInfo: AvatarInfoPet;
-  onClose: () => void;
+    avatarInfo: AvatarInfoPet;
+    onClose: () => void;
 }
 
-const PetHeader: FC<{ name: string; petType: number; petBreed: number; onClose: () => void }> = ({ name, petType, petBreed, onClose }) => (
+const PetHeader: FC<{ name: string; petType: number; petBreed: number; onClose: () => void }> = ({
+    name,
+    petType,
+    petBreed,
+    onClose,
+}) => (
     <div className="flex flex-col gap-1">
         <Flex alignItems="center" gap={1} justifyContent="between">
             <Text small wrap variant="white">
@@ -59,9 +73,9 @@ const PetHeader: FC<{ name: string; petType: number; petBreed: number; onClose: 
 );
 
 const MonsterplantStats: FC<{
-  avatarInfo: AvatarInfoPet;
-  remainingGrowTime: number;
-  remainingTimeToLive: number;
+    avatarInfo: AvatarInfoPet;
+    remainingGrowTime: number;
+    remainingTimeToLive: number;
 }> = ({ avatarInfo, remainingGrowTime, remainingTimeToLive }) => (
     <>
         <Column center gap={1}>
@@ -72,7 +86,11 @@ const MonsterplantStats: FC<{
             {!avatarInfo.dead && (
                 <Column alignItems="center" gap={1}>
                     <Text center small wrap variant="white">
-                        {LocalizeText('pet.level', ['level', 'maxlevel'], [avatarInfo.level.toString(), avatarInfo.maximumLevel.toString()])}
+                        {LocalizeText(
+                            'pet.level',
+                            ['level', 'maxlevel'],
+                            [avatarInfo.level.toString(), avatarInfo.maximumLevel.toString()],
+                        )}
                     </Text>
                 </Column>
             )}
@@ -91,7 +109,10 @@ const MonsterplantStats: FC<{
                     <div
                         className="bg-success rounded pet-stats"
                         style={{
-                            width: avatarInfo.dead || remainingTimeToLive <= 0 ? '0' : `${(remainingTimeToLive / avatarInfo.maximumTimeToLive) * 100}%`,
+                            width:
+                                avatarInfo.dead || remainingTimeToLive <= 0
+                                    ? '0'
+                                    : `${(remainingTimeToLive / avatarInfo.maximumTimeToLive) * 100}%`,
                         }}
                     />
                 </div>
@@ -112,7 +133,11 @@ const MonsterplantStats: FC<{
             )}
             <Column alignItems="center" gap={1}>
                 <Text small truncate variant="white">
-                    {LocalizeText('infostand.pet.text.raritylevel', ['level'], [LocalizeText(`infostand.pet.raritylevel.${avatarInfo.rarityLevel}`)])}
+                    {LocalizeText(
+                        'infostand.pet.text.raritylevel',
+                        ['level'],
+                        [LocalizeText(`infostand.pet.raritylevel.${avatarInfo.rarityLevel}`)],
+                    )}
                 </Text>
                 <LayoutRarityLevelView className="top-2 inset-e-2" level={avatarInfo.rarityLevel} />
             </Column>
@@ -137,7 +162,11 @@ const RegularPetStats: FC<{ avatarInfo: AvatarInfoPet }> = ({ avatarInfo }) => (
                 </Column>
                 <Column grow gap={1}>
                     <Text center small wrap variant="white">
-                        {LocalizeText('pet.level', ['level', 'maxlevel'], [avatarInfo.level.toString(), avatarInfo.maximumLevel.toString()])}
+                        {LocalizeText(
+                            'pet.level',
+                            ['level', 'maxlevel'],
+                            [avatarInfo.level.toString(), avatarInfo.maximumLevel.toString()],
+                        )}
                     </Text>
                     <Column alignItems="center" gap={1}>
                         <Text small truncate variant="white">
@@ -203,25 +232,21 @@ const RegularPetStats: FC<{ avatarInfo: AvatarInfoPet }> = ({ avatarInfo }) => (
     </>
 );
 
-export const InfoStandWidgetPetView: FC<InfoStandWidgetPetViewProps> = ({ avatarInfo, onClose }) =>
-{
+export const InfoStandWidgetPetView: FC<InfoStandWidgetPetViewProps> = ({ avatarInfo, onClose }) => {
     const [remainingGrowTime, setRemainingGrowTime] = useState(0);
     const [remainingTimeToLive, setRemainingTimeToLive] = useState(0);
     const { roomSession = null } = useRoom();
     const { petRespectRemaining = 0, respectPet = null } = useSessionInfo();
 
-    useEffect(() =>
-    {
+    useEffect(() => {
         setRemainingGrowTime(avatarInfo.remainingGrowTime || 0);
         setRemainingTimeToLive(avatarInfo.remainingTimeToLive || 0);
     }, [avatarInfo]);
 
-    useEffect(() =>
-    {
+    useEffect(() => {
         if (avatarInfo.petType !== PetType.MONSTERPLANT || avatarInfo.dead) return;
 
-        const interval = setInterval(() =>
-        {
+        const interval = setInterval(() => {
             setRemainingGrowTime((prev) => (prev <= 0 ? 0 : prev - 1));
             setRemainingTimeToLive((prev) => (prev <= 0 ? 0 : prev - 1));
         }, 1000);
@@ -230,15 +255,12 @@ export const InfoStandWidgetPetView: FC<InfoStandWidgetPetViewProps> = ({ avatar
     }, [avatarInfo]);
 
     const processButtonAction = useCallback(
-        async (action: string) =>
-        {
-            try
-            {
+        async (action: string) => {
+            try {
                 let hideMenu = true;
                 if (!action) return;
 
-                switch (action)
-                {
+                switch (action) {
                     case 'respect':
                         await respectPet(avatarInfo.id);
                         if (petRespectRemaining - 1 >= 1) hideMenu = false;
@@ -261,13 +283,11 @@ export const InfoStandWidgetPetView: FC<InfoStandWidgetPetViewProps> = ({ avatar
                 }
 
                 if (hideMenu) onClose();
-            }
-            catch (error)
-            {
+            } catch (error) {
                 console.error(`Failed to process action ${action}:`, error);
             }
         },
-        [avatarInfo, petRespectRemaining, respectPet, roomSession, onClose]
+        [avatarInfo, petRespectRemaining, respectPet, roomSession, onClose],
     );
 
     const buttons = [
@@ -285,9 +305,9 @@ export const InfoStandWidgetPetView: FC<InfoStandWidgetPetViewProps> = ({ avatar
             action: 'treat',
             label: LocalizeText('infostand.button.pettreat'),
             condition:
-        !avatarInfo.dead &&
-        avatarInfo.petType === PetType.MONSTERPLANT &&
-        avatarInfo.energy / avatarInfo.maximumEnergy < 0.98,
+                !avatarInfo.dead &&
+                avatarInfo.petType === PetType.MONSTERPLANT &&
+                avatarInfo.energy / avatarInfo.maximumEnergy < 0.98,
         },
         {
             action: 'compost',
@@ -341,10 +361,14 @@ export const InfoStandWidgetPetView: FC<InfoStandWidgetPetViewProps> = ({ avatar
                 {buttons.map(
                     (button) =>
                         button.condition && (
-                            <Button key={button.action} variant="dark" onClick={() => processButtonAction(button.action)}>
+                            <Button
+                                key={button.action}
+                                variant="dark"
+                                onClick={() => processButtonAction(button.action)}
+                            >
                                 {button.label}
                             </Button>
-                        )
+                        ),
                 )}
             </Flex>
         </Column>

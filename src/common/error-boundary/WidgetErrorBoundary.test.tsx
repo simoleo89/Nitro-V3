@@ -10,10 +10,8 @@ import { WidgetErrorBoundary } from './WidgetErrorBoundary';
 // `src/nitro-renderer.mock.ts` via the alias in vitest.config.mts.
 // The SUT imports the same path, so both reach the same vi.fn instance.
 
-describe('WidgetErrorBoundary', () =>
-{
-    beforeEach(() =>
-    {
+describe('WidgetErrorBoundary', () => {
+    beforeEach(() => {
         vi.clearAllMocks();
         // react-error-boundary lets React's "uncaught error" log through
         // by default — silence it so jsdom doesn't dump a stack trace
@@ -21,73 +19,65 @@ describe('WidgetErrorBoundary', () =>
         vi.spyOn(console, 'error').mockImplementation(() => {});
     });
 
-    afterEach(() =>
-    {
+    afterEach(() => {
         cleanup();
         vi.restoreAllMocks();
     });
 
-    it('renders its children when nothing throws', () =>
-    {
+    it('renders its children when nothing throws', () => {
         render(
             <WidgetErrorBoundary name="HappyPath">
                 <span data-testid="child">visible</span>
-            </WidgetErrorBoundary>
+            </WidgetErrorBoundary>,
         );
 
         expect(screen.getByTestId('child')).toHaveTextContent('visible');
     });
 
-    it('swallows a render-time error to a silent fallback and logs it', () =>
-    {
-        const Boom: FC = () =>
-        {
+    it('swallows a render-time error to a silent fallback and logs it', () => {
+        const Boom: FC = () => {
             throw new Error('kaboom');
         };
 
         const { container } = render(
             <WidgetErrorBoundary name="Boom">
                 <Boom />
-            </WidgetErrorBoundary>
+            </WidgetErrorBoundary>,
         );
 
         // Default fallback is `() => null` → boundary subtree is empty.
         expect(container).toBeEmptyDOMElement();
 
         expect(NitroLogger.error).toHaveBeenCalledTimes(1);
-        const [ message, err ] = (NitroLogger.error as ReturnType<typeof vi.fn>).mock.calls[0];
+        const [message, err] = (NitroLogger.error as ReturnType<typeof vi.fn>).mock.calls[0];
         expect(message).toBe('[Widget:Boom] crashed');
         expect(err).toBeInstanceOf(Error);
         expect((err as Error).message).toBe('kaboom');
     });
 
-    it('renders a custom fallback node when provided', () =>
-    {
-        const Boom: FC = () =>
-        {
+    it('renders a custom fallback node when provided', () => {
+        const Boom: FC = () => {
             throw new Error('explode');
         };
 
         render(
-            <WidgetErrorBoundary name="WithFallback" fallback={ <div data-testid="fb">offline</div> }>
+            <WidgetErrorBoundary name="WithFallback" fallback={<div data-testid="fb">offline</div>}>
                 <Boom />
-            </WidgetErrorBoundary>
+            </WidgetErrorBoundary>,
         );
 
         expect(screen.getByTestId('fb')).toHaveTextContent('offline');
     });
 
-    it('uses "unknown" as the widget name when the prop is omitted', () =>
-    {
-        const Boom: FC = () =>
-        {
+    it('uses "unknown" as the widget name when the prop is omitted', () => {
+        const Boom: FC = () => {
             throw new Error('anonymous');
         };
 
         render(
             <WidgetErrorBoundary>
                 <Boom />
-            </WidgetErrorBoundary>
+            </WidgetErrorBoundary>,
         );
 
         expect(NitroLogger.error).toHaveBeenCalledTimes(1);

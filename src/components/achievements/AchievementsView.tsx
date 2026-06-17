@@ -1,9 +1,4 @@
-import
-{
-    AddLinkEventTracker,
-    ILinkEventTracker,
-    RemoveLinkEventTracker,
-} from '@nitrots/nitro-renderer';
+import { AddLinkEventTracker, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useState } from 'react';
 import { AchievementUtilities, LocalizeText } from '../../api';
 import { Column, LayoutImage, LayoutProgressBar, Text } from '../../common';
@@ -12,8 +7,7 @@ import { NitroCard } from '../../layout';
 import { AchievementCategoryView } from './AchievementCategoryView';
 import { AchievementsCategoryListView } from './category-list';
 
-export const AchievementsView: FC<{}> = (props) =>
-{
+export const AchievementsView: FC = (props) => {
     const [isVisible, setIsVisible] = useState(false);
     const {
         achievementCategories = [],
@@ -25,17 +19,14 @@ export const AchievementsView: FC<{}> = (props) =>
         selectedCategory = null,
     } = useAchievements();
 
-    useEffect(() =>
-    {
+    useEffect(() => {
         const linkTracker: ILinkEventTracker = {
-            linkReceived: (url: string) =>
-            {
+            linkReceived: (url: string) => {
                 const parts = url.split('/');
 
-                if(parts.length < 2) return;
+                if (parts.length < 2) return;
 
-                switch(parts[1])
-                {
+                switch (parts[1]) {
                     case 'show':
                         setIsVisible(true);
                         return;
@@ -55,7 +46,7 @@ export const AchievementsView: FC<{}> = (props) =>
         return () => RemoveLinkEventTracker(linkTracker);
     }, []);
 
-    if(!isVisible) return null;
+    if (!isVisible) return null;
 
     return (
         <NitroCard className="w-[375px] h-[405px]" uniqueKey="achievements">
@@ -70,14 +61,8 @@ export const AchievementsView: FC<{}> = (props) =>
                         onClick={(event) => setSelectedCategoryCode(null)}
                     />
                     <Column className="grow!" gap={0}>
-                        <Text
-                            className="text-small"
-                            fontSize={4}
-                            fontWeight="bold"
-                        >
-                            {LocalizeText(
-                                `quests.${selectedCategory.code}.name`
-                            )}
+                        <Text className="text-small" fontSize={4} fontWeight="bold">
+                            {LocalizeText(`quests.${selectedCategory.code}.name`)}
                         </Text>
                         <Text>
                             {LocalizeText(
@@ -85,19 +70,13 @@ export const AchievementsView: FC<{}> = (props) =>
                                 ['progress', 'limit'],
                                 [
                                     selectedCategory.getProgress().toString(),
-                                    selectedCategory
-                                        .getMaxProgress()
-                                        .toString(),
-                                ]
+                                    selectedCategory.getMaxProgress().toString(),
+                                ],
                             )}
                         </Text>
                     </Column>
                     <LayoutImage
-                        imageUrl={AchievementUtilities.getAchievementCategoryImageUrl(
-                            selectedCategory,
-                            null,
-                            true
-                        )}
+                        imageUrl={AchievementUtilities.getAchievementCategoryImageUrl(selectedCategory, null, true)}
                     />
                 </div>
             )}
@@ -109,14 +88,12 @@ export const AchievementsView: FC<{}> = (props) =>
                             selectedCategoryCode={selectedCategoryCode}
                             setSelectedCategoryCode={setSelectedCategoryCode}
                         />
-                        <div
-                            className="flex flex-col justify-end grow gap-1"
-                        >
+                        <div className="flex flex-col justify-end grow gap-1">
                             <Text center small>
                                 {LocalizeText(
                                     'achievements.categories.score',
                                     ['score'],
-                                    [achievementScore.toString()]
+                                    [achievementScore.toString()],
                                 )}
                             </Text>
                             <LayoutProgressBar
@@ -125,18 +102,13 @@ export const AchievementsView: FC<{}> = (props) =>
                                 text={LocalizeText(
                                     'achievements.categories.totalprogress',
                                     ['progress', 'limit'],
-                                    [
-                                        getProgress.toString(),
-                                        getMaxProgress.toString(),
-                                    ]
+                                    [getProgress.toString(), getMaxProgress.toString()],
                                 )}
                             />
                         </div>
                     </>
                 )}
-                {selectedCategory && (
-                    <AchievementCategoryView category={selectedCategory} />
-                )}
+                {selectedCategory && <AchievementCategoryView category={selectedCategory} />}
             </NitroCard.Content>
         </NitroCard>
     );

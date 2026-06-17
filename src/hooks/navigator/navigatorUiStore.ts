@@ -49,9 +49,7 @@ export const useNavigatorUiStore = createNitroStore<NavigatorUiState & Navigator
 
     show: () => set({ isVisible: true, needsSearch: true }),
     hide: () => set({ isVisible: false }),
-    toggle: () => set((s) => s.isVisible
-        ? { isVisible: false }
-        : { isVisible: true, needsSearch: true }),
+    toggle: () => set((s) => (s.isVisible ? { isVisible: false } : { isVisible: true, needsSearch: true })),
     openCreator: () => set({ isVisible: true, isCreatorOpen: true }),
     closeCreator: () => set({ isCreatorOpen: false }),
     setRoomInfoOpen: (open) => set({ isRoomInfoOpen: open }),
@@ -65,5 +63,5 @@ export const useNavigatorUiStore = createNitroStore<NavigatorUiState & Navigator
     requestSearch: () => set({ needsSearch: true }),
     consumeSearchRequest: () => set({ needsSearch: false }),
     setTab: (code) => set({ currentTabCode: code, currentFilter: '', isCreatorOpen: false }),
-    setFilter: (value) => set({ currentFilter: value })
+    setFilter: (value) => set({ currentFilter: value }),
 }));

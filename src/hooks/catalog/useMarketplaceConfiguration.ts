@@ -1,4 +1,8 @@
-import { GetMarketplaceConfigurationMessageComposer, MarketplaceConfigurationEvent, MarketplaceConfigurationMessageParser } from '@nitrots/nitro-renderer';
+import {
+    GetMarketplaceConfigurationMessageComposer,
+    MarketplaceConfigurationEvent,
+    MarketplaceConfigurationMessageParser,
+} from '@nitrots/nitro-renderer';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useNitroQuery } from '../../api/nitro-query';
 
@@ -16,13 +20,13 @@ import { useNitroQuery } from '../../api/nitro-query';
  * is React Query's; the component just reads `data`.
  */
 export const useMarketplaceConfiguration = (
-    options: { enabled?: boolean } = {}
+    options: { enabled?: boolean } = {},
 ): UseQueryResult<MarketplaceConfigurationMessageParser> =>
     useNitroQuery<MarketplaceConfigurationEvent, MarketplaceConfigurationMessageParser>({
-        key: [ 'nitro', 'catalog', 'marketplaceConfiguration' ],
+        key: ['nitro', 'catalog', 'marketplaceConfiguration'],
         request: () => new GetMarketplaceConfigurationMessageComposer(),
         parser: MarketplaceConfigurationEvent,
-        select: event => event.getParser(),
+        select: (event) => event.getParser(),
         enabled: options.enabled,
-        staleTime: Infinity
+        staleTime: Infinity,
     });

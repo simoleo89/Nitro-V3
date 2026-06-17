@@ -1,4 +1,4 @@
 import { FC } from 'react';
 import { WiredNeighborhoodSelectorView } from './WiredNeighborhoodSelectorView';
 
-export const WiredSelectorUsersNeighborhoodView: FC<{}> = () => <WiredNeighborhoodSelectorView />;
+export const WiredSelectorUsersNeighborhoodView: FC = () => <WiredNeighborhoodSelectorView />;

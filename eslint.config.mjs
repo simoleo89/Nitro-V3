@@ -37,42 +37,9 @@ export default [
             ...typescriptEslintPlugin.configs[
                 "recommended-requiring-type-checking"
             ].rules,
-            'indent': [
-                'error',
-                4,
-                {
-                    'SwitchCase': 1
-                }
-            ],
-            'no-multi-spaces': [
-                'error'
-            ],
-            'no-trailing-spaces': [
-                'error',
-                {
-                    'skipBlankLines': false,
-                    'ignoreComments': true
-                }
-            ],
-            'linebreak-style': [
-                'off'
-            ],
-            'quotes': [
-                'error',
-                'single'
-            ],
-            'semi': [
-                'error',
-                'always'
-            ],
-            'brace-style': [
-                'error',
-                'allman'
-            ],
-            'object-curly-spacing': [
-                'error',
-                'always'
-            ],
+            // Formatting (indent, quotes, semicolons, brace style, spacing,
+            // trailing spaces, line breaks) is delegated to Biome — see
+            // biome.json and `yarn format`. ESLint here covers correctness only.
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-unsafe-assignment': 'off',
             '@typescript-eslint/no-unsafe-call': 'off',

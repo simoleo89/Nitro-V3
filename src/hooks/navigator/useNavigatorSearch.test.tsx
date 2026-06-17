@@ -17,16 +17,15 @@ import { useNavigatorSearch } from './useNavigatorSearch';
 // event-driven implementation directly — no QueryClient scaffolding.
 
 /** Build a fake NavigatorSearchEvent whose getParser() returns a result with `code`. */
-const makeSearchEvent = (code: string) =>
-{
+const makeSearchEvent = (code: string) => {
     // Cast constructors as `any` so tsgo doesn't check required args against
     // the real renderer SDK types (the mock stubs have no required args).
-    const result = new (NavigatorSearchResultSet as any)() as any;
+    const result = new (NavigatorSearchResultSet as any)();
     result.code = code;
     result.data = '';
     result.results = [];
 
-    const ev = new (NavigatorSearchEvent as any)() as any;
+    const ev = new (NavigatorSearchEvent as any)();
     ev.getParser = () => ({ result });
     return ev;
 };
@@ -42,28 +41,24 @@ const INITIAL_UI = {
     needsInit: true,
     needsSearch: false,
     currentTabCode: '',
-    currentFilter: ''
+    currentFilter: '',
 };
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('useNavigatorSearch', () =>
-{
-    beforeEach(() =>
-    {
+describe('useNavigatorSearch', () => {
+    beforeEach(() => {
         useNavigatorUiStore.setState(INITIAL_UI);
     });
 
-    afterEach(() =>
-    {
+    afterEach(() => {
         cleanup();
         vi.clearAllMocks();
     });
 
-    it('1. with empty tabCode no fetch starts (the request effect is gated)', () =>
-    {
+    it('1. with empty tabCode no fetch starts (the request effect is gated)', () => {
         const { result } = renderHook(() => useNavigatorSearch());
 
         // No tab selected → the request effect short-circuits, nothing fetches.
@@ -71,20 +66,17 @@ describe('useNavigatorSearch', () =>
         expect(result.current.searchResult).toBeNull();
     });
 
-    it('2. after setTab("public"), the hook starts fetching and a matching event resolves it', async () =>
-    {
+    it('2. after setTab("public"), the hook starts fetching and a matching event resolves it', async () => {
         const { result } = renderHook(() => useNavigatorSearch());
 
-        act(() =>
-        {
+        act(() => {
             useNavigatorUiStore.getState().setTab('public');
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(true));
 
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
         await waitFor(() => expect(result.current.searchResult).not.toBeNull());
@@ -92,31 +84,26 @@ describe('useNavigatorSearch', () =>
         expect(result.current.isFetching).toBe(false);
     });
 
-    it('3. after setFilter("cocco"), a new fetch fires and a matching event resolves it', async () =>
-    {
+    it('3. after setFilter("cocco"), a new fetch fires and a matching event resolves it', async () => {
         const { result } = renderHook(() => useNavigatorSearch());
 
-        act(() =>
-        {
+        act(() => {
             useNavigatorUiStore.getState().setTab('public');
         });
         await waitFor(() => expect(result.current.isFetching).toBe(true));
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
         await waitFor(() => expect(result.current.isFetching).toBe(false));
 
-        act(() =>
-        {
+        act(() => {
             useNavigatorUiStore.getState().setFilter('cocco');
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(true));
 
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(false));
@@ -124,25 +111,21 @@ describe('useNavigatorSearch', () =>
         expect(useNavigatorUiStore.getState().currentFilter).toBe('cocco');
     });
 
-    it('4. after setTab("events"), currentFilter resets to "" and a new fetch fires for events', async () =>
-    {
+    it('4. after setTab("events"), currentFilter resets to "" and a new fetch fires for events', async () => {
         const { result } = renderHook(() => useNavigatorSearch());
 
-        act(() =>
-        {
+        act(() => {
             useNavigatorUiStore.getState().setTab('public');
             useNavigatorUiStore.getState().setFilter('some-filter');
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(true));
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
         await waitFor(() => expect(result.current.isFetching).toBe(false));
 
-        act(() =>
-        {
+        act(() => {
             useNavigatorUiStore.getState().setTab('events');
         });
 
@@ -151,60 +134,51 @@ describe('useNavigatorSearch', () =>
 
         await waitFor(() => expect(result.current.isFetching).toBe(true));
 
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('events') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('events'));
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(false));
         expect((result.current.searchResult as any).code).toBe('events');
     });
 
-    it('5. NavigatorSearchEvent with result.code === currentTabCode is accepted and updates data', async () =>
-    {
+    it('5. NavigatorSearchEvent with result.code === currentTabCode is accepted and updates data', async () => {
         const { result } = renderHook(() => useNavigatorSearch());
 
-        act(() =>
-        {
+        act(() => {
             useNavigatorUiStore.getState().setTab('public');
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(true));
 
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
-        await waitFor(() =>
-        {
+        await waitFor(() => {
             expect(result.current.searchResult).not.toBeNull();
             expect((result.current.searchResult as any).code).toBe('public');
         });
     });
 
-    it('6. NavigatorSearchEvent with result.code !== currentTabCode is REJECTED — data unchanged', async () =>
-    {
+    it('6. NavigatorSearchEvent with result.code !== currentTabCode is REJECTED — data unchanged', async () => {
         const { result } = renderHook(() => useNavigatorSearch());
 
-        act(() =>
-        {
+        act(() => {
             useNavigatorUiStore.getState().setTab('public');
         });
 
         await waitFor(() => expect(result.current.isFetching).toBe(true));
 
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('wrong_tab') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('wrong_tab'));
         });
 
         // The wrong-tab event is filtered out by the accept guard.
         expect(result.current.searchResult).toBeNull();
 
-        act(() =>
-        {
-            mockEventDispatcher.dispatchEvent(makeSearchEvent('public') as any);
+        act(() => {
+            mockEventDispatcher.dispatchEvent(makeSearchEvent('public'));
         });
 
         await waitFor(() => expect(result.current.searchResult).not.toBeNull());

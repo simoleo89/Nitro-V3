@@ -2,20 +2,17 @@ import * as Popover from '@radix-ui/react-popover';
 import { FC, useState } from 'react';
 import { Flex, Grid, NitroCardContentView } from '../../../../common';
 
-interface ChatInputStyleSelectorViewProps
-{
-  chatStyleId: number;
-  chatStyleIds: number[];
-  selectChatStyleId: (styleId: number) => void;
+interface ChatInputStyleSelectorViewProps {
+    chatStyleId: number;
+    chatStyleIds: number[];
+    selectChatStyleId: (styleId: number) => void;
 }
 
-export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = props =>
-{
+export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = (props) => {
     const { chatStyleIds = null, selectChatStyleId = null } = props;
-    const [ selectorVisible, setSelectorVisible ] = useState(false);
+    const [selectorVisible, setSelectorVisible] = useState(false);
 
-    const selectStyle = (styleId: number) =>
-    {
+    const selectStyle = (styleId: number) => {
         selectChatStyleId(styleId);
         setSelectorVisible(false);
     };
@@ -35,13 +32,23 @@ export const ChatInputStyleSelectorView: FC<ChatInputStyleSelectorViewProps> = p
                 >
                     <NitroCardContentView className="bg-transparent max-h-[210px]!" overflow="hidden">
                         <Grid columnCount={3} overflow="auto">
-                            {chatStyleIds && chatStyleIds.length > 0 && chatStyleIds.map(styleId => (
-                                <Flex key={styleId} center pointer className="h-[35px] w-[65px]" onClick={() => selectStyle(styleId)}>
-                                    <div className="bubble-container relative w-[50px]">
-                                        <div className={`relative max-w-[65px] min-h-[26px] text-[14px] chat-bubble bubble-${styleId}`} />
-                                    </div>
-                                </Flex>
-                            ))}
+                            {chatStyleIds &&
+                                chatStyleIds.length > 0 &&
+                                chatStyleIds.map((styleId) => (
+                                    <Flex
+                                        key={styleId}
+                                        center
+                                        pointer
+                                        className="h-[35px] w-[65px]"
+                                        onClick={() => selectStyle(styleId)}
+                                    >
+                                        <div className="bubble-container relative w-[50px]">
+                                            <div
+                                                className={`relative max-w-[65px] min-h-[26px] text-[14px] chat-bubble bubble-${styleId}`}
+                                            />
+                                        </div>
+                                    </Flex>
+                                ))}
                         </Grid>
                     </NitroCardContentView>
                     <Popover.Arrow className="fill-black" width={14} height={7} />

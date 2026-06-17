@@ -11,8 +11,7 @@ import { useWiredToolsStore } from './useWiredToolsStore';
  * Stays separate from useWiredToolsState so components that only need
  * to trigger Wired actions don't have to pull in the full state shape.
  */
-export const useWiredToolsActions = () =>
-{
+export const useWiredToolsActions = () => {
     const {
         updateAccountPreferences,
         saveRoomSettings,
@@ -26,7 +25,7 @@ export const useWiredToolsActions = () =>
         updateRoomVariableValue,
         openMonitor,
         openInspectionForFurni,
-        openInspectionForUser
+        openInspectionForUser,
     } = useBetween(useWiredToolsStore);
 
     return {
@@ -42,6 +41,6 @@ export const useWiredToolsActions = () =>
         updateRoomVariableValue,
         openMonitor,
         openInspectionForFurni,
-        openInspectionForUser
+        openInspectionForUser,
     };
 };

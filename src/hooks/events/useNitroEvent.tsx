@@ -4,5 +4,5 @@ import { useEventDispatcher } from './useEventDispatcher';
 export const useNitroEvent = <T extends NitroEvent>(
     type: string | string[],
     handler: (event: T) => void,
-    enabled = true
+    enabled = true,
 ) => useEventDispatcher(type, GetEventDispatcher(), handler, enabled);

@@ -20,17 +20,17 @@ export const HousekeepingActionType = {
     ECONOMY_GIVE_DIAMONDS: 'economy.give_diamonds',
     ECONOMY_GRANT_ITEM: 'economy.grant_item',
     ECONOMY_SET_HC: 'economy.set_hc',
-    ECONOMY_HOTEL_ALERT: 'economy.hotel_alert'
+    ECONOMY_HOTEL_ALERT: 'economy.hotel_alert',
 } as const;
 
-export type HousekeepingActionType = typeof HousekeepingActionType[keyof typeof HousekeepingActionType];
+export type HousekeepingActionType = (typeof HousekeepingActionType)[keyof typeof HousekeepingActionType];
 
 export const HousekeepingTabId = {
     DASHBOARD: 'dashboard',
     USERS: 'users',
     ROOMS: 'rooms',
     ECONOMY: 'economy',
-    AUDIT: 'audit'
+    AUDIT: 'audit',
 } as const;
 
-export type HousekeepingTabId = typeof HousekeepingTabId[keyof typeof HousekeepingTabId];
+export type HousekeepingTabId = (typeof HousekeepingTabId)[keyof typeof HousekeepingTabId];

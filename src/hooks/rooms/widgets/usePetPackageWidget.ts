@@ -1,10 +1,14 @@
-import { GetRoomEngine, OpenPetPackageMessageComposer, RoomObjectCategory, RoomSessionPetPackageEvent } from '@nitrots/nitro-renderer';
+import {
+    GetRoomEngine,
+    OpenPetPackageMessageComposer,
+    RoomObjectCategory,
+    RoomSessionPetPackageEvent,
+} from '@nitrots/nitro-renderer';
 import { useReducer } from 'react';
 import { LocalizeText, SendMessageComposer } from '../../../api';
 import { useNitroEvent } from '../../events';
 
-interface PetPackageState
-{
+interface PetPackageState {
     isVisible: boolean;
     objectId: number;
     objectType: string;
@@ -23,13 +27,11 @@ const INITIAL_STATE: PetPackageState = {
     objectId: -1,
     objectType: '',
     petName: '',
-    errorResult: ''
+    errorResult: '',
 };
 
-const petPackageReducer = (state: PetPackageState, action: PetPackageAction): PetPackageState =>
-{
-    switch(action.type)
-    {
+const petPackageReducer = (state: PetPackageState, action: PetPackageAction): PetPackageState => {
+    switch (action.type) {
         case 'open':
             return { ...INITIAL_STATE, isVisible: true, objectId: action.objectId, objectType: action.objectType };
         case 'close':
@@ -47,44 +49,45 @@ const petPackageReducer = (state: PetPackageState, action: PetPackageAction): Pe
  * server to a localized error label. Exported for testability — the
  * mapping is server-protocol contract, not UI state.
  */
-export const getPetPackageNameError = (errorCode: number): string =>
-{
-    if(!errorCode) return '';
+export const getPetPackageNameError = (errorCode: number): string => {
+    if (!errorCode) return '';
 
-    switch(errorCode)
-    {
-        case 1: return LocalizeText('catalog.alert.petname.long');
-        case 2: return LocalizeText('catalog.alert.petname.short');
-        case 3: return LocalizeText('catalog.alert.petname.chars');
+    switch (errorCode) {
+        case 1:
+            return LocalizeText('catalog.alert.petname.long');
+        case 2:
+            return LocalizeText('catalog.alert.petname.short');
+        case 3:
+            return LocalizeText('catalog.alert.petname.chars');
         case 4:
         default:
             return LocalizeText('catalog.alert.petname.bobba');
     }
 };
 
-const usePetPackageWidgetState = () =>
-{
-    const [ state, dispatch ] = useReducer(petPackageReducer, INITIAL_STATE);
+const usePetPackageWidgetState = () => {
+    const [state, dispatch] = useReducer(petPackageReducer, INITIAL_STATE);
 
     const onClose = () => dispatch({ type: 'close' });
     const onConfirm = () => SendMessageComposer(new OpenPetPackageMessageComposer(state.objectId, state.petName));
     const onChangePetName = (petName: string) => dispatch({ type: 'set-name', petName });
 
-    useNitroEvent<RoomSessionPetPackageEvent>(RoomSessionPetPackageEvent.RSOPPE_OPEN_PET_PACKAGE_REQUESTED, event =>
-    {
-        if(!event) return;
+    useNitroEvent<RoomSessionPetPackageEvent>(RoomSessionPetPackageEvent.RSOPPE_OPEN_PET_PACKAGE_REQUESTED, (event) => {
+        if (!event) return;
 
-        const roomObject = GetRoomEngine().getRoomObject(event.session.roomId, event.objectId, RoomObjectCategory.FLOOR);
+        const roomObject = GetRoomEngine().getRoomObject(
+            event.session.roomId,
+            event.objectId,
+            RoomObjectCategory.FLOOR,
+        );
 
         dispatch({ type: 'open', objectId: event.objectId, objectType: roomObject.type });
     });
 
-    useNitroEvent<RoomSessionPetPackageEvent>(RoomSessionPetPackageEvent.RSOPPE_OPEN_PET_PACKAGE_RESULT, event =>
-    {
-        if(!event) return;
+    useNitroEvent<RoomSessionPetPackageEvent>(RoomSessionPetPackageEvent.RSOPPE_OPEN_PET_PACKAGE_RESULT, (event) => {
+        if (!event) return;
 
-        if(event.nameValidationStatus === 0)
-        {
+        if (event.nameValidationStatus === 0) {
             dispatch({ type: 'close' });
             return;
         }
@@ -99,7 +102,7 @@ const usePetPackageWidgetState = () =>
         objectType: state.objectType,
         onChangePetName,
         onConfirm,
-        onClose
+        onClose,
     };
 };
 

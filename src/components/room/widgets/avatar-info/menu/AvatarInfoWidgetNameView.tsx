@@ -1,6 +1,6 @@
 import { GetSessionDataManager } from '@nitrots/nitro-renderer';
 import { FC, useMemo } from 'react';
-import { AvatarInfoName } from '../../../../../api';
+import { AvatarInfoName, SanitizeHtml } from '../../../../../api';
 import { ContextMenuView } from '../../context-menu/ContextMenuView';
 
 interface AvatarInfoWidgetNameViewProps
@@ -24,7 +24,7 @@ export const AvatarInfoWidgetNameView: FC<AvatarInfoWidgetNameViewProps> = props
 
     return (
         <ContextMenuView category={ nameInfo.category } classNames={ getClassNames } fades={ (nameInfo.id !== GetSessionDataManager().userId) } objectId={ nameInfo.roomIndex } userType={ nameInfo.userType } onClose={ onClose }>
-            <div className="text-shadow" dangerouslySetInnerHTML={ { __html: `${ nameInfo.name }` } }></div>
+            <div className="text-shadow" dangerouslySetInnerHTML={ { __html: SanitizeHtml(`${ nameInfo.name }`) } }></div>
         </ContextMenuView>
     );
 };

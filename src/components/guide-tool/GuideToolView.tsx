@@ -321,7 +321,7 @@ export const GuideToolView: FC<{}> = props =>
                 return;
             case 'forum_link':
                 const url: string = GetConfigurationValue<string>('group.homepage.url', '').replace('%groupid%', GetConfigurationValue<string>('guide.help.alpha.groupid', '0'));
-                window.open(url);
+                window.open(url, '_blank', 'noopener,noreferrer');
                 return;
         }
     }, [ isHandlingBullyReports, isHandlingGuideRequests, isHandlingHelpRequests, simpleAlert ]);

@@ -15,6 +15,7 @@ export * from './PrefixUtils';
 export * from './ProductImageUtility';
 export * from './Randomizer';
 export * from './RememberLogin';
+export * from './isSafeExternalUrl';
 export * from './RoomChatFormatter';
 export * from './SanitizeHtml';
 export * from './SetLocalStorage';

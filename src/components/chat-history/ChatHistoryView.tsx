@@ -1,6 +1,6 @@
 import { AddLinkEventTracker, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { ChatEntryType, LocalizeText } from '../../api';
+import { ChatEntryType, LocalizeText, SanitizeHtml } from '../../api';
 import { Flex, NitroCardContentView, NitroCardHeaderView, NitroCardTabsItemView, NitroCardTabsView, NitroCardView, Text } from '../../common';
 import { useChatHistory, useMentionActions, useMentionsSnapshot, useOnClickChat } from '../../hooks';
 import { useUserDataSnapshot } from '../../hooks/session/useSessionSnapshots';
@@ -137,8 +137,8 @@ export const ChatHistoryView: FC<{}> = props =>
                                             )}
                                         </div>
                                         <div className="chat-content">
-                                            <b className="mr-1 username" dangerouslySetInnerHTML={{ __html: `${row.name}: ` }} />
-                                            <span className="message" dangerouslySetInnerHTML={{ __html: `${row.message}` }} onClick={ onClickChat } />
+                                            <b className="mr-1 username" dangerouslySetInnerHTML={{ __html: SanitizeHtml(`${row.name}: `) }} />
+                                            <span className="message" dangerouslySetInnerHTML={{ __html: SanitizeHtml(`${row.message}`) }} onClick={ onClickChat } />
                                         </div>
                                     </div>
                                 </div>

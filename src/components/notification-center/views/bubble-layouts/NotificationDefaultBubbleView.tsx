@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { NotificationBubbleItem, OpenUrl } from '../../../../api';
+import { NotificationBubbleItem, OpenUrl, SanitizeHtml } from '../../../../api';
 import { Flex, LayoutNotificationBubbleView, LayoutNotificationBubbleViewProps, Text } from '../../../../common';
 
 export interface NotificationDefaultBubbleViewProps extends LayoutNotificationBubbleViewProps
@@ -19,7 +19,7 @@ export const NotificationDefaultBubbleView: FC<NotificationDefaultBubbleViewProp
                 { (item.iconUrl && item.iconUrl.length) &&
                     <img alt="" className="no-select" src={ item.iconUrl } /> }
             </Flex>
-            <Text wrap dangerouslySetInnerHTML={ { __html: htmlText } } variant="white" />
+            <Text wrap dangerouslySetInnerHTML={ { __html: SanitizeHtml(htmlText) } } variant="white" />
         </LayoutNotificationBubbleView>
     );
 };

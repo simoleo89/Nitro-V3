@@ -1,6 +1,6 @@
 import { GetSessionDataManager, RoomObjectType } from '@nitrots/nitro-renderer';
 import { FC, UIEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ChatEntryType, LocalizeText } from '../../../../api';
+import { ChatEntryType, LocalizeText, SanitizeHtml } from '../../../../api';
 import { DraggableWindowPosition, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
 import { useChatHistory, useChatWindow, useOnClickChat } from '../../../../hooks';
 import { useRoom } from '../../../../hooks/rooms';
@@ -133,18 +133,18 @@ export const ChatWidgetWindowView: FC<{}> = () =>
                                 { hideBalloons && !hideAvatars && <div className={ `w-[65px] h-[55px] shrink-0 mt-[-18px] rounded-sm bg-no-repeat bg-center scale-70 ${ isOwnMessage ? 'order-2' : '' }` } style={ chat.imageUrl ? { backgroundImage: `url(${ chat.imageUrl })` } : undefined } /> }
                                 { hideBalloons && (
                                     <div onClick={ onClickChat }>
-                                        <b dangerouslySetInnerHTML={ { __html: `${ chat.name }: ` } } />
+                                        <b dangerouslySetInnerHTML={ { __html: SanitizeHtml(`${ chat.name }: `) } } />
                                         { !chat.showTranslation &&
-                                            <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: chat.message } } /> }
+                                            <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: SanitizeHtml(chat.message) } } /> }
                                         { chat.showTranslation &&
                                             <div className="mt-[2px] flex flex-col gap-[2px]">
                                                 <div className="flex items-start gap-1 leading-[1.15]">
                                                     <span className="inline-block min-w-[52px] font-bold opacity-75">original:</span>
-                                                    <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: chat.originalMessage || chat.message || '' } } />
+                                                    <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: SanitizeHtml(chat.originalMessage || chat.message || '') } } />
                                                 </div>
                                                 <div className="flex items-start gap-1 leading-[1.15]">
                                                     <span className="inline-block min-w-[52px] font-bold opacity-75">translate:</span>
-                                                    <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: chat.translatedMessage || chat.message || '' } } />
+                                                    <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: SanitizeHtml(chat.translatedMessage || chat.message || '') } } />
                                                 </div>
                                             </div> }
                                     </div>
@@ -161,18 +161,18 @@ export const ChatWidgetWindowView: FC<{}> = () =>
                                                 ) }
                                             </div>
                                             <div className={ `chat-content py-[5px] px-[6px] leading-none min-h-[25px] ${ !hideAvatars ? (isOwnMessage ? 'mr-[27px]' : 'ml-[27px]') : '' }` }>
-                                                <b className="username" dangerouslySetInnerHTML={ { __html: `${ chat.name }: ` } } />
+                                                <b className="username" dangerouslySetInnerHTML={ { __html: SanitizeHtml(`${ chat.name }: `) } } />
                                                 { !chat.showTranslation &&
-                                                    <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: `${ chat.message }` } } onClick={ onClickChat } /> }
+                                                    <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: SanitizeHtml(`${ chat.message }`) } } onClick={ onClickChat } /> }
                                                 { chat.showTranslation &&
                                                     <div className="mt-[2px] flex flex-col gap-[2px]" onClick={ onClickChat }>
                                                         <div className="flex items-start gap-1 leading-[1.1]">
                                                             <span className="inline-block min-w-[52px] font-bold" style={ { opacity: 0.75 } }>original:</span>
-                                                            <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: `${ chat.originalMessage || chat.message || '' }` } } />
+                                                            <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: SanitizeHtml(`${ chat.originalMessage || chat.message || '' }`) } } />
                                                         </div>
                                                         <div className="flex items-start gap-1 leading-[1.1]">
                                                             <span className="inline-block min-w-[52px] font-bold" style={ { opacity: 0.75 } }>translate:</span>
-                                                            <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: `${ chat.translatedMessage || chat.message || '' }` } } />
+                                                            <span className={ messageClassName } dangerouslySetInnerHTML={ { __html: SanitizeHtml(`${ chat.translatedMessage || chat.message || '' }`) } } />
                                                         </div>
                                                     </div> }
                                             </div>

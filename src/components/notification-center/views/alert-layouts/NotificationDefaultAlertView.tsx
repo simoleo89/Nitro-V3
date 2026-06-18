@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from 'react';
-import { DispatchUiEvent, LocalizeText, NotificationAlertItem, NotificationAlertType, OpenUrl, RoomWidgetUpdateChatInputContentEvent } from '../../../../api';
+import { DispatchUiEvent, LocalizeText, NotificationAlertItem, NotificationAlertType, OpenUrl, RoomWidgetUpdateChatInputContentEvent, SanitizeHtml } from '../../../../api';
 import { Button, Column, Flex, LayoutNotificationAlertView, LayoutNotificationAlertViewProps } from '../../../../common';
 
 interface NotificationDefaultAlertViewProps extends LayoutNotificationAlertViewProps
@@ -97,7 +97,7 @@ export const NotificationDefaultAlertView: FC<NotificationDefaultAlertViewProps>
                     {
                         const htmlText = message.replace(/\r\n|\r|\n/g, '<br />');
 
-                        return <div key={ index } dangerouslySetInnerHTML={ { __html: htmlText } } />;
+                        return <div key={ index } dangerouslySetInnerHTML={ { __html: SanitizeHtml(htmlText) } } />;
                     }) }
                     { item.clickUrl && (item.clickUrl.length > 0) && (item.imageUrl && !imageFailed) && <>
                         <hr className="my-2 w-full" />

@@ -1,6 +1,6 @@
 import { GetSessionDataManager, RoomObjectType } from '@nitrots/nitro-renderer';
 import { FC, useMemo, useState } from 'react';
-import { ChatEntryType, IReportedUser, LocalizeText, ReportState } from '../../../api';
+import { ChatEntryType, IReportedUser, LocalizeText, ReportState, SanitizeHtml } from '../../../api';
 import { AutoGrid, Button, Column, Flex, LayoutGridItem, Text } from '../../../common';
 import { useChatHistory, useHelp } from '../../../hooks';
 
@@ -66,7 +66,7 @@ export const SelectReportedUserView: FC<{}> = props =>
                         {
                             return (
                                 <LayoutGridItem key={ user.id } itemActive={ (selectedUserId === user.id) } onClick={ event => selectUser(user.id) }>
-                                    <span dangerouslySetInnerHTML={ { __html: (user.username) } } />
+                                    <span dangerouslySetInnerHTML={ { __html: SanitizeHtml(user.username) } } />
                                 </LayoutGridItem>
                             );
                         }) }

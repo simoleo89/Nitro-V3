@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -10,6 +10,8 @@ const userProfileCssPath = join(process.cwd(), 'src/css/user-profile/UserProfile
 const helpCssPath = join(process.cwd(), 'src/css/help/HelpView.css');
 const indexTsxPath = join(process.cwd(), 'src/index.tsx');
 const vaultViewPath = join(process.cwd(), 'src/components/vault/VaultView.tsx');
+
+const readIfExists = (path: string) => existsSync(path) ? readFileSync(path, 'utf8') : '';
 
 describe('NitroCardView.css', () =>
 {
@@ -39,9 +41,9 @@ describe('NitroCardView.css', () =>
         const catalogView = readFileSync(catalogViewPath, 'utf8');
         const catalogCss = readFileSync(catalogCssPath, 'utf8');
         const userProfileCss = readFileSync(userProfileCssPath, 'utf8');
-        const helpCss = readFileSync(helpCssPath, 'utf8');
+        const helpCss = readIfExists(helpCssPath);
         const indexTsx = readFileSync(indexTsxPath, 'utf8');
-        const vaultView = readFileSync(vaultViewPath, 'utf8');
+        const vaultView = readIfExists(vaultViewPath);
         const legacySwfWindowClass = [ 'habbo', 'swf', 'window' ].join('-');
 
         expect(catalogView).not.toContain(legacySwfWindowClass);

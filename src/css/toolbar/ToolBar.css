@@ -1,3 +1,13 @@
+.tb-frame {
+    transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease, border-radius 220ms ease;
+}
+
+.tb-nav-clip {
+    overflow-x: clip;
+    overflow-y: visible;
+    overflow-clip-margin: 0 0 200px 0;
+}
+
 .tb-icon {
     opacity: 1;
     cursor: pointer;
@@ -46,11 +56,43 @@
     }
 }
 
+.tb-bar-scroll > * {
+    flex-shrink: 0;
+}
+
 .tb-open-shell {
     scrollbar-width: none;
     -ms-overflow-style: none;
 
     &::-webkit-scrollbar {
         display: none;
+    }
+}
+
+.tbme-panel {
+    background: rgba(18, 16, 14, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 10px 12px;
+    box-shadow:
+        0 10px 36px rgba(0, 0, 0, 0.65),
+        0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+
+.tbme-icon {
+    opacity: 0.72;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+
+    &:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        opacity: 0.85;
+        transform: translateY(0);
     }
 }

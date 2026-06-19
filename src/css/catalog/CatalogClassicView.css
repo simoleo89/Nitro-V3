@@ -270,6 +270,8 @@
     height: 40px;
     min-height: 40px;
     max-height: 40px;
+    gap: 0;
+    padding: 4px 6px 0 !important;
     align-items: flex-end;
     overflow-x: auto;
     overflow-y: hidden;
@@ -299,6 +301,26 @@
 
 .nitro-catalog-classic-tabs-shell::-webkit-scrollbar-button:single-button {
     display: none !important;
+}
+
+.nitro-catalog-classic-tabs-shell .nitro-card-tab-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 36px;
+    min-width: 0;
+    flex: 1 1 0;
+    max-width: none;
+    padding: 6px 6px 7px;
+    margin: 0 2px 0 0;
+    flex-shrink: 1;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.nitro-catalog-classic-tabs-shell .nitro-card-tab-item:last-of-type {
+    margin-right: 0;
 }
 
 .nitro-catalog-classic-tabs-shell .nitro-card-tab-item > div {

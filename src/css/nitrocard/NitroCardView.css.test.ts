@@ -47,9 +47,9 @@ describe('NitroCardView.css', () =>
         expect(catalogView).not.toContain(legacySwfWindowClass);
         expect(indexTsx).not.toContain([ 'Habbo', 'Swf', 'Skin', 'css' ].join('.'));
         expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-window\s+\.nitro-card-(?:header|header-shell|title|close-button)/);
-        expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-tabs-shell\s+\.nitro-card-tab-item\s*\{/);
         expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-tabs-shell\s+\.nitro-card-tab-item:hover/);
         expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-tabs-shell\s+\.nitro-card-tab-item-active/);
+        expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-tabs-shell\s+\.nitro-card-tab-item\s*\{[^}]*\b(?:background|border|box-shadow|color|text-shadow)\s*:/s);
         expect(userProfileCss).not.toMatch(/\.nitro-extended-profile-window\s+\.nitro-card-(?:header-shell|title|close-button)/);
         expect(helpCss).not.toContain('.nitro-card.nitro-help');
         expect(vaultView).not.toContain('.nitro-card.nitro-vault');

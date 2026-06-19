@@ -60,10 +60,6 @@
     max-height: calc(100vh - 24px) !important;
     position: relative;
     color: var(--catalog-swf-text);
-    background: var(--catalog-swf-bg) !important;
-    border: 1px solid #000 !important;
-    border-radius: 7px 7px 0 0 !important;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.35);
     overflow: hidden;
     box-sizing: border-box;
 }
@@ -87,59 +83,6 @@
 .nitro-catalog-classic-window,
 .nitro-catalog-classic-window * {
     image-rendering: pixelated;
-}
-
-.nitro-catalog-classic-window .nitro-card-header {
-    height: 35px;
-    min-height: 35px;
-    background: var(--catalog-swf-blue) !important;
-    border: 0 !important;
-    border-bottom: 1px solid #000 !important;
-}
-
-.nitro-catalog-classic-window .nitro-card-header-shell {
-    min-height: 35px;
-    max-height: 35px;
-}
-
-.nitro-catalog-classic-window .nitro-card-title {
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 35px;
-    text-align: center;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
-}
-
-.nitro-catalog-classic-window .nitro-card-close-button {
-    top: 7px !important;
-    right: 7px !important;
-    width: 19px !important;
-    min-width: 19px !important;
-    height: 20px !important;
-    min-height: 20px !important;
-    padding: 0 !important;
-    background-image: url("../../assets/images/catalog/buttons/close.png") !important;
-    background-color: transparent !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-size: 19px 20px !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    image-rendering: pixelated !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: block !important;
-}
-
-.nitro-catalog-classic-window .nitro-card-close-button:hover {
-    background-image: url("../../assets/images/catalog/buttons/close_hover.png") !important;
-    filter: none;
-}
-
-.nitro-catalog-classic-window .nitro-card-close-button:active {
-    background-image: url("../../assets/images/catalog/buttons/close_pressed.png") !important;
 }
 
 .nitro-catalog-classic-mobile-header,
@@ -327,17 +270,12 @@
     height: 40px;
     min-height: 40px;
     max-height: 40px;
-    gap: 0;
-    padding: 4px 6px 0 !important;
     align-items: flex-end;
     overflow-x: auto;
     overflow-y: hidden;
     flex-wrap: nowrap;
     scrollbar-width: thin;
     scrollbar-color: #8da3b3 transparent;
-    background: var(--catalog-swf-bg) !important;
-    border: 0 !important;
-    border-bottom: 1px solid #c8c8bf;
 }
 
 .nitro-catalog-classic-tabs-shell::-webkit-scrollbar {
@@ -363,38 +301,6 @@
     display: none !important;
 }
 
-.nitro-catalog-classic-tabs-shell .nitro-card-tab-item {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    height: 36px;
-    min-width: 0;
-    flex: 1 1 0;
-    max-width: none;
-    padding: 6px 6px 7px;
-    margin: 0 2px 0 0;
-    flex-shrink: 1;
-    border: 1px solid #000 !important;
-    border-bottom: 0 !important;
-    border-radius: 6px 6px 0 0 !important;
-    background:
-        linear-gradient(180deg, #d6d6cc 0%, #c1c1b7 100%) !important;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.18) !important;
-    color: #2a2a2a !important;
-    font-size: 12px;
-    font-weight: 400;
-    white-space: nowrap;
-    overflow: hidden;
-    border-image-source: none !important;
-}
-
-.nitro-catalog-classic-tabs-shell .nitro-card-tab-item:last-of-type {
-    margin-right: 0;
-}
-
 .nitro-catalog-classic-tabs-shell .nitro-card-tab-item > div {
     align-items: center !important;
     justify-content: center !important;
@@ -411,23 +317,6 @@
     object-fit: contain;
     image-rendering: pixelated;
     flex-shrink: 0;
-}
-
-.nitro-catalog-classic-tabs-shell .nitro-card-tab-item:hover {
-    background: linear-gradient(180deg, #e3e3d9 0%, #d0d0c5 100%) !important;
-    color: #000 !important;
-}
-
-.nitro-catalog-classic-tabs-shell .nitro-card-tab-item-active {
-    z-index: 2;
-    background:
-        linear-gradient(180deg, #4fb3ff 0%, var(--catalog-swf-blue) 100%) !important;
-    color: #ffffff !important;
-    font-weight: 700;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        inset 0 -2px 0 var(--catalog-swf-blue-dark) !important;
 }
 
 .nitro-catalog-classic-tab-label {

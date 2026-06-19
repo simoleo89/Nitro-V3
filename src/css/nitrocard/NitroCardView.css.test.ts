@@ -4,6 +4,12 @@ import { describe, expect, it } from 'vitest';
 
 const cssPath = join(process.cwd(), 'src/css/nitrocard/NitroCardView.css');
 const indexCssPath = join(process.cwd(), 'src/css/index.css');
+const catalogViewPath = join(process.cwd(), 'src/components/catalog/CatalogClassicView.tsx');
+const catalogCssPath = join(process.cwd(), 'src/css/catalog/CatalogClassicView.css');
+const userProfileCssPath = join(process.cwd(), 'src/css/user-profile/UserProfileView.css');
+const helpCssPath = join(process.cwd(), 'src/css/help/HelpView.css');
+const indexTsxPath = join(process.cwd(), 'src/index.tsx');
+const vaultViewPath = join(process.cwd(), 'src/components/vault/VaultView.tsx');
 
 describe('NitroCardView.css', () =>
 {
@@ -26,5 +32,26 @@ describe('NitroCardView.css', () =>
         expect(css).not.toContain('.nitro-card-shell:not(.nitro-wired)');
         expect(css).not.toContain('.nitro-card-tabs-shell');
         expect(css).not.toContain('.nitro-card-tab-item');
+    });
+
+    it('keeps standard card chrome out of feature-level window skins', () =>
+    {
+        const catalogView = readFileSync(catalogViewPath, 'utf8');
+        const catalogCss = readFileSync(catalogCssPath, 'utf8');
+        const userProfileCss = readFileSync(userProfileCssPath, 'utf8');
+        const helpCss = readFileSync(helpCssPath, 'utf8');
+        const indexTsx = readFileSync(indexTsxPath, 'utf8');
+        const vaultView = readFileSync(vaultViewPath, 'utf8');
+        const legacySwfWindowClass = [ 'habbo', 'swf', 'window' ].join('-');
+
+        expect(catalogView).not.toContain(legacySwfWindowClass);
+        expect(indexTsx).not.toContain([ 'Habbo', 'Swf', 'Skin', 'css' ].join('.'));
+        expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-window\s+\.nitro-card-(?:header|header-shell|title|close-button)/);
+        expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-tabs-shell\s+\.nitro-card-tab-item\s*\{/);
+        expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-tabs-shell\s+\.nitro-card-tab-item:hover/);
+        expect(catalogCss).not.toMatch(/\.nitro-catalog-classic-tabs-shell\s+\.nitro-card-tab-item-active/);
+        expect(userProfileCss).not.toMatch(/\.nitro-extended-profile-window\s+\.nitro-card-(?:header-shell|title|close-button)/);
+        expect(helpCss).not.toContain('.nitro-card.nitro-help');
+        expect(vaultView).not.toContain('.nitro-card.nitro-vault');
     });
 });

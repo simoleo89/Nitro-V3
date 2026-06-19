@@ -35,7 +35,6 @@ import './css/forms/form_select.css';
 
 import './css/friends/FriendsView.css';
 
-import './css/habbo/HabboSwfSkin.css';
 
 import './css/hotelview/HotelView.css';
 

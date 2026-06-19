@@ -13,7 +13,8 @@
     --nitro-card-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
-.nitro-card {
+.nitro-card,
+.nitro-card-shell:not(.nitro-wired) {
     resize: both;
     border: 2px solid var(--nitro-card-border) !important;
     border-radius: var(--nitro-card-radius);
@@ -22,7 +23,8 @@
     color: var(--nitro-card-text);
     overflow: hidden;
 
-    .nitro-card-header {
+    .nitro-card-header,
+    .nitro-card-header-shell {
         position: relative;
         min-height: 34px;
         max-height: 34px;
@@ -84,7 +86,8 @@
         }
     }
 
-    .nitro-card-tabs {
+    .nitro-card-tabs,
+    .nitro-card-tabs-shell {
         display: flex;
         flex-wrap: wrap;
         gap: 4px;
@@ -94,7 +97,8 @@
         background: var(--nitro-card-frame);
         border-bottom: 2px solid #b8c2b4;
 
-        .nav-item {
+        .nav-item,
+        .nitro-card-tab-item {
             min-height: 28px;
             padding: 0.35rem 0.75rem;
             margin-bottom: -2px;
@@ -119,7 +123,8 @@
                 outline-offset: -2px;
             }
 
-            &.active {
+            &.active,
+            &.nitro-card-tab-item-active {
                 background: var(--nitro-card-surface);
                 border-color: var(--nitro-card-border) !important;
                 border-bottom: 0;
@@ -127,7 +132,8 @@
         }
     }
 
-    .content-area {
+    .content-area,
+    .nitro-card-content-shell {
         height: 100%;
         overflow: auto;
         padding: 10px;
@@ -140,7 +146,8 @@
     }
 }
 
-.content-area {
+.content-area,
+.nitro-card-content-shell {
     h1,
     h2,
     h3,
@@ -185,7 +192,8 @@
     }
 }
 
-.nitro-card-header {
+.nitro-card-header,
+.nitro-card-header-shell {
     position: relative;
     height: 100%;
 }
@@ -204,14 +212,17 @@
 }
 
 @media (max-width: 991.98px) {
-    .nitro-card {
+    .nitro-card,
+    .nitro-card-shell:not(.nitro-wired) {
         resize: none !important;
         max-width: calc(100vw - 16px) !important;
         max-height: calc(100vh - 16px) !important;
     }
 
-    .nitro-card {
-        .nitro-card-header {
+    .nitro-card,
+    .nitro-card-shell:not(.nitro-wired) {
+        .nitro-card-header,
+        .nitro-card-header-shell {
             min-height: 32px;
             max-height: 32px;
             padding: 4px 34px;
@@ -222,22 +233,26 @@
             }
         }
 
-        .nitro-card-tabs {
+        .nitro-card-tabs,
+        .nitro-card-tabs-shell {
             padding: 4px 6px 0;
             gap: 3px;
 
-            .nav-item {
+            .nav-item,
+            .nitro-card-tab-item {
                 padding: 0.25rem 0.55rem;
                 font-size: 12px;
             }
         }
 
-        .content-area {
+        .content-area,
+        .nitro-card-content-shell {
             padding: 8px;
         }
     }
 
-    .content-area {
+    .content-area,
+    .nitro-card-content-shell {
         min-height: auto !important;
         max-height: 100% !important;
 

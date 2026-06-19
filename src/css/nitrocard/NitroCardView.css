@@ -1,55 +1,85 @@
+:root {
+    --nitro-card-border: #111111;
+    --nitro-card-frame: #d8ddd4;
+    --nitro-card-surface: #f4f2e8;
+    --nitro-card-surface-raised: #ffffff;
+    --nitro-card-header: #2f7894;
+    --nitro-card-header-highlight: #58a8c5;
+    --nitro-card-header-shadow: #1a5368;
+    --nitro-card-text: #151515;
+    --nitro-card-muted: #4f5b60;
+    --nitro-card-focus: #ffd95a;
+    --nitro-card-radius: 8px;
+    --nitro-card-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
 .nitro-card {
     resize: both;
-    border: 2px solid #000 !important;
-    border-radius: 10px;
-    background: #f2f2eb;
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+    border: 2px solid var(--nitro-card-border) !important;
+    border-radius: var(--nitro-card-radius);
+    background: var(--nitro-card-frame);
+    box-shadow: var(--nitro-card-shadow);
+    color: var(--nitro-card-text);
+    overflow: hidden;
 
     .nitro-card-header {
         position: relative;
-        min-height: 36px;
-        max-height: 36px;
+        min-height: 34px;
+        max-height: 34px;
         width: 100%;
         margin: 0;
-        padding: 5px;
-        background: #30728c;
-        border: 2px solid #3c88a6;
-        border-bottom-color: #000;
-        border-radius: 8px 8px 0 0;
-        box-shadow: none;
+        padding: 4px 38px;
+        background: linear-gradient(180deg, var(--nitro-card-header-highlight) 0%, var(--nitro-card-header) 44%, var(--nitro-card-header-shadow) 100%);
+        border: 0;
+        border-bottom: 2px solid var(--nitro-card-border);
+        border-radius: calc(var(--nitro-card-radius) - 2px) calc(var(--nitro-card-radius) - 2px) 0 0;
+        box-shadow: inset 0 1px rgba(255, 255, 255, 0.38);
 
         &:before {
             display: none;
         }
 
-        .nitro-card-header-text {
+        .nitro-card-header-text,
+        .nitro-card-title {
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
             color: #fff;
-            text-shadow: 1px 1px 1px #000;
+            text-overflow: ellipsis;
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.65);
+            white-space: nowrap;
             font-family: UbuntuCondensed, Ubuntu, sans-serif;
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 400;
             line-height: 1;
             min-height: auto;
         }
 
-        .nitro-card-header-close {
+        .nitro-card-header-close,
+        .nitro-card-close-button {
+            appearance: none;
             cursor: pointer;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             padding: 0;
             line-height: 1;
-            border-radius: 4px;
-            border: 2px solid #000;
-            box-shadow: none;
-            background: #bf2c2c;
+            border-radius: 5px;
+            border: 2px solid var(--nitro-card-border);
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.34);
+            background: #c63b32;
 
             &:hover {
+                background: #d64a40;
                 border-color: #fff;
-                filter: brightness(1.08);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--nitro-card-focus);
+                outline-offset: 2px;
             }
 
             &:active {
-                filter: brightness(0.96);
+                filter: brightness(0.94);
             }
         }
     }
@@ -60,27 +90,38 @@
         gap: 4px;
         min-height: auto;
         max-height: none;
-        padding: 4px 8px 0;
-        background: #d9ded7;
-        border-bottom: 2px solid #c4cabf;
+        padding: 5px 8px 0;
+        background: var(--nitro-card-frame);
+        border-bottom: 2px solid #b8c2b4;
 
         .nav-item {
-            padding: 0.35rem 0.8rem;
-            margin-bottom: -1px;
-            color: #000;
-            background: #d2d7cf;
-            border: 2px solid #000;
+            min-height: 28px;
+            padding: 0.35rem 0.75rem;
+            margin-bottom: -2px;
+            color: var(--nitro-card-text);
+            background: #cbd3c8;
+            border: 2px solid var(--nitro-card-border);
             border-bottom: 0;
-            border-radius: 8px 8px 0 0;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            border-radius: 7px 7px 0 0;
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.72);
+            line-height: 1.1;
 
             &:before {
                 display: none;
             }
 
+            &:hover {
+                background: #dde4da;
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--nitro-card-focus);
+                outline-offset: -2px;
+            }
+
             &.active {
-                background: #f2f2eb;
-                border-color: #000 !important;
+                background: var(--nitro-card-surface);
+                border-color: var(--nitro-card-border) !important;
                 border-bottom: 0;
             }
         }
@@ -90,12 +131,12 @@
         height: 100%;
         overflow: auto;
         padding: 10px;
-        background: #f2f2eb;
+        background: var(--nitro-card-surface);
         border: 0;
         border-top: 0;
-        border-radius: 0 0 8px 8px;
+        border-radius: 0 0 calc(var(--nitro-card-radius) - 2px) calc(var(--nitro-card-radius) - 2px);
         font-family: Ubuntu, sans-serif;
-        color: #111;
+        color: var(--nitro-card-text);
     }
 }
 
@@ -109,7 +150,7 @@
         font-family: Ubuntu, sans-serif;
         font-weight: 700;
         line-height: 1.15;
-        color: #111;
+        color: var(--nitro-card-text);
     }
 
     p,
@@ -123,7 +164,7 @@
     select,
     button {
         font-family: Ubuntu, sans-serif;
-        color: #111;
+        color: var(--nitro-card-text);
     }
 
     p,
@@ -173,9 +214,10 @@
         .nitro-card-header {
             min-height: 32px;
             max-height: 32px;
-            padding: 4px;
+            padding: 4px 34px;
 
-            .nitro-card-header-text {
+            .nitro-card-header-text,
+            .nitro-card-title {
                 font-size: 17px;
             }
         }

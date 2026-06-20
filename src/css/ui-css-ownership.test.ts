@@ -76,6 +76,10 @@ describe('UI CSS ownership', () =>
         expect(catalogAdminModalView).toContain('max-h-[calc(100vh-16px)]');
         expect(catalogAdminModalView).toContain('overflow-y-auto');
         expect(catalogAdminOfferEditView).not.toContain('style={ { zIndex: 1000 } }');
+        expect(catalogAdminOfferEditView).not.toContain('border-2 border-card-grid-item-border rounded px-2 py-1 bg-white');
+        expect(catalogAdminOfferEditView).not.toContain('bg-white rounded border-2 border-card-grid-item-border p-2.5');
+        expect(catalogAdminOfferEditView).toContain('nitro-catalog-admin-input');
+        expect(catalogAdminOfferEditView).toContain('nitro-catalog-admin-panel');
         expect(catalogAdminOfferEditView).toContain('<CatalogAdminModalView');
         expect(catalogAdminOfferEditView).toContain('widthClassName="w-[420px]"');
         expect(catalogAdminQuickActionsView).toContain('setEditingPageData(true)');
@@ -91,12 +95,16 @@ describe('UI CSS ownership', () =>
         expect(catalogLayoutTrophiesView).toContain('nitro-catalog-trophy-inscription');
         expect(catalogAdminPageEditView).toContain('<CatalogAdminModalView');
         expect(catalogAdminPageEditView).toContain('widthClassName="w-[520px]"');
+        expect(catalogAdminPageEditView).not.toContain('border-2 border-card-grid-item-border rounded px-2 py-1 bg-white');
+        expect(catalogAdminPageEditView).toContain('nitro-catalog-admin-input');
         expect(getCatalogLayout).not.toContain('custom_prefix');
         expect(getCatalogLayout).not.toContain('CatalogLayoutCustomPrefixView');
         expect(catalogCss).toContain('.nitro-catalog-window :where(.bg-white, .bg-gray-50, .bg-card-grid-item)');
         expect(catalogCss).toContain('.nitro-catalog-window :where(input, select, textarea)');
         expect(catalogCss).toContain('.nitro-catalog-window :where(.text-muted, .text-dark)');
         expect(catalogCss).toContain('.nitro-catalog-admin-body :where(.uppercase.font-bold)');
+        expect(catalogCss).toContain('.nitro-catalog-admin-input');
+        expect(catalogCss).toContain('.nitro-catalog-admin-button.is-primary');
         expect(catalogCss).toContain('.nitro-catalog-trophy-inscription.has-text');
         expect(catalogCss).toContain('.nitro-catalog-marketplace-item-icon');
         expect(catalogCss).toContain('.nitro-catalog-vip-hc-banner');

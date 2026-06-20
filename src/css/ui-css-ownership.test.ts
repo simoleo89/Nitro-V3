@@ -42,6 +42,8 @@ describe('UI CSS ownership', () =>
         const catalogLayoutDefaultView = readSource('src/components/catalog/views/page/layout/CatalogLayoutDefaultView.tsx');
         const catalogLayoutColorGroupingView = readSource('src/components/catalog/views/page/layout/CatalogLayoutColorGroupingView.tsx');
         const catalogLayoutSoundMachineView = readSource('src/components/catalog/views/page/layout/CatalogLayoutSoundMachineView.tsx');
+        const catalogLayoutVipBuyView = readSource('src/components/catalog/views/page/layout/CatalogLayoutVipBuyView.tsx');
+        const catalogLayoutMarketplaceItemView = readSource('src/components/catalog/views/page/layout/marketplace/CatalogLayoutMarketplaceItemView.tsx');
         const catalogLayoutPetView = readSource('src/components/catalog/views/page/layout/pets/CatalogLayoutPetView.tsx');
         const catalogLayoutTrophiesView = readSource('src/components/catalog/views/page/layout/CatalogLayoutTrophiesView.tsx');
         const getCatalogLayout = readSource('src/components/catalog/views/page/layout/GetCatalogLayout.tsx');
@@ -82,6 +84,8 @@ describe('UI CSS ownership', () =>
         expect(catalogLayoutTrophiesView).toContain('<CatalogAdminQuickActionsView');
         expect(catalogLayoutColorGroupingView).not.toContain('style={ { maxHeight: 154 } }');
         expect(catalogLayoutSoundMachineView).not.toContain('style={ { height: 140 } }');
+        expect(catalogLayoutVipBuyView).not.toContain("backgroundSize: 'contain'");
+        expect(catalogLayoutMarketplaceItemView).not.toContain('style={ { width: 40, height: 40 } }');
         expect(catalogLayoutTrophiesView).not.toContain("boxShadow: '0 0 8px");
         expect(catalogLayoutTrophiesView).not.toContain("background: trophyText.length");
         expect(catalogLayoutTrophiesView).toContain('nitro-catalog-trophy-inscription');
@@ -94,6 +98,8 @@ describe('UI CSS ownership', () =>
         expect(catalogCss).toContain('.nitro-catalog-window :where(.text-muted, .text-dark)');
         expect(catalogCss).toContain('.nitro-catalog-admin-body :where(.uppercase.font-bold)');
         expect(catalogCss).toContain('.nitro-catalog-trophy-inscription.has-text');
+        expect(catalogCss).toContain('.nitro-catalog-marketplace-item-icon');
+        expect(catalogCss).toContain('.nitro-catalog-vip-hc-banner');
         expect(inventoryCategoryFilterView).not.toContain('style={ { width: currentTab === TAB_BADGES');
         expect(inventoryCategoryFilterView).toContain('nitro-inventory-filter-bar');
         expect(inventoryCss).toContain('.nitro-inventory-window .nitro-inventory-filter-bar.is-badges');

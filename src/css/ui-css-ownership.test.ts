@@ -76,6 +76,12 @@ describe('UI CSS ownership', () =>
         const chatHistoryCss = readSource('src/css/chat/ChatHistoryView.css');
         const vaultCss = readSource('src/css/vault/VaultView.css');
         const userSettingsCss = readSource('src/css/user-settings/UserSettingsView.css');
+        const sanctionStatusView = readSource('src/components/help/views/SanctionStatusView.tsx');
+        const mentionsView = readSource('src/components/mentions/MentionsView.tsx');
+        const translationSettingsView = readSource('src/components/translation/TranslationSettingsView.tsx');
+        const userAccountSettingsView = readSource('src/components/user-settings/UserAccountSettingsView.tsx');
+        const hcCenterView = readSource('src/components/hc-center/HcCenterView.tsx');
+        const inventoryFurnitureDeleteView = readSource('src/components/inventory/views/furniture/InventoryFurnitureDeleteView.tsx');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -155,5 +161,11 @@ describe('UI CSS ownership', () =>
         expect(chatHistoryCss).toContain('.nitro-chat-history-scroll');
         expect(vaultCss).toContain('.nitro-vault-content');
         expect(userSettingsCss).toContain('.user-settings-window');
+        expect(sanctionStatusView).toContain('max-w-[calc(100vw-16px)]');
+        expect(mentionsView).toContain('max-w-[calc(100vw-16px)]');
+        expect(translationSettingsView).toContain('max-w-[calc(100vw-16px)]');
+        expect(userAccountSettingsView).toContain('max-w-[calc(100vw-16px)]');
+        expect(hcCenterView).toContain('max-w-[calc(100vw-16px)]');
+        expect(inventoryFurnitureDeleteView).toContain('max-w-[calc(100vw-16px)]');
     });
 });

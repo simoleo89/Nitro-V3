@@ -166,9 +166,10 @@ export const VaultView: FC<{}> = props =>
     if(!isVisible) return null;
 
     return (
-        <NitroCardView className="nitro-vault w-[430px]" theme="primary-slim" uniqueKey="vault">
+        <NitroCardView className="nitro-vault min-w-0 w-[min(430px,calc(100vw-16px))] max-w-[calc(100vw-16px)] max-h-[calc(100vh-16px)]" theme="primary-slim" uniqueKey="vault">
             <NitroCardHeaderView headerText={ localizeWithFallback('earnings.title', 'Guadagni') } onCloseClick={ () => setIsVisible(false) } />
-            <NitroCardContentView className="flex flex-col gap-[3px] text-black">                { CATEGORIES.map(category =>
+            <NitroCardContentView className="nitro-vault-content flex flex-col gap-[3px] text-black">
+                { CATEGORIES.map(category =>
                 {
                     const entry = entriesByKey.get(category.key) ?? null;
                     const canClaim = !!entry && entry.enabled && entry.claimable;

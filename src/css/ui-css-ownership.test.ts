@@ -69,6 +69,13 @@ describe('UI CSS ownership', () =>
         const friendsListRemoveConfirmationView = readSource('src/components/friends/views/friends-list/FriendsListRemoveConfirmationView.tsx');
         const friendsListRoomInviteView = readSource('src/components/friends/views/friends-list/FriendsListRoomInviteView.tsx');
         const friendsMessengerView = readSource('src/components/friends/views/messenger/FriendsMessengerView.tsx');
+        const vaultView = readSource('src/components/vault/VaultView.tsx');
+        const helpView = readSource('src/components/help/HelpView.tsx');
+        const userSettingsView = readSource('src/components/user-settings/UserSettingsView.tsx');
+        const chatHistoryView = readSource('src/components/chat-history/ChatHistoryView.tsx');
+        const chatHistoryCss = readSource('src/css/chat/ChatHistoryView.css');
+        const vaultCss = readSource('src/css/vault/VaultView.css');
+        const userSettingsCss = readSource('src/css/user-settings/UserSettingsView.css');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -140,5 +147,13 @@ describe('UI CSS ownership', () =>
         expect(wiredBaseView).toContain('max-h-[calc(100vh-16px)]');
         expect(friendsListView).toContain('max-w-[calc(100vw-16px)]');
         expect(friendsMessengerView).toContain('max-w-[calc(100vw-16px)]');
+        expect(vaultView).toContain('max-w-[calc(100vw-16px)]');
+        expect(helpView).toContain('max-w-[calc(100vw-16px)]');
+        expect(userSettingsView).toContain('max-w-[calc(100vw-16px)]');
+        expect(chatHistoryView).toContain('nitro-chat-history');
+        expect(chatHistoryView).not.toContain("style={{ flex: 1, overflowY: 'auto'");
+        expect(chatHistoryCss).toContain('.nitro-chat-history-scroll');
+        expect(vaultCss).toContain('.nitro-vault-content');
+        expect(userSettingsCss).toContain('.user-settings-window');
     });
 });

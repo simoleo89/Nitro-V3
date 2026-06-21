@@ -23,6 +23,7 @@ import './css/catalog/CatalogView.css';
 import './css/emustats/EmuStatsView.css';
 
 import './css/chat/Chats.css';
+import './css/chat/ChatHistoryView.css';
 import './css/chat/ChatInputMentionSelectorView.css';
 import './css/mentions/MentionToasts.css';
 import './css/mentions/MentionsPanel.css';
@@ -67,7 +68,9 @@ import './css/slider.css';
 
 import './css/toolbar/ToolBar.css';
 import './css/user-profile/UserProfileView.css';
+import './css/user-settings/UserSettingsView.css';
 
+import './css/vault/VaultView.css';
 import './css/widgets/FurnitureWidgets.css';
 import './css/WiredView.css';
 

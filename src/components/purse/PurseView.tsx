@@ -1,6 +1,6 @@
 import { CreateLinkEvent } from '@nitrots/nitro-renderer';
 import { FC, useCallback, useMemo, useState } from 'react';
-import { FaChartBar, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaChartBar, FaCog, FaLanguage, FaSignOutAlt } from 'react-icons/fa';
 import { ClearRememberLogin, GetConfigurationValue, GetRememberLogin, LocalizeText, localizeWithFallback } from '../../api';
 import { Column, LayoutCurrencyIcon } from '../../common';
 import { usePurse } from '../../hooks';
@@ -104,6 +104,17 @@ export const PurseView: FC<{}> = (props) => {
                         </button>
                     </div>
                     <div className="nitro-purse__col nitro-purse__col--actions">
+                        <button
+                            type="button"
+                            className="nitro-purse__btn nitro-purse__btn--icon nitro-purse__btn--translate"
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                CreateLinkEvent('translation-settings/toggle');
+                            }}
+                            title="Google Translate"
+                        >
+                            <FaLanguage className="nitro-purse__btn-icon" />
+                        </button>
                         <button
                             type="button"
                             className="nitro-purse__btn nitro-purse__btn--help"

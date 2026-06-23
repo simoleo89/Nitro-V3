@@ -145,13 +145,19 @@
     background: #716a85;
 }
 
+.nitro-purse__btn--translate {
+    border-color: #565064;
+    background: #716a85;
+}
+
 /* Action column buttons: square corners */
 .nitro-purse__col--actions .nitro-purse__btn {
     border-radius: 0;
 }
 
-/* Gear icon rendered white */
-.nitro-purse__btn--settings svg {
+/* Gear + translate icons rendered white */
+.nitro-purse__btn--settings svg,
+.nitro-purse__btn--translate svg {
     color: #ffffff;
 }
 

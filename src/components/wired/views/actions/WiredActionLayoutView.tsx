@@ -57,6 +57,10 @@ import { WiredActionToggleFurniStateView } from './WiredActionToggleFurniStateVi
 import { WiredActionSetRollerSpeedView } from './WiredActionSetRollerSpeedView';
 import { WiredActionBotDanceView } from './WiredActionBotDanceView';
 import { WiredActionGivePointsTypeView } from './WiredActionGivePointsTypeView';
+import { WiredActionGiveOrTakeFurniView } from './WiredActionGiveOrTakeFurniView';
+import { WiredActionPlayYoutubeView } from './WiredActionPlayYoutubeView';
+import { WiredActionQuickBopperView } from './WiredActionQuickBopperView';
+import { WiredActionSetRoomAdView } from './WiredActionSetRoomAdView';
 import { WiredActionUnfreezeView } from './WiredActionUnfreezeView';
 import { WiredActionNegativeCallAnotherStackView } from './WiredActionNegativeCallAnotherStackView';
 import { WiredExtraFilterFurniView } from '../extras/WiredExtraFilterFurniView';
@@ -263,6 +267,14 @@ export const WiredActionLayoutView = (code: number) => {
             return <WiredActionBotDanceView />;
         case WiredActionLayoutCode.GIVE_POINTS_TYPE:
             return <WiredActionGivePointsTypeView />;
+        case WiredActionLayoutCode.GIVE_OR_TAKE_FURNI:
+            return <WiredActionGiveOrTakeFurniView />;
+        case WiredActionLayoutCode.PLAY_YOUTUBE:
+            return <WiredActionPlayYoutubeView />;
+        case WiredActionLayoutCode.QUICK_BOPPER:
+            return <WiredActionQuickBopperView />;
+        case WiredActionLayoutCode.SET_ROOM_AD:
+            return <WiredActionSetRoomAdView />;
     }
 
     return null;

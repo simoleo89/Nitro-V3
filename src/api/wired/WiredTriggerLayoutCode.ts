@@ -23,4 +23,5 @@ export class WiredTriggerLayout
     public static USER_PERFORMS_ACTION: number = 21;
     public static CLOCK_COUNTER: number = 22;
     public static VARIABLE_CHANGED: number = 23;
+    public static USER_GETS_HANDITEM: number = 25;
 }

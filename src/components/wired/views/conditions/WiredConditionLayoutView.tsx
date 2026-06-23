@@ -1,5 +1,7 @@
 import { WiredConditionlayout } from '../../../../api';
 import { WiredConditionNoBattleBanzaiView } from './WiredConditionNoBattleBanzaiView';
+import { WiredConditionUserOnFurniWithStateView } from './WiredConditionUserOnFurniWithStateView';
+import { WiredConditionTriggerFurniAdjacentStateView } from './WiredConditionTriggerFurniAdjacentStateView';
 import { WiredConditionActorDirView } from './WiredConditionActorDirView';
 import { WiredConditionActorHasHandItemView } from './WiredConditionActorHasHandItem';
 import { WiredConditionActorIsGroupMemberView } from './WiredConditionActorIsGroupMemberView';
@@ -117,6 +119,10 @@ export const WiredConditionLayoutView = (code: number) => {
             return <WiredConditionTeamHasRankView />;
         case WiredConditionlayout.NO_BATTLEBANZAI:
             return <WiredConditionNoBattleBanzaiView />;
+        case WiredConditionlayout.USER_ON_FURNI_WITH_STATE:
+            return <WiredConditionUserOnFurniWithStateView />;
+        case WiredConditionlayout.TRG_FURNI_ADJACENT_STATE:
+            return <WiredConditionTriggerFurniAdjacentStateView />;
     }
 
     return null;

@@ -89,4 +89,8 @@ export class WiredActionLayoutCode
     public static SET_ROLLER_SPEED: number = 88;
     public static BOT_DANCE: number = 89;
     public static GIVE_POINTS_TYPE: number = 90;
+    public static GIVE_OR_TAKE_FURNI: number = 91;
+    public static PLAY_YOUTUBE: number = 92;
+    public static QUICK_BOPPER: number = 93;
+    public static SET_ROOM_AD: number = 94;
 }

@@ -151,16 +151,16 @@ export const PurseView: FC<{}> = (props) => {
             {settingsMenuOpen && (
                 <div className="nitro-purse-menu">
                     <button type="button" className="nitro-purse-menu__item" onClick={() => openSettingsSection('audio')}>
-                        Impostazioni Audio
+                        {localizeWithFallback('purse.settings.audio', 'Audio Settings')}
                     </button>
                     <button type="button" className="nitro-purse-menu__item nitro-purse-menu__item--disabled" disabled>
-                        Impostazioni Discord
+                        {localizeWithFallback('purse.settings.discord', 'Discord Settings')}
                     </button>
                     <button type="button" className="nitro-purse-menu__item" onClick={() => openSettingsSection('chat')}>
-                        Impostazioni Chat
+                        {localizeWithFallback('purse.settings.chat', 'Chat Settings')}
                     </button>
                     <button type="button" className="nitro-purse-menu__item" onClick={() => openSettingsSection('other')}>
-                        Altre Impostazioni
+                        {localizeWithFallback('purse.settings.other', 'Other Settings')}
                     </button>
                     <button
                         type="button"
@@ -170,10 +170,10 @@ export const PurseView: FC<{}> = (props) => {
                             setSettingsMenuOpen(false);
                         }}
                     >
-                        Gestione Account
+                        {localizeWithFallback('purse.settings.account', 'Account Management')}
                     </button>
                     <button type="button" className="nitro-purse-menu__item nitro-purse-menu__item--disabled" disabled>
-                        Filtro Parole
+                        {localizeWithFallback('purse.settings.wordfilter', 'Word Filter')}
                     </button>
                 </div>
             )}

@@ -44,4 +44,5 @@ export class WiredConditionlayout
     public static NEG_HAS_VAR: number = 41;
     public static VAR_VAL_MATCH: number = 42;
     public static VAR_AGE_MATCH: number = 43;
+    public static NO_BATTLEBANZAI: number = 44;
 }

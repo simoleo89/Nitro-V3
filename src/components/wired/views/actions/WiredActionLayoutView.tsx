@@ -55,6 +55,8 @@ import { WiredActionSetFurniStateToView } from './WiredActionSetFurniStateToView
 import { WiredActionTeleportView } from './WiredActionTeleportView';
 import { WiredActionToggleFurniStateView } from './WiredActionToggleFurniStateView';
 import { WiredActionSetRollerSpeedView } from './WiredActionSetRollerSpeedView';
+import { WiredActionBotDanceView } from './WiredActionBotDanceView';
+import { WiredActionGivePointsTypeView } from './WiredActionGivePointsTypeView';
 import { WiredActionUnfreezeView } from './WiredActionUnfreezeView';
 import { WiredActionNegativeCallAnotherStackView } from './WiredActionNegativeCallAnotherStackView';
 import { WiredExtraFilterFurniView } from '../extras/WiredExtraFilterFurniView';
@@ -259,6 +261,10 @@ export const WiredActionLayoutView = (code: number) =>
             return <WiredActionSendSignalView />;
         case WiredActionLayoutCode.SET_ROLLER_SPEED:
             return <WiredActionSetRollerSpeedView />;
+        case WiredActionLayoutCode.BOT_DANCE:
+            return <WiredActionBotDanceView />;
+        case WiredActionLayoutCode.GIVE_POINTS_TYPE:
+            return <WiredActionGivePointsTypeView />;
     }
 
     return null;

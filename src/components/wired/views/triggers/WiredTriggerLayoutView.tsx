@@ -1,4 +1,5 @@
 import { WiredTriggerLayout } from '../../../../api';
+import { WiredTriggerUserGetsHandItemView } from './WiredTriggerUserGetsHandItemView';
 import { WiredTriggerAvatarEnterRoomView } from './WiredTriggerAvatarEnterRoomView';
 import { WiredTriggerAvatarLeaveRoomView } from './WiredTriggerAvatarLeaveRoomView';
 import { WiredTriggerAvatarSaysSomethingView } from './WiredTriggerAvatarSaysSomethingView';
@@ -71,6 +72,8 @@ export const WiredTriggerLayoutView = (code: number) => {
             return <WiredTriggerToggleFurniView />;
         case WiredTriggerLayout.RECEIVE_SIGNAL:
             return <WiredTriggerReceiveSignalView />;
+        case WiredTriggerLayout.USER_GETS_HANDITEM:
+            return <WiredTriggerUserGetsHandItemView />;
     }
 
     return null;

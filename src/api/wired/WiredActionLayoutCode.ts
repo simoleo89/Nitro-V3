@@ -85,4 +85,5 @@ export class WiredActionLayoutCode {
     public static TEXT_INPUT_VARIABLE_EXTRA: number = 85;
     public static NEG_CALL_ANOTHER_STACK: number = 86;
     public static NEG_SEND_SIGNAL: number = 87;
+    public static SET_ROLLER_SPEED: number = 88;
 }

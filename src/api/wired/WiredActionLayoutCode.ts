@@ -86,4 +86,6 @@ export class WiredActionLayoutCode {
     public static NEG_CALL_ANOTHER_STACK: number = 86;
     public static NEG_SEND_SIGNAL: number = 87;
     public static SET_ROLLER_SPEED: number = 88;
+    public static BOT_DANCE: number = 89;
+    public static GIVE_POINTS_TYPE: number = 90;
 }

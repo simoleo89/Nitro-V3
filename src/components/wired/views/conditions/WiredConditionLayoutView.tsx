@@ -1,4 +1,5 @@
 import { WiredConditionlayout } from '../../../../api';
+import { WiredConditionNoBattleBanzaiView } from './WiredConditionNoBattleBanzaiView';
 import { WiredConditionActorDirView } from './WiredConditionActorDirView';
 import { WiredConditionActorHasHandItemView } from './WiredConditionActorHasHandItem';
 import { WiredConditionActorIsGroupMemberView } from './WiredConditionActorIsGroupMemberView';
@@ -114,6 +115,8 @@ export const WiredConditionLayoutView = (code: number) => {
             return <WiredConditionTeamHasScoreView />;
         case WiredConditionlayout.TEAM_HAS_RANK:
             return <WiredConditionTeamHasRankView />;
+        case WiredConditionlayout.NO_BATTLEBANZAI:
+            return <WiredConditionNoBattleBanzaiView />;
     }
 
     return null;

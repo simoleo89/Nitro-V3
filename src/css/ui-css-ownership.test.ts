@@ -85,6 +85,9 @@ describe('UI CSS ownership', () => {
         const chatWidgetWindowView = readSource('src/components/room/widgets/chat/ChatWidgetWindowView.tsx');
         const chooserWidgetView = readSource('src/components/room/widgets/choosers/ChooserWidgetView.tsx');
         const youtubePlayerView = readSource('src/components/toolbar/YouTubePlayerView.tsx');
+        const infoStandUserView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetUserView.tsx');
+        const infoStandFurniView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetFurniView.tsx');
+        const infoStandCss = readSource('src/css/room/InfoStand.css');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -188,5 +191,16 @@ describe('UI CSS ownership', () => {
         expect(roomWidgetsCss).toContain('.nitro-chooser-widget');
         expect(roomWidgetsCss).toContain('.nitro-chat-widget-window');
         expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-modal.is-fullscreen');
+        expect(infoStandUserView).toContain('infostand-shell');
+        expect(infoStandUserView).toContain('infostand-panel');
+        expect(infoStandUserView).not.toContain('bg-[rgba(28,28,32,0.95)]');
+        expect(infoStandUserView).not.toContain("style={{ pointerEvents: 'auto', cursor: 'pointer' }}");
+        expect(infoStandFurniView).toContain('infostand-shell');
+        expect(infoStandFurniView).toContain('infostand-admin-button');
+        expect(infoStandFurniView).not.toContain('bg-[rgba(28,28,32,.95)]');
+        expect(infoStandFurniView).not.toContain("style={{ color: '#000' }}");
+        expect(infoStandCss).toContain('.infostand-panel.is-default');
+        expect(infoStandCss).toContain('.infostand-buildtools-panel');
+        expect(infoStandCss).toContain('.infostand-admin-button.is-primary');
     });
 });

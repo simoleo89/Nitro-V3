@@ -145,6 +145,146 @@
   }
 }
 
+.infostand-shell {
+  position: relative;
+  min-width: 190px;
+  max-width: 190px;
+  z-index: 30;
+  pointer-events: auto;
+}
+
+.infostand-panel {
+  position: relative;
+  min-width: 190px;
+  max-width: 190px;
+  overflow: hidden;
+  border-radius: 0.25rem;
+}
+
+.infostand-panel.is-default {
+  background: rgba(28, 28, 32, 0.95);
+  box-shadow: inset 0 5px rgba(34, 34, 39, 0.6), inset 0 -4px rgba(18, 18, 21, 0.6);
+}
+
+.infostand-content {
+  height: 100%;
+  padding: 8px;
+  overflow: auto;
+}
+
+.infostand-divider {
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0.5;
+}
+
+.infostand-profile-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 68px;
+  overflow: hidden;
+  border-radius: 0.125rem;
+}
+
+.infostand-badge-slot {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.background-edit-icon {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.infostand-motto-row {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.infostand-motto-input {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 12px;
+  resize: none;
+}
+
+.infostand-motto-input:focus {
+  border-color: transparent;
+  box-shadow: none;
+  font-style: italic;
+}
+
+.infostand-furni-image {
+  max-width: 120px;
+  max-height: 82px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.infostand-admin-button {
+  width: 100%;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  background: #2a2a3a;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background-color 0.15s ease;
+}
+
+.infostand-admin-button:hover {
+  background: #3a3a4a;
+}
+
+.infostand-admin-button.is-primary {
+  background: #1e7295;
+}
+
+.infostand-admin-button.is-primary:hover {
+  background: #1a617f;
+}
+
+.infostand-buildtools-panel {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 2px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: #3d5d63;
+}
+
+.infostand-buildtools-input {
+  width: 100%;
+  padding: 0.125rem 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.27);
+  border-radius: 0.25rem;
+  background: #1a1a2a;
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.infostand-config-input {
+  color: #000;
+}
+
 .nitro-rarity-level {
     width: 36px;
     height: 28px;

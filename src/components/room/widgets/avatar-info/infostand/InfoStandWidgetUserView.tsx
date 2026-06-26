@@ -162,12 +162,12 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
 
     return (
         <>
-            <div className="relative min-w-[190px] max-w-[190px] pointer-events-auto z-30">
+            <div className="infostand-shell">
                 {borderId ? <Base className={`infostand-border ${infostandBorderClass}`} /> : null}
                 <Column
-                    className={`relative min-w-[190px] max-w-[190px] ${cardBackgroundId ? '' : 'bg-[rgba(28,28,32,0.95)]'} [box-shadow:inset_0_5px_#22222799,inset_0_-4px_#12121599] rounded overflow-hidden profile-card-background ${infostandCardBackgroundClass}`}
+                    className={`infostand-panel profile-card-background${cardBackgroundId ? '' : ' is-default'} ${infostandCardBackgroundClass}`}
                 >
-                    <Column className="h-full p-[8px] overflow-auto" gap={1} overflow="visible">
+                    <Column className="infostand-content" gap={1} overflow="visible">
                         <div className="flex flex-col gap-1">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1">
@@ -187,13 +187,13 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
                                 </div>
                                 <FaTimes className="cursor-pointer fa-icon" onClick={onClose} />
                             </div>
-                            <hr className="m-0 bg-[#0003] border-0 opacity-[0.5] h-px" />
+                            <hr className="infostand-divider" />
                         </div>
                         <div className="flex flex-col gap-1">
                             <div className="flex gap-1">
                                 <Column
                                     fullWidth
-                                    className={`flex items-center w-full max-w-[68px] rounded-sm relative overflow-hidden profile-background ${infostandBackgroundClass}`}
+                                    className={`infostand-profile-preview profile-background ${infostandBackgroundClass}`}
                                     onClick={handleProfileClick}
                                 >
                                     <Base position="absolute" className={`profile-stand ${infostandStandClass}`} />
@@ -203,7 +203,6 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
                                 {avatarInfo.type === AvatarInfoUser.OWN_USER && (
                                     <Base
                                         className="background-edit-icon background-edit-position"
-                                        style={{ pointerEvents: 'auto', cursor: 'pointer' }}
                                         onClick={handleEditClick}
                                         aria-label="Edit profile background"
                                     />
@@ -222,7 +221,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
                                                 <Flex
                                                     key="group"
                                                     center
-                                                    className="relative w-[40px] h-[40px] bg-no-repeat bg-center"
+                                                    className="infostand-badge-slot"
                                                     pointer={avatarInfo.groupId > 0}
                                                     onClick={(event) => GetGroupInformation(avatarInfo.groupId)}
                                                 >
@@ -260,10 +259,10 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
                                     })()}
                                 </Column>
                             </div>
-                            <hr className="m-0 bg-[#0003] border-0 opacity-[0.5] h-px" />
+                            <hr className="infostand-divider" />
                         </div>
                         <div className="flex flex-col gap-1">
-                            <Flex alignItems="center" className="bg-light-dark rounded py-1 px-2">
+                            <Flex alignItems="center" className="infostand-motto-row">
                                 {avatarInfo.type !== AvatarInfoUser.OWN_USER && (
                                     <Flex grow alignItems="center" className="min-h-[18px]">
                                         <Text fullWidth pointer small textBreak wrap variant="white">
@@ -283,7 +282,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
                                             {isEditingMotto && (
                                                 <input
                                                     autoFocus={true}
-                                                    className="w-full h-full text-[12px] p-0 outline-0 border-0 text-[#fff] relative bg-transparent resize-none focus:italic border-transparent focus:border-transparent focus:ring-0"
+                                                    className="infostand-motto-input"
                                                     maxLength={GetConfigurationValue<number>('motto.max.length', 38)}
                                                     type="text"
                                                     value={motto}
@@ -296,7 +295,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
                                     </Flex>
                                 )}
                             </Flex>
-                            <hr className="m-0 bg-[#0003] border-0 opacity-[0.5] h-px" />
+                            <hr className="infostand-divider" />
                         </div>
                         <div className="flex flex-col gap-1">
                             <Text small wrap variant="white">
@@ -304,7 +303,7 @@ export const InfoStandWidgetUserView: FC<InfoStandWidgetUserViewProps> = (props)
                             </Text>
                             {avatarInfo.carryItem > 0 && (
                                 <>
-                                    <hr className="m-0 bg-[#0003] border-0 opacity-[0.5] h-px" />
+                                    <hr className="infostand-divider" />
                                     <Text small wrap variant="white">
                                         {LocalizeText('infostand.text.handitem', ['item'], [LocalizeText('handitem' + avatarInfo.carryItem)])}
                                     </Text>

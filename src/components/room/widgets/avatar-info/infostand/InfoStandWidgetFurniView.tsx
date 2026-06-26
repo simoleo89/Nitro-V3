@@ -532,8 +532,8 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
 
     return (
         <Column alignItems="end" gap={1}>
-            <Column className="relative min-w-[190px] max-w-[190px] z-30 pointer-events-auto bg-[rgba(28,28,32,.95)] [box-shadow:inset_0_5px_#22222799,inset_0_-4px_#12121599] rounded">
-                <Column className="h-full p-[8px] overflow-auto" gap={1} overflow="visible">
+            <Column className="infostand-shell infostand-panel is-default">
+                <Column className="infostand-content" gap={1} overflow="visible">
                     <div className="flex flex-col gap-1">
                         <Flex alignItems="center" gap={1} justifyContent="between">
                             <Text small wrap variant="white">
@@ -541,7 +541,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                             </Text>
                             <FaTimes className="cursor-pointer fa-icon" onClick={onClose} />
                         </Flex>
-                        <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                        <hr className="infostand-divider" />
                     </div>
                     {!isBranded && (
                         <div className="flex flex-col gap-1">
@@ -564,17 +564,11 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                         category={avatarInfo.category}
                                         objectId={avatarInfo.id}
                                         roomId={roomSession.roomId}
-                                        style={{
-                                            maxWidth: 120,
-                                            maxHeight: 82,
-                                            backgroundSize: 'contain',
-                                            backgroundPosition: 'center',
-                                            backgroundRepeat: 'no-repeat'
-                                        }}
+                                        className="infostand-furni-image"
                                     />
                                 </Flex>
                             </Flex>
-                            <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                            <hr className="infostand-divider" />
                         </div>
                     )}
                     {avatarInfo.description && descriptionsEnabled && (
@@ -582,7 +576,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                             <Text fullWidth wrap textBreak variant="white" small>
                                 {avatarInfo.description}
                             </Text>
-                            <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                            <hr className="infostand-divider" />
                         </Column>
                     )}
                     <div className="flex flex-col gap-1">
@@ -713,7 +707,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                 )}
                                 {isModerator && (
                                     <button
-                                        className="w-full text-white text-xs bg-[#1e7295] hover:bg-[#1a617f] border border-[#ffffff33] rounded px-2 py-1 cursor-pointer transition-colors"
+                                        className="infostand-admin-button is-primary"
                                         onClick={() => {
                                             const roomObject = GetRoomEngine().getRoomObject(
                                                 roomSession.roomId,
@@ -733,7 +727,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                 {!avatarInfo.isWallItem && canMove && (
                                     <>
                                         <button
-                                            className="w-full text-white text-xs bg-[#2a2a3a] hover:bg-[#3a3a4a] border border-[#ffffff33] rounded px-2 py-1 cursor-pointer transition-colors"
+                                            className="infostand-admin-button"
                                             onClick={() => setDropdownOpen(!dropdownOpen)}
                                         >
                                             {dropdownOpen
@@ -743,7 +737,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                         {dropdownOpen && (
                                             <div className="flex gap-[4px] w-full">
                                                 {/* Left panel: position + rotation */}
-                                                <div className="flex-1 bg-[#3D5D63] rounded-[6px] border border-white p-[2px] flex flex-col gap-1">
+                                                <div className="infostand-buildtools-panel">
                                                     <Text small variant="white">
                                                         {LocalizeText('group.edit.badge.position')}
                                                     </Text>
@@ -796,14 +790,14 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                     </div>
                                                 </div>
                                                 {/* Right panel: height */}
-                                                <div className="flex-1 bg-[#3D5D63] rounded-[6px] border border-white p-[2px] flex flex-col gap-1">
+                                                <div className="infostand-buildtools-panel">
                                                     <Text small variant="white">
                                                         {LocalizeText('stack.magic.tile.height.label')}
                                                     </Text>
                                                     <input
                                                         spellCheck={false}
                                                         type="number"
-                                                        className="w-full text-xs bg-[#1a1a2a] text-white border border-[#ffffff44] rounded px-1 py-0.5"
+                                                        className="infostand-buildtools-input"
                                                         value={furniLocationZ !== null ? furniLocationZ.toString() : ''}
                                                         onChange={handleHeightChange}
                                                         onBlur={handleHeightBlur}
@@ -881,8 +875,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                         </Text>
                                                         <NitroInput
                                                             type="text"
-                                                            className="text-black"
-                                                            style={{ color: '#000' }}
+                                                            className="infostand-config-input"
                                                             value={furniValues[index]}
                                                             onChange={(event) => onFurniSettingChange(index, event.target.value)}
                                                         />
@@ -906,8 +899,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                 </Text>
                                                 <NitroInput
                                                     type="text"
-                                                    className="text-black"
-                                                    style={{ color: '#000' }}
+                                                    className="infostand-config-input"
                                                     value={customValues[index]}
                                                     onChange={(event) => onCustomVariableChange(index, event.target.value)}
                                                 />

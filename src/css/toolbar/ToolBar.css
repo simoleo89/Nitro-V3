@@ -1,9 +1,58 @@
 .tb-frame {
+    position: fixed;
+    left: 50%;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    width: 420px;
+    max-width: 95vw;
+    height: 38px;
+    padding: 4px 6px;
+    pointer-events: none;
+    transform: translateX(-50%);
     transition: background-color 220ms ease, border-color 220ms ease, box-shadow 220ms ease, border-radius 220ms ease;
 }
 
+.tb-shell-bg {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 39;
+    height: 52px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+    background: rgba(62, 64, 72, 0.55);
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+}
+
 .tb-nav-clip {
+    position: fixed;
+    bottom: 0;
+    z-index: 40;
+    align-items: center;
+    height: 52px;
+    max-width: max(0px, calc(50vw - 242px));
     overflow: visible;
+}
+
+.tb-nav-left {
+    left: 0;
+    padding-left: 0.75rem;
+}
+
+.tb-nav-right {
+    padding-right: 0.75rem;
+}
+
+.tb-nav-right.is-room {
+    right: 0;
+}
+
+.tb-nav-right.is-desktop {
+    right: 0.75rem;
 }
 
 .tb-icon {
@@ -85,6 +134,13 @@
 }
 
 .tb-open-shell {
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    height: 52px;
+    padding: 10px 8px 2px;
+    overflow: visible;
+    background: transparent;
     scrollbar-width: none;
     -ms-overflow-style: none;
 

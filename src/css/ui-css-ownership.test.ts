@@ -85,6 +85,7 @@ describe('UI CSS ownership', () => {
         const chatWidgetWindowView = readSource('src/components/room/widgets/chat/ChatWidgetWindowView.tsx');
         const chooserWidgetView = readSource('src/components/room/widgets/choosers/ChooserWidgetView.tsx');
         const youtubePlayerView = readSource('src/components/toolbar/YouTubePlayerView.tsx');
+        const toolbarView = readSource('src/components/toolbar/ToolbarView.tsx');
         const infoStandUserView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetUserView.tsx');
         const infoStandFurniView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetFurniView.tsx');
         const infoStandBotView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetBotView.tsx');
@@ -94,6 +95,7 @@ describe('UI CSS ownership', () => {
         const chatInputView = readSource('src/components/room/widgets/chat-input/ChatInputView.tsx');
         const chatInputStyleSelectorView = readSource('src/components/room/widgets/chat-input/ChatInputStyleSelectorView.tsx');
         const chatWidgetWindowView2 = readSource('src/components/room/widgets/chat/ChatWidgetWindowView.tsx');
+        const toolbarCss = readSource('src/css/toolbar/ToolBar.css');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -199,9 +201,16 @@ describe('UI CSS ownership', () => {
         expect(youtubePlayerView).not.toContain('bg-amber-600 text-white');
         expect(roomWidgetsCss).toContain('.nitro-chooser-widget');
         expect(roomWidgetsCss).toContain('.nitro-chat-widget-window');
-        expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-modal.is-fullscreen');
-        expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-tab-button.is-active');
-        expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-empty-video');
+        expect(toolbarView).toContain('tb-shell-bg');
+        expect(toolbarView).toContain('tb-nav-left');
+        expect(toolbarView).toContain('tb-nav-right');
+        expect(toolbarView).not.toContain('w-[420px] max-w-[95vw]');
+        expect(toolbarView).not.toContain('max-w-[calc(50vw-242px)]');
+        expect(toolbarCss).toContain('.tb-shell-bg');
+        expect(toolbarCss).toContain('max-width: max(0px, calc(50vw - 242px))');
+        expect(toolbarCss).toContain('.youtube-player-modal.is-fullscreen');
+        expect(toolbarCss).toContain('.youtube-player-tab-button.is-active');
+        expect(toolbarCss).toContain('.youtube-player-empty-video');
         expect(infoStandUserView).toContain('infostand-shell');
         expect(infoStandUserView).toContain('infostand-panel');
         expect(infoStandUserView).not.toContain('bg-[rgba(28,28,32,0.95)]');

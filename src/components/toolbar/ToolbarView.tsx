@@ -179,7 +179,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
             { youtubeEnabled && <YouTubePlayerView /> }
 
             { isInRoom &&
-                <div className={ `tb-frame fixed ${ compactFramePosition } left-1/2 -translate-x-1/2 z-40 flex h-[38px] w-[420px] max-w-[95vw] items-center px-[6px] py-[4px] pointer-events-none` }>
+                <div className={ `tb-frame ${ compactFramePosition }` }>
                     <Flex
                         alignItems="center"
                         justifyContent="center"
@@ -192,14 +192,14 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 animate={ visibilityVariant }
                 variants={ shellVariants }
                 transition={ SHELL_TRANSITION }
-                className={ `pointer-events-none fixed bottom-0 left-0 right-0 z-[39] h-[52px] rounded-t-[12px] border border-b-0 border-white/8 bg-[rgba(62,64,72,0.55)] shadow-[0_-6px_18px_rgba(0,0,0,0.18)] ${ desktopBlockClasses }` } />
+                className={ `tb-shell-bg ${ desktopBlockClasses }` } />
 
             <motion.div
                 initial="visible"
                 animate={ visibilityVariant }
                 variants={ leftNavVariants }
                 transition={ NAV_TRANSITION }
-                className={ `tb-nav-clip fixed bottom-0 left-0 z-40 h-[52px] max-w-[calc(50vw-242px)] items-center pl-3 ${ desktopFlexClasses }` }>
+                className={ `tb-nav-clip tb-nav-left ${ desktopFlexClasses }` }>
                 <button
                     type="button"
                     onClick={ () => setLeftCollapsed(value => !value) }
@@ -211,7 +211,7 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 </button>
                 <motion.div
                     variants={ containerVariants }
-                    className="tb-open-shell flex h-[52px] max-w-full items-center gap-2 overflow-visible bg-transparent px-[8px] pt-[10px] pb-[2px]">
+                    className="tb-open-shell gap-2">
                     { !leftCollapsed && (<>
                     <motion.div variants={ itemVariants }>
                         { isInRoom
@@ -313,10 +313,10 @@ export const ToolbarView: FC<{ isInRoom: boolean }> = props =>
                 animate={ visibilityVariant }
                 variants={ rightNavVariants }
                 transition={ NAV_TRANSITION }
-                className={ `tb-nav-clip fixed bottom-0 z-40 h-[52px] max-w-[calc(50vw-242px)] items-center pr-3 ${ desktopFlexClasses } ${ isInRoom ? 'right-0' : 'right-3' }` }>
+                className={ `tb-nav-clip tb-nav-right ${ desktopFlexClasses } ${ isInRoom ? 'is-room' : 'is-desktop' }` }>
                 <motion.div
                     variants={ containerVariants }
-                    className="tb-open-shell flex h-[52px] max-w-full items-center gap-3 overflow-visible bg-transparent px-[8px] pt-[10px] pb-[2px]">
+                    className="tb-open-shell gap-3">
                     <motion.div variants={ itemVariants } className="relative">
                         <ToolbarItemView icon="friendall" onClick={ () => CreateLinkEvent('friends/toggle') } className="tb-icon" />
                         { (requests.length > 0) &&

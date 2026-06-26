@@ -317,7 +317,7 @@ export const ChatInputView: FC<{}> = (props) => {
     if (!roomSession || roomSession.isSpectator) return null;
 
     return createPortal(
-        <div className="nitro-chat-input-container relative flex h-[38px] w-full items-center justify-between gap-[6px] overflow-visible rounded-[12px] border-2 border-black bg-[#dcdcdc] pl-[8px] pr-[8px]">
+        <div className="nitro-chat-input-container">
             {commandSelectorVisible && (
                 <ChatInputCommandSelectorView
                     commands={filteredCommands}

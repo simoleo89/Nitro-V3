@@ -90,7 +90,7 @@ export const ChatWidgetWindowView: FC<{}> = () => {
                     if (clearChatHistory) clearChatHistory();
                 }}
             />
-            <NitroCardContentView className="bg-[#f2f2f2] relative" overflow="hidden">
+            <NitroCardContentView className="nitro-chat-widget-content" overflow="hidden">
                 <div className="flex items-center gap-2 px-2 py-1 border-b border-black/20 bg-white/40 text-black text-[11px]">
                     <label className="flex items-center gap-1 cursor-pointer select-none">
                         <input checked={hidePets} type="checkbox" onChange={(event) => setHidePets(event.target.checked)} />
@@ -118,7 +118,7 @@ export const ChatWidgetWindowView: FC<{}> = () => {
                     </button>
                     <div>
                         <input
-                            className="h-[20px] px-1 rounded border border-black/30 bg-white/70 text-[11px] text-black"
+                            className="nitro-chat-widget-search"
                             placeholder="Search"
                             type="text"
                             value={search}
@@ -136,7 +136,7 @@ export const ChatWidgetWindowView: FC<{}> = () => {
                             <div key={`${chat.timestamp}-${chat.id}`} className={rowClassName}>
                                 {hideBalloons && !hideAvatars && (
                                     <div
-                                        className={`w-[65px] h-[55px] shrink-0 mt-[-18px] rounded-sm bg-no-repeat bg-center scale-70 ${isOwnMessage ? 'order-2' : ''}`}
+                                        className={`nitro-chat-widget-avatar-preview ${isOwnMessage ? 'order-2' : ''}`}
                                         style={chat.imageUrl ? { backgroundImage: `url(${chat.imageUrl})` } : undefined}
                                     />
                                 )}
@@ -170,7 +170,7 @@ export const ChatWidgetWindowView: FC<{}> = () => {
                                     <div className="bubble-container relative inline-flex items-start">
                                         {chat.style === 0 && (
                                             <div
-                                                className="absolute -top-px left-px w-[30px] h-[calc(100%-0.5px)] rounded-[7px] z-1"
+                                                className="nitro-chat-widget-color-strip"
                                                 style={{ backgroundColor: chat.color }}
                                             />
                                         )}
@@ -181,7 +181,7 @@ export const ChatWidgetWindowView: FC<{}> = () => {
                                             <div className="user-container flex items-center justify-center h-full max-h-[24px] overflow-hidden">
                                                 {!hideAvatars && chat.imageUrl && chat.imageUrl.length > 0 && (
                                                     <div
-                                                        className={`user-image absolute top-[-15px] w-[45px] h-[65px] bg-no-repeat bg-center ${isOwnMessage ? 'right-[-9.25px]' : 'left-[-9.25px]'}`}
+                                                        className={`nitro-chat-widget-user-image ${isOwnMessage ? 'right-[-9.25px]' : 'left-[-9.25px]'}`}
                                                         style={{ backgroundImage: `url(${chat.imageUrl})` }}
                                                     />
                                                 )}

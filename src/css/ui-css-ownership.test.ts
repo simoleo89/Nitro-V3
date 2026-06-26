@@ -91,6 +91,9 @@ describe('UI CSS ownership', () => {
         const infoStandRentableBotView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetRentableBotView.tsx');
         const infoStandPetView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetPetView.tsx');
         const infoStandCss = readSource('src/css/room/InfoStand.css');
+        const chatInputView = readSource('src/components/room/widgets/chat-input/ChatInputView.tsx');
+        const chatInputStyleSelectorView = readSource('src/components/room/widgets/chat-input/ChatInputStyleSelectorView.tsx');
+        const chatWidgetWindowView2 = readSource('src/components/room/widgets/chat/ChatWidgetWindowView.tsx');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -215,5 +218,15 @@ describe('UI CSS ownership', () => {
         expect(infoStandCss).toContain('.infostand-buildtools-move-button');
         expect(infoStandCss).toContain('.infostand-buildtools-height-button.is-down');
         expect(infoStandCss).toContain('.infostand-admin-button.is-primary');
+        expect(chatInputView).toContain('nitro-chat-input-container');
+        expect(chatInputView).not.toContain('rounded-[12px] border-2 border-black bg-[#dcdcdc]');
+        expect(chatInputStyleSelectorView).toContain('nitro-chat-style-popover');
+        expect(chatInputStyleSelectorView).not.toContain('bg-[#dfdfdf]');
+        expect(chatInputStyleSelectorView).not.toContain("style={{ filter: 'none' }}");
+        expect(chatWidgetWindowView2).toContain('nitro-chat-widget-content');
+        expect(chatWidgetWindowView2).toContain('nitro-chat-widget-search');
+        expect(chatWidgetWindowView2).not.toContain('bg-[#f2f2f2]');
+        expect(roomWidgetsCss).toContain('.nitro-chat-style-trigger');
+        expect(roomWidgetsCss).toContain('.nitro-chat-widget-color-strip');
     });
 });

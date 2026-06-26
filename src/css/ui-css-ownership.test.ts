@@ -79,6 +79,8 @@ describe('UI CSS ownership', () => {
         const userAccountSettingsView = readSource('src/components/user-settings/UserAccountSettingsView.tsx');
         const hcCenterView = readSource('src/components/hc-center/HcCenterView.tsx');
         const inventoryFurnitureDeleteView = readSource('src/components/inventory/views/furniture/InventoryFurnitureDeleteView.tsx');
+        const badgeCreatorView = readSource('src/components/badge-creator/BadgeCreatorView.tsx');
+        const badgeCreatorCss = readSource('src/css/badges/BadgeCreatorView.css');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -164,5 +166,12 @@ describe('UI CSS ownership', () => {
         expect(userAccountSettingsView).toContain('max-w-[calc(100vw-16px)]');
         expect(hcCenterView).toContain('max-w-[calc(100vw-16px)]');
         expect(inventoryFurnitureDeleteView).toContain('max-w-[calc(100vw-16px)]');
+        expect(badgeCreatorView).toContain('nitro-badge-creator');
+        expect(badgeCreatorView).not.toContain('w-[760px] h-[680px]');
+        expect(badgeCreatorView).not.toContain('style={{ minWidth: 220 }}');
+        expect(badgeCreatorCss).toContain('.nitro-badge-creator');
+        expect(badgeCreatorCss).toContain('width: min(760px, calc(var(--nitro-app-width, 100vw) - 16px))');
+        expect(badgeCreatorCss).toContain('.badge-creator-main');
+        expect(badgeCreatorCss).toContain('flex-direction: column');
     });
 });

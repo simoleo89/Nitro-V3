@@ -459,11 +459,11 @@ export const BadgeCreatorView: FC<{}> = () => {
     if (!isVisible) return null;
 
     return (
-        <NitroCardView className="nitro-badge-creator w-[760px] h-[680px]" isResizable={false} theme="primary-slim" uniqueKey="badge-creator">
+        <NitroCardView className="nitro-badge-creator" isResizable={false} theme="primary-slim" uniqueKey="badge-creator">
             <NitroCardHeaderView headerText={t('badgecreator.title', 'Badge Creator')} onCloseClick={() => setIsVisible(false)} />
             <NitroCardContentView className="text-black">
                 <Flex gap={2} className="badge-creator-main">
-                    <Column gap={2}>
+                    <Column gap={2} className="badge-creator-editor">
                         <div
                             className="badge-creator-canvas"
                             style={{
@@ -519,12 +519,12 @@ export const BadgeCreatorView: FC<{}> = () => {
                             </Button>
                         </Flex>
                     </Column>
-                    <Column gap={2} className="badge-creator-side" style={{ minWidth: 220 }}>
+                    <Column gap={2} className="badge-creator-side">
                         <div>
                             <Text bold variant="black">
                                 {t('badgecreator.palette', 'Palette')}
                             </Text>
-                            <div className="badge-creator-palette" style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 22px)', gap: 4, marginTop: 4 }}>
+                            <div className="badge-creator-palette">
                                 {PALETTE.map((color, idx) => {
                                     const isTransparent = color === TRANSPARENT;
                                     const isSelected = color === selectedColor;
@@ -551,7 +551,7 @@ export const BadgeCreatorView: FC<{}> = () => {
                                     );
                                 })}
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                            <div className="badge-creator-custom-color">
                                 <button
                                     type="button"
                                     onClick={openColorPicker}
@@ -652,7 +652,7 @@ export const BadgeCreatorView: FC<{}> = () => {
                                 {t('badgecreator.price', 'Cost: %price% %currency%', ['price', 'currency'], [String(priceBadge), currencyName(currencyType)])}
                             </Text>
                         )}
-                        <Flex gap={1}>
+                        <Flex gap={1} className="badge-creator-actions">
                             <Button onClick={handleSave} disabled={submitting} variant="success">
                                 {submitting
                                     ? t('badgecreator.saving', 'Saving…')
@@ -675,7 +675,7 @@ export const BadgeCreatorView: FC<{}> = () => {
                         </Flex>
                     </Column>
                 </Flex>
-                <Column gap={1} className="badge-creator-list" style={{ marginTop: 8 }}>
+                <Column gap={1} className="badge-creator-list">
                     <Text bold variant="black">
                         {t('badgecreator.list.title', 'Your custom badges (%count%/%max%)', ['count', 'max'], [String(badges?.length ?? 0), String(maxBadges)])}
                     </Text>
@@ -683,7 +683,7 @@ export const BadgeCreatorView: FC<{}> = () => {
                     {badges !== null && !badges.length && <Text variant="black">{t('badgecreator.list.empty', "You haven't made any badges yet.")}</Text>}
                     {badges !== null &&
                         badges.map((badge) => (
-                            <Flex key={badge.badgeId} alignItems="center" gap={2} style={{ padding: 4, borderTop: '1px solid #ccc' }}>
+                            <Flex key={badge.badgeId} alignItems="center" gap={2} className="badge-creator-list-row">
                                 <img
                                     src={badge.url}
                                     alt={badge.name || badge.badgeId}

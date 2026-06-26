@@ -1,0 +1,80 @@
+.nitro-badge-creator {
+    width: min(760px, calc(var(--nitro-app-width, 100vw) - 16px));
+    height: min(680px, calc(var(--nitro-app-height, 100vh) - 16px));
+    max-width: calc(var(--nitro-app-width, 100vw) - 16px);
+    max-height: calc(var(--nitro-app-height, 100vh) - 16px);
+}
+
+.nitro-badge-creator .content-area,
+.nitro-badge-creator .nitro-card-content-shell {
+    min-height: 0;
+    overflow: auto;
+}
+
+.badge-creator-main {
+    align-items: flex-start;
+    min-width: 0;
+}
+
+.badge-creator-editor {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.badge-creator-tools,
+.badge-creator-actions {
+    flex-wrap: wrap;
+}
+
+.badge-creator-side {
+    flex: 1 1 220px;
+    min-width: min(220px, 100%);
+}
+
+.badge-creator-palette {
+    display: grid;
+    grid-template-columns: repeat(8, 22px);
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.badge-creator-custom-color {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.badge-creator-list {
+    margin-top: 8px;
+    min-width: 0;
+}
+
+.badge-creator-list-row {
+    padding: 4px;
+    border-top: 1px solid #ccc;
+    min-width: 0;
+}
+
+@media (max-width: 760px) {
+    .nitro-badge-creator {
+        width: calc(var(--nitro-app-width, 100vw) - 16px);
+    }
+
+    .badge-creator-main {
+        flex-direction: column;
+    }
+
+    .badge-creator-editor,
+    .badge-creator-side {
+        width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .badge-creator-list-row {
+        flex-wrap: wrap;
+    }
+}

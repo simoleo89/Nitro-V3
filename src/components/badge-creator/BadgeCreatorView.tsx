@@ -531,6 +531,7 @@ export const BadgeCreatorView: FC<{}> = () => {
                                     return (
                                         <button
                                             key={idx}
+                                            className={`badge-creator-swatch${isSelected ? ' is-selected' : ''}`}
                                             type="button"
                                             onClick={() => {
                                                 setSelectedColor(color);
@@ -538,14 +539,9 @@ export const BadgeCreatorView: FC<{}> = () => {
                                             }}
                                             title={isTransparent ? 'Transparent' : argbToCss(color)}
                                             style={{
-                                                width: 22,
-                                                height: 22,
-                                                border: isSelected ? '2px solid #000' : '1px solid #888',
                                                 background: isTransparent
                                                     ? 'repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px'
-                                                    : argbToCss(color),
-                                                cursor: 'pointer',
-                                                padding: 0
+                                                    : argbToCss(color)
                                             }}
                                         />
                                     );
@@ -553,20 +549,10 @@ export const BadgeCreatorView: FC<{}> = () => {
                             </div>
                             <div className="badge-creator-custom-color">
                                 <button
+                                    className="badge-creator-color-button"
                                     type="button"
                                     onClick={openColorPicker}
                                     title={t('badgecreator.color.custom', 'Pick a custom colour')}
-                                    style={{
-                                        width: 28,
-                                        height: 26,
-                                        padding: 2,
-                                        border: '1px solid #888',
-                                        background: '#f3f3f3',
-                                        cursor: 'pointer',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                                         <path
@@ -586,17 +572,14 @@ export const BadgeCreatorView: FC<{}> = () => {
                                     </svg>
                                 </button>
                                 <div
+                                    className="badge-creator-selected-color"
                                     onClick={openColorPicker}
                                     title={argbToHex(selectedColor)}
                                     style={{
-                                        width: 26,
-                                        height: 26,
-                                        border: '1px solid #888',
                                         background:
                                             selectedColor === TRANSPARENT
                                                 ? 'repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 8px 8px'
-                                                : argbToCss(selectedColor),
-                                        cursor: 'pointer'
+                                                : argbToCss(selectedColor)
                                     }}
                                 />
                                 <Text small variant="muted">
@@ -615,21 +598,13 @@ export const BadgeCreatorView: FC<{}> = () => {
                                 {t('badgecreator.preview', 'Preview')}
                             </Text>
                             <div
-                                style={{
-                                    width: GRID_WIDTH,
-                                    height: GRID_HEIGHT,
-                                    marginTop: 4,
-                                    border: '1px solid #888',
-                                    imageRendering: 'pixelated',
-                                    position: 'relative',
-                                    overflow: 'hidden'
-                                }}
+                                className="badge-creator-preview"
                             >
                                 <canvas
                                     ref={previewCanvasRef}
                                     width={GRID_WIDTH}
                                     height={GRID_HEIGHT}
-                                    style={{ display: 'block', width: GRID_WIDTH, height: GRID_HEIGHT, imageRendering: 'pixelated' }}
+                                    className="badge-creator-preview-canvas"
                                 />
                             </div>
                         </div>
@@ -689,9 +664,9 @@ export const BadgeCreatorView: FC<{}> = () => {
                                     alt={badge.name || badge.badgeId}
                                     width={GRID_WIDTH}
                                     height={GRID_HEIGHT}
-                                    style={{ imageRendering: 'pixelated', border: '1px solid #888' }}
+                                    className="badge-creator-list-icon"
                                 />
-                                <Column gap={0} style={{ flex: 1, minWidth: 0 }}>
+                                <Column gap={0} className="badge-creator-list-copy">
                                     <Text bold variant="black" truncate>
                                         {badge.name || badge.badgeId}
                                     </Text>

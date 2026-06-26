@@ -76,9 +76,8 @@ export const ChatWidgetWindowView: FC<{}> = () => {
 
     return (
         <NitroCardView
-            className="w-[460px] h-[240px]"
+            className="nitro-chat-widget-window"
             disableDrag={false}
-            style={{ pointerEvents: 'auto' }}
             theme="primary-slim"
             uniqueKey="chat-widget-window"
             windowPosition={DraggableWindowPosition.TOP_LEFT}
@@ -122,7 +121,7 @@ export const ChatWidgetWindowView: FC<{}> = () => {
                             className="h-[20px] px-1 rounded border border-black/30 bg-white/70 text-[11px] text-black"
                             placeholder="Search"
                             type="text"
-                            value={LocalizeText('navigator.frontpage.staticsearch.8')}
+                            value={search}
                             onChange={(event) => setSearch(event.target.value)}
                         />
                     </div>

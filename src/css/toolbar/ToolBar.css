@@ -120,3 +120,20 @@
         transform: translateY(0);
     }
 }
+
+.youtube-player-modal {
+    width: min(550px, calc(var(--nitro-app-width, 100vw) - 16px));
+    max-width: calc(var(--nitro-app-width, 100vw) - 16px);
+    max-height: calc(var(--nitro-app-height, 100vh) - 16px);
+}
+
+.youtube-player-modal.is-fullscreen {
+    position: fixed !important;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none;
+    max-height: none;
+    z-index: 9999;
+    border-radius: 0;
+}

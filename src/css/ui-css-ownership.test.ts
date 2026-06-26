@@ -50,6 +50,7 @@ describe('UI CSS ownership', () => {
         const inventoryCss = readSource('src/css/inventory/InventoryView.css');
         const friendsCss = readSource('src/css/friends/FriendsView.css');
         const roomSettingsCss = readSource('src/css/room/NavigatorRoomSettings.css');
+        const roomWidgetsCss = readSource('src/css/room/RoomWidgets.css');
         const indexCss = readSource('src/css/index.css');
         const wiredCss = readSource('src/css/WiredView.css');
         const modToolsView = readSource('src/components/mod-tools/ModToolsView.tsx');
@@ -81,6 +82,9 @@ describe('UI CSS ownership', () => {
         const inventoryFurnitureDeleteView = readSource('src/components/inventory/views/furniture/InventoryFurnitureDeleteView.tsx');
         const badgeCreatorView = readSource('src/components/badge-creator/BadgeCreatorView.tsx');
         const badgeCreatorCss = readSource('src/css/badges/BadgeCreatorView.css');
+        const chatWidgetWindowView = readSource('src/components/room/widgets/chat/ChatWidgetWindowView.tsx');
+        const chooserWidgetView = readSource('src/components/room/widgets/choosers/ChooserWidgetView.tsx');
+        const youtubePlayerView = readSource('src/components/toolbar/YouTubePlayerView.tsx');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -173,5 +177,16 @@ describe('UI CSS ownership', () => {
         expect(badgeCreatorCss).toContain('width: min(760px, calc(var(--nitro-app-width, 100vw) - 16px))');
         expect(badgeCreatorCss).toContain('.badge-creator-main');
         expect(badgeCreatorCss).toContain('flex-direction: column');
+        expect(chatWidgetWindowView).toContain('nitro-chat-widget-window');
+        expect(chatWidgetWindowView).not.toContain('className="w-[460px] h-[240px]"');
+        expect(chatWidgetWindowView).toContain('value={search}');
+        expect(chooserWidgetView).toContain('nitro-chooser-widget');
+        expect(chooserWidgetView).not.toContain('className="w-[420px] h-[400px]"');
+        expect(youtubePlayerView).toContain('youtube-player-modal');
+        expect(youtubePlayerView).toContain('is-fullscreen');
+        expect(youtubePlayerView).not.toContain("'w-[550px]'");
+        expect(roomWidgetsCss).toContain('.nitro-chooser-widget');
+        expect(roomWidgetsCss).toContain('.nitro-chat-widget-window');
+        expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-modal.is-fullscreen');
     });
 });

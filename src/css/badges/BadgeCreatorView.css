@@ -40,11 +40,59 @@
     margin-top: 4px;
 }
 
+.badge-creator-swatch {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid #888;
+    cursor: pointer;
+}
+
+.badge-creator-swatch.is-selected {
+    border: 2px solid #000;
+}
+
 .badge-creator-custom-color {
     display: flex;
     align-items: center;
     gap: 6px;
     margin-top: 6px;
+}
+
+.badge-creator-color-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 26px;
+    padding: 2px;
+    border: 1px solid #888;
+    background: #f3f3f3;
+    cursor: pointer;
+}
+
+.badge-creator-selected-color {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #888;
+    cursor: pointer;
+}
+
+.badge-creator-preview {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    margin-top: 4px;
+    overflow: hidden;
+    border: 1px solid #888;
+    image-rendering: pixelated;
+}
+
+.badge-creator-preview-canvas {
+    display: block;
+    width: 40px;
+    height: 40px;
+    image-rendering: pixelated;
 }
 
 .badge-creator-list {
@@ -55,6 +103,16 @@
 .badge-creator-list-row {
     padding: 4px;
     border-top: 1px solid #ccc;
+    min-width: 0;
+}
+
+.badge-creator-list-icon {
+    border: 1px solid #888;
+    image-rendering: pixelated;
+}
+
+.badge-creator-list-copy {
+    flex: 1 1 auto;
     min-width: 0;
 }
 

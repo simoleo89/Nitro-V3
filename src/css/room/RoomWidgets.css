@@ -177,6 +177,26 @@
     height: 200px;
 }
 
+.nitro-chat-widget-window {
+    width: min(460px, calc(var(--nitro-app-width, 100vw) - 16px));
+    height: min(240px, calc(var(--nitro-app-height, 100vh) - 16px));
+    max-width: calc(var(--nitro-app-width, 100vw) - 16px);
+    max-height: calc(var(--nitro-app-height, 100vh) - 16px);
+    pointer-events: auto;
+}
+
+.nitro-chooser-widget {
+    width: min(420px, calc(var(--nitro-app-width, 100vw) - 16px));
+    height: min(400px, calc(var(--nitro-app-height, 100vh) - 16px));
+    max-width: calc(var(--nitro-app-width, 100vw) - 16px);
+    max-height: calc(var(--nitro-app-height, 100vh) - 16px);
+}
+
+.nitro-chooser-widget .content-area,
+.nitro-chooser-widget .nitro-card-content-shell {
+    min-height: 0;
+}
+
 .toggle-roomtool {
     min-height: 95px;
     width: 20px;

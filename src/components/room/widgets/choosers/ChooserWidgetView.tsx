@@ -116,7 +116,7 @@ export const ChooserWidgetView: FC<ChooserWidgetViewProps> = (props) => {
     };
 
     return (
-        <NitroCardView className="w-[420px] h-[400px]" theme="primary-slim">
+        <NitroCardView className="nitro-chooser-widget" theme="primary-slim">
             <NitroCardHeaderView headerText={title + ' (' + filteredItems.length + ')'} onCloseClick={handleClose} />
             <NitroCardContentView overflow="hidden" gap={1}>
                 <Flex gap={2}>

@@ -224,7 +224,7 @@ export const YouTubePlayerView: FC<{}> = () => {
     );
 
     return (
-        <NitroCardView className={`youtube-player-modal ${isFullscreen ? '!fixed inset-0 w-full h-full z-[9999] rounded-none' : 'w-[550px]'}`}>
+        <NitroCardView className={`youtube-player-modal${isFullscreen ? ' is-fullscreen' : ''}`}>
             <NitroCardHeaderView headerText={isRoomMode ? '📺 YouTube TV' : '▶ YouTube'} onCloseClick={() => setIsOpen(false)} />
             <NitroCardContentView>
                 <div className="flex gap-1 mb-3 border-b border-gray-700 pb-2 flex-wrap">

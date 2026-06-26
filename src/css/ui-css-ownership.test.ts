@@ -194,9 +194,14 @@ describe('UI CSS ownership', () => {
         expect(youtubePlayerView).toContain('youtube-player-modal');
         expect(youtubePlayerView).toContain('is-fullscreen');
         expect(youtubePlayerView).not.toContain("'w-[550px]'");
+        expect(youtubePlayerView).toContain('youtube-player-tabs');
+        expect(youtubePlayerView).toContain('youtube-player-control-button');
+        expect(youtubePlayerView).not.toContain('bg-amber-600 text-white');
         expect(roomWidgetsCss).toContain('.nitro-chooser-widget');
         expect(roomWidgetsCss).toContain('.nitro-chat-widget-window');
         expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-modal.is-fullscreen');
+        expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-tab-button.is-active');
+        expect(readSource('src/css/toolbar/ToolBar.css')).toContain('.youtube-player-empty-video');
         expect(infoStandUserView).toContain('infostand-shell');
         expect(infoStandUserView).toContain('infostand-panel');
         expect(infoStandUserView).not.toContain('bg-[rgba(28,28,32,0.95)]');

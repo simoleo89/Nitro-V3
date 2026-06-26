@@ -210,6 +210,7 @@ export const YouTubePlayerView: FC<{}> = () => {
     const isPaused = currentVideoState === YoutubeVideoPlaybackStateEnum.PAUSED;
     const roomSession = GetRoomSession();
     const isMyRoom = isModerator || (roomSession && roomSession.isRoomOwner);
+    const tabButtonClass = (value: typeof tab) => `youtube-player-tab-button${tab === value ? ' is-active' : ''}`;
 
     const QuickVolumeButton = ({ value, label }: { value: number; label: string }) => (
         <button
@@ -217,7 +218,7 @@ export const YouTubePlayerView: FC<{}> = () => {
                 setVolume(value);
                 setVolumePreset(value);
             }}
-            className={`px-2 py-1 rounded text-xs ${volumePreset === value ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+            className={`youtube-player-volume-button${volumePreset === value ? ' is-active' : ''}`}
         >
             {label}
         </button>
@@ -227,28 +228,28 @@ export const YouTubePlayerView: FC<{}> = () => {
         <NitroCardView className={`youtube-player-modal${isFullscreen ? ' is-fullscreen' : ''}`}>
             <NitroCardHeaderView headerText={isRoomMode ? '📺 YouTube TV' : '▶ YouTube'} onCloseClick={() => setIsOpen(false)} />
             <NitroCardContentView>
-                <div className="flex gap-1 mb-3 border-b border-gray-700 pb-2 flex-wrap">
+                <div className="youtube-player-tabs">
                     <button
                         onClick={() => setTab('player')}
-                        className={`px-3 py-1 rounded text-sm ${tab === 'player' ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                        className={tabButtonClass('player')}
                     >
                         ▶
                     </button>
                     <button
                         onClick={() => setTab('playlist')}
-                        className={`px-3 py-1 rounded text-sm ${tab === 'playlist' ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                        className={tabButtonClass('playlist')}
                     >
                         📋 {playlist.length}
                     </button>
                     <button
                         onClick={() => setTab('history')}
-                        className={`px-3 py-1 rounded text-sm ${tab === 'history' ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                        className={tabButtonClass('history')}
                     >
                         🕐 {history.length}
                     </button>
                     <button
                         onClick={() => setTab('share')}
-                        className={`px-3 py-1 rounded text-sm ${tab === 'share' ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                        className={tabButtonClass('share')}
                     >
                         📤
                     </button>
@@ -258,14 +259,14 @@ export const YouTubePlayerView: FC<{}> = () => {
                                 setTab('spectators');
                                 loadRoomUsers();
                             }}
-                            className={`px-3 py-1 rounded text-sm ${tab === 'spectators' ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                            className={tabButtonClass('spectators')}
                         >
                             📺 {watcherIds.size}
                         </button>
                     )}
                     <button
                         onClick={() => setTab('settings')}
-                        className={`px-3 py-1 rounded text-sm ${tab === 'settings' ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                        className={tabButtonClass('settings')}
                     >
                         ⚙️
                     </button>
@@ -302,20 +303,20 @@ export const YouTubePlayerView: FC<{}> = () => {
                                 onReady={() => addToHistory(videoId)}
                             />
                         ) : (
-                            <div className="h-[280px] flex items-center justify-center bg-gray-800 text-gray-500">
+                            <div className="youtube-player-empty-video">
                                 {LocalizeText('widget.furni.video_viewer.no_videos')}
                             </div>
                         )}
 
                         {isRoomMode && hasControl && (
-                            <div className="mt-2 flex gap-2 justify-center">
-                                <button onClick={handlePrev} className="px-3 py-1 bg-gray-700 rounded text-white text-sm">
+                            <div className="youtube-player-controls">
+                                <button onClick={handlePrev} className="youtube-player-control-button">
                                     ◀◀
                                 </button>
-                                <button onClick={isPlaying ? handlePause : handlePlay} className="px-4 py-1 bg-amber-600 rounded text-white font-bold text-sm">
+                                <button onClick={isPlaying ? handlePause : handlePlay} className="youtube-player-control-button is-primary">
                                     {isPlaying ? '⏸' : '▶'}
                                 </button>
-                                <button onClick={handleNext} className="px-3 py-1 bg-gray-700 rounded text-white text-sm">
+                                <button onClick={handleNext} className="youtube-player-control-button">
                                     ▶▶
                                 </button>
                             </div>

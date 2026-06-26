@@ -1,4 +1,7 @@
 .nitro-wired {
+    width: min(300px, calc(100vw - 16px));
+    min-width: 0;
+    max-width: calc(100vw - 16px);
     background: #efefef;
     border: 1px solid #8d8d8d !important;
     border-radius: 6px !important;
@@ -408,6 +411,10 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
+    }
+
+    .nitro-wired__give-var--trigger-variable {
+        width: min(244px, 100%);
     }
 
     .nitro-wired__give-var-heading {

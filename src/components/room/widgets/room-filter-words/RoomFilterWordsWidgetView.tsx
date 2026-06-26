@@ -56,10 +56,9 @@ export const RoomFilterWordsWidgetView: FC<{}> = (props) => {
                     <Button onClick={() => processAction(true)}>{LocalizeText('navigator.roomsettings.roomfilter.addword')}</Button>
                 </Grid>
                 <Column
-                    className="min-h-[calc(1.5em+ .5rem+2px)] px-[.5rem] py-[.25rem] rounded-[.2rem] form-control-sm"
+                    className="nitro-room-filter-words-list min-h-[calc(1.5em+ .5rem+2px)] px-[.5rem] py-[.25rem] rounded-[.2rem] form-control-sm"
                     gap={0}
                     overflow="auto"
-                    style={{ height: '100px' }}
                 >
                     {wordsFilter &&
                         wordsFilter.length > 0 &&

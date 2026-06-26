@@ -96,6 +96,9 @@ describe('UI CSS ownership', () => {
         const chatInputStyleSelectorView = readSource('src/components/room/widgets/chat-input/ChatInputStyleSelectorView.tsx');
         const chatWidgetWindowView2 = readSource('src/components/room/widgets/chat/ChatWidgetWindowView.tsx');
         const toolbarCss = readSource('src/css/toolbar/ToolBar.css');
+        const roomPromoteMyOwnEventView = readSource('src/components/room/widgets/room-promotes/views/RoomPromoteMyOwnEventWidgetView.tsx');
+        const roomPromoteOtherEventView = readSource('src/components/room/widgets/room-promotes/views/RoomPromoteOtherEventWidgetView.tsx');
+        const roomFilterWordsWidgetView = readSource('src/components/room/widgets/room-filter-words/RoomFilterWordsWidgetView.tsx');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
         expect(catalogView).not.toContain('habbo-swf-window');
@@ -242,5 +245,11 @@ describe('UI CSS ownership', () => {
         expect(chatWidgetWindowView2).not.toContain('bg-[#f2f2f2]');
         expect(roomWidgetsCss).toContain('.nitro-chat-style-trigger');
         expect(roomWidgetsCss).toContain('.nitro-chat-widget-color-strip');
+        expect(roomPromoteMyOwnEventView).toContain('nitro-room-promote-description');
+        expect(roomPromoteOtherEventView).toContain('nitro-room-promote-description');
+        expect(roomPromoteMyOwnEventView).not.toContain("style={{ overflowWrap: 'anywhere' }}");
+        expect(roomFilterWordsWidgetView).toContain('nitro-room-filter-words-list');
+        expect(roomFilterWordsWidgetView).not.toContain("style={{ height: '100px' }}");
+        expect(roomWidgetsCss).toContain('.nitro-room-filter-words-list');
     });
 });

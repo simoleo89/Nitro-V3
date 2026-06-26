@@ -20,7 +20,7 @@ export const RoomPromoteMyOwnEventWidgetView: FC<RoomPromoteMyOwnEventWidgetView
 
     return (
         <>
-            <Flex alignItems="center" gap={2} style={{ overflowWrap: 'anywhere' }}>
+            <Flex alignItems="center" gap={2} className="nitro-room-promote-description">
                 <Text variant="white">{eventDescription}</Text>
             </Flex>
             <br />

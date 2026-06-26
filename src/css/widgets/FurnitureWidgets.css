@@ -509,8 +509,20 @@
 }
 
 .nitro-playlist-editor-widget {
-    width: 625px;
-    height: 440px;
+    width: min(625px, calc(100vw - 16px));
+    min-width: 0;
+    max-width: calc(100vw - 16px);
+    height: min(440px, calc(100vh - 16px));
+    min-height: 0;
+    max-height: calc(100vh - 16px);
+
+    .playlist-editor-layout {
+        min-height: 0;
+    }
+
+    .playlist-editor-pane {
+        flex: 1 1 0;
+    }
 
     img.my-music {
         position: absolute;
@@ -607,6 +619,19 @@
             mask-image: url('@/assets/images/room-widgets/playlist-editor/disk_image.png');
             height: 76px;
             width: 76px;
+        }
+    }
+}
+
+@media (max-width: 640px), (max-height: 520px) {
+    .nitro-playlist-editor-widget {
+        .playlist-editor-layout {
+            flex-direction: column;
+        }
+
+        .playlist-editor-pane {
+            width: 100%;
+            min-height: 0;
         }
     }
 }

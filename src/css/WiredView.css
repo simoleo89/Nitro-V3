@@ -55,12 +55,24 @@
 
         .nitro-card-close-button::before,
         .nitro-card-close-button::after {
+            content: '';
+            position: absolute;
             left: 50%;
             top: 50%;
             width: 10px;
             height: 2px;
+            border-radius: 2px;
             background: #6a6a6a;
             margin: 0;
+            transform-origin: center;
+        }
+
+        .nitro-card-close-button::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        .nitro-card-close-button::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
         }
     }
 

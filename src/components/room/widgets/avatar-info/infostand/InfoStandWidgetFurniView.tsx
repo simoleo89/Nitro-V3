@@ -596,7 +596,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                     </div>
                     {(isJukeBox || isSongDisk) && (
                         <div className="flex flex-col gap-1">
-                            <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                            <hr className="infostand-divider" />
                             {songId === -1 && (
                                 <Text small wrap variant="white">
                                     {LocalizeText('infostand.jukebox.text.not.playing')}
@@ -623,7 +623,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                     <div className="flex flex-col gap-1">
                         {isCrackable && (
                             <>
-                                <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                                <hr className="infostand-divider" />
                                 <Text small wrap variant="white">
                                     {LocalizeText(
                                         'infostand.crackable_furni.hits_remaining',
@@ -635,7 +635,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                         )}
                         {avatarInfo.groupId > 0 && (
                             <>
-                                <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                                <hr className="infostand-divider" />
                                 <Flex pointer alignItems="center" gap={2} onClick={() => GetGroupInformation(avatarInfo.groupId)}>
                                     <LayoutBadgeImageView badgeCode={getGroupBadgeCode()} isGroup={true} />
                                     <Text underline variant="white">
@@ -646,7 +646,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                         )}
                         {itemLocation.x > -1 && itemLocationEnabled && (!itemLocationRequireAccess || canMove) && (
                             <>
-                                <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                                <hr className="infostand-divider" />
                                 <div className="flex items-center gap-1 min-w-0">
                                     <FaCrosshairs className="fa-icon shrink-0" />
                                     <Text small textBreak variant="white">
@@ -657,7 +657,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                         )}
                         {rareValue && rareValue.points > 0 && (
                             <>
-                                <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                                <hr className="infostand-divider" />
                                 <Flex alignItems="center" gap={2}>
                                     <Text small variant="white">
                                         {LocalizeText('rarevalues.infostand.label')}
@@ -673,7 +673,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                         )}
                         {godMode && (
                             <>
-                                <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                                <hr className="infostand-divider" />
                                 {canSeeFurniId && (
                                     <div className="flex items-center gap-3">
                                         <div className="flex items-center gap-1">
@@ -744,13 +744,13 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                     <div className="flex flex-col items-center gap-[2px]">
                                                         <div className="flex gap-[0.6em]">
                                                             <div
-                                                                className="bg-[#E55959] text-white w-[25px] h-[25px] border border-white cursor-pointer rounded-[3px] flex justify-center items-center transition-[filter] duration-300 hover:brightness-150 rotate-[225deg]"
+                                                                className="infostand-buildtools-move-button rotate-[225deg]"
                                                                 onClick={() => sendUpdate(-1, 0, furniLocationZ ?? 0, 0)}
                                                             >
                                                                 <GrFormNextLink size="1.7em" />
                                                             </div>
                                                             <div
-                                                                className="bg-[#E55959] text-white w-[25px] h-[25px] border border-white cursor-pointer rounded-[3px] flex justify-center items-center transition-[filter] duration-300 hover:brightness-150 rotate-[315deg]"
+                                                                className="infostand-buildtools-move-button rotate-[315deg]"
                                                                 onClick={() => sendUpdate(0, -1, furniLocationZ ?? 0, 0)}
                                                             >
                                                                 <GrFormNextLink size="1.7em" />
@@ -758,13 +758,13 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                         </div>
                                                         <div className="flex gap-[0.6em]">
                                                             <div
-                                                                className="bg-[#E55959] text-white w-[25px] h-[25px] border border-white cursor-pointer rounded-[3px] flex justify-center items-center transition-[filter] duration-300 hover:brightness-150 rotate-[135deg]"
+                                                                className="infostand-buildtools-move-button rotate-[135deg]"
                                                                 onClick={() => sendUpdate(0, 1, furniLocationZ ?? 0, 0)}
                                                             >
                                                                 <GrFormNextLink size="1.7em" />
                                                             </div>
                                                             <div
-                                                                className="bg-[#E55959] text-white w-[25px] h-[25px] border border-white cursor-pointer rounded-[3px] flex justify-center items-center transition-[filter] duration-300 hover:brightness-150 rotate-[45deg]"
+                                                                className="infostand-buildtools-move-button rotate-[45deg]"
                                                                 onClick={() => sendUpdate(1, 0, furniLocationZ ?? 0, 0)}
                                                             >
                                                                 <GrFormNextLink size="1.7em" />
@@ -776,13 +776,13 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                     </Text>
                                                     <div className="flex justify-center gap-[0.6em]">
                                                         <div
-                                                            className="bg-[#D1A245] text-black w-[28px] h-[28px] border-2 border-[#eee] cursor-pointer rounded-full flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                            className="infostand-buildtools-rotate-button"
                                                             onClick={() => sendUpdate(0, 0, furniLocationZ ?? 0, -1)}
                                                         >
                                                             <GrRotateLeft size="1.4em" />
                                                         </div>
                                                         <div
-                                                            className="bg-[#D1A245] text-black w-[28px] h-[28px] border-2 border-[#eee] cursor-pointer rounded-full flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                            className="infostand-buildtools-rotate-button"
                                                             onClick={() => sendUpdate(0, 0, furniLocationZ ?? 0, 1)}
                                                         >
                                                             <GrRotateRight size="1.4em" />
@@ -808,7 +808,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                     <div className="flex justify-center gap-1">
                                                         <div className="flex flex-col items-center gap-[2px]">
                                                             <div
-                                                                className="bg-[#247FD1] text-white w-[24px] h-[24px] border border-white cursor-pointer rounded-[3px] leading-none flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                                className="infostand-buildtools-height-button is-up"
                                                                 onClick={() => adjustHeight(1)}
                                                             >
                                                                 ↑
@@ -817,7 +817,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                                 █
                                                             </Text>
                                                             <div
-                                                                className="bg-[#44A750] text-white w-[24px] h-[24px] border border-white cursor-pointer rounded-[3px] leading-none flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                                className="infostand-buildtools-height-button is-down"
                                                                 onClick={() => adjustHeight(-1)}
                                                             >
                                                                 ↓
@@ -825,7 +825,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                         </div>
                                                         <div className="flex flex-col items-center gap-[2px]">
                                                             <div
-                                                                className="bg-[#247FD1] text-white w-[24px] h-[24px] border border-white cursor-pointer rounded-[3px] leading-none flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                                className="infostand-buildtools-height-button is-up"
                                                                 onClick={() => adjustHeight(0.1)}
                                                             >
                                                                 ↑
@@ -834,7 +834,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                                 ▄
                                                             </Text>
                                                             <div
-                                                                className="bg-[#44A750] text-white w-[24px] h-[24px] border border-white cursor-pointer rounded-[3px] leading-none flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                                className="infostand-buildtools-height-button is-down"
                                                                 onClick={() => adjustHeight(-0.1)}
                                                             >
                                                                 ↓
@@ -842,7 +842,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                         </div>
                                                         <div className="flex flex-col items-center gap-[2px]">
                                                             <div
-                                                                className="bg-[#247FD1] text-white w-[24px] h-[24px] border border-white cursor-pointer rounded-[3px] leading-none flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                                className="infostand-buildtools-height-button is-up"
                                                                 onClick={() => adjustHeight(0.01)}
                                                             >
                                                                 ↑
@@ -851,7 +851,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                                                 _
                                                             </Text>
                                                             <div
-                                                                className="bg-[#44A750] text-white w-[24px] h-[24px] border border-white cursor-pointer rounded-[3px] leading-none flex justify-center items-center transition-[filter] duration-300 hover:brightness-150"
+                                                                className="infostand-buildtools-height-button is-down"
                                                                 onClick={() => adjustHeight(-0.01)}
                                                             >
                                                                 ↓
@@ -865,7 +865,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                                 )}
                                 {furniKeys.length > 0 && (
                                     <>
-                                        <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                                        <hr className="infostand-divider" />
                                         <div className="flex flex-col gap-1">
                                             {furniKeys.map((key, index) => {
                                                 return (
@@ -889,7 +889,7 @@ export const InfoStandWidgetFurniView: FC<InfoStandWidgetFurniViewProps> = (prop
                         )}
                         {customKeys.length > 0 && (
                             <>
-                                <hr className="m-0 bg-[#0003] border-0 opacity-[.5] h-px" />
+                                <hr className="infostand-divider" />
                                 <div className="flex flex-col gap-1">
                                     {customKeys.map((key, index) => {
                                         return (

@@ -26,8 +26,8 @@ export const InfoStandWidgetRentableBotView: FC<InfoStandWidgetRentableBotViewPr
 
     return (
         <div className="flex flex-col gap-1">
-            <div className="flex flex-col nitro-infostand rounded">
-                <div className="flex flex-col gap-1 overflow-visible container-fluid content-area">
+            <div className="flex flex-col infostand-shell infostand-panel is-default">
+                <div className="flex flex-col gap-1 overflow-visible infostand-content">
                     <div className="flex flex-col gap-1">
                         <Flex alignItems="center" gap={1} justifyContent="between">
                             <Text small wrap variant="white">
@@ -35,7 +35,7 @@ export const InfoStandWidgetRentableBotView: FC<InfoStandWidgetRentableBotViewPr
                             </Text>
                             <FaTimes className="cursor-pointer fa-icon" onClick={onClose} />
                         </Flex>
-                        <hr className="m-0" />
+                        <hr className="infostand-divider" />
                     </div>
                     <div className="flex flex-col gap-1">
                         <div className="flex gap-1">
@@ -49,15 +49,15 @@ export const InfoStandWidgetRentableBotView: FC<InfoStandWidgetRentableBotViewPr
                                     })}
                             </Column>
                         </div>
-                        <hr className="m-0" />
+                        <hr className="infostand-divider" />
                     </div>
                     <div className="flex flex-col gap-1">
-                        <Flex alignItems="center" className="bg-light-dark rounded py-1 px-2">
+                        <Flex alignItems="center" className="infostand-motto-row">
                             <Text fullWidth small textBreak wrap className="min-h-[18px]" variant="white">
                                 {avatarInfo.motto}
                             </Text>
                         </Flex>
-                        <hr className="m-0" />
+                        <hr className="infostand-divider" />
                     </div>
                     <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-1">
@@ -68,7 +68,7 @@ export const InfoStandWidgetRentableBotView: FC<InfoStandWidgetRentableBotViewPr
                         </div>
                         {avatarInfo.carryItem > 0 && (
                             <>
-                                <hr className="m-0" />
+                                <hr className="infostand-divider" />
                                 <Text small wrap variant="white">
                                     {LocalizeText('infostand.text.handitem', ['item'], [LocalizeText('handitem' + avatarInfo.carryItem)])}
                                 </Text>

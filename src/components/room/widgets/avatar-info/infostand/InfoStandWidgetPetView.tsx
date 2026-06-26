@@ -287,8 +287,8 @@ export const InfoStandWidgetPetView: FC<InfoStandWidgetPetViewProps> = ({ avatar
 
     return (
         <Column alignItems="end" gap={1}>
-            <Column className="nitro-infostand rounded">
-                <Column className="container-fluid content-area" gap={1} overflow="visible">
+            <Column className="infostand-shell infostand-panel is-default">
+                <Column className="infostand-content" gap={1} overflow="visible">
                     <PetHeader name={avatarInfo.name} petType={avatarInfo.petType} petBreed={avatarInfo.petBreed} onClose={onClose} />
                     {avatarInfo.petType === PetType.MONSTERPLANT ? (
                         <MonsterplantStats avatarInfo={avatarInfo} remainingGrowTime={remainingGrowTime} remainingTimeToLive={remainingTimeToLive} />

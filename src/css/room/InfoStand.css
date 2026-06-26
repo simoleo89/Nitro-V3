@@ -281,6 +281,57 @@
   font-size: 0.75rem;
 }
 
+.infostand-buildtools-move-button,
+.infostand-buildtools-rotate-button,
+.infostand-buildtools-height-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-color: #fff;
+  color: #fff;
+  cursor: pointer;
+  transition: filter 0.3s;
+}
+
+.infostand-buildtools-move-button:hover,
+.infostand-buildtools-rotate-button:hover,
+.infostand-buildtools-height-button:hover {
+  filter: brightness(1.5);
+}
+
+.infostand-buildtools-move-button {
+  width: 25px;
+  height: 25px;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  background: #e55959;
+}
+
+.infostand-buildtools-rotate-button {
+  width: 28px;
+  height: 28px;
+  border: 2px solid #eee;
+  border-radius: 999px;
+  background: #d1a245;
+  color: #000;
+}
+
+.infostand-buildtools-height-button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #fff;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.infostand-buildtools-height-button.is-up {
+  background: #247fd1;
+}
+
+.infostand-buildtools-height-button.is-down {
+  background: #44a750;
+}
+
 .infostand-config-input {
   color: #000;
 }

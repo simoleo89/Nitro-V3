@@ -14,8 +14,8 @@ export const InfoStandWidgetBotView: FC<InfoStandWidgetBotViewProps> = (props) =
     if (!avatarInfo) return null;
 
     return (
-        <Column className="nitro-infostand rounded">
-            <Column className="container-fluid content-area" gap={1} overflow="visible">
+        <Column className="infostand-shell infostand-panel is-default">
+            <Column className="infostand-content" gap={1} overflow="visible">
                 <div className="flex flex-col gap-1">
                     <Flex alignItems="center" gap={1} justifyContent="between">
                         <Text small wrap variant="white">
@@ -23,7 +23,7 @@ export const InfoStandWidgetBotView: FC<InfoStandWidgetBotViewProps> = (props) =
                         </Text>
                         <FaTimes className="cursor-pointer fa-icon" onClick={onClose} />
                     </Flex>
-                    <hr className="m-0" />
+                    <hr className="infostand-divider" />
                 </div>
                 <div className="flex flex-col gap-1">
                     <div className="flex gap-1">
@@ -37,16 +37,16 @@ export const InfoStandWidgetBotView: FC<InfoStandWidgetBotViewProps> = (props) =
                                 })}
                         </Column>
                     </div>
-                    <hr className="m-0" />
+                    <hr className="infostand-divider" />
                 </div>
-                <Flex alignItems="center" className="bg-light-dark rounded py-1 px-2">
+                <Flex alignItems="center" className="infostand-motto-row">
                     <Text fullWidth small textBreak wrap className="min-h-[18px]" variant="white">
                         {avatarInfo.motto}
                     </Text>
                 </Flex>
                 {avatarInfo.carryItem > 0 && (
                     <div className="flex flex-col gap-1">
-                        <hr className="m-0" />
+                        <hr className="infostand-divider" />
                         <Text small wrap variant="white">
                             {LocalizeText('infostand.text.handitem', ['item'], [LocalizeText('handitem' + avatarInfo.carryItem)])}
                         </Text>

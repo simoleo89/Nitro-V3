@@ -87,6 +87,9 @@ describe('UI CSS ownership', () => {
         const youtubePlayerView = readSource('src/components/toolbar/YouTubePlayerView.tsx');
         const infoStandUserView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetUserView.tsx');
         const infoStandFurniView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetFurniView.tsx');
+        const infoStandBotView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetBotView.tsx');
+        const infoStandRentableBotView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetRentableBotView.tsx');
+        const infoStandPetView = readSource('src/components/room/widgets/avatar-info/infostand/InfoStandWidgetPetView.tsx');
         const infoStandCss = readSource('src/css/room/InfoStand.css');
 
         expect(groupCreatorView).not.toContain('border border-[solid] border-[#283F5D]');
@@ -199,8 +202,18 @@ describe('UI CSS ownership', () => {
         expect(infoStandFurniView).toContain('infostand-admin-button');
         expect(infoStandFurniView).not.toContain('bg-[rgba(28,28,32,.95)]');
         expect(infoStandFurniView).not.toContain("style={{ color: '#000' }}");
+        expect(infoStandFurniView).not.toContain('bg-[#E55959]');
+        expect(infoStandFurniView).not.toContain('bg-[#247FD1]');
+        expect(infoStandBotView).toContain('infostand-shell');
+        expect(infoStandBotView).not.toContain('nitro-infostand rounded');
+        expect(infoStandRentableBotView).toContain('infostand-shell');
+        expect(infoStandRentableBotView).not.toContain('container-fluid content-area');
+        expect(infoStandPetView).toContain('infostand-shell');
+        expect(infoStandPetView).not.toContain('nitro-infostand rounded');
         expect(infoStandCss).toContain('.infostand-panel.is-default');
         expect(infoStandCss).toContain('.infostand-buildtools-panel');
+        expect(infoStandCss).toContain('.infostand-buildtools-move-button');
+        expect(infoStandCss).toContain('.infostand-buildtools-height-button.is-down');
         expect(infoStandCss).toContain('.infostand-admin-button.is-primary');
     });
 });

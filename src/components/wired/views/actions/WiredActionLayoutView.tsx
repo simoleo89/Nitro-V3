@@ -88,6 +88,10 @@ import { WiredActionPlayYoutubeView } from './WiredActionPlayYoutubeView';
 import { WiredActionQuickBopperView } from './WiredActionQuickBopperView';
 import { WiredActionSetRoomAdView } from './WiredActionSetRoomAdView';
 import { WiredActionUnfreezeView } from './WiredActionUnfreezeView';
+import { WiredActionMoveFurniAsGroupView } from './WiredActionMoveFurniAsGroupView';
+import { WiredSelectorRemoteView } from '../selectors/WiredSelectorRemoteView';
+import { WiredExtraMovementCurveView } from '../extras/WiredExtraMovementCurveView';
+import { WiredExtraTimeUtilitiesView } from '../extras/WiredExtraTimeUtilitiesView';
 
 export const WiredActionLayoutView = (code: number) => {
     switch (code) {
@@ -275,6 +279,14 @@ export const WiredActionLayoutView = (code: number) => {
             return <WiredActionQuickBopperView />;
         case WiredActionLayoutCode.SET_ROOM_AD:
             return <WiredActionSetRoomAdView />;
+        case WiredActionLayoutCode.MOVE_FURNI_AS_GROUP:
+            return <WiredActionMoveFurniAsGroupView />;
+        case WiredActionLayoutCode.REMOTE_SELECTOR:
+            return <WiredSelectorRemoteView />;
+        case WiredActionLayoutCode.MOVEMENT_CURVE_EXTRA:
+            return <WiredExtraMovementCurveView />;
+        case WiredActionLayoutCode.TIME_UTILITIES_EXTRA:
+            return <WiredExtraTimeUtilitiesView />;
     }
 
     return null;

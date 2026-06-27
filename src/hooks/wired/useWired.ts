@@ -73,7 +73,6 @@ const useWiredState = () => {
         if (!trigger || !allowsFurni) return;
 
         if (objectId <= 0) return;
-        if (category !== RoomObjectCategory.FLOOR && category !== RoomObjectCategory.WALL) return;
 
         const getInteractionTypeName = (furniData: any): string => {
             if (!furniData) return null;
@@ -206,15 +205,14 @@ const useWiredState = () => {
             return;
         }
 
-        if (allowedInteractionTypes && allowedInteractionTypes.length) {
+        if (category === RoomObjectCategory.FLOOR && allowedInteractionTypes && allowedInteractionTypes.length) {
             const roomId = GetRoomSession().roomId;
-            const clickedObject = GetRoomEngine().getRoomObject(roomId, objectId, category);
+            const clickedObject = GetRoomEngine().getRoomObject(roomId, objectId, RoomObjectCategory.FLOOR);
 
             if (!clickedObject) return;
 
             const typeId = clickedObject.model.getValue<number>(RoomObjectVariable.FURNITURE_TYPE_ID);
-            const sourceFurniData =
-                category === RoomObjectCategory.WALL ? GetSessionDataManager().getWallItemData(typeId) : GetSessionDataManager().getFloorItemData(typeId);
+            const sourceFurniData = GetSessionDataManager().getFloorItemData(typeId);
 
             if (!sourceFurniData) return;
             if (!isAllowedInteraction(sourceFurniData)) {
@@ -224,7 +222,7 @@ const useWiredState = () => {
 
                     const remaining = prevValue.filter((id) => id !== objectId);
 
-                    WiredSelectionVisualizer.hide(objectId, category);
+                    WiredSelectionVisualizer.hide(objectId);
 
                     return remaining;
                 });
@@ -241,11 +239,11 @@ const useWiredState = () => {
             if (index >= 0) {
                 newFurniIds.splice(index, 1);
 
-                WiredSelectionVisualizer.hide(objectId, category);
+                WiredSelectionVisualizer.hide(objectId);
             } else if (newFurniIds.length < trigger.maximumItemSelectionCount) {
                 newFurniIds.push(objectId);
 
-                WiredSelectionVisualizer.show(objectId, category);
+                WiredSelectionVisualizer.show(objectId);
             }
 
             return newFurniIds;

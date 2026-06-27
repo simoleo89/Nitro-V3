@@ -14,50 +14,46 @@ export class WiredSelectionVisualizer {
         color: [0.2, 0.7, 1]
     });
 
-    public static show(furniId: number, category: number = RoomObjectCategory.FLOOR): void {
-        WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId, category), WiredSelectionVisualizer._selectionShader);
+    public static show(furniId: number): void {
+        WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId), WiredSelectionVisualizer._selectionShader);
     }
 
-    public static hide(furniId: number, category: number = RoomObjectCategory.FLOOR): void {
-        const roomObject = WiredSelectionVisualizer.getRoomObject(furniId, category);
+    public static hide(furniId: number): void {
+        const roomObject = WiredSelectionVisualizer.getRoomObject(furniId);
 
         WiredSelectionVisualizer.clearSelectionShader(roomObject, WiredSelectionVisualizer._selectionShader);
         WiredSelectionVisualizer.clearSelectionShader(roomObject, WiredSelectionVisualizer._secondarySelectionShader);
     }
 
-    public static showSecondary(furniId: number, category: number = RoomObjectCategory.FLOOR): void {
-        WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId, category), WiredSelectionVisualizer._secondarySelectionShader);
+    public static showSecondary(furniId: number): void {
+        WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId), WiredSelectionVisualizer._secondarySelectionShader);
     }
 
-    public static hideSecondary(furniId: number, category: number = RoomObjectCategory.FLOOR): void {
-        WiredSelectionVisualizer.clearSelectionShader(WiredSelectionVisualizer.getRoomObject(furniId, category), WiredSelectionVisualizer._secondarySelectionShader);
+    public static hideSecondary(furniId: number): void {
+        WiredSelectionVisualizer.clearSelectionShader(WiredSelectionVisualizer.getRoomObject(furniId), WiredSelectionVisualizer._secondarySelectionShader);
     }
 
     public static clearSelectionShaderFromFurni(furniIds: number[]): void {
         for (const furniId of furniIds) {
             WiredSelectionVisualizer.clearSelectionShader(WiredSelectionVisualizer.getRoomObject(furniId), WiredSelectionVisualizer._selectionShader);
-            WiredSelectionVisualizer.clearSelectionShader(WiredSelectionVisualizer.getRoomObject(furniId, RoomObjectCategory.WALL), WiredSelectionVisualizer._selectionShader);
         }
     }
 
     public static applySelectionShaderToFurni(furniIds: number[]): void {
         for (const furniId of furniIds) {
             WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId), WiredSelectionVisualizer._selectionShader);
-            WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId, RoomObjectCategory.WALL), WiredSelectionVisualizer._selectionShader);
         }
     }
 
     public static clearSecondarySelectionShaderFromFurni(furniIds: number[]): void {
         for (const furniId of furniIds) {
             WiredSelectionVisualizer.clearSelectionShader(WiredSelectionVisualizer.getRoomObject(furniId), WiredSelectionVisualizer._secondarySelectionShader);
-            WiredSelectionVisualizer.clearSelectionShader(WiredSelectionVisualizer.getRoomObject(furniId, RoomObjectCategory.WALL), WiredSelectionVisualizer._secondarySelectionShader);
         }
     }
 
     public static applySecondarySelectionShaderToFurni(furniIds: number[]): void {
         for (const furniId of furniIds) {
             WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId), WiredSelectionVisualizer._secondarySelectionShader);
-            WiredSelectionVisualizer.applySelectionShader(WiredSelectionVisualizer.getRoomObject(furniId, RoomObjectCategory.WALL), WiredSelectionVisualizer._secondarySelectionShader);
         }
     }
 
@@ -98,10 +94,10 @@ export class WiredSelectionVisualizer {
         }
     }
 
-    private static getRoomObject(objectId: number, category: number = RoomObjectCategory.FLOOR): IRoomObject {
+    private static getRoomObject(objectId: number): IRoomObject {
         const roomEngine = GetRoomEngine();
 
-        return roomEngine.getRoomObject(roomEngine.activeRoomId, objectId, category);
+        return roomEngine.getRoomObject(roomEngine.activeRoomId, objectId, RoomObjectCategory.FLOOR);
     }
 
     private static getRoomObjectByCategory(objectId: number, category: number): IRoomObject {

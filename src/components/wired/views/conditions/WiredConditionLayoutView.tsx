@@ -3,6 +3,7 @@ import { WiredConditionActorHasHandItemView } from './WiredConditionActorHasHand
 import { WiredConditionNoBattleBanzaiView } from './WiredConditionNoBattleBanzaiView';
 import { WiredConditionUserOnFurniWithStateView } from './WiredConditionUserOnFurniWithStateView';
 import { WiredConditionTriggerFurniAdjacentStateView } from './WiredConditionTriggerFurniAdjacentStateView';
+import { WiredConditionChestHasItemsView } from './WiredConditionChestHasItemsView';
 import { WiredConditionActorDirView } from './WiredConditionActorDirView';
 import { WiredConditionActorIsGroupMemberView } from './WiredConditionActorIsGroupMemberView';
 import { WiredConditionActorIsOnFurniView } from './WiredConditionActorIsOnFurniView';
@@ -123,6 +124,8 @@ export const WiredConditionLayoutView = (code: number) => {
             return <WiredConditionUserOnFurniWithStateView />;
         case WiredConditionlayout.TRG_FURNI_ADJACENT_STATE:
             return <WiredConditionTriggerFurniAdjacentStateView />;
+        case WiredConditionlayout.CHEST_HAS_ITEMS:
+            return <WiredConditionChestHasItemsView />;
     }
 
     return null;

@@ -46,4 +46,5 @@ export class WiredConditionlayout {
     public static NO_BATTLEBANZAI: number = 44;
     public static USER_ON_FURNI_WITH_STATE: number = 45;
     public static TRG_FURNI_ADJACENT_STATE: number = 46;
+    public static CHEST_HAS_ITEMS: number = 47;
 }

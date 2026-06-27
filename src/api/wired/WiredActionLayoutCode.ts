@@ -92,4 +92,8 @@ export class WiredActionLayoutCode {
     public static PLAY_YOUTUBE: number = 92;
     public static QUICK_BOPPER: number = 93;
     public static SET_ROOM_AD: number = 94;
+    public static MOVE_FURNI_AS_GROUP: number = 95;
+    public static REMOTE_SELECTOR: number = 96;
+    public static MOVEMENT_CURVE_EXTRA: number = 97;
+    public static TIME_UTILITIES_EXTRA: number = 98;
 }

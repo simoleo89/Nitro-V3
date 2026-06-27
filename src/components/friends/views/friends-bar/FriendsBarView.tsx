@@ -4,6 +4,11 @@ import { LocalizeText, MessengerFriend } from '../../../../api';
 import { FriendBarItemView } from './FriendBarItemView';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 
+const localizeWithFallback = (key: string, fallback: string) => {
+    const text = LocalizeText(key);
+    return text && text !== key ? text : fallback;
+};
+
 // Hard cap on simultaneously-shown friend chips. The effective count is
 // reduced below this when the bar would otherwise overflow its (clipped)
 // slot in the toolbar — see the width measurement below.
@@ -148,7 +153,7 @@ export const FriendBarView: FC<{ onlineFriends: MessengerFriend[]; requestsCount
                         exit="exit"
                     >
                         <div className="flex h-[34px] items-center rounded-[7px] border border-[#9fc56f] bg-[#5f7d2f] px-[10px] text-[0.83rem] font-medium whitespace-nowrap text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_2px_0_rgba(0,0,0,0.25)]">
-                            Nessun amico online
+                            {localizeWithFallback('friendbar.empty.online', 'No friends online')}
                         </div>
                     </motion.div>
                 )}

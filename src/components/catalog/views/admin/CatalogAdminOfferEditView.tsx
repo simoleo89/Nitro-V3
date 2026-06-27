@@ -5,6 +5,11 @@ import { LocalizeText } from '../../../../api';
 import { useCatalogData } from '../../../../hooks';
 import { IOfferEditData, useCatalogAdmin } from '../../CatalogAdminContext';
 
+const localizeWithFallback = (key: string, fallback: string) => {
+    const text = LocalizeText(key);
+    return text && text !== key ? text : fallback;
+};
+
 export const CatalogAdminOfferEditView: FC = () => {
     const { currentPage = null } = useCatalogData();
     const catalogAdmin = useCatalogAdmin();
@@ -149,7 +154,7 @@ export const CatalogAdminOfferEditView: FC = () => {
                         </label>
                         <input
                             className={inputClass}
-                            placeholder="es. rare_dragon_lamp"
+                            placeholder={localizeWithFallback('catalog.admin.offer.name.placeholder', 'e.g. rare_dragon_lamp')}
                             type="text"
                             value={catalogName}
                             onChange={(e) => setCatalogName(e.target.value)}
@@ -163,10 +168,12 @@ export const CatalogAdminOfferEditView: FC = () => {
                         </div>
                         <div className="grid grid-cols-3 gap-1.5">
                             <div className="flex flex-col gap-0.5">
-                                <label className="text-[9px] text-muted">Item IDs</label>
+                                <label className="text-[9px] text-muted">
+                                    {localizeWithFallback('catalog.admin.offer.item.ids', 'Item IDs')}
+                                </label>
                                 <input
                                     className={inputClass}
-                                    placeholder="1234 or 100;200"
+                                    placeholder={localizeWithFallback('catalog.admin.offer.item.ids.placeholder', '1234 or 100;200')}
                                     type="text"
                                     value={itemIds}
                                     onChange={(e) => setItemIds(e.target.value)}
@@ -236,9 +243,9 @@ export const CatalogAdminOfferEditView: FC = () => {
                                     value={pointsType}
                                     onChange={(e) => setPointsType(parseInt(e.target.value))}
                                 >
-                                    <option value={0}>Duckets</option>
-                                    <option value={5}>Diamonds</option>
-                                    <option value={101}>Seasonal</option>
+                                    <option value={0}>{localizeWithFallback('catalog.admin.currency.duckets', 'Duckets')}</option>
+                                    <option value={5}>{localizeWithFallback('catalog.admin.currency.diamonds', 'Diamonds')}</option>
+                                    <option value={101}>{localizeWithFallback('catalog.admin.currency.seasonal', 'Seasonal')}</option>
                                 </select>
                             </div>
                         </div>
@@ -259,12 +266,14 @@ export const CatalogAdminOfferEditView: FC = () => {
                                     value={clubOnly}
                                     onChange={(e) => setClubOnly(e.target.value)}
                                 >
-                                    <option value="0">No</option>
-                                    <option value="1">Si</option>
+                                    <option value="0">{localizeWithFallback('generic.no', 'No')}</option>
+                                    <option value="1">{localizeWithFallback('generic.yes', 'Yes')}</option>
                                 </select>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <label className="text-[9px] text-muted">Limited Stack</label>
+                                <label className="text-[9px] text-muted">
+                                    {localizeWithFallback('catalog.admin.offer.limited.stack', 'Limited Stack')}
+                                </label>
                                 <input
                                     className={inputClass}
                                     min={0}
@@ -274,7 +283,9 @@ export const CatalogAdminOfferEditView: FC = () => {
                                 />
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <label className="text-[9px] text-muted">Offer ID</label>
+                                <label className="text-[9px] text-muted">
+                                    {localizeWithFallback('catalog.admin.offer.id', 'Offer ID')}
+                                </label>
                                 <input
                                     className={inputClass}
                                     type="number"

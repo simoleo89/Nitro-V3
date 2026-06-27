@@ -60,7 +60,11 @@ export const RoomFilterWordsWidgetView: FC = (props) => {
     if (!isVisible) return null;
 
     return (
-        <NitroCardView className="nitro-guide-tool no-resize" theme="primary-slim">
+        <NitroCardView
+            isResizable={false}
+            className="nitro-guide-tool nitro-room-filter-words min-w-0 w-[min(340px,calc(100vw-16px))] max-w-[calc(100vw-16px)] max-h-[calc(100vh-16px)]"
+            theme="primary-slim"
+        >
             <NitroCardHeaderView
                 headerText={LocalizeText('navigator.roomsettings.roomfilter')}
                 onCloseClick={() => onClose()}
@@ -78,7 +82,7 @@ export const RoomFilterWordsWidgetView: FC = (props) => {
                     </Button>
                 </Grid>
                 <Column
-                    className="min-h-[calc(1.5em+ .5rem+2px)] px-[.5rem] py-[.25rem]  rounded-[.2rem] form-control-sm"
+                    className="min-h-[calc(1.5em+ .5rem+2px)] px-[.5rem] py-[.25rem] rounded-[.2rem] form-control-sm"
                     gap={0}
                     overflow="auto"
                     style={{ height: '100px' }}

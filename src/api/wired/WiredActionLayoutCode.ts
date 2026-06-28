@@ -100,4 +100,7 @@ export class WiredActionLayoutCode {
     public static CURRENCY_CHEST: number = 100;
     public static FURNI_CHEST: number = 101;
     public static GIVE_FURNI_FROM_CHEST: number = 102;
+    public static SCAN_CHEST_FURNI_BY_TYPE: number = 103;
+    public static INIT_TRANSACTION: number = 104;
+    public static CANCEL_TRANSACTION: number = 105;
 }

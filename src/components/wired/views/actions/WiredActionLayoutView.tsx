@@ -96,6 +96,9 @@ import { WiredActionGiveCurrencyFromChestView } from './WiredActionGiveCurrencyF
 import { WiredChestCurrencyView } from '../extras/WiredChestCurrencyView';
 import { WiredActionGiveFurniFromChestView } from './WiredActionGiveFurniFromChestView';
 import { WiredChestFurniView } from '../extras/WiredChestFurniView';
+import { WiredSelectorScanChestFurniByType } from '../selectors/WiredSelectorScanChestFurniByType';
+import { WiredActionInitTransactionView } from './WiredActionInitTransactionView';
+import { WiredActionCancelTransactionView } from './WiredActionCancelTransactionView';
 
 export const WiredActionLayoutView = (code: number) => {
     switch (code) {
@@ -299,6 +302,12 @@ export const WiredActionLayoutView = (code: number) => {
             return <WiredActionGiveFurniFromChestView />;
         case WiredActionLayoutCode.FURNI_CHEST:
             return <WiredChestFurniView />;
+        case WiredActionLayoutCode.SCAN_CHEST_FURNI_BY_TYPE:
+            return <WiredSelectorScanChestFurniByType />;
+        case WiredActionLayoutCode.INIT_TRANSACTION:
+            return <WiredActionInitTransactionView />;
+        case WiredActionLayoutCode.CANCEL_TRANSACTION:
+            return <WiredActionCancelTransactionView />;
     }
 
     return null;

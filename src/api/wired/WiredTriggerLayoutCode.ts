@@ -25,4 +25,6 @@ export class WiredTriggerLayout {
     public static USER_GETS_HANDITEM: number = 25;
     public static DICE_ROLLED: number = 24;
     public static PRESS_KEYBIND: number = 26;
+    public static TRANSACTION_COMPLETE: number = 27;
+    public static TRANSACTION_FAIL: number = 28;
 }

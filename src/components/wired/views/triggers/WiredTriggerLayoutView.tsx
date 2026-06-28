@@ -25,6 +25,8 @@ import { WiredTriggerGameStartsView } from './WiredTriggerGameStartsView';
 import { WiredTriggeScoreAchievedView } from './WiredTriggerScoreAchievedView';
 import { WiredTriggerReceiveSignalView } from './WiredTriggerReceiveSignalView';
 import { WiredTriggerToggleFurniView } from './WiredTriggerToggleFurniView';
+import { WiredTriggerTransactionCompleteView } from './WiredTriggerTransactionCompleteView';
+import { WiredTriggerTransactionFailView } from './WiredTriggerTransactionFailView';
 
 export const WiredTriggerLayoutView = (code: number) => {
     switch (code) {
@@ -80,6 +82,10 @@ export const WiredTriggerLayoutView = (code: number) => {
             return <WiredTriggerDiceRolledView />;
         case WiredTriggerLayout.PRESS_KEYBIND:
             return <WiredTriggerPressKeybindView />;
+        case WiredTriggerLayout.TRANSACTION_COMPLETE:
+            return <WiredTriggerTransactionCompleteView />;
+        case WiredTriggerLayout.TRANSACTION_FAIL:
+            return <WiredTriggerTransactionFailView />;
     }
 
     return null;

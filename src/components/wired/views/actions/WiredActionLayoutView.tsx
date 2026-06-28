@@ -94,6 +94,8 @@ import { WiredExtraMovementCurveView } from '../extras/WiredExtraMovementCurveVi
 import { WiredExtraTimeUtilitiesView } from '../extras/WiredExtraTimeUtilitiesView';
 import { WiredActionGiveCurrencyFromChestView } from './WiredActionGiveCurrencyFromChestView';
 import { WiredChestCurrencyView } from '../extras/WiredChestCurrencyView';
+import { WiredActionGiveFurniFromChestView } from './WiredActionGiveFurniFromChestView';
+import { WiredChestFurniView } from '../extras/WiredChestFurniView';
 
 export const WiredActionLayoutView = (code: number) => {
     switch (code) {
@@ -293,6 +295,10 @@ export const WiredActionLayoutView = (code: number) => {
             return <WiredActionGiveCurrencyFromChestView />;
         case WiredActionLayoutCode.CURRENCY_CHEST:
             return <WiredChestCurrencyView />;
+        case WiredActionLayoutCode.GIVE_FURNI_FROM_CHEST:
+            return <WiredActionGiveFurniFromChestView />;
+        case WiredActionLayoutCode.FURNI_CHEST:
+            return <WiredChestFurniView />;
     }
 
     return null;

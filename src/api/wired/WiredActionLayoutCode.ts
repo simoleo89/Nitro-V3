@@ -98,4 +98,6 @@ export class WiredActionLayoutCode {
     public static TIME_UTILITIES_EXTRA: number = 98;
     public static GIVE_CURRENCY_FROM_CHEST: number = 99;
     public static CURRENCY_CHEST: number = 100;
+    public static FURNI_CHEST: number = 101;
+    public static GIVE_FURNI_FROM_CHEST: number = 102;
 }

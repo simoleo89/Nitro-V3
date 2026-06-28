@@ -176,7 +176,14 @@ export const PurseView: FC<{}> = (props) => {
                     >
                         Impostazioni Audio
                     </button>
-                    <button type="button" className="nitro-purse-menu__item nitro-purse-menu__item--disabled" disabled>
+                    <button
+                        type="button"
+                        className="nitro-purse-menu__item"
+                        onClick={() => {
+                            CreateLinkEvent('discord-settings/show');
+                            setSettingsMenuOpen(false);
+                        }}
+                    >
                         Impostazioni Discord
                     </button>
                     <button

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { LocalizeText, WiredFurniType } from '../../../../api';
+import { LocalizeText, localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
@@ -44,7 +44,7 @@ export const WiredActionGiveOrTakeFurniView: FC<{}> = props =>
                     onChange={ event => setBaseItemId(parseInt(event.target.value, 10) || 0) } />
             </div>
             <div className="flex flex-col gap-1">
-                <Text bold>{ LocalizeText('wiredfurni.params.count', [ 'count' ], [ quantity.toString() ]) }</Text>
+                <Text bold>{ localizeWithFallback('wiredfurni.params.count', 'Quantity', [ 'count' ], [ quantity.toString() ]) }</Text>
                 <input
                     className="form-control form-control-sm"
                     type="number"
@@ -61,7 +61,7 @@ export const WiredActionGiveOrTakeFurniView: FC<{}> = props =>
                         name="giveOrTake"
                         checked={ giveOrTake === MODE_GIVE }
                         onChange={ () => setGiveOrTake(MODE_GIVE) } />
-                    <Text>{ LocalizeText('wiredfurni.params.give') }</Text>
+                    <Text>{ localizeWithFallback('wiredfurni.params.give', 'Give') }</Text>
                 </div>
                 <div className="flex items-center gap-1">
                     <input
@@ -70,7 +70,7 @@ export const WiredActionGiveOrTakeFurniView: FC<{}> = props =>
                         name="giveOrTake"
                         checked={ giveOrTake === MODE_TAKE }
                         onChange={ () => setGiveOrTake(MODE_TAKE) } />
-                    <Text>{ LocalizeText('wiredfurni.params.take') }</Text>
+                    <Text>{ localizeWithFallback('wiredfurni.params.take', 'Take') }</Text>
                 </div>
             </div>
         </WiredActionBaseView>

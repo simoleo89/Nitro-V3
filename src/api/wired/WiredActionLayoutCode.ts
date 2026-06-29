@@ -103,4 +103,12 @@ export class WiredActionLayoutCode {
     public static SCAN_CHEST_FURNI_BY_TYPE: number = 103;
     public static INIT_TRANSACTION: number = 104;
     public static CANCEL_TRANSACTION: number = 105;
+    public static PLACE_FURNI: number = 106;
+    public static REMOVE_FURNI: number = 107;
+    public static QUEST_EXTRA: number = 108;
+    public static QUEST_CHAIN_EXTRA: number = 109;
+    public static CONTRACT_PAYMENT: number = 110;
+    public static CONTRACT_REWARD: number = 111;
+    public static CONTRACT_TRADE: number = 112;
+    public static CUSTOM_CONTRACT: number = 113;
 }

@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
+import { LocalizeText, localizeWithFallback, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredFurniSelectionSourceRow } from '../WiredFurniSelectionSourceRow';
@@ -190,7 +190,7 @@ export const WiredActionSendSignalView: FC = () => {
             selectionPreview={
                 <div className="flex flex-col gap-2">
                     <WiredFurniSelectionSourceRow
-                        title="Antenne:"
+                        title={localizeWithFallback('wiredfurni.params.sources.furni.title.signal_antenna', 'Antenne:')}
                         titleIsLiteral={true}
                         options={[{ value: SOURCE_SELECTED, label: 'wiredfurni.params.sources.furni.100' }]}
                         value={SOURCE_SELECTED}
@@ -203,7 +203,7 @@ export const WiredActionSendSignalView: FC = () => {
                         onSelectionActivate={() => switchSelection('antenna')}
                     />
                     <WiredFurniSelectionSourceRow
-                        title="Furni da mandare avanti:"
+                        title={localizeWithFallback('wiredfurni.params.sources.furni.title.signal_forward', 'Furni da mandare avanti:')}
                         titleIsLiteral={true}
                         options={FURNI_SOURCES}
                         value={furniSource}
@@ -216,7 +216,7 @@ export const WiredActionSendSignalView: FC = () => {
                         onSelectionActivate={() => switchSelection('furni')}
                     />
                     <WiredFurniSelectionSourceRow
-                        title="Utenti da mandare avanti:"
+                        title={localizeWithFallback('wiredfurni.params.sources.users.title.signal_forward', 'Utenti da mandare avanti:')}
                         titleIsLiteral={true}
                         options={USER_SOURCES}
                         value={userSource}
@@ -232,7 +232,7 @@ export const WiredActionSendSignalView: FC = () => {
             }
         >
             <div className="flex flex-col gap-3">
-                <Text bold>{LocalizeText('wiredfurni.params.signal.options')}</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.params.signal.send_options', LocalizeText('wiredfurni.params.signal.options'))}</Text>
                 <div className="form-check">
                     <input
                         type="checkbox"

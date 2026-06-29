@@ -3,6 +3,7 @@ import { WidgetErrorBoundary } from '../../../../common';
 import { FurnitureBackgroundColorView } from './FurnitureBackgroundColorView';
 import { FurnitureAreaHideView } from './FurnitureAreaHideView';
 import { FurnitureBadgeDisplayView } from './FurnitureBadgeDisplayView';
+import { FurnitureChestView } from './FurnitureChestView';
 import { FurnitureCraftingView } from './FurnitureCraftingView';
 import { FurnitureDimmerView } from './FurnitureDimmerView';
 import { FurnitureExchangeCreditView } from './FurnitureExchangeCreditView';
@@ -32,6 +33,9 @@ export const FurnitureWidgetsView: FC = (props) => {
             </WidgetErrorBoundary>
             <WidgetErrorBoundary name="FurnitureBadgeDisplay">
                 <FurnitureBadgeDisplayView />
+            </WidgetErrorBoundary>
+            <WidgetErrorBoundary name="FurnitureChest">
+                <FurnitureChestView />
             </WidgetErrorBoundary>
             <WidgetErrorBoundary name="FurnitureCrafting">
                 <FurnitureCraftingView />

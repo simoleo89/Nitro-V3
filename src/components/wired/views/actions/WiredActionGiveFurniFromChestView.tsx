@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { WiredFurniType } from '../../../../api';
+import { localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
@@ -23,7 +23,7 @@ export const WiredActionGiveFurniFromChestView: FC<{}> = () => {
         <WiredActionBaseView hasSpecialInput={true} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_BY_ID} save={save}>
             <div className="flex flex-col gap-2">
                 <Text bold>Pick the furni chest above, then how many to give per trigger:</Text>
-                <Text bold>Amount</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.params.amount_to_give', 'Amount')}</Text>
                 <input
                     type="number"
                     min={1}

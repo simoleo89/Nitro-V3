@@ -9,8 +9,12 @@ export const WiredActionInitTransactionView: FC<{}> = () => {
     const save = () => setIntParams([]);
 
     return (
-        <WiredActionBaseView hasSpecialInput={false} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_NONE} save={save}>
-            <Text small>Fires the "Transaction Completed" triggers (success branch). No settings.</Text>
+        <WiredActionBaseView hasSpecialInput={true} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_BY_ID} save={save}>
+            <Text small>
+                Pick the Contract furni above to execute. Their terms are checked and applied atomically:
+                on success the "Transaction Completed" triggers fire, otherwise "Transaction Failed".
+                With no contract selected it simply fires "Transaction Completed".
+            </Text>
         </WiredActionBaseView>
     );
 };

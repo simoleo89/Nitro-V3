@@ -99,6 +99,14 @@ import { WiredChestFurniView } from '../extras/WiredChestFurniView';
 import { WiredSelectorScanChestFurniByType } from '../selectors/WiredSelectorScanChestFurniByType';
 import { WiredActionInitTransactionView } from './WiredActionInitTransactionView';
 import { WiredActionCancelTransactionView } from './WiredActionCancelTransactionView';
+import { WiredActionPlaceFurniView } from './WiredActionPlaceFurniView';
+import { WiredActionRemoveFurniView } from './WiredActionRemoveFurniView';
+import { WiredExtraQuestView } from '../extras/WiredExtraQuestView';
+import { WiredExtraQuestChainView } from '../extras/WiredExtraQuestChainView';
+import { WiredContractPaymentView } from '../extras/WiredContractPaymentView';
+import { WiredContractRewardView } from '../extras/WiredContractRewardView';
+import { WiredContractTradeView } from '../extras/WiredContractTradeView';
+import { WiredCustomContractView } from '../extras/WiredCustomContractView';
 
 export const WiredActionLayoutView = (code: number) => {
     switch (code) {
@@ -308,6 +316,22 @@ export const WiredActionLayoutView = (code: number) => {
             return <WiredActionInitTransactionView />;
         case WiredActionLayoutCode.CANCEL_TRANSACTION:
             return <WiredActionCancelTransactionView />;
+        case WiredActionLayoutCode.PLACE_FURNI:
+            return <WiredActionPlaceFurniView />;
+        case WiredActionLayoutCode.REMOVE_FURNI:
+            return <WiredActionRemoveFurniView />;
+        case WiredActionLayoutCode.QUEST_EXTRA:
+            return <WiredExtraQuestView />;
+        case WiredActionLayoutCode.QUEST_CHAIN_EXTRA:
+            return <WiredExtraQuestChainView />;
+        case WiredActionLayoutCode.CONTRACT_PAYMENT:
+            return <WiredContractPaymentView />;
+        case WiredActionLayoutCode.CONTRACT_REWARD:
+            return <WiredContractRewardView />;
+        case WiredActionLayoutCode.CONTRACT_TRADE:
+            return <WiredContractTradeView />;
+        case WiredActionLayoutCode.CUSTOM_CONTRACT:
+            return <WiredCustomContractView />;
     }
 
     return null;

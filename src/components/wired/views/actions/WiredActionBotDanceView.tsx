@@ -1,16 +1,16 @@
 import { FC, useEffect, useState } from 'react';
-import { WiredFurniType } from '../../../../api';
+import { localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
 const DANCE_TYPES = [
-    { value: 0, label: 'Stop dancing' },
-    { value: 1, label: 'Hap Hop' },
-    { value: 2, label: 'Pogo Mogo' },
-    { value: 3, label: 'Duck Funk' },
-    { value: 4, label: 'The Rollie' }
+    { value: 0, key: null, label: 'Stop dancing' },
+    { value: 1, key: 'wiredfurni.params.action.dance.1', label: 'Hap Hop' },
+    { value: 2, key: 'wiredfurni.params.action.dance.2', label: 'Pogo Mogo' },
+    { value: 3, key: 'wiredfurni.params.action.dance.3', label: 'Duck Funk' },
+    { value: 4, key: 'wiredfurni.params.action.dance.4', label: 'The Rollie' }
 ];
 
 export const WiredActionBotDanceView: FC<{}> = props =>
@@ -39,7 +39,7 @@ export const WiredActionBotDanceView: FC<{}> = props =>
             requiresFurni={ WiredFurniType.STUFF_SELECTION_OPTION_NONE }
             save={ save }>
             <div className="flex flex-col gap-1">
-                <Text bold>Bot name</Text>
+                <Text bold>{ localizeWithFallback('wiredfurni.params.bot.name', 'Bot name') }</Text>
                 <NitroInput maxLength={ 32 } type="text" value={ botName } onChange={ event => setBotName(event.target.value) } />
             </div>
             <div className="flex flex-col gap-1">
@@ -49,7 +49,7 @@ export const WiredActionBotDanceView: FC<{}> = props =>
                     value={ danceType }
                     onChange={ event => setDanceType(parseInt(event.target.value, 10) || 0) }>
                     { DANCE_TYPES.map(option => (
-                        <option key={ option.value } value={ option.value }>{ option.label }</option>
+                        <option key={ option.value } value={ option.value }>{ option.key ? localizeWithFallback(option.key, option.label) : option.label }</option>
                     )) }
                 </select>
             </div>

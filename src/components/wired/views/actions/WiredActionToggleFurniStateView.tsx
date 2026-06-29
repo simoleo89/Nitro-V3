@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { LocalizeText, WiredFurniType } from '../../../../api';
+import { LocalizeText, localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { WiredActionBaseView } from './WiredActionBaseView';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
@@ -48,7 +48,7 @@ export const WiredActionToggleFurniStateView: FC = (props) => {
             }
         >
             <div className="flex flex-col gap-1">
-                <Text bold>{LocalizeText('wiredfurni.params.operator.2')}</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.params.toggletype_selection', LocalizeText('wiredfurni.params.operator.2'))}</Text>
                 {[0, 1].map((option) => (
                     <label key={option} className="flex items-center gap-1">
                         <input

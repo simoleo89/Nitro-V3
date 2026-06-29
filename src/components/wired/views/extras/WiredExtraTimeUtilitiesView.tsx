@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { WiredFurniType } from '../../../../api';
+import { WiredFurniType, localizeWithFallback } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredExtraBaseView } from './WiredExtraBaseView';
@@ -34,7 +34,7 @@ export const WiredExtraTimeUtilitiesView: FC<{}> = () => {
     return (
         <WiredExtraBaseView hasSpecialInput={true} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_NONE} save={save} cardStyle={{ width: 380 }}>
             <div className="flex flex-col gap-2">
-                <Text bold>Time unit</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.params.choose_type', 'Time unit')}</Text>
                 <div className="flex flex-col gap-1">
                     {UNIT_OPTIONS.map((option) => (
                         <label key={option.value} className="flex items-center gap-2">

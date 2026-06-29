@@ -238,6 +238,7 @@ export const WiredActionGiveRewardView: FC = (props) => {
         >
             <div className="flex items-center gap-1">
                 <input
+                    checked={limitEnabled}
                     className="form-check-input"
                     id="limitEnabled"
                     type="checkbox"

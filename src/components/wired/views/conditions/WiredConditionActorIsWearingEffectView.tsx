@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { LocalizeText, WiredFurniType } from '../../../../api';
+import { LocalizeText, localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { NitroInput } from '../../../../layout';
@@ -55,7 +55,7 @@ export const WiredConditionActorIsWearingEffectView: FC<WiredConditionActorIsWea
                 ))}
             </div>
             <div className="flex flex-col gap-1">
-                <Text bold>{LocalizeText('wiredfurni.tooltip.effectid')}</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.params.effectid', LocalizeText('wiredfurni.tooltip.effectid'))}</Text>
                 <NitroInput
                     type="number"
                     value={effect}

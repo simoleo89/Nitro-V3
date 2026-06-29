@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { GetWiredTimeLocale, LocalizeText, WiredFurniType } from '../../../../api';
+import { GetWiredTimeLocale, localizeWithFallback, LocalizeText, WiredFurniType } from '../../../../api';
 import { Slider, Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredTriggerBaseView } from './WiredTriggerBaseView';
@@ -21,7 +21,14 @@ export const WiredTriggeExecuteOnceView: FC = (props) => {
             save={save}
         >
             <div className="flex flex-col gap-1">
-                <Text bold>{LocalizeText('wiredfurni.params.settime', ['seconds'], [GetWiredTimeLocale(time)])}</Text>
+                <Text bold>
+                    {localizeWithFallback(
+                        'wiredfurni.params.settime2',
+                        LocalizeText('wiredfurni.params.settime', ['seconds'], [GetWiredTimeLocale(time)]),
+                        ['seconds'],
+                        [GetWiredTimeLocale(time)],
+                    )}
+                </Text>
                 <Slider max={1200} min={1} value={time} onChange={(event) => setTime(event)} />
             </div>
         </WiredTriggerBaseView>

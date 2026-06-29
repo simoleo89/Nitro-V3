@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { LocalizeText, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
+import { LocalizeText, localizeWithFallback, WiredFurniType, WiredSelectionVisualizer } from '../../../../api';
 import contextVariableIcon from '../../../../assets/images/wired/var/icon_source_context_clean.png';
 import furniVariableIcon from '../../../../assets/images/wired/var/icon_source_furni.png';
 import globalVariableIcon from '../../../../assets/images/wired/var/icon_source_global.png';
@@ -596,7 +596,7 @@ export const WiredConditionVariableValueMatchView: FC = () => {
 
                 <div className="nitro-wired__give-var-section">
                     <div className="nitro-wired__give-var-section-title">
-                        {LocalizeText('wiredfurni.params.choose_type')}
+                        {localizeWithFallback('wiredfurni.params.comparison_selection', LocalizeText('wiredfurni.params.choose_type'))}
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {COMPARISON_OPTIONS.map((option) => (
@@ -626,7 +626,7 @@ export const WiredConditionVariableValueMatchView: FC = () => {
                             type="radio"
                             onChange={() => setReferenceMode('constant')}
                         />
-                        <Text>{LocalizeText('wiredfurni.params.operator.2')}</Text>
+                        <Text>{localizeWithFallback('wiredfurni.params.variables.reference_value.set_value', LocalizeText('wiredfurni.params.operator.2'))}</Text>
                         <NitroInput
                             className="nitro-wired__give-var-number"
                             type="number"

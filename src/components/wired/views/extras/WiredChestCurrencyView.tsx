@@ -1,14 +1,14 @@
 import { FC, useEffect, useState } from 'react';
-import { WiredFurniType } from '../../../../api';
+import { localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredExtraBaseView } from './WiredExtraBaseView';
 
 // Currency type convention (matches server InteractionWiredChestCurrency): -1 = credits, >=0 = points type.
-const CURRENCY_OPTIONS: { value: number; label: string }[] = [
-    { value: -1, label: 'Credits' },
-    { value: 0, label: 'Duckets' },
-    { value: 5, label: 'Diamonds' },
+const CURRENCY_OPTIONS: { value: number; key: string; fallback: string }[] = [
+    { value: -1, key: 'wiredfurni.chest.currency.credits', fallback: 'Credits' },
+    { value: 0, key: 'wiredfurni.chest.currency.duckets', fallback: 'Duckets' },
+    { value: 5, key: 'wiredfurni.chest.currency.diamonds', fallback: 'Diamonds' },
 ];
 
 export const WiredChestCurrencyView: FC<{}> = () => {
@@ -29,9 +29,9 @@ export const WiredChestCurrencyView: FC<{}> = () => {
     };
 
     return (
-        <WiredExtraBaseView hasSpecialInput={true} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_NONE} save={save} cardStyle={{ width: 380 }}>
+        <WiredExtraBaseView hasSpecialInput={true} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_NONE} save={save}>
             <div className="flex flex-col gap-2">
-                <Text bold>Currency type</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.chest.currency.type', 'Currency type')}</Text>
                 <div className="flex flex-col gap-1">
                     {CURRENCY_OPTIONS.map((option) => (
                         <label key={option.value} className="flex items-center gap-2">
@@ -42,11 +42,11 @@ export const WiredChestCurrencyView: FC<{}> = () => {
                                 checked={currencyType === option.value}
                                 onChange={() => setCurrencyType(option.value)}
                             />
-                            <Text small>{option.label}</Text>
+                            <Text small>{localizeWithFallback(option.key, option.fallback)}</Text>
                         </label>
                     ))}
                 </div>
-                <Text bold>Amount stored</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.chest.currency.amount', 'Amount stored')}</Text>
                 <input
                     type="number"
                     min={0}

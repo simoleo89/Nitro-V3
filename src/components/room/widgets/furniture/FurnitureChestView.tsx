@@ -427,7 +427,7 @@ export const FurnitureChestView: FC = () => {
             {/* ===== SETTINGS ===== */}
             {showSettings && (
                 <NitroCardView className="nitro-widget-chest-settings" theme="primary-slim" style={{ width: 360 }}>
-                    <NitroCardHeaderView headerText="Impostazioni Scrigno Crediti" onCloseClick={() => setShowSettings(false)} />
+                    <NitroCardHeaderView headerText={isFurni ? 'Impostazioni Scrigno Furni' : 'Impostazioni Scrigno Crediti'} onCloseClick={() => setShowSettings(false)} />
                     <NitroCardContentView>
                         <Column gap={2}>
                             <Text bold>Impostazioni di accesso aggiuntive</Text>
@@ -469,7 +469,7 @@ export const FurnitureChestView: FC = () => {
             {/* ===== NOTIFICATIONS ===== */}
             {showNotifications && (
                 <NitroCardView className="nitro-widget-chest-notifications" theme="primary-slim" style={{ width: 360 }}>
-                    <NitroCardHeaderView headerText="Impostazione notifiche Scrigno Crediti" onCloseClick={() => setShowNotifications(false)} />
+                    <NitroCardHeaderView headerText={isFurni ? 'Impostazione notifiche Scrigno Furni' : 'Impostazione notifiche Scrigno Crediti'} onCloseClick={() => setShowNotifications(false)} />
                     <NitroCardContentView>
                         <Column gap={2}>
                             <Text bold>Notifiche generali</Text>

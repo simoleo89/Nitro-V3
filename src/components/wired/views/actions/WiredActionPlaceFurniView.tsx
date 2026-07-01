@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { LocalizeText, localizeWithFallback, WiredFurniType } from '../../../../api';
+import { localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
@@ -34,7 +34,7 @@ export const WiredActionPlaceFurniView: FC<{}> = () => {
     return (
         <WiredActionBaseView hasSpecialInput={true} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_NONE} save={save}>
             <div className="flex flex-col gap-1">
-                <Text bold>{LocalizeText('catalog.search.title')} (base item id)</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.params.base_item_id', 'Base item ID')}</Text>
                 <input
                     className="form-control form-control-sm"
                     type="number"
@@ -44,7 +44,7 @@ export const WiredActionPlaceFurniView: FC<{}> = () => {
                 />
             </div>
             <div className="flex flex-col gap-1">
-                <Text bold>{LocalizeText('wiredfurni.params.count', ['count'], [quantity.toString()])}</Text>
+                <Text bold>{localizeWithFallback('wiredfurni.params.count', 'Quantity', ['count'], [quantity.toString()])}</Text>
                 <input
                     className="form-control form-control-sm"
                     type="number"

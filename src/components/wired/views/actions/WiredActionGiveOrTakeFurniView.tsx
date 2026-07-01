@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { LocalizeText, localizeWithFallback, WiredFurniType } from '../../../../api';
+import { localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredActionBaseView } from './WiredActionBaseView';
@@ -35,7 +35,7 @@ export const WiredActionGiveOrTakeFurniView: FC<{}> = props =>
             save={ save }
             footer={ <WiredSourcesSelector showUsers={ true } userSource={ userSource } onChangeUsers={ setUserSource } /> }>
             <div className="flex flex-col gap-1">
-                <Text bold>{ LocalizeText('catalog.search.title') } (base item id)</Text>
+                <Text bold>{ localizeWithFallback('wiredfurni.params.base_item_id', 'Base item ID') }</Text>
                 <input
                     className="form-control form-control-sm"
                     type="number"

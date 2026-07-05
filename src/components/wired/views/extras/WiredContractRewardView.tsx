@@ -2,63 +2,38 @@ import { FC, useEffect, useState } from 'react';
 import { WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
+import { CONTRACT_DIR_RECEIVE, ContractTermRow, parseContractTerms, serializeContractTerms } from './contractTermWire';
+import { WiredContractTermRow } from './WiredContractTermRow';
 import { WiredExtraBaseView } from './WiredExtraBaseView';
-
-// Term encoding (server InteractionWiredContract): intParams = [count, dir, type, amount, ...]. dir 1=RECEIVE.
-const DIR_RECEIVE = 1;
-const CURRENCY_OPTIONS: { value: number; label: string }[] = [
-    { value: -1, label: 'Credits' },
-    { value: 0, label: 'Duckets' },
-    { value: 5, label: 'Diamonds' },
-];
 
 export const WiredContractRewardView: FC<{}> = () => {
     const { trigger = null, setIntParams = null, setStringParam = null } = useWired();
-    const [currencyType, setCurrencyType] = useState(-1);
-    const [amount, setAmount] = useState(0);
+    const [row, setRow] = useState<ContractTermRow>({
+        direction: CONTRACT_DIR_RECEIVE,
+        kind: 0,
+        currencyType: -1,
+        wallItem: false,
+        baseItemId: 0,
+        amount: 0,
+    });
 
     useEffect(() => {
         if (!trigger) return;
-
-        const data = trigger.intData ?? [];
-        if (data.length >= 4) {
-            setCurrencyType(data[2]);
-            setAmount(Math.max(0, data[3]));
-        }
+        const parsed = parseContractTerms(trigger.intData ?? [], trigger.stringData ?? '');
+        if (parsed.length > 0) setRow(parsed[0]);
     }, [trigger]);
 
     const save = () => {
-        setIntParams([1, DIR_RECEIVE, currencyType, Math.max(0, amount)]);
-        setStringParam('');
+        const payload = serializeContractTerms([{ ...row, direction: CONTRACT_DIR_RECEIVE }]);
+        setIntParams(payload.intParams);
+        setStringParam(payload.stringParam);
     };
 
     return (
         <WiredExtraBaseView hasSpecialInput={true} requiresFurni={WiredFurniType.STUFF_SELECTION_OPTION_BY_ID} save={save} cardStyle={{ width: 380 }}>
             <div className="flex flex-col gap-2">
                 <Text bold>The user will RECEIVE:</Text>
-                <Text bold>Currency type</Text>
-                <div className="flex flex-col gap-1">
-                    {CURRENCY_OPTIONS.map((option) => (
-                        <label key={option.value} className="flex items-center gap-2">
-                            <input
-                                type="radio"
-                                className="form-check-input"
-                                name="rewardCurrencyType"
-                                checked={currencyType === option.value}
-                                onChange={() => setCurrencyType(option.value)}
-                            />
-                            <Text small>{option.label}</Text>
-                        </label>
-                    ))}
-                </div>
-                <Text bold>Amount</Text>
-                <input
-                    type="number"
-                    min={0}
-                    className="form-control form-control-sm"
-                    value={amount}
-                    onChange={(event) => setAmount(Math.max(0, parseInt(event.target.value, 10) || 0))}
-                />
+                <WiredContractTermRow row={row} onChange={(patch) => setRow((prev) => ({ ...prev, ...patch }))} />
                 <Text small>Pick a chest above to source the reward from its pool (else it is minted).</Text>
             </div>
         </WiredExtraBaseView>

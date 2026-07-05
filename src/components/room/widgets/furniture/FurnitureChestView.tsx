@@ -326,18 +326,15 @@ export const FurnitureChestView: FC = () => {
                             {/* notification_settings_button 24x24, icon wired_chests_bell_icon 12x15 */}
                             <button
                                 type="button"
-                                className="flex items-center justify-center cursor-pointer shrink-0"
-                                style={{ width: 24, height: 24, background: '#f1f0ee', border: '1px solid #cfcabc', borderRadius: 4, padding: 0 }}
+                                className="nitro-chest__header-icon"
                                 onClick={() => setShowNotifications(true)}
                                 title={LocalizeText('wiredchests.notifications.button')}
                             >
                                 <img src={bellIcon} width={12} height={15} alt="" draggable={false} style={{ imageRendering: 'pixelated' }} />
                             </button>
-                            {/* settings_button 24x24, icon wired_chests_gear_icon 14x14 */}
                             <button
                                 type="button"
-                                className="flex items-center justify-center cursor-pointer shrink-0"
-                                style={{ width: 24, height: 24, background: '#f1f0ee', border: '1px solid #cfcabc', borderRadius: 4, padding: 0 }}
+                                className="nitro-chest__header-icon"
                                 onClick={() => setShowSettings(true)}
                                 title={LocalizeText('wiredchests.settings.button')}
                             >

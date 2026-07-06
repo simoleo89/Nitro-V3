@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { LocalizeText, WiredFurniType } from '../../../../api';
+import { LocalizeText, localizeWithFallback, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
 import { WiredConditionBaseView } from './WiredConditionBaseView';
@@ -77,7 +77,7 @@ export const WiredConditionUserOnFurniWithStateView: FC<{}> = () =>
                 </div>
             ) }>
             <div className="flex flex-col gap-1">
-                <Text bold>{ LocalizeText('wiredfurni.params.state') }</Text>
+                <Text bold>{ localizeWithFallback('wiredfurni.params.state', 'State') }</Text>
                 <input className="form-control form-control-sm" type="text" value={ requiredState } onChange={ event => setRequiredState(event.target.value) } />
             </div>
         </WiredConditionBaseView>

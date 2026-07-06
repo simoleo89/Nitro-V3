@@ -2,16 +2,12 @@ import { FC, useEffect, useState } from 'react';
 import { LocalizeText, WiredFurniType } from '../../../../api';
 import { Text } from '../../../../common';
 import { useWired } from '../../../../hooks';
+import { WIRED_DIRECTION_GRID, WiredDirectionIcon } from '../WiredDirectionIcon';
 import { WiredSourcesSelector } from '../WiredSourcesSelector';
 import { WiredActionBaseView } from './WiredActionBaseView';
 
-const directionOptions: { value: number; icon: string }[] = [
-    { value: 0, icon: 'ne' },
-    { value: 2, icon: 'se' },
-    { value: 4, icon: 'sw' },
-    { value: 6, icon: 'nw' }
-];
-
+// Server WiredEffectMoveFurniAsGroup: intParams = [direction (0-7, N/NE/E/SE/S/SW/W/NW), furniSource].
+// directionDeltaX/Y handle all 8 compass points, so expose the full grid (was only 0/2/4/6).
 export const WiredActionMoveFurniAsGroupView: FC<{}> = () => {
     const { trigger = null, setIntParams = null } = useWired();
     const [direction, setDirection] = useState(-1);
@@ -40,22 +36,30 @@ export const WiredActionMoveFurniAsGroupView: FC<{}> = () => {
         >
             <div className="flex flex-col gap-1">
                 <Text bold>{LocalizeText('wiredfurni.params.startdir')}</Text>
-                <div className="flex gap-1">
-                    {directionOptions.map((option) => (
-                        <div key={option.value} className="flex items-center gap-1">
-                            <input
-                                checked={direction === option.value}
-                                className="form-check-input"
-                                id={`groupdir${option.value}`}
-                                name="groupdir"
-                                type="radio"
-                                onChange={() => setDirection(option.value)}
-                            />
-                            <Text>
-                                <i className={`icon icon-${option.icon}`} />
-                            </Text>
-                        </div>
-                    ))}
+                <div className="grid grid-cols-4 gap-2 max-w-[240px]">
+                    {WIRED_DIRECTION_GRID.flatMap((row, rowIndex) =>
+                        row.map((value, columnIndex) => {
+                            if (value === null) {
+                                return <div key={`group-dir-empty-${rowIndex}-${columnIndex}`} />;
+                            }
+
+                            return (
+                                <label key={`group-dir-${value}`} className="flex items-center justify-center gap-[2px] cursor-pointer">
+                                    <input
+                                        checked={direction === value}
+                                        className="form-check-input"
+                                        id={`groupdir${value}`}
+                                        name="groupdir"
+                                        type="radio"
+                                        onChange={() => setDirection(value)}
+                                    />
+                                    <span className="inline-flex items-center justify-center">
+                                        <WiredDirectionIcon direction={value} selected={direction === value} />
+                                    </span>
+                                </label>
+                            );
+                        })
+                    )}
                 </div>
             </div>
         </WiredActionBaseView>

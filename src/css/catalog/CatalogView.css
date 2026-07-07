@@ -552,7 +552,9 @@
     flex-wrap: nowrap;
 }
 
-/* Air tab_button: 110x30 style 3. */
+/* Air tab_button style 3 (height 30). Width sizes to the label instead of a
+   fixed 110px cap, so long categories (e.g. "Imported Furniture") aren't
+   truncated; the dynamic window width grows to fit them. */
 .nitro-catalog-tabs-shell .nitro-card-tab-item {
     display: inline-flex;
     align-items: center;
@@ -561,7 +563,7 @@
     height: 30px;
     min-width: 0;
     flex: 0 0 auto;
-    max-width: 110px;
+    max-width: none;
     padding: 4px 8px 6px;
     margin: 0 2px 0 0;
     flex-shrink: 0;

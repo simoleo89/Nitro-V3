@@ -1118,6 +1118,16 @@ const useCatalogStore = () => {
     }, []);
 
     useEffect(() => {
+        const refreshCurrentPage = () => {
+            if (pageId > -1) loadCatalogPage(pageId, currentOffer?.offerId ?? -1);
+        };
+
+        window.addEventListener('catalog-admin-refresh-current-page', refreshCurrentPage);
+
+        return () => window.removeEventListener('catalog-admin-refresh-current-page', refreshCurrentPage);
+    }, [pageId, currentOffer, loadCatalogPage]);
+
+    useEffect(() => {
         if (!currentOffer) return;
 
         setPurchaseOptions({ quantity: 1, extraData: null, extraParamRequired: false, previewStuffData: null });

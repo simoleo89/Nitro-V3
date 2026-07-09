@@ -121,15 +121,12 @@ export const CatalogAdminOfferEditView: FC<{}> = () => {
 
         if (isNew) createOffer(data);
         else saveOffer(data);
-
-        if (setEditingOffer) setEditingOffer(null);
     };
 
     const handleDelete = () => {
         if (isNew || !deleteOffer || !confirm(LocalizeText('catalog.admin.delete.offer.confirm'))) return;
 
         deleteOffer(editingOffer.offerId);
-        if (setEditingOffer) setEditingOffer(null);
     };
 
     const inputClass = 'nitro-catalog-admin-input';

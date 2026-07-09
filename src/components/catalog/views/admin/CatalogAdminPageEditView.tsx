@@ -143,7 +143,6 @@ export const CatalogAdminPageEditView: FC<{}> = () => {
         };
 
         catalogAdmin.savePage(data);
-        closeForm();
     };
 
     const openTranslate = () => {

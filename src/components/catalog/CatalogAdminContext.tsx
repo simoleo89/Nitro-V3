@@ -117,6 +117,9 @@ export const useCatalogAdmin = () => useContext(CatalogAdminContext);
 
 let pendingChangeCounter = 0;
 
+const PAGE_INDEX_REFRESH_ACTIONS = new Set(['savePage', 'createPage', 'deletePage', 'movePage', 'toggleVisible', 'toggleEnabled']);
+const OFFER_REFRESH_ACTIONS = new Set(['saveOffer', 'createOffer', 'deleteOffer', 'reorder']);
+
 export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const { currentType } = useCatalogUiState();
     const [adminMode, setAdminMode] = useState(false);
@@ -133,6 +136,7 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
     const pendingActionRef = useRef<string | null>(null);
     const pendingChangeLabelRef = useRef<string | null>(null);
     const pendingChangeRecordedForBatchRef = useRef(false);
+    const pendingReorderRef = useRef<{ remaining: number } | null>(null);
     const { simpleAlert = null } = useNotification();
 
     const beginAdminAction = useCallback((action: string, summary: string) => {
@@ -240,6 +244,29 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
         const action = pendingActionRef.current;
         const summary = pendingChangeLabelRef.current;
 
+        if (action === 'reorder' && pendingReorderRef.current) {
+            if (!parser.success) {
+                pendingReorderRef.current = null;
+                pendingActionRef.current = null;
+                pendingChangeLabelRef.current = null;
+                setLoading(false);
+                setLastError(parser.message || 'Operation failed');
+
+                if (simpleAlert) {
+                    simpleAlert(parser.message || 'Operation failed', NotificationAlertType.ALERT, null, null, 'Admin Error');
+                }
+
+                window.dispatchEvent(new Event('catalog-admin-refresh-current-page'));
+                return;
+            }
+
+            pendingReorderRef.current.remaining -= 1;
+
+            if (pendingReorderRef.current.remaining > 0) return;
+
+            pendingReorderRef.current = null;
+        }
+
         pendingActionRef.current = null;
         pendingChangeLabelRef.current = null;
         setLoading(false);
@@ -263,7 +290,11 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
             } else {
                 recordPendingChange(action, summary);
 
-                if (action === 'saveOffer' || action === 'createOffer' || action === 'deleteOffer') {
+                if (PAGE_INDEX_REFRESH_ACTIONS.has(action)) {
+                    window.dispatchEvent(new Event('catalog-admin-refresh-index'));
+                }
+
+                if (OFFER_REFRESH_ACTIONS.has(action)) {
                     window.dispatchEvent(new Event('catalog-admin-refresh-current-page'));
                 }
             }
@@ -389,7 +420,10 @@ export const CatalogAdminProvider: FC<{ children: ReactNode }> = ({ children }) 
 
     const reorderOffers = useCallback(
         (orders: { id: number; orderNumber: number }[], summary?: string) => {
+            if (!orders.length) return;
+
             beginAdminAction('reorder', summary || 'Reordered offers');
+            pendingReorderRef.current = { remaining: orders.length };
 
             for (const order of orders) {
                 SendMessageComposer(new CatalogAdminMoveOfferComposer(order.id, order.orderNumber, currentType));

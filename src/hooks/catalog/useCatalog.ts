@@ -1122,10 +1122,19 @@ const useCatalogStore = () => {
             if (pageId > -1) loadCatalogPage(pageId, currentOffer?.offerId ?? -1);
         };
 
-        window.addEventListener('catalog-admin-refresh-current-page', refreshCurrentPage);
+        const refreshCatalogIndex = () => {
+            clearCatalogIndexCache();
+            SendMessageComposer(new GetCatalogIndexComposer(currentType));
+        };
 
-        return () => window.removeEventListener('catalog-admin-refresh-current-page', refreshCurrentPage);
-    }, [pageId, currentOffer, loadCatalogPage]);
+        window.addEventListener('catalog-admin-refresh-current-page', refreshCurrentPage);
+        window.addEventListener('catalog-admin-refresh-index', refreshCatalogIndex);
+
+        return () => {
+            window.removeEventListener('catalog-admin-refresh-current-page', refreshCurrentPage);
+            window.removeEventListener('catalog-admin-refresh-index', refreshCatalogIndex);
+        };
+    }, [pageId, currentOffer, loadCatalogPage, currentType]);
 
     useEffect(() => {
         if (!currentOffer) return;

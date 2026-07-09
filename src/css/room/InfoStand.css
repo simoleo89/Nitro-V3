@@ -60,6 +60,16 @@
     padding: 0.1rem 0.25rem;
   }
 
+  .content-area {
+    background: transparent;
+    padding: 0;
+    height: auto;
+    overflow: visible;
+    border-radius: 0;
+    font-family: inherit;
+    color: inherit;
+  }
+
   .body-image {
     display: flex;
     align-items: center;

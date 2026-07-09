@@ -54,14 +54,13 @@ export const FurnitureFriendFurniView: FC<{}> = (props) => {
                 <div className={`nitro-engraving-lock-view ${engravingTypeClass}`.trim()}>
                     <button type="button" className="engraving-lock-close" onClick={onClose} aria-label="Close" />
                     <div className="engraving-lock-avatar engraving-lock-avatar--left">
-                        <LayoutAvatarImageView direction={2} figure={figures[0]} fit scale={0.85} />
+                        <LayoutAvatarImageView direction={2} figure={figures[0]} />
                     </div>
                     <div className="engraving-lock-avatar engraving-lock-avatar--right">
-                        <LayoutAvatarImageView direction={4} figure={figures[1]} fit scale={0.85} />
+                        <LayoutAvatarImageView direction={4} figure={figures[1]} />
                     </div>
                     <p className="engraving-lock-header">{getEngravingCaption(type)}</p>
                     <p className="engraving-lock-date">{date}</p>
-                    <div className="engraving-lock-separator" aria-hidden="true" />
                     <span className="engraving-lock-name engraving-lock-name--left">{usernames[0]}</span>
                     <span className="engraving-lock-name engraving-lock-name--right">{usernames[1]}</span>
                 </div>

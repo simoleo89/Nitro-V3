@@ -421,13 +421,14 @@
     background-image: url('@/assets/images/room-widgets/engraving-lock-widget/engraving-lock-spritesheet.png');
     background-position: 0 0;
     background-repeat: no-repeat;
+    background-size: 375px 630px;
     image-rendering: pixelated;
     color: #59224a;
     font-family: UbuntuCondensed, Ubuntu, sans-serif;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 17px;
-    text-shadow: 0 1px #ffffff;
+    text-shadow: 0 1px 0 #ffffff;
     user-select: none;
 }
 
@@ -439,7 +440,7 @@
 .nitro-engraving-lock-view.engraving-lock-4 {
     background-position: 0 -420px;
     color: #f1dcc8;
-    text-shadow: 0 2px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 .nitro-engraving-lock-view .engraving-lock-close {
@@ -465,10 +466,23 @@
 
 .nitro-engraving-lock-view .engraving-lock-avatar .avatar-image {
     position: absolute !important;
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    left: 0 !important;
+    bottom: 0;
+    left: 50%;
+    width: 90px !important;
+    height: 130px !important;
+    margin-left: 0 !important;
+    transform: translateX(-50%);
+    image-rendering: pixelated;
+}
+
+.nitro-engraving-lock-view .engraving-lock-avatar--left .avatar-image {
+    margin-left: -10px !important;
+    transform: translateX(calc(-50% - 5px));
+}
+
+.nitro-engraving-lock-view .engraving-lock-avatar--right .avatar-image {
+    margin-left: -15px !important;
+    transform: translateX(calc(-50% - 7px));
 }
 
 .nitro-engraving-lock-view .engraving-lock-avatar--left {
@@ -495,25 +509,6 @@
     width: 97px;
     margin: 0;
     text-align: center;
-}
-
-.nitro-engraving-lock-view .engraving-lock-separator {
-    position: absolute;
-    top: 168px;
-    left: 40px;
-    width: 295px;
-    height: 1px;
-    margin: 0;
-    background: rgba(89, 34, 74, 0.22);
-    border: 0;
-}
-
-.nitro-engraving-lock-view.engraving-lock-3 .engraving-lock-separator {
-    background: rgba(97, 65, 16, 0.25);
-}
-
-.nitro-engraving-lock-view.engraving-lock-4 .engraving-lock-separator {
-    background: rgba(241, 220, 200, 0.25);
 }
 
 .nitro-engraving-lock-view .engraving-lock-name {

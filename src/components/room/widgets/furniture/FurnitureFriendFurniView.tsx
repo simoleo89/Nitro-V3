@@ -3,6 +3,18 @@ import { LocalizeText } from '../../../../api';
 import { Button, DraggableWindow, LayoutAvatarImageView, NitroCardContentView, NitroCardHeaderView, NitroCardView } from '../../../../common';
 import { useFurnitureFriendFurniWidget } from '../../../../hooks';
 
+const formatEngravingDate = (value: string) => {
+    if (!value) return value;
+
+    const parts = value.split(/[-/.]/).map((part) => parseInt(part, 10));
+
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return value;
+
+    const [day, month, year] = parts;
+
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+};
+
 const getEngravingCaption = (type: number) => {
     switch (type) {
         case 3:
@@ -59,10 +71,10 @@ export const FurnitureFriendFurniView: FC<{}> = (props) => {
                     <div className="engraving-lock-avatar engraving-lock-avatar--right">
                         <LayoutAvatarImageView direction={4} figure={figures[1]} />
                     </div>
-                    <p className="engraving-lock-header">{getEngravingCaption(type)}</p>
-                    <p className="engraving-lock-date">{date}</p>
-                    <span className="engraving-lock-name engraving-lock-name--left">{usernames[0]}</span>
-                    <span className="engraving-lock-name engraving-lock-name--right">{usernames[1]}</span>
+                    <div className="engraving-lock-header">{getEngravingCaption(type)}</div>
+                    <div className="engraving-lock-date">{formatEngravingDate(date)}</div>
+                    <div className="engraving-lock-name engraving-lock-name--left">{usernames[0]}</div>
+                    <div className="engraving-lock-name engraving-lock-name--right">{usernames[1]}</div>
                 </div>
             </DraggableWindow>
         );

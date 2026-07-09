@@ -421,7 +421,7 @@
     background-image: url('@/assets/images/room-widgets/engraving-lock-widget/engraving-lock-spritesheet.png');
     background-position: 0 0;
     background-repeat: no-repeat;
-    background-size: 375px 630px;
+    background-size: 411px 630px;
     image-rendering: pixelated;
     color: #59224a;
     font-family: UbuntuCondensed, Ubuntu, sans-serif;
@@ -493,31 +493,36 @@
     left: 186px;
 }
 
-.nitro-engraving-lock-view .engraving-lock-header {
+.nitro-engraving-lock-view .engraving-lock-header,
+.nitro-engraving-lock-view .engraving-lock-date,
+.nitro-engraving-lock-view .engraving-lock-name {
     position: absolute;
+    display: block;
+    height: 17px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.nitro-engraving-lock-view .engraving-lock-header {
     top: 126px;
     left: 82px;
     width: 217px;
-    margin: 0;
     text-align: center;
 }
 
 .nitro-engraving-lock-view .engraving-lock-date {
-    position: absolute;
     top: 151px;
     left: 143px;
     width: 97px;
-    margin: 0;
     text-align: center;
 }
 
 .nitro-engraving-lock-view .engraving-lock-name {
-    position: absolute;
     top: 175px;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .nitro-engraving-lock-view .engraving-lock-name--left {

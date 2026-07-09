@@ -1,7 +1,6 @@
 import { AddLinkEventTracker, ILinkEventTracker, RemoveLinkEventTracker } from '@nitrots/nitro-renderer';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import { FaBars, FaCog } from 'react-icons/fa';
-import { CatalogType, GetConfigurationValue, LocalizeShortNumber, LocalizeText, SanitizeHtml } from '../../api';
+import { FaBars, FaCog, FaEyeSlash } from 'react-icons/fa';import { CatalogType, GetConfigurationValue, LocalizeShortNumber, LocalizeText, SanitizeHtml } from '../../api';
 import { LayoutCurrencyIcon, NitroCardContentView, NitroCardHeaderView, NitroCardTabsItemView, NitroCardTabsView, NitroCardView } from '../../common';
 import { useCatalogActions, useCatalogData, useCatalogUiState, useHasPermission, usePurse } from '../../hooks';
 import { CatalogAdminProvider, useCatalogAdmin } from './CatalogAdminContext';
@@ -17,7 +16,6 @@ import { CatalogNavigationView } from './views/navigation/CatalogNavigationView'
 import { CatalogSearchView } from './views/page/common/CatalogSearchView';
 import { GetCatalogLayout } from './views/page/layout/GetCatalogLayout';
 import { MarketplacePostOfferView } from './views/page/layout/marketplace/MarketplacePostOfferView';
-
 const CatalogViewInner: FC<{}> = () => {
     const { rootNode = null, currentPage = null, searchResult = null } = useCatalogData();
     const {
@@ -51,12 +49,12 @@ const CatalogViewInner: FC<{}> = () => {
         if (!rootNode?.children?.length) return 0;
 
         return rootNode.children.filter((child, index) => {
-            if (!child.isVisible) return false;
-            if (index === 0 && getSwfTabLabel(child.localization).toLowerCase().includes('rari')) return false;
+            if (!adminMode && !child.isVisible) return false;
+            if (!adminMode && index === 0 && getSwfTabLabel(child.localization).toLowerCase().includes('rari')) return false;
 
             return true;
         }).length;
-    }, [rootNode]);
+    }, [adminMode, rootNode]);
 
     const catalogWindowStyle = useCatalogWindowWidth(
         tabsShellRef,
@@ -68,7 +66,6 @@ const CatalogViewInner: FC<{}> = () => {
         rootNode?.pageId,
         activeCatalogNode?.pageId
     );
-
     useEffect(() => {
         const getCatalogTypeFromLink = (type?: string) => {
             switch ((type || '').toLowerCase()) {
@@ -188,8 +185,11 @@ const CatalogViewInner: FC<{}> = () => {
                         {rootNode &&
                             rootNode.children.length > 0 &&
                             rootNode.children.map((child, index) => {
-                                if (!child.isVisible) return null;
-                                if (index === 0 && getSwfTabLabel(child.localization).toLowerCase().includes('rari')) return null;
+                                if (!adminMode && !child.isVisible) return null;
+                                if (!adminMode && index === 0 && getSwfTabLabel(child.localization).toLowerCase().includes('rari')) return null;
+
+                                const isHidden = !child.isVisible;
+                                const tabLabel = parseCatalogTabLabel(child.localization);
 
                                 return (
                                     <NitroCardTabsItemView
@@ -205,11 +205,14 @@ const CatalogViewInner: FC<{}> = () => {
                                         <div className="flex items-center gap-1">
                                             {child.iconId > 0 && <CatalogIconView icon={child.iconId} className="nitro-catalog-tab-icon" />}
                                             <span className="nitro-catalog-tab-label">{getSwfTabLabel(child.localization)}</span>
+                                            {adminMode && tabLabel.count !== null && (
+                                                <span className="nitro-catalog-tab-count">({LocalizeShortNumber(tabLabel.count)})</span>
+                                            )}
+                                            {adminMode && isHidden && <FaEyeSlash className="text-[8px] text-danger ml-1" />}
                                         </div>
                                     </NitroCardTabsItemView>
                                 );
-                            })}
-                        {isMod && (
+                            })}                        {isMod && (
                             <NitroCardTabsItemView classNames={['nitro-catalog-admin-tab']} isActive={adminMode} onClick={() => setAdminMode(!adminMode)}>
                                 <FaCog className={`text-[10px] ${adminMode ? 'animate-spin' : ''}`} style={adminMode ? { animationDuration: '3s' } : {}} />
                             </NitroCardTabsItemView>

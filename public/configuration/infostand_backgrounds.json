@@ -664,6 +664,9 @@
     ],
     "cards.data": [
         {
+            "backgroundId": 0
+        },
+        {
             "backgroundId": 1
         },
         {

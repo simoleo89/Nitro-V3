@@ -168,8 +168,8 @@
 }
 
 .nitro-purse__btn--help {
-    color: #ffffff;
-    background: var(--habbo-purse-help, #217bb5);
+    border-color: #14526b;
+    background: linear-gradient(180deg, #5ba4c4 0%, #418db0 44%, #2e6f8a 100%);
 }
 
 .nitro-purse__btn--logout {

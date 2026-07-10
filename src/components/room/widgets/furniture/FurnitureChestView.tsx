@@ -138,14 +138,15 @@ export const FurnitureChestView: FC = () => {
         [],
     );
 
+    // One cell per furni type (like the chest grid), with a quantity badge;
+    // clicking deposits the first unlocked item of that type.
     const depositableInventoryItems = useMemo(() => {
-        const rows: { id: number; baseItemId: number; name: string }[] = [];
+        const rows: { id: number; baseItemId: number; name: string; quantity: number }[] = [];
         for (const g of groupItems) {
             if (g.isWallItem) continue;
-            for (const item of g.items) {
-                if (item.locked) continue;
-                rows.push({ id: item.id, baseItemId: g.type, name: g.name });
-            }
+            const unlocked = g.items.filter((item) => !item.locked);
+            if (!unlocked.length) continue;
+            rows.push({ id: unlocked[0].id, baseItemId: g.type, name: g.name, quantity: unlocked.length });
         }
         return rows;
     }, [groupItems]);
@@ -584,6 +585,11 @@ export const FurnitureChestView: FC = () => {
                                                 draggable={false}
                                                 style={{ maxWidth: 38, maxHeight: 38, objectFit: 'contain', imageRendering: 'pixelated' }}
                                             />
+                                            {row.quantity > 1 && (
+                                                <div className="nitro-chest__qty-badge">
+                                                    <span>{row.quantity}</span>
+                                                </div>
+                                            )}
                                         </button>
                                     ))}
                                 </div>

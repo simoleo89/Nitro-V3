@@ -4,6 +4,8 @@ import { GetGroupChatData, LocalizeText, MessengerGroupType, MessengerThread, Me
 import { Base, Flex, LayoutAvatarImageView } from '../../../../../common';
 import { useFriends } from '../../../../../hooks';
 import { resolveAvatarFigure } from '../../friends-list/resolveAvatarFigure';
+import { getMessageStatusPresentation } from './messageStatus.helpers';
+import { MessengerMessageStatusView } from '../MessengerMessageStatusView';
 
 export const FriendsMessengerThreadGroup: FC<{ thread: MessengerThread; group: MessengerThreadChatGroup }> = (props) => {
     const { thread = null, group = null } = props;
@@ -22,6 +24,10 @@ export const FriendsMessengerThreadGroup: FC<{ thread: MessengerThread; group: M
     }, [thread, group, groupChatData]);
 
     if (!thread || !group) return null;
+
+    const lastChat = group.chats[group.chats.length - 1];
+    const showMessageStatus = isOwnChat && group.type === MessengerGroupType.PRIVATE_CHAT && lastChat.type === MessengerThreadChat.CHAT;
+    const messageStatus = getMessageStatusPresentation(lastChat.status);
 
     if (!group.userId) {
         return (
@@ -60,9 +66,11 @@ export const FriendsMessengerThreadGroup: FC<{ thread: MessengerThread; group: M
                             getFriend?.(thread.participant.id)?.gender ?? thread.participant.gender
                         )}
                         headOnly={true}
+                        compactHead={true}
+                        compactHeadSize={24}
                     />
                 )}
-                {groupChatData && !isOwnChat && <LayoutAvatarImageView direction={2} figure={groupChatData.figure} headOnly={true} />}
+                {groupChatData && !isOwnChat && <LayoutAvatarImageView direction={2} figure={groupChatData.figure} headOnly={true} compactHead={true} compactHeadSize={24} />}
             </Base>
             <Base className="messenger-message-body">
                 <Base className={'messenger-message-name ' + (isOwnChat ? 'text-end' : '')}>
@@ -94,16 +102,16 @@ export const FriendsMessengerThreadGroup: FC<{ thread: MessengerThread; group: M
                         );
                     })}
                 </Base>
-                <Base className="messenger-message-time">{group.chats[0].date.toLocaleTimeString()}</Base>
-                {isOwnChat && group.type === MessengerGroupType.PRIVATE_CHAT && group.chats[group.chats.length - 1].type === MessengerThreadChat.CHAT && (
-                    <Base className={'messenger-message-status ' + (group.chats[group.chats.length - 1].status === MessengerThreadChat.READ ? 'read' : '')}>
-                        {group.chats[group.chats.length - 1].status === MessengerThreadChat.READ ? '✓✓' : '✓'}
-                    </Base>
-                )}
+                <Base className={'messenger-message-meta ' + (isOwnChat ? 'own' : '')}>
+                    <span className="messenger-message-time">{group.chats[0].date.toLocaleTimeString()}</span>
+                    {showMessageStatus && (
+                        <MessengerMessageStatusView isRead={messageStatus.isRead} />
+                    )}
+                </Base>
             </Base>
             {isOwnChat && (
                 <Base shrink className="message-avatar">
-                    <LayoutAvatarImageView direction={4} figure={GetSessionDataManager().figure} headOnly={true} />
+                    <LayoutAvatarImageView direction={4} figure={GetSessionDataManager().figure} headOnly={true} compactHead={true} compactHeadSize={24} />
                 </Base>
             )}
         </Flex>

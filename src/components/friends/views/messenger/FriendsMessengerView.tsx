@@ -6,6 +6,7 @@ import { DraggableWindowPosition, LayoutAvatarImageView, NitroCardContentView, N
 import { useFriends, useHelp, useMessenger, useTranslation } from '../../../../hooks';
 import { resolveAvatarFigure } from '../friends-list/resolveAvatarFigure';
 import { FriendsMessengerThreadView } from './messenger-thread/FriendsMessengerThreadView';
+import { FriendsPersistentMessengerView } from './FriendsPersistentMessengerView';
 
 export const FriendsMessengerView: FC<{}> = (props) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -19,7 +20,8 @@ export const FriendsMessengerView: FC<{}> = (props) => {
         setActiveThreadId = null,
         closeThread = null,
         typingUserIds = [],
-        sendTypingStatus = null
+        sendTypingStatus = null,
+        persistentMessenger = null
     } = useMessenger();
     const { getFriend = null } = useFriends();
     const { report = null } = useHelp();
@@ -116,7 +118,27 @@ export const FriendsMessengerView: FC<{}> = (props) => {
                         return;
                     }
 
-                    const thread = getMessageThread(parseInt(parts[1]));
+                    const participantId = parseInt(parts[1]);
+                    const friend = getFriend(participantId);
+                    if(!friend) return;
+
+                    if(participantId === -1)
+                    {
+                        const thread = getMessageThread(participantId);
+                        if(!thread) return;
+                        setActiveThreadId(thread.threadId);
+                        setIsVisible(true);
+                        return;
+                    }
+
+                    if(persistentMessenger)
+                    {
+                        persistentMessenger.actions.openDirectConversation(participantId, friend.name);
+                        setIsVisible(true);
+                        return;
+                    }
+
+                    const thread = getMessageThread(participantId);
 
                     if (!thread) return;
 
@@ -130,10 +152,11 @@ export const FriendsMessengerView: FC<{}> = (props) => {
         AddLinkEventTracker(linkTracker);
 
         return () => RemoveLinkEventTracker(linkTracker);
-    }, [getMessageThread, setActiveThreadId]);
+    }, [getFriend, getMessageThread, persistentMessenger, setActiveThreadId]);
 
     useEffect(() => {
         if (!isVisible || !activeThread) return;
+        if(!messagesBox.current) return;
 
         messagesBox.current.scrollTop = messagesBox.current.scrollHeight;
     }, [isVisible, activeThread]);
@@ -162,6 +185,16 @@ export const FriendsMessengerView: FC<{}> = (props) => {
     }, [isVisible, activeThread, lastThreadId, visibleThreads, setActiveThreadId]);
 
     if (!isVisible) return null;
+
+    if (persistentMessenger) {
+        return <FriendsPersistentMessengerView
+            messenger={persistentMessenger}
+            legacyStaffThread={activeThread?.participant?.id === -1 ? activeThread : null}
+            onClose={() => setIsVisible(false)}
+            onCloseStaff={() => activeThread && closeThread(activeThread.threadId)}
+            onSendStaff={(text) => activeThread && sendMessage(activeThread, GetSessionDataManager().userId, text)}
+        />;
+    }
 
     return (
         <NitroCardView
@@ -200,7 +233,7 @@ export const FriendsMessengerView: FC<{}> = (props) => {
                                         className={'messenger-avatar-tab' + (activeThread === thread ? ' active' : '') + (thread.unread ? ' unread' : '')}
                                         onClick={(event) => setActiveThreadId(thread.threadId)}
                                     >
-                                        <LayoutAvatarImageView figure={figure} headOnly={true} direction={isStaff ? 3 : 2} />
+                                        <LayoutAvatarImageView figure={figure} headOnly={true} compactHead={true} compactHeadSize={36} compactHeadPadding={0} direction={isStaff ? 3 : 2} />
                                     </button>
                                 );
                             })}

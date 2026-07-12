@@ -249,6 +249,16 @@ export class DoorbellMessageEvent extends MessageEvent {}
 export class RoomDoorbellAcceptedEvent extends MessageEvent {}
 export class FlatAccessDeniedMessageEvent extends MessageEvent {}
 export class GenericErrorEvent extends MessageEvent {}
+export class GenericErrorEnum {
+    static readonly AUTHENTICATION_FAILED = -3;
+    static readonly CONNECTING_TO_SERVER_FAILED = -400;
+    static readonly KICKED_OUT_OF_ROOM = 4008;
+    static readonly VIP_REQUIRED = 4009;
+    static readonly ROOM_NAME_UNACCEPTABLE = 4010;
+    static readonly CANNOT_BAN_GROUP_MEMBER = 4011;
+    static readonly WRONG_ROOM_PASSWORD = -100002;
+    static readonly TRADE_STRIP_LOCKED = -13001;
+}
 export class GetGuestRoomResultEvent extends MessageEvent {}
 
 // Mentions system — incoming events extend MessageEvent (they expose

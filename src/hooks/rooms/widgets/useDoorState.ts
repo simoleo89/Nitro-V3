@@ -1,6 +1,7 @@
 import {
     DoorbellMessageEvent,
     FlatAccessDeniedMessageEvent,
+    GenericErrorEnum,
     GenericErrorEvent,
     GetGuestRoomResultEvent,
     GetSessionDataManager,
@@ -42,7 +43,7 @@ const useDoorStateStore = () => {
 
     const handleGenericError = useCallback((event: GenericErrorEvent) => {
         const parser = event.getParser();
-        if (parser.errorCode !== -100002) return;
+        if (parser.errorCode !== GenericErrorEnum.WRONG_ROOM_PASSWORD) return;
         setSnapshot((prev) => ({ ...prev, state: DoorStateType.STATE_WRONG_PASSWORD }));
     }, []);
 

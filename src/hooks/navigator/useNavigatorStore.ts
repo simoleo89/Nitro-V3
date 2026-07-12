@@ -7,6 +7,7 @@ import {
     FavouritesEvent,
     FlatCreatedEvent,
     FollowFriendMessageComposer,
+    GenericErrorEnum,
     GenericErrorEvent,
     GetGuestRoomMessageComposer,
     GetGuestRoomResultEvent,
@@ -216,7 +217,7 @@ export const useNavigatorStore = () => {
                 const parser = event.getParser();
                 // -100002 (wrong password) is handled by useDoorState — skip it here.
                 switch (parser.errorCode) {
-                    case 4009:
+                    case GenericErrorEnum.VIP_REQUIRED:
                         simpleAlert(
                             LocalizeText('navigator.alert.need.to.be.vip'),
                             NotificationAlertType.DEFAULT,
@@ -225,7 +226,7 @@ export const useNavigatorStore = () => {
                             LocalizeText('generic.alert.title')
                         );
                         return;
-                    case 4010:
+                    case GenericErrorEnum.ROOM_NAME_UNACCEPTABLE:
                         simpleAlert(
                             LocalizeText('navigator.alert.invalid_room_name'),
                             NotificationAlertType.DEFAULT,

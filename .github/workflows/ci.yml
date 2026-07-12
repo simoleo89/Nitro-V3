@@ -130,7 +130,8 @@ jobs:
 
           # Fork PR auto mode: prefer the companion renderer branch that matches
           # the client head (e.g. feat/chest-furni-v2-ui → feat/chest-furni-v2),
-          # then the base-ref default (Dev/main), then integration.
+          # then the base-ref default (Dev/main), then integration. A matching
+          # renderer feature branch may itself be stacked on required protocol PRs.
           if [ -z "$IN_REF" ] && [ -z "$VAR_REF" ] && [ -n "$PR_HEAD_REF" ] && [ -n "$REPO" ]; then
             COMPANION_REFS="$PR_HEAD_REF"
             case "$PR_HEAD_REF" in

@@ -19,6 +19,7 @@ import {
     MessengerThreadChat,
     NotificationAlertType,
     PlaySound,
+    selectMessengerIconState,
     SendMessageComposer,
     SoundNames
 } from '../../api';
@@ -26,8 +27,12 @@ import { useMessageEvent } from '../events';
 import { useNotification } from '../notification';
 import { IResolvedTranslation, useTranslation } from '../translation';
 import { useFriends } from './useFriends';
+import { useMessengerActions, useMessengerHistory, useMessengerRealtime } from './messenger';
 
 const useMessengerState = () => {
+    const persistentState = useMessengerRealtime();
+    const persistentHistory = useMessengerHistory();
+    const persistentActions = useMessengerActions();
     const [messageThreads, setMessageThreads] = useState<MessengerThread[]>([]);
     const [activeThreadId, setActiveThreadId] = useState<number>(-1);
     const [hiddenThreadIds, setHiddenThreadIds] = useState<number[]>([]);
@@ -281,24 +286,8 @@ const useMessengerState = () => {
     }, [activeThreadId]);
 
     useEffect(() => {
-        setIconState((prevValue) => {
-            if (!visibleThreads.length) return MessengerIconState.HIDDEN;
-
-            let isUnread = false;
-
-            for (const thread of visibleThreads) {
-                if (thread.unreadCount > 0) {
-                    isUnread = true;
-
-                    break;
-                }
-            }
-
-            if (isUnread) return MessengerIconState.UNREAD;
-
-            return MessengerIconState.SHOW;
-        });
-    }, [visibleThreads]);
+        setIconState(selectMessengerIconState(persistentState, visibleThreads.length > 0, visibleThreads.some(thread => thread.unreadCount > 0)));
+    }, [persistentState, visibleThreads]);
 
     return {
         messageThreads,
@@ -310,7 +299,8 @@ const useMessengerState = () => {
         closeThread,
         sendMessage,
         typingUserIds,
-        sendTypingStatus
+        sendTypingStatus,
+        persistentMessenger: { state: persistentState, history: persistentHistory, actions: persistentActions }
     };
 };
 

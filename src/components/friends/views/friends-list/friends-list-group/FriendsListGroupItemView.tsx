@@ -4,6 +4,7 @@ import { LayoutAvatarImageView, NitroCardAccordionItemView, UserProfileIconView 
 import { useFriends } from '../../../../../hooks';
 import { resolveAvatarFigure } from '../resolveAvatarFigure';
 import { resolveAvatarGender } from '../resolveAvatarGender';
+import { canFollowFriendListEntry } from './friendsListActions.helpers';
 
 export const FriendsListGroupItemView: FC<{ friend: MessengerFriend; selected: boolean; selectFriend: (userId: number) => void }> = (props) => {
     const { friend = null, selected = false, selectFriend = null } = props;
@@ -67,6 +68,8 @@ export const FriendsListGroupItemView: FC<{ friend: MessengerFriend; selected: b
                         figure={resolveAvatarFigure(friend.figure, friend.gender)}
                         gender={resolveAvatarGender(friend.gender)}
                         headOnly={true}
+                        compactHead={true}
+                        compactHeadSize={23}
                         direction={2}
                     />
                 </div>
@@ -78,7 +81,7 @@ export const FriendsListGroupItemView: FC<{ friend: MessengerFriend; selected: b
             <div className="friends-list-actions">
                 {!isRelationshipOpen && (
                     <>
-                        {friend.online && (
+                        {canFollowFriendListEntry(friend) && (
                             <div
                                 className="nitro-friends-spritesheet icon-follow cursor-pointer"
                                 title={LocalizeText('friendlist.tip.follow')}

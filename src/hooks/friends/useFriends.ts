@@ -22,7 +22,7 @@ import {
 } from '@nitrots/nitro-renderer';
 import { useEffect, useMemo, useState } from 'react';
 import { useBetween } from 'use-between';
-import { CloneObject, LocalizeText, MessengerFriend, MessengerRequest, MessengerSettings, NotificationAlertType, SendMessageComposer } from '../../api';
+import { CloneObject, LocalizeText, MessengerFriend, MessengerRequest, MessengerSettings, NotificationAlertType, SendMessageComposer, withUpdatedFriendCategories } from '../../api';
 import { useMessageEvent } from '../events';
 import { useNotification } from '../notification';
 
@@ -178,6 +178,8 @@ const useFriendsStore = () => {
 
     useMessageEvent<FriendListUpdateEvent>(FriendListUpdateEvent, (event) => {
         const parser = event.getParser();
+
+        setSettings((previous) => withUpdatedFriendCategories(previous, parser.categories));
 
         setFriends((prevValue) => {
             const newValue = [...prevValue];

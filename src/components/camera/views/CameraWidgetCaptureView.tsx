@@ -21,13 +21,16 @@ export const CameraWidgetCaptureView: FC<CameraWidgetCaptureViewProps> = (props)
 
     const selectedPicture = selectedPictureIndex > -1 ? cameraRoll[selectedPictureIndex] : null;
 
-    const getCameraBounds = () => {
-        if (!elementRef || !elementRef.current) return null;
+const getCameraBounds = () => {
+         if (!elementRef || !elementRef.current) return null;
 
-        const frameBounds = elementRef.current.getBoundingClientRect();
-
-        return new NitroRectangle(Math.floor(frameBounds.x), Math.floor(frameBounds.y), Math.floor(frameBounds.width), Math.floor(frameBounds.height));
-    };
+         const frameBounds = elementRef.current.getBoundingClientRect();
+         const scaleFactor = 1.001;
+         const scaledX = Math.floor(frameBounds.x * scaleFactor);
+         const scaledY = Math.floor(frameBounds.y * scaleFactor);
+         console.log("CameraCapture bounds:", scaledX, scaledY);
+         return new NitroRectangle(scaledX, scaledY, Math.floor(frameBounds.width), Math.floor(frameBounds.height));
+     };
 
     const takePicture = async () => {
         if (selectedPictureIndex > -1) {
